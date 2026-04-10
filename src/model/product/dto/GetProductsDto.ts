@@ -1,0 +1,15 @@
+import type { GenericWithUserId } from "../../shared/GenericWithUserId";
+import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
+import type { ProductDiscount } from "../types/ProductDiscount";
+
+export interface GetProductsDto extends GenericWithUserId {
+  meta?: PaginationMeta;
+  categoryId?: string;
+  tagIds?: string[];
+  keyword?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minQuantity?: number;
+  maxQuantity?: number;
+  discountType?: ProductDiscount["type"];
+}
