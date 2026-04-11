@@ -1,7 +1,7 @@
 import type React from "react";
 import styled from "styled-components";
 import { Select } from "../../../components/Select";
-import { useAppDispatch, useAppSelector } from "../../../redux/store";
+import { useAppSelector } from "../../../redux/store";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { useCallback, useMemo } from "react";
@@ -13,12 +13,10 @@ import {
   countActiveFilters,
   parseFiltersFromParams,
 } from "../utils/productUtils";
-import debounce from "lodash/debounce";
-import { productActions } from "../../../redux/product/products.slice";
-import userSliceSelectors from "../../../redux/user/user.selector";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
+import productSliceSelectors from "../../../redux/product/products.selector";
 
 const PopoverBody = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
@@ -82,34 +80,33 @@ const PopoverFooter = styled.div`
 export const ProductsFilter: React.FC = () => {
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
-  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
 
-  const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+
   const filters = useMemo(
-    () => parseFiltersFromParams(searchParams),
-    [searchParams],
+    () => parseFiltersFromParams(searchParams, productsMeta),
+    [searchParams, productsMeta],
   );
   const activeCount = countActiveFilters(filters);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFetch = useCallback(
-    debounce((f: Partial<GetProductsDto>) => {
-      dispatch(productActions.getProducts({ ...f, userId } as GetProductsDto));
-    }, 400),
-    [dispatch, userId],
-  );
-
   const applyFilter = useCallback(
     (key: keyof GetProductsDto, value: unknown) => {
-      setSearchParams(buildParams({ ...filters, [key]: value }, searchParams), {
-        replace: true,
-      });
-      if (key === "keyword") {
-        debouncedFetch({ ...filters, [key as keyof GetProductsDto]: value });
-      }
+      setSearchParams(
+        buildParams(
+          {
+            ...filters,
+            meta: { ...(filters?.meta || {}), page: 0 },
+            [key]: value,
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
     },
-    [filters, searchParams, setSearchParams, debouncedFetch],
+    [filters, searchParams, setSearchParams],
   );
 
   const resetFilters = useCallback(() => {

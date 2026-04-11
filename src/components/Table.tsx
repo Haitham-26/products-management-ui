@@ -6,7 +6,7 @@ export const Table = <T extends object>(props: AntdTableProps<T>) => {
     <AntdTable
       size="small"
       sticky
-      scroll={{ y: "calc(100vh - 3rem)" }}
+      scroll={{ y: "calc(100vh - 25rem)" }}
       bordered
       {...props}
     />

@@ -26,6 +26,7 @@ import { Dropdown } from "../../../components/Dropdown";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { Toast } from "../../../utils/Toast";
+import productSliceSelectors from "../../../redux/product/products.selector";
 
 const Content = styled.div`
   display: flex;
@@ -124,6 +125,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
+  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
 
   const { control, handleSubmit, getValues, reset, watch } =
     useForm<CreateProductDto>({
@@ -138,6 +140,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         },
         userId,
         categoryId: "",
+        tags: [],
       },
     });
 
@@ -190,10 +193,13 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         dto.discount.value = Number(dto.discount.value);
       }
 
-      dto.tags = dto.tags?.map((tag) => tag.tag) as any;
+      // @ts-expect-error We send the tag IDs only
+      dto.tags = dto.tags?.map((tag) => tag.tag);
 
       await dispatch(productActions.createProduct(dto)).unwrap();
-      await dispatch(productActions.getProducts({ userId })).unwrap();
+      await dispatch(
+        productActions.getProducts({ userId, meta: productsMeta }),
+      ).unwrap();
 
       reset();
       onClose();

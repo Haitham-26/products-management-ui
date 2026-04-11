@@ -4,6 +4,7 @@ import type { ProductDiscount } from "../../../model/product/types/ProductDiscou
 
 export const parseFiltersFromParams = (
   params: URLSearchParams,
+  meta: GetProductsDto["meta"],
 ): Partial<GetProductsDto> => ({
   keyword: params.get("keyword") || "",
   categoryId: params.get("categoryId") || undefined,
@@ -18,10 +19,13 @@ export const parseFiltersFromParams = (
   maxQuantity: params.get("maxQuantity")
     ? Number(params.get("maxQuantity"))
     : undefined,
-  meta: {
-    page: params.get("page") ? Number(params.get("page")) : undefined,
-    limit: params.get("limit") ? Number(params.get("limit")) : undefined,
-  },
+  meta:
+    params.get("page") || params.get("limit")
+      ? {
+          page: params.get("page") ? Number(params.get("page")) : undefined,
+          limit: params.get("limit") ? Number(params.get("limit")) : undefined,
+        }
+      : meta,
 });
 
 export const buildParams = (
@@ -47,6 +51,9 @@ export const buildParams = (
   set("maxQuantity", filters.maxQuantity?.toString());
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
+
+  // to force reload
+  next.set("u", new Date().getTime().toString());
 
   next.delete("tagIds");
   filters.tagIds?.forEach((id) => next.append("tagIds", id));

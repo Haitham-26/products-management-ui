@@ -124,6 +124,15 @@ const FilterBadge = styled.span`
 `;
 
 export const Products: React.FC = () => {
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+  const [productEditVisible, setProductEditVisible] = useState(false);
+  const [productDeleteVisible, setProductDeleteVisible] = useState(false);
+  const [productReadVisible, setProductReadVisible] = useState(false);
+  const [productCreateVisible, setProductCreateVisible] = useState(false);
+  const [productDeleteLoading, setProductDeleteLoading] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const productsLoading = useAppSelector(
@@ -133,33 +142,19 @@ export const Products: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = useMemo(
-    () => parseFiltersFromParams(searchParams),
-    [searchParams],
+    () => parseFiltersFromParams(searchParams, productsMeta),
+    [searchParams, productsMeta],
   );
-
-  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-  const [productEditVisible, setProductEditVisible] = useState(false);
-  const [productDeleteVisible, setProductDeleteVisible] = useState(false);
-  const [productReadVisible, setProductReadVisible] = useState(false);
-  const [productCreateVisible, setProductCreateVisible] = useState(false);
-  const [productDeleteLoading, setProductDeleteLoading] = useState(false);
-  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const dispatch = useAppDispatch();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFetch = useCallback(
-    debounce((f: Partial<GetProductsDto>) => {
-      dispatch(
-        productActions.getProducts({
-          ...f,
-          userId,
-        } as GetProductsDto),
-      );
-    }, 400),
-    [dispatch, userId],
+  const debouncedSetSearchParams = useMemo(
+    () =>
+      debounce((nextParams) => {
+        setSearchParams(nextParams, { replace: true });
+      }, 800),
+    [setSearchParams],
   );
-
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
       ...filters,
@@ -171,24 +166,31 @@ export const Products: React.FC = () => {
     };
 
     setSearchParams(buildParams(newFilters, searchParams), { replace: true });
-    debouncedFetch(newFilters);
+    debouncedSetSearchParams(newFilters);
   };
+
   const applyFilter = useCallback(
     (key: keyof GetProductsDto, value: unknown) => {
-      setSearchParams(buildParams({ ...filters, [key]: value }, searchParams), {
-        replace: true,
-      });
-      if (key === "keyword") {
-        console.log("hello");
+      const newFilters = {
+        ...filters,
+        meta: {
+          ...(filters?.meta || {}),
+          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+        },
+        [key]: value,
+      };
 
-        debouncedFetch({
-          ...filters,
-          meta: { ...(filters?.meta || {}), page: 0 },
-          [key as keyof GetProductsDto]: value,
-        });
+      const nextParams = buildParams(newFilters, searchParams);
+
+      if (key === "keyword") {
+        // Debounce the URL update for typing
+        debouncedSetSearchParams(nextParams);
+      } else {
+        // Apply immediately for dropdowns/filters
+        setSearchParams(nextParams, { replace: true });
       }
     },
-    [filters, searchParams, setSearchParams, debouncedFetch],
+    [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
   const activeFiltersCount = countActiveFilters(filters);
@@ -218,16 +220,30 @@ export const Products: React.FC = () => {
         productActions.deleteProduct({ productId: currentProduct._id, userId }),
       ).unwrap();
 
-      setSearchParams(buildParams(filters, searchParams), {
-        replace: true,
-      });
+      const meta = productsMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - 1;
 
-      await dispatch(
-        productActions.getProducts({
-          ...filters,
-          userId,
-        } as GetProductsDto),
-      ).unwrap();
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
 
       setProductDeleteVisible(false);
       setCurrentProduct(null);
@@ -244,15 +260,15 @@ export const Products: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(categoryActions.getCategories({ userId }));
-    dispatch(tagActions.getTags({ userId }));
     dispatch(
       productActions.getProducts({
         ...filters,
         userId,
       } as GetProductsDto),
     );
-    return () => debouncedFetch.cancel();
+    dispatch(categoryActions.getCategories({ userId }));
+    dispatch(tagActions.getTags({ userId }));
+    return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -273,8 +289,13 @@ export const Products: React.FC = () => {
             <Icon icon={faMagnifyingGlass} />
             <Input
               placeholder="Search by name or description…"
-              value={filters.keyword}
-              onChange={(e) => applyFilter("keyword", e.target.value)}
+              value={searchKeyword}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setSearchKeyword(value);
+                applyFilter("keyword", value);
+              }}
             />
           </SearchWrapper>
 
@@ -309,9 +330,9 @@ export const Products: React.FC = () => {
           total: productsMeta?.total || 0,
           onChange: handlePageChange,
           showSizeChanger: true,
-          pageSizeOptions: ["3", "10", "20", "50", "100"],
+          pageSizeOptions: ["10", "20", "50", "100"],
           position: ["bottomRight"],
-          showTotal: (total) => `Total ${total} items`,
+          showTotal: (total) => `Total ${total} products`,
         }}
       />
 

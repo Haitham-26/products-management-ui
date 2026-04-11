@@ -27,6 +27,9 @@ import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Button } from "../../../components/Button";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons/faXmarkCircle";
+import productSliceSelectors from "../../../redux/product/products.selector";
+import { useSearchParams } from "react-router-dom";
+import { buildParams, parseFiltersFromParams } from "../utils/productUtils";
 
 const Content = styled.div`
   display: flex;
@@ -124,6 +127,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
+  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { control, handleSubmit, reset, getValues, watch } =
     useForm<UpdateProductDto>({
@@ -139,6 +145,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         userId,
         productId: "",
         categoryId: "",
+        tags: [],
       },
     });
 
@@ -146,6 +153,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     control,
     name: "tags",
   });
+
+  const filters = useMemo(
+    () => parseFiltersFromParams(searchParams, productsMeta),
+    [searchParams, productsMeta],
+  );
 
   const [discountType, discountValue, price] = watch([
     "discount.type",
@@ -209,7 +221,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         }),
       ).unwrap();
 
-      await dispatch(productActions.getProducts({ userId })).unwrap();
+      setSearchParams(buildParams(filters, searchParams), {
+        replace: true,
+      });
 
       onClose();
     } finally {
@@ -227,6 +241,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         quantity: product.quantity || 0,
         discount: product.discount,
         categoryId: product.category?._id,
+        tags: (product?.tags || []).map((tag) => ({
+          tag: tag._id,
+        })),
         userId,
       });
     }
