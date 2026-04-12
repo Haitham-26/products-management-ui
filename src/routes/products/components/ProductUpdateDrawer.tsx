@@ -29,7 +29,10 @@ import { Button } from "../../../components/Button";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons/faXmarkCircle";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import { useSearchParams } from "react-router-dom";
-import { buildParams, parseFiltersFromParams } from "../utils/productUtils";
+import {
+  buildProductsParams,
+  parseProductsFiltersFromParams,
+} from "../utils/productUtils";
 
 const Content = styled.div`
   display: flex;
@@ -155,7 +158,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   });
 
   const filters = useMemo(
-    () => parseFiltersFromParams(searchParams, productsMeta),
+    () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
 
@@ -221,7 +224,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         }),
       ).unwrap();
 
-      setSearchParams(buildParams(filters, searchParams), {
+      setSearchParams(buildProductsParams(filters, searchParams), {
         replace: true,
       });
 

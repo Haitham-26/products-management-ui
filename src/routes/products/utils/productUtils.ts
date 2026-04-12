@@ -2,7 +2,7 @@ import isNil from "lodash/isNil";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 
-export const parseFiltersFromParams = (
+export const parseProductsFiltersFromParams = (
   params: URLSearchParams,
   meta: GetProductsDto["meta"],
 ): Partial<GetProductsDto> => ({
@@ -28,7 +28,7 @@ export const parseFiltersFromParams = (
       : meta,
 });
 
-export const buildParams = (
+export const buildProductsParams = (
   filters: Partial<GetProductsDto>,
   base: URLSearchParams,
 ): URLSearchParams => {
@@ -61,7 +61,9 @@ export const buildParams = (
   return next;
 };
 
-export const countActiveFilters = (filters: Partial<GetProductsDto>) => {
+export const countProductsActiveFilters = (
+  filters: Partial<GetProductsDto>,
+) => {
   let n = 0;
   if (filters.categoryId) {
     n++;

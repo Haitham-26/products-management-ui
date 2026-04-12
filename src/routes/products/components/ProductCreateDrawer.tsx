@@ -27,6 +27,11 @@ import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { Toast } from "../../../utils/Toast";
 import productSliceSelectors from "../../../redux/product/products.selector";
+import { useSearchParams } from "react-router-dom";
+import {
+  buildProductsParams,
+  parseProductsFiltersFromParams,
+} from "../utils/productUtils";
 
 const Content = styled.div`
   display: flex;
@@ -127,6 +132,8 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { control, handleSubmit, getValues, reset, watch } =
     useForm<CreateProductDto>({
       defaultValues: {
@@ -148,6 +155,11 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
     control,
     name: "tags",
   });
+
+  const filters = useMemo(
+    () => parseProductsFiltersFromParams(searchParams, productsMeta),
+    [searchParams, productsMeta],
+  );
 
   const categoriesOptions = useMemo(
     () =>
@@ -197,9 +209,10 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       dto.tags = dto.tags?.map((tag) => tag.tag);
 
       await dispatch(productActions.createProduct(dto)).unwrap();
-      await dispatch(
-        productActions.getProducts({ userId, meta: productsMeta }),
-      ).unwrap();
+
+      setSearchParams(buildProductsParams(filters, searchParams), {
+        replace: true,
+      });
 
       reset();
       onClose();

@@ -9,9 +9,9 @@ import { Option } from "antd/es/mentions";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useSearchParams } from "react-router-dom";
 import {
-  buildParams,
-  countActiveFilters,
-  parseFiltersFromParams,
+  buildProductsParams,
+  countProductsActiveFilters,
+  parseProductsFiltersFromParams,
 } from "../utils/productUtils";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
@@ -85,15 +85,15 @@ export const ProductsFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filters = useMemo(
-    () => parseFiltersFromParams(searchParams, productsMeta),
+    () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
-  const activeCount = countActiveFilters(filters);
+  const activeCount = countProductsActiveFilters(filters);
 
   const applyFilter = useCallback(
     (key: keyof GetProductsDto, value: unknown) => {
       setSearchParams(
-        buildParams(
+        buildProductsParams(
           {
             ...filters,
             meta: { ...(filters?.meta || {}), page: 0 },

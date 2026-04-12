@@ -30,9 +30,9 @@ import type { Product } from "../../model/product/types/Product";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import { ProductsFilter } from "./components/ProductsFilter";
 import {
-  buildParams,
-  countActiveFilters,
-  parseFiltersFromParams,
+  buildProductsParams,
+  countProductsActiveFilters,
+  parseProductsFiltersFromParams,
 } from "./utils/productUtils";
 
 const StyledContainer = styled(Container)`
@@ -142,7 +142,7 @@ export const Products: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = useMemo(
-    () => parseFiltersFromParams(searchParams, productsMeta),
+    () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
 
@@ -155,6 +155,7 @@ export const Products: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
       ...filters,
@@ -165,7 +166,9 @@ export const Products: React.FC = () => {
       },
     };
 
-    setSearchParams(buildParams(newFilters, searchParams), { replace: true });
+    setSearchParams(buildProductsParams(newFilters, searchParams), {
+      replace: true,
+    });
     debouncedSetSearchParams(newFilters);
   };
 
@@ -180,7 +183,7 @@ export const Products: React.FC = () => {
         [key]: value,
       };
 
-      const nextParams = buildParams(newFilters, searchParams);
+      const nextParams = buildProductsParams(newFilters, searchParams);
 
       if (key === "keyword") {
         // Debounce the URL update for typing
@@ -193,7 +196,7 @@ export const Products: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countActiveFilters(filters);
+  const activeFiltersCount = countProductsActiveFilters(filters);
 
   const onDelete = (product: Product) => {
     setCurrentProduct(product);
@@ -230,7 +233,7 @@ export const Products: React.FC = () => {
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
       setSearchParams(
-        buildParams(
+        buildProductsParams(
           {
             ...filters,
             meta: {

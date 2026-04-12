@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -15,6 +15,12 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import type { Category } from "../../../model/category/types/Category";
+import {
+  buildCategoriesParams,
+  parseCategoriesFiltersFromParams,
+} from "../utils/categoryUtils";
+import categorySliceSelectors from "../../../redux/category/categories.selector";
+import { useSearchParams } from "react-router-dom";
 
 const Content = styled.div`
   display: flex;
@@ -84,8 +90,13 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const dispatch = useAppDispatch();
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const categoriesMeta = useAppSelector(
+    categorySliceSelectors.selectCategoriesMeta,
+  );
+
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { control, handleSubmit, reset, getValues } =
     useForm<UpdateCategoryDto>({
@@ -95,14 +106,10 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
       },
     });
 
-  useEffect(() => {
-    if (category && open) {
-      reset({
-        name: category.name,
-        description: category.description ?? "",
-      });
-    }
-  }, [category, open, reset]);
+  const filters = useMemo(
+    () => parseCategoriesFiltersFromParams(searchParams, categoriesMeta),
+    [searchParams, categoriesMeta],
+  );
 
   const onUpdate = async () => {
     if (!category) {
@@ -120,13 +127,24 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
         }),
       ).unwrap();
 
-      await dispatch(categoryActions.getCategories({ userId })).unwrap();
+      setSearchParams(buildCategoriesParams(filters, searchParams), {
+        replace: true,
+      });
 
       onClose();
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (category && open) {
+      reset({
+        name: category.name,
+        description: category.description || "",
+      });
+    }
+  }, [category, open, reset]);
 
   return (
     <Drawer

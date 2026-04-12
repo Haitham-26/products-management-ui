@@ -11,10 +11,15 @@ const selectCategoriesLoading = createSelector(
   categoryState,
   (state) => state.categoriesLoading,
 );
+const selectCategoriesMeta = createSelector(
+  categoryState,
+  (state) => state.meta,
+);
 
 const categorySliceSelectors = {
   selectCategories,
   selectCategoriesLoading,
+  selectCategoriesMeta,
 };
 
 export default categorySliceSelectors;

@@ -1,8 +1,9 @@
 import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryDto";
 import type { DeleteCategoryDto } from "../../model/category/dto/DeleteCategoryDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
-import type { Product } from "../../model/product/types/Product";
+import type { Category } from "../../model/category/types/Category";
 import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
 
 export class CategoryAxios {
@@ -11,9 +12,9 @@ export class CategoryAxios {
   }
 
   static getCategories(dto: GenericWithUserId) {
-    return AppAxios.post<Product[]>("/categories", dto).then(
-      ({ data }) => data,
-    );
+    return AppAxios.get<PaginatedResponse<Category>>("/categories", {
+      params: dto,
+    }).then(({ data }) => data);
   }
 
   static deleteCategory(dto: DeleteCategoryDto) {

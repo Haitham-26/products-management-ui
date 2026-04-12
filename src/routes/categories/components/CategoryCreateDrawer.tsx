@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -14,6 +14,12 @@ import type { CreateCategoryDto } from "../../../model/category/dto/CreateCatego
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
+import {
+  buildCategoriesParams,
+  parseCategoriesFiltersFromParams,
+} from "../utils/categoryUtils";
+import { useSearchParams } from "react-router-dom";
+import categorySliceSelectors from "../../../redux/category/categories.selector";
 
 const Content = styled.div`
   display: flex;
@@ -81,9 +87,13 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const dispatch = useAppDispatch();
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const categoriesMeta = useAppSelector(
+    categorySliceSelectors.selectCategoriesMeta,
+  );
 
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { control, handleSubmit, reset, getValues } =
     useForm<CreateCategoryDto>({
       defaultValues: {
@@ -91,6 +101,11 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
         description: "",
       },
     });
+
+  const filters = useMemo(
+    () => parseCategoriesFiltersFromParams(searchParams, categoriesMeta),
+    [searchParams, categoriesMeta],
+  );
 
   const onCreate = async () => {
     try {
@@ -103,7 +118,9 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
         }),
       ).unwrap();
 
-      await dispatch(categoryActions.getCategories({ userId })).unwrap();
+      setSearchParams(buildCategoriesParams(filters, searchParams), {
+        replace: true,
+      });
 
       reset();
       onClose();

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { Product } from "../../model/product/types/Product";
 import { AppThunk } from "../AppThunk";
 import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
 import { userActions } from "../user/user.slice";
@@ -7,15 +6,27 @@ import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryD
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
 import type { DeleteCategoryDto } from "../../model/category/dto/DeleteCategoryDto";
 import { CategoryAxios } from "../../axios/category/category.axios";
+import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
+import type { Category } from "../../model/category/types/Category";
+import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 
 interface CategoryState {
-  categories?: Product[];
+  categories?: Category[];
   categoriesLoading?: boolean;
+  meta?: PaginationMeta;
 }
 
 const initialState: CategoryState = {
   categories: [],
   categoriesLoading: false,
+  meta: {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  },
 };
 
 const createCategory = AppThunk<void, CreateCategoryDto>(
@@ -23,7 +34,7 @@ const createCategory = AppThunk<void, CreateCategoryDto>(
   CategoryAxios.createCategory,
 );
 
-const getCategories = AppThunk<Product[], GenericWithUserId>(
+const getCategories = AppThunk<PaginatedResponse<Category>, GenericWithUserId>(
   "/categories",
   CategoryAxios.getCategories,
 );
@@ -47,7 +58,8 @@ export const categorySlice = createSlice({
       state.categoriesLoading = true;
     });
     addCase(getCategories.fulfilled, (state, action) => {
-      state.categories = action.payload;
+      state.categories = action.payload.data;
+      state.meta = action.payload.meta;
       state.categoriesLoading = false;
     });
     addCase(getCategories.rejected, (state) => {
