@@ -118,7 +118,7 @@ export const CategoriesFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minChildrenCount}
+              value={filters.minChildrenCount || ""}
               onChange={(e) =>
                 applyFilter(
                   "minChildrenCount",
@@ -131,7 +131,7 @@ export const CategoriesFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Max"
-              value={filters.maxChildrenCount}
+              value={filters.maxChildrenCount || ""}
               onChange={(e) =>
                 applyFilter(
                   "maxChildrenCount",

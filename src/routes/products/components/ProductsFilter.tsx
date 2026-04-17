@@ -175,7 +175,7 @@ export const ProductsFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minPrice}
+              value={filters.minPrice || ""}
               onChange={(e) =>
                 applyFilter(
                   "minPrice",
@@ -206,7 +206,7 @@ export const ProductsFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minQuantity}
+              value={filters.minQuantity || ""}
               onChange={(e) =>
                 applyFilter(
                   "minQuantity",
