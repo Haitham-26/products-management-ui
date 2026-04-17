@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -13,6 +13,9 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import type { CreateTagDto } from "../../../model/tag/dto/CreateTagDto";
 import { Textarea } from "../../../components/Textarea";
+import { buildTagsParams, parseTagsFiltersFromParams } from "../utils/tagUtils";
+import { useSearchParams } from "react-router-dom";
+import tagSliceSelectors from "../../../redux/tag/tags.selector";
 
 const Content = styled.div`
   display: flex;
@@ -82,13 +85,20 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const { control, handleSubmit, reset, getValues } = useForm<CreateTagDto>({
     defaultValues: {
       name: "",
       description: "",
     },
   });
+
+  const filters = useMemo(
+    () => parseTagsFiltersFromParams(searchParams, tagsMeta),
+    [searchParams, tagsMeta],
+  );
 
   const onCreate = async () => {
     try {
@@ -101,7 +111,9 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
         }),
       ).unwrap();
 
-      await dispatch(tagActions.getTags({ userId })).unwrap();
+      setSearchParams(buildTagsParams(filters, searchParams), {
+        replace: true,
+      });
 
       reset();
       onClose();

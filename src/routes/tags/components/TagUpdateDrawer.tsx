@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -14,6 +14,9 @@ import type { Tag } from "../../../model/tag/types/Tag";
 import type { UpdateTagDto } from "../../../model/tag/dto/UpdateTagDto";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import { Textarea } from "../../../components/Textarea";
+import { buildTagsParams, parseTagsFiltersFromParams } from "../utils/tagUtils";
+import { useSearchParams } from "react-router-dom";
+import tagSliceSelectors from "../../../redux/tag/tags.selector";
 
 const Content = styled.div`
   display: flex;
@@ -85,7 +88,9 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
 
   const dispatch = useAppDispatch();
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const { control, handleSubmit, reset, getValues } = useForm<UpdateTagDto>({
     defaultValues: {
       name: "",
@@ -93,14 +98,10 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
     },
   });
 
-  useEffect(() => {
-    if (tag && open) {
-      reset({
-        name: tag.name,
-        description: tag?.description,
-      });
-    }
-  }, [tag, open, reset]);
+  const filters = useMemo(
+    () => parseTagsFiltersFromParams(searchParams, tagsMeta),
+    [searchParams, tagsMeta],
+  );
 
   const onUpdate = async () => {
     if (!tag) {
@@ -118,13 +119,25 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
         }),
       ).unwrap();
 
-      await dispatch(tagActions.getTags({ userId })).unwrap();
+      setSearchParams(buildTagsParams(filters, searchParams), {
+        replace: true,
+      });
 
+      reset();
       onClose();
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (tag && open) {
+      reset({
+        name: tag.name,
+        description: tag?.description,
+      });
+    }
+  }, [tag, open, reset]);
 
   return (
     <Drawer

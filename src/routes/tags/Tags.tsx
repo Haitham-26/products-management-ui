@@ -1,31 +1,32 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
 import { WarningModal } from "../../components/WarningModal";
 import userSliceSelectors from "../../redux/user/user.selector";
 import styled from "styled-components";
-import { Button } from "../../components/Button";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { TagCreateDrawer } from "./components/TagCreateDrawer";
-import { Text } from "../../components/Text";
 import { TagUpdateDrawer } from "./components/TagUpdateDrawer";
 import { createTagsTableColumns } from "./components/createTagsTableColumns";
 import type { Tag } from "../../model/tag/types/Tag";
 import { tagActions } from "../../redux/tag/tags.slice";
 import { TagReadDrawer } from "./components/TagReadDrawer";
 import tagSliceSelectors from "../../redux/tag/tags.selector";
+import type { GetTagsDto } from "../../model/tag/dto/GetTagsDto";
+import { useSearchParams } from "react-router-dom";
+import {
+  buildTagsParams,
+  countTagsActiveFilters,
+  parseTagsFiltersFromParams,
+} from "./utils/tagUtils";
+import debounce from "lodash/debounce";
+import { PageHeader } from "../../components/PageHeader";
+import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
+import { TagsFilter } from "./components/TagsFilter";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 export const Tags: React.FC = () => {
@@ -43,6 +44,62 @@ export const Tags: React.FC = () => {
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const tagsLoading = useAppSelector(tagSliceSelectors.selectTagsLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters = useMemo(
+    () => parseTagsFiltersFromParams(searchParams, tagsMeta),
+    [searchParams, tagsMeta],
+  );
+
+  const debouncedSetSearchParams = useMemo(
+    () =>
+      debounce((nextParams) => {
+        setSearchParams(nextParams, { replace: true });
+      }, 800),
+    [setSearchParams],
+  );
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    const newFilters = {
+      ...filters,
+      meta: {
+        ...filters.meta,
+        page,
+        limit: pageSize,
+      },
+    };
+
+    setSearchParams(buildTagsParams(newFilters, searchParams), {
+      replace: true,
+    });
+    debouncedSetSearchParams(newFilters);
+  };
+
+  const applyFilter = useCallback(
+    (key: keyof GetTagsDto, value: unknown) => {
+      const newFilters = {
+        ...filters,
+        meta: {
+          ...(filters?.meta || {}),
+          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+        },
+        [key]: value,
+      };
+
+      const nextParams = buildTagsParams(newFilters, searchParams);
+
+      if (key === "keyword") {
+        debouncedSetSearchParams(nextParams);
+      } else {
+        setSearchParams(nextParams, { replace: true });
+      }
+    },
+    [filters, searchParams, setSearchParams, debouncedSetSearchParams],
+  );
+
+  const activeFiltersCount = countTagsActiveFilters(filters);
 
   const onDelete = (tag: Tag) => {
     setCurrentTag(tag);
@@ -67,13 +124,37 @@ export const Tags: React.FC = () => {
     try {
       setTagDeleteLoading(true);
 
+      const meta = tagsMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - 1;
+
       await dispatch(
         tagActions.deleteTag({
           tagId: currentTag?._id,
           userId,
         }),
       ).unwrap();
-      await dispatch(tagActions.getTags({ userId })).unwrap();
+
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildTagsParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
 
       setTagDeleteVisible(false);
       setCurrentTag(null);
@@ -95,24 +176,50 @@ export const Tags: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(tagActions.getTags({ userId }));
-  }, [dispatch, userId]);
+    dispatch(
+      tagActions.getTags({
+        ...filters,
+        userId,
+      } as GetTagsDto),
+    );
+
+    return () => debouncedSetSearchParams.cancel();
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StyledContainer>
-      <Header>
-        <Text fontSize="title">Tags</Text>
-
-        <Button icon={faPlus} onClick={() => setTagCreateVisible(true)}>
-          Add tag
-        </Button>
-      </Header>
+      <PageHeader
+        icon={faTags}
+        title="Tags"
+        action={{
+          title: "New Tag",
+          icon: faPlus,
+          onClick: () => setTagCreateVisible(true),
+        }}
+        filters={{
+          activeCount: activeFiltersCount,
+          content: <TagsFilter />,
+        }}
+        search={{
+          placeholder: "Search by name or description...",
+          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+        }}
+      />
 
       <Table
         loading={tagsLoading}
         columns={tableColumns}
         dataSource={tags}
-        pagination={false}
+        pagination={{
+          current: tagsMeta?.page || 1,
+          pageSize: tagsMeta?.limit || 10,
+          total: tagsMeta?.total || 0,
+          onChange: handlePageChange,
+          showSizeChanger: true,
+          pageSizeOptions: ["2", "10", "20", "50", "100"],
+          position: ["bottomRight"],
+          showTotal: (total) => `Total ${total} tags`,
+        }}
       />
 
       <WarningModal

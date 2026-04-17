@@ -1,6 +1,7 @@
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import type { CreateTagDto } from "../../model/tag/dto/CreateTagDto";
 import type { DeleteTagDto } from "../../model/tag/dto/DeleteTagDto";
+import type { GetTagsDto } from "../../model/tag/dto/GetTagsDto";
 import type { UpdateTagDto } from "../../model/tag/dto/UpdateTagDto";
 import type { Tag } from "../../model/tag/types/Tag";
 import AppAxios from "../AppAxios";
@@ -10,8 +11,10 @@ export class TagAxios {
     return AppAxios.post("/tags/create", dto).then(({ data }) => data);
   }
 
-  static getTags(dto: GenericWithUserId) {
-    return AppAxios.post<Tag[]>("/tags", dto).then(({ data }) => data);
+  static getTags(dto: GetTagsDto) {
+    return AppAxios.get<PaginatedResponse<Tag>>("/tags", { params: dto }).then(
+      ({ data }) => data,
+    );
   }
 
   static deleteTag(dto: DeleteTagDto) {

@@ -8,10 +8,12 @@ const selectTagsLoading = createSelector(
   tagState,
   (state) => state.tagsLoading,
 );
+const selectTagsMeta = createSelector(tagState, (state) => state.meta);
 
 const tagSliceSelectors = {
   selectTags,
   selectTagsLoading,
+  selectTagsMeta,
 };
 
 export default tagSliceSelectors;

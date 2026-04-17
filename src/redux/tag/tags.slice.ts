@@ -1,21 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
 import { userActions } from "../user/user.slice";
 import type { CreateTagDto } from "../../model/tag/dto/CreateTagDto";
 import type { Tag } from "../../model/tag/types/Tag";
 import type { DeleteTagDto } from "../../model/tag/dto/DeleteTagDto";
 import type { UpdateTagDto } from "../../model/tag/dto/UpdateTagDto";
 import { TagAxios } from "../../axios/tag/tag.axios";
+import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
+import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
+import type { GetTagsDto } from "../../model/tag/dto/GetTagsDto";
 
 interface TagState {
   tags?: Tag[];
   tagsLoading?: boolean;
+  meta?: PaginationMeta;
 }
 
 const initialState: TagState = {
   tags: [],
   tagsLoading: false,
+  meta: {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  },
 };
 
 const createTag = AppThunk<void, CreateTagDto>(
@@ -23,7 +34,10 @@ const createTag = AppThunk<void, CreateTagDto>(
   TagAxios.createTag,
 );
 
-const getTags = AppThunk<Tag[], GenericWithUserId>("/tags", TagAxios.getTags);
+const getTags = AppThunk<PaginatedResponse<Tag>, GetTagsDto>(
+  "/tags",
+  TagAxios.getTags,
+);
 
 const deleteTag = AppThunk<void, DeleteTagDto>(
   "/tags/:id/delete",
@@ -44,7 +58,8 @@ export const tagSlice = createSlice({
       state.tagsLoading = true;
     });
     addCase(getTags.fulfilled, (state, action) => {
-      state.tags = action.payload;
+      state.tags = action.payload.data;
+      state.meta = action.payload.meta;
       state.tagsLoading = false;
     });
     addCase(getTags.rejected, (state) => {

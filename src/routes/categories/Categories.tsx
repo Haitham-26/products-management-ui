@@ -5,10 +5,8 @@ import { Table } from "../../components/Table";
 import { WarningModal } from "../../components/WarningModal";
 import userSliceSelectors from "../../redux/user/user.selector";
 import styled from "styled-components";
-import { Button } from "../../components/Button";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { CategoryCreateDrawer } from "./components/CategoryCreateDrawer";
-import { Text } from "../../components/Text";
 import { CategoryUpdateDrawer } from "./components/CategoryUpdateDrawer";
 import { CategoryReadDrawer } from "./components/CategoryReadDrawer";
 import type { Category } from "../../model/category/types/Category";
@@ -23,101 +21,12 @@ import {
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
-import { Icon } from "../../components/Icon";
-import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
-import { Popover } from "antd";
 import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
-import { Input } from "../../components/Input";
 import { CategoriesFilter } from "./components/CategoriesFilter";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
+import { PageHeader } from "../../components/PageHeader";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const TopRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const FilterBar = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  flex-wrap: wrap;
-`;
-
-const SearchWrapper = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 10rem;
-
-  input {
-    padding-inline-end: ${({ theme }) => theme.spacing.md};
-    min-width: 16rem;
-  }
-
-  svg {
-    position: absolute;
-    z-index: 2;
-    inset-inline-end: ${({ theme }) => theme.spacing.sm};
-    color: ${({ theme }) => theme.colors.textSecondary};
-    pointer-events: none;
-    font-size: 13px;
-  }
-`;
-
-const FilterButton = styled.button<{ active?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  height: 2rem;
-  padding: 0 ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid
-    ${({ theme, active }) =>
-      active ? theme.colors.primary : theme.colors.border};
-  background: ${({ theme, active }) =>
-    active ? `${theme.colors.primary}12` : theme.colors.surface};
-  color: ${({ theme, active }) =>
-    active ? theme.colors.primary : theme.colors.textSecondary};
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  margin-inline-start: auto;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const FilterBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: ${({ theme }) => theme.colors.primary};
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1;
 `;
 
 export const Categories: React.FC = () => {
@@ -128,8 +37,6 @@ export const Categories: React.FC = () => {
   const [categoryReadVisible, setCategoryReadVisible] = useState(false);
   const [categoryCreateVisible, setCategoryCreateVisible] = useState(false);
   const [categoryDeleteLoading, setCategoryDeleteLoading] = useState(false);
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
 
   const dispatch = useAppDispatch();
 
@@ -284,52 +191,23 @@ export const Categories: React.FC = () => {
 
   return (
     <StyledContainer>
-      <Header>
-        <TopRow>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <Icon icon={faFolder} color="primary" />
-            <Text fontSize="title">Categories</Text>
-          </div>
-          <Button icon={faPlus} onClick={() => setCategoryCreateVisible(true)}>
-            New Category
-          </Button>
-        </TopRow>
-
-        <FilterBar>
-          <SearchWrapper>
-            <Icon icon={faMagnifyingGlass} />
-            <Input
-              placeholder="Search by name"
-              value={searchKeyword}
-              onChange={(e) => {
-                const value = e.target.value;
-
-                setSearchKeyword(value);
-                applyFilter("keyword", value);
-              }}
-            />
-          </SearchWrapper>
-
-          <Popover
-            content={<CategoriesFilter />}
-            trigger="click"
-            placement="bottomLeft"
-            open={popoverOpen}
-            onOpenChange={setPopoverOpen}
-            arrow={false}
-          >
-            <FilterButton active={Boolean(activeFiltersCount)}>
-              <Icon icon={faFilter} />
-              Filters
-              {activeFiltersCount ? (
-                <FilterBadge>{activeFiltersCount}</FilterBadge>
-              ) : (
-                <Icon icon={faChevronDown} />
-              )}
-            </FilterButton>
-          </Popover>
-        </FilterBar>
-      </Header>
+      <PageHeader
+        icon={faFolder}
+        title="Categories"
+        action={{
+          title: "New Category",
+          icon: faPlus,
+          onClick: () => setCategoryCreateVisible(true),
+        }}
+        filters={{
+          activeCount: activeFiltersCount,
+          content: <CategoriesFilter />,
+        }}
+        search={{
+          placeholder: "Search by name or description...",
+          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+        }}
+      />
 
       <Table
         loading={categoriesLoading}
