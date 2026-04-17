@@ -39,6 +39,14 @@ export const createTagsTableColumns = ({
       ellipsis: true,
     },
     {
+      title: "Usage Count",
+      dataIndex: "usageCount",
+      key: "usageCount",
+      width: 200,
+      ellipsis: true,
+      sorter: (a, b) => b.usageCount - a.usageCount,
+    },
+    {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",

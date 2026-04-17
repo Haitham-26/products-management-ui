@@ -116,8 +116,8 @@ export const Tags: React.FC = () => {
       />
 
       <WarningModal
-        title={`Delete "${currentTag?.title}" tag?`}
-        description={`Are you sure you want to delete "${currentTag?.title}" tag? Once you confirm, you cannot undo it later.`}
+        title={`Delete "${currentTag?.name}" tag?`}
+        description={`Are you sure you want to delete "${currentTag?.name}" tag? Once you confirm, you cannot undo it later.`}
         open={tagDeleteVisible}
         onClose={() => setTagDeleteVisible(false)}
         onConfirm={deleteTag}
