@@ -127,7 +127,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     <Header>
       <TopRow>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Icon icon={icon} color="primary" />
+          <Icon icon={icon} color="primary" size="xl" />
           <Text fontSize="title">{title}</Text>
         </div>
         {action ? (
