@@ -416,7 +416,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
               <Select
                 title="Select category"
                 value={categoriesOptions?.find((c) => c.value === value)}
-                onChange={onChange}
+                onChange={(v) => onChange(v || null)}
                 options={categoriesOptions}
               />
             )}
