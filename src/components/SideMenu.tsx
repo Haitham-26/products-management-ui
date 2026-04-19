@@ -9,6 +9,7 @@ import { faChartBar } from "@fortawesome/free-solid-svg-icons/faChartBar";
 import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
 import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 
 const StyledContainer = styled(Container)`
   width: 250px;
@@ -67,6 +68,11 @@ export const SideMenu: React.FC = () => {
       label: "Tags",
       path: "/tags",
       icon: <Icon icon={faTags} />,
+    },
+    {
+      label: "Orders",
+      path: "/orders",
+      icon: <Icon icon={faCartShopping} />,
     },
   ].map((item) => ({
     key: item.path,

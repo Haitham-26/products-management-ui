@@ -34,6 +34,7 @@ const StyledInput = styled.input<{ hasError: boolean; originalType?: string }>`
 
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: 0.875rem;
+  height: 2rem;
 
   ${({ originalType, theme }) =>
     originalType === "password"

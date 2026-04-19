@@ -5,6 +5,7 @@ import { Dashboard } from "./dashboard/Dashboard";
 import { Products } from "./products/Products";
 import { Categories } from "./categories/Categories";
 import { Tags } from "./tags/Tags";
+import { Orders } from "./orders/Orders";
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
@@ -24,6 +25,10 @@ export const PrivateRoutes: RouteObject = {
     {
       path: "/tags",
       element: <AppPrivateRoute component={<Tags />} />,
+    },
+    {
+      path: "/orders",
+      element: <AppPrivateRoute component={<Orders />} />,
     },
     {
       path: "*",

@@ -8,6 +8,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
+
+  .ant-select {
+    height: 2rem;
+  }
 `;
 
 type SelectProps = AntdSelectProps;

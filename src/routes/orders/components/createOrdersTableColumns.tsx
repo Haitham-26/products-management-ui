@@ -1,0 +1,89 @@
+import type { ColumnsType } from "antd/es/table";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons/faPenToSquare";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
+
+import { Icon } from "../../../components/Icon";
+import { Dropdown } from "../../../components/Dropdown";
+import { formatDate } from "../../../utils/Date";
+import type { Order } from "../../../model/order/types/Order";
+
+type FNType = (category: Order) => void;
+
+type CreateOrdersTableColumnsArgs = {
+  onEdit: FNType;
+  onDelete: FNType;
+  onRead: FNType;
+};
+
+export const createOrdersTableColumns = ({
+  onEdit,
+  onDelete,
+  onRead,
+}: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
+  return [
+    {
+      title: "Order ID",
+      dataIndex: "_id",
+      key: "id",
+      width: 220,
+      ellipsis: true,
+    },
+    {
+      title: "Note",
+      dataIndex: "note",
+      key: "note",
+      width: 360,
+      ellipsis: true,
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 180,
+      render: (value: string) => formatDate(new Date(value), true),
+      sorter: (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      fixed: "right",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <Icon icon={faEye} />,
+                label: "View",
+                onClick: () => onRead(record),
+              },
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit(record),
+              },
+              {
+                key: "delete",
+                icon: <Icon icon={faTrash} />,
+                label: "Delete",
+                danger: true,
+                onClick: () => onDelete(record),
+              },
+            ],
+          }}
+        >
+          <span style={{ cursor: "pointer" }}>
+            <Icon icon={faEllipsis} />
+          </span>
+        </Dropdown>
+      ),
+    },
+  ];
+};

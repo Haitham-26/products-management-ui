@@ -15,12 +15,14 @@ import productsSlice from "./product/products.slice";
 import categoriesSlice from "./category/categories.slice";
 import tagsSlice from "./tag/tags.slice";
 import userSlice from "./user/user.slice";
+import ordersSlice from "./order/orders.slice";
 import storage from "redux-persist/lib/storage";
 
 const rootReducer = combineReducers({
   products: productsSlice,
   categories: categoriesSlice,
   tags: tagsSlice,
+  orders: ordersSlice,
   user: userSlice,
 });
 
