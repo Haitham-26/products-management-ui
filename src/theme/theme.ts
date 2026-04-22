@@ -14,6 +14,10 @@ export const theme = {
     error: "#ef4444",
     success: "#22c55e",
 
+    pending: "#fbbf24",
+    confirmed: "#22c55e",
+    cancelled: "#ef4444",
+
     glassBackground: "rgba(255, 255, 255, 0.6)",
     glassBorder: "rgba(255, 255, 255, 0.4)",
   },

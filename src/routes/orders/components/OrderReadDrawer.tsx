@@ -77,9 +77,12 @@ export const OrderReadDrawer: React.FC<Props> = ({
     return null;
   }
 
+  console.log(order);
+
   return (
     <Drawer open={open} onClose={onClose} title="Order details" size="large">
       <Content>
+        {/* HERO */}
         <Hero>
           <HeroIcon>
             <Icon icon={faCartShopping} />
@@ -90,27 +93,38 @@ export const OrderReadDrawer: React.FC<Props> = ({
             <Text fontSize="small" color="textSecondary">
               Status: {order.status}
             </Text>
+            <Text fontSize="small">Total: {order.totalPriceAtPurchase}</Text>
           </HeroText>
         </Hero>
 
+        {/* ITEMS */}
         <Card>
           <Text fontSize="subtitle">Items</Text>
 
           {order.items.map((item, index) => {
-            const productName = products.find(
-              (product) => product._id === item.productId,
-            )?.name;
+            const product = products.find(
+              (p) => p._id.toString() === item.productId.toString(),
+            );
 
             return (
               <Row key={index}>
-                <Text>{productName || item.productId}</Text>
+                <div>
+                  <Text>{product?.name || "Unknown product"}</Text>
 
-                <Text>x{item.quantity}</Text>
+                  <Text fontSize="small" color="textSecondary">
+                    {item.priceAtPurchase} × {item.quantity}
+                  </Text>
+                </div>
+
+                <Text>
+                  {(item.priceAtPurchase * item.quantity).toFixed(2)}$
+                </Text>
               </Row>
             );
           })}
         </Card>
 
+        {/* NOTE */}
         <Card>
           <Row>
             <Icon icon={faAlignLeft} />
@@ -120,6 +134,16 @@ export const OrderReadDrawer: React.FC<Props> = ({
               </Text>
               <Text>{order.note || "No note provided"}</Text>
             </div>
+          </Row>
+        </Card>
+
+        <Card>
+          <Row>
+            <Text fontSize="subtitle" color="textSecondary">
+              Total price
+            </Text>
+
+            <Text fontSize="subtitle">{order.totalPriceAtPurchase}$</Text>
           </Row>
         </Card>
       </Content>

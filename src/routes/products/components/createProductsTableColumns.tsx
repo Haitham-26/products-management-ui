@@ -11,6 +11,7 @@ import { formatDate } from "../../../utils/Date";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
+import { isNaN } from "lodash";
 
 type FNType = (product: Product) => void;
 
@@ -92,33 +93,12 @@ export const createProductsTableColumns = ({
       key: "priceAfterDiscount",
       width: 180,
       render: (_: unknown, record: Product) => {
-        const { price, discount } = record;
-
-        if (!discount) {
-          return `$${price.toFixed(2)}`;
-        }
-
-        const finalPrice =
-          discount.type === "percentage"
-            ? price - price * (discount.value / 100)
-            : price - discount.value;
-
-        return finalPrice > 0 ? `$${finalPrice.toFixed(2)}` : "$0.00";
+        return record.priceAfterDiscount && !isNaN(record.priceAfterDiscount)
+          ? `$${record.priceAfterDiscount.toFixed(2)}`
+          : `$0.00`;
       },
       sorter: (a: Product, b: Product) => {
-        const getFinalPrice = (product: Product) => {
-          const { price, discount } = product;
-
-          if (!discount) {
-            return price;
-          }
-
-          return discount.type === "percentage"
-            ? price - price * (discount.value / 100)
-            : price - discount.value;
-        };
-
-        return getFinalPrice(b) - getFinalPrice(a);
+        return (b?.priceAfterDiscount || 0) - (a?.priceAfterDiscount || 0);
       },
     },
     {

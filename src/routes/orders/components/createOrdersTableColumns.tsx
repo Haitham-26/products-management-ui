@@ -8,6 +8,9 @@ import { Icon } from "../../../components/Icon";
 import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Order } from "../../../model/order/types/Order";
+import capitalize from "lodash/capitalize";
+import type { OrderItem } from "../../../model/order/types/OrderItem";
+import type { Product } from "../../../model/product/types/Product";
 
 type FNType = (category: Order) => void;
 
@@ -15,12 +18,14 @@ type CreateOrdersTableColumnsArgs = {
   onEdit: FNType;
   onDelete: FNType;
   onRead: FNType;
+  products: Product[];
 };
 
 export const createOrdersTableColumns = ({
   onEdit,
   onDelete,
   onRead,
+  products = [],
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
@@ -29,6 +34,38 @@ export const createOrdersTableColumns = ({
       key: "id",
       width: 220,
       ellipsis: true,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 220,
+      ellipsis: true,
+      render: (value: string) => capitalize(value),
+      onCell: (record) => ({
+        className: `${record.status.toLowerCase()}-status`,
+      }),
+    },
+    {
+      title: "Total Price",
+      dataIndex: "totalPriceAtPurchase",
+      key: "totalPriceAtPurchase",
+      width: 220,
+      ellipsis: true,
+      render: (value: number) => (value ? `$${value.toFixed(2)}` : "$0"),
+      sorter: (a, b) =>
+        (a?.totalPriceAtPurchase || 0) - (b?.totalPriceAtPurchase || 0),
+    },
+    {
+      title: "Products",
+      dataIndex: "items",
+      key: "items",
+      width: 220,
+      ellipsis: true,
+      render: (items: OrderItem[]) =>
+        items
+          .map((i) => products.find((p) => p._id === i.productId)?.name)
+          .join(", "),
     },
     {
       title: "Note",

@@ -1,5 +1,5 @@
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -124,14 +124,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { control, handleSubmit, reset, getValues, watch } =
-    useForm<UpdateOrderDto>({
-      defaultValues: {
-        items: order?.items || [],
-        note: order?.note || "",
-        orderId: order?._id || "",
-        userId,
-      },
-    });
+    useForm<UpdateOrderDto>();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -172,6 +165,11 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
     try {
       setLoading(true);
 
+      dto.items = dto.items.map((item) => ({
+        ...item,
+        quantity: Number(item.quantity),
+      }));
+
       await dispatch(
         orderActions.updateOrder({
           ...dto,
@@ -188,6 +186,15 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    reset({
+      items: order?.items || [],
+      note: order?.note || "",
+      orderId: order?._id || "",
+      userId,
+    });
+  }, [order, reset, userId]);
 
   return (
     <Drawer

@@ -9,6 +9,7 @@ export interface Product {
   price: number;
   quantity: number;
   discount?: ProductDiscount;
+  priceAfterDiscount?: number;
   category?: Partial<Category>;
   tags?: Partial<Tag>[];
   createdAt: string;

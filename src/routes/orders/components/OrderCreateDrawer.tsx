@@ -166,6 +166,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     try {
       setLoading(true);
 
+      dto.items = dto.items.map((item) => ({
+        ...item,
+        quantity: Number(item.quantity),
+      }));
+
       await dispatch(
         orderActions.createOrder({
           ...dto,

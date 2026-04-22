@@ -26,9 +26,20 @@ import { OrderUpdateDrawer } from "./components/OrderUpdateDrawer";
 import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { productActions } from "../../redux/product/products.slice";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
+import productSliceSelectors from "../../redux/product/products.selector";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
+
+  .pending-status {
+    background-color: ${({ theme }) => theme.colors.pending} !important;
+  }
+  .confirmed-status {
+    background-color: ${({ theme }) => theme.colors.confirmed};
+  }
+  .cancelled-status {
+    background-color: ${({ theme }) => theme.colors.cancelled};
+  }
 `;
 
 export const Orders: React.FC = () => {
@@ -46,6 +57,7 @@ export const Orders: React.FC = () => {
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
+  const products = useAppSelector(productSliceSelectors.selectProducts);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -172,8 +184,9 @@ export const Orders: React.FC = () => {
         onDelete,
         onEdit,
         onRead,
+        products,
       }),
-    [],
+    [products],
   );
 
   useEffect(() => {
