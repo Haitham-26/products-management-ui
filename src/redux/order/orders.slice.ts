@@ -7,8 +7,8 @@ import type { PaginatedResponse } from "../../model/shared/meta/PaginatedRespons
 import type { Order } from "../../model/order/types/Order";
 import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
 import { OrderAxios } from "../../axios/order/order.axios";
-import type { DeleteOrderDto } from "../../model/order/dto/DeleteOrderDto";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
+import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 
 interface OrderState {
   orders?: Order[];
@@ -39,14 +39,14 @@ const getOrders = AppThunk<PaginatedResponse<Order>, GenericWithUserId>(
   OrderAxios.getOrders,
 );
 
-const deleteOrder = AppThunk<void, DeleteOrderDto>(
-  "/orders/:id/delete",
-  OrderAxios.deleteOrder,
-);
-
 const updateOrder = AppThunk<void, UpdateOrderDto>(
   "/orders/:id/update",
   OrderAxios.updateOrder,
+);
+
+const manageOrderStatus = AppThunk<void, ManageOrderStatusDto>(
+  "/orders/:id/manage-status",
+  OrderAxios.manageOrderStatus,
 );
 
 export const orderSlice = createSlice({
@@ -73,8 +73,8 @@ export const orderSlice = createSlice({
 const orderActions = {
   createOrder,
   getOrders,
-  deleteOrder,
   updateOrder,
+  manageOrderStatus,
 };
 
 export { orderActions };

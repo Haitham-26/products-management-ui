@@ -1,7 +1,6 @@
 import type { ColumnsType } from "antd/es/table";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons/faPenToSquare";
-import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 
 import { Icon } from "../../../components/Icon";
@@ -11,20 +10,21 @@ import type { Order } from "../../../model/order/types/Order";
 import capitalize from "lodash/capitalize";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import type { Product } from "../../../model/product/types/Product";
+import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 
 type FNType = (category: Order) => void;
 
 type CreateOrdersTableColumnsArgs = {
   onEdit: FNType;
-  onDelete: FNType;
   onRead: FNType;
+  onManageStatus: FNType;
   products: Product[];
 };
 
 export const createOrdersTableColumns = ({
   onEdit,
-  onDelete,
   onRead,
+  onManageStatus,
   products = [],
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
@@ -107,11 +107,10 @@ export const createOrdersTableColumns = ({
                 onClick: () => onEdit(record),
               },
               {
-                key: "delete",
-                icon: <Icon icon={faTrash} />,
-                label: "Delete",
-                danger: true,
-                onClick: () => onDelete(record),
+                key: "manage-status",
+                icon: <Icon icon={faGear} />,
+                label: "Manage Status",
+                onClick: () => onManageStatus(record),
               },
             ],
           }}

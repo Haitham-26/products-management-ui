@@ -1,5 +1,5 @@
 import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
-import type { DeleteOrderDto } from "../../model/order/dto/DeleteOrderDto";
+import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { Order } from "../../model/order/types/Order";
 import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
@@ -17,15 +17,16 @@ export class OrderAxios {
     }).then(({ data }) => data);
   }
 
-  static deleteOrder(dto: DeleteOrderDto) {
-    return AppAxios.delete(`/orders/${dto.orderId}/delete`).then(
-      ({ data }) => data,
-    );
-  }
-
   static updateOrder(dto: UpdateOrderDto) {
     return AppAxios.patch<void>(`/orders/${dto.orderId}/update`, dto).then(
       ({ data }) => data,
     );
+  }
+
+  static manageOrderStatus(dto: ManageOrderStatusDto) {
+    return AppAxios.patch<void>(
+      `/orders/${dto.orderId}/manage-status`,
+      dto,
+    ).then(({ data }) => data);
   }
 }

@@ -2,14 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
-import { WarningModal } from "../../components/WarningModal";
 import userSliceSelectors from "../../redux/user/user.selector";
 import styled from "styled-components";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { createOrdersTableColumns } from "./components/createOrdersTableColumns";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
-import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
 import { OrdersFilter } from "./components/OrdersFilter";
 import { PageHeader } from "../../components/PageHeader";
 import { orderActions } from "../../redux/order/orders.slice";
@@ -27,6 +25,8 @@ import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { productActions } from "../../redux/product/products.slice";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import productSliceSelectors from "../../redux/product/products.selector";
+import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -35,10 +35,12 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.pending} !important;
   }
   .confirmed-status {
-    background-color: ${({ theme }) => theme.colors.confirmed};
+    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+    color: ${({ theme }) => theme.colors.surface};
   }
   .cancelled-status {
-    background-color: ${({ theme }) => theme.colors.cancelled};
+    background-color: ${({ theme }) => theme.colors.cancelled} !important;
+    color: ${({ theme }) => theme.colors.surface};
   }
 `;
 
@@ -46,10 +48,10 @@ export const Orders: React.FC = () => {
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   const [orderEditVisible, setOrderEditVisible] = useState(false);
-  const [orderDeleteVisible, setOrderDeleteVisible] = useState(false);
   const [orderReadVisible, setOrderReadVisible] = useState(false);
   const [orderCreateVisible, setOrderCreateVisible] = useState(false);
-  const [orderDeleteLoading, setOrderDeleteLoading] = useState(false);
+  const [orderManageStatusVisible, setOrderManageStatusVisible] =
+    useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -114,11 +116,6 @@ export const Orders: React.FC = () => {
 
   const activeFiltersCount = countOrdersActiveFilters(filters);
 
-  const onDelete = (order: Order) => {
-    setCurrentOrder(order);
-    setOrderDeleteVisible(true);
-  };
-
   const onEdit = (order: Order) => {
     setCurrentOrder(order);
     setOrderEditVisible(true);
@@ -129,61 +126,17 @@ export const Orders: React.FC = () => {
     setOrderReadVisible(true);
   };
 
-  const deleteOrder = async () => {
-    if (!currentOrder) {
-      return;
-    }
-
-    try {
-      setOrderDeleteLoading(true);
-
-      const meta = ordersMeta;
-      const currentPage = meta?.page || 1;
-      const limit = meta?.limit || 10;
-      const total = (meta?.total || 1) - 1;
-
-      await dispatch(
-        orderActions.deleteOrder({
-          orderId: currentOrder?._id,
-          userId,
-        }),
-      ).unwrap();
-
-      const totalPages = Math.ceil(total / limit);
-
-      const newPage = currentPage > totalPages ? totalPages : currentPage;
-
-      setSearchParams(
-        buildOrdersParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
-          },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
-
-      setOrderDeleteVisible(false);
-      setCurrentOrder(null);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setOrderDeleteLoading(false);
-    }
+  const onManageStatus = (order: Order) => {
+    setCurrentOrder(order);
+    setOrderManageStatusVisible(true);
   };
 
   const tableColumns = useMemo(
     () =>
       createOrdersTableColumns({
-        onDelete,
         onEdit,
         onRead,
+        onManageStatus,
         products,
       }),
     [products],
@@ -204,7 +157,7 @@ export const Orders: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faFolder}
+        icon={faCartShopping}
         title="Orders"
         action={{
           title: "New Order",
@@ -237,17 +190,6 @@ export const Orders: React.FC = () => {
         }}
       />
 
-      <WarningModal
-        title={`Delete "${currentOrder?._id}" order?`}
-        description={`Are you sure you want to delete "${currentOrder?._id}" order? Once you confirm, you cannot undo it later.`}
-        open={orderDeleteVisible}
-        onClose={() => setOrderDeleteVisible(false)}
-        onConfirm={deleteOrder}
-        confirmText="Delete"
-        cancelText="Cancel"
-        confirmLoading={orderDeleteLoading}
-      />
-
       <OrderCreateDrawer
         open={orderCreateVisible}
         onClose={() => setOrderCreateVisible(false)}
@@ -262,6 +204,12 @@ export const Orders: React.FC = () => {
       <OrderReadDrawer
         open={orderReadVisible}
         onClose={() => setOrderReadVisible(false)}
+        order={currentOrder}
+      />
+
+      <OrderManageStatusModal
+        open={orderManageStatusVisible}
+        onClose={() => setOrderManageStatusVisible(false)}
         order={currentOrder}
       />
     </StyledContainer>
