@@ -219,8 +219,8 @@ export const Products: React.FC = () => {
       />
 
       <WarningModal
-        title={`Delete "${currentProduct?.name}"?`}
-        description="This action will permanently remove the item from inventory."
+        title={`Are you sure you want to delete this product "${currentProduct?.name}"?`}
+        description={`You are about to remove "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this item.`}
         open={productDeleteVisible}
         onClose={() => setProductDeleteVisible(false)}
         onConfirm={deleteProduct}

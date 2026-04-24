@@ -14,6 +14,10 @@ const Wrapper = styled.div`
 const Label = styled.label`
   font-size: 0.875rem;
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  span {
+    color: ${({ theme }) => theme.colors.error};
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -85,6 +89,7 @@ export const Input: React.FC<InputProps> = ({
   errorMessage,
   type,
   id,
+  required,
   ...props
 }) => {
   const [show, setShow] = useState(false);
@@ -95,7 +100,11 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <Wrapper>
-      {title ? <Label htmlFor={id}>{title}</Label> : null}
+      {title ? (
+        <Label htmlFor={id}>
+          {title} {required ? <span>*</span> : null}
+        </Label>
+      ) : null}
 
       <InputWrapper>
         <StyledInput

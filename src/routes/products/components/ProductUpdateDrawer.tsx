@@ -7,26 +7,24 @@ import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
-import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
-import { faDollarSign } from "@fortawesome/free-solid-svg-icons/faDollarSign";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
+import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
+import { faLayerGroup } from "@fortawesome/free-solid-svg-icons/faLayerGroup";
+import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faCircleXmark } from "@fortawesome/free-solid-svg-icons/faCircleXmark";
+import { faTicket } from "@fortawesome/free-solid-svg-icons/faTicket";
 import type { Product } from "../../../model/product/types/Product";
+import type { UpdateProductDto } from "../../../model/product/dto/UpdateProductDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { productActions } from "../../../redux/product/products.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import type { UpdateProductDto } from "../../../model/product/dto/UpdateProductDto";
-import { faPercent } from "@fortawesome/free-solid-svg-icons/faPercent";
 import { Select } from "../../../components/Select";
-import { Text } from "../../../components/Text";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
-import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
-import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
-import { Dropdown } from "../../../components/Dropdown";
-import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Button } from "../../../components/Button";
-import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons/faXmarkCircle";
+import tagSliceSelectors from "../../../redux/tag/tags.selector";
+import { Dropdown } from "../../../components/Dropdown";
+import { Toast } from "../../../utils/Toast";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -34,83 +32,117 @@ import {
   parseProductsFiltersFromParams,
 } from "../utils/productUtils";
 
-const Content = styled.div`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const Hero = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-  padding-bottom: ${({ theme }) => theme.spacing.lg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const HeroIcon = styled.div`
-  width: 56px;
-  height: 56px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary}1A;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 1.5rem;
-  }
-`;
-
-const HeroText = styled.div`
-  h2 {
-    font-size: ${({ theme }) => theme.typography.subtitle};
-  }
-
-  p {
-    font-size: ${({ theme }) => theme.typography.small};
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-`;
-
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+const GlassHeader = styled.header`
   padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.primary}0D;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px border ${({ theme }) => theme.colors.primary}20;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const SectionHeader = styled.div`
+const IconWrapper = styled.div`
+  font-size: 2rem;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-size: ${({ theme }) => theme.typography.title};
+  }
+
+  span {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: ${({ theme }) => theme.typography.small};
+  }
+`;
+
+const FormSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const SectionLabel = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary}20;
+  padding-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 
   h4 {
-    font-size: ${({ theme }) => theme.typography.body};
-  }
-
-  svg {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 0;
   }
 `;
 
-const TagsButton = styled(Button)`
-  width: 8rem;
+const InputGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const TagButton = styled(Button)`
-  padding: ${({ theme }) => theme.spacing.sm} !important;
-  font-size: 0.75rem !important;
+const PriceBadge = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.success}10;
+  border: 1px dashed ${({ theme }) => theme.colors.success};
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  b {
+    color: ${({ theme }) => theme.colors.success};
+    font-size: ${({ theme }) => theme.typography.subtitle};
+  }
 `;
 
-const TagsWrapper = styled.div`
+const TagCloud = styled.div`
   display: flex;
   flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ElegantTag = styled(Button)`
+  all: unset;
+  cursor: pointer;
+  background: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: 0.7rem;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 type ProductUpdateDrawerProps = {
@@ -125,14 +157,13 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   product,
 }) => {
   const [loading, setLoading] = useState(false);
-
   const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const { control, handleSubmit, reset, getValues, watch } =
     useForm<UpdateProductDto>({
@@ -140,10 +171,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         name: "",
         description: "",
         price: 0,
-        discount: {
-          type: "percentage",
-          value: 0,
-        },
+        discount: { type: "percentage", value: 0 },
         quantity: 0,
         userId,
         productId: "",
@@ -152,15 +180,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       },
     });
 
-  const { append, remove, fields } = useFieldArray({
-    control,
-    name: "tags",
-  });
-
-  const filters = useMemo(
-    () => parseProductsFiltersFromParams(searchParams, productsMeta),
-    [searchParams, productsMeta],
-  );
+  const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
   const [discountType, discountValue, price] = watch([
     "discount.type",
@@ -169,28 +189,31 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   ]);
 
   const categoriesOptions = useMemo(
-    () =>
-      categories.map((category) => ({
-        label: category.name,
-        value: category._id,
-      })),
+    () => categories.map((c) => ({ label: c.name, value: c._id })),
     [categories],
   );
 
   const tagsOptions = useMemo(
     () =>
       tags
-        ?.filter((tag) => !fields?.find((field) => field.tag === tag._id))
-        ?.map((tag) => ({
+        ?.filter((tag) => !fields.some((f) => f.tag === tag._id))
+        .map((tag) => ({
           key: tag._id,
-          icon: <Icon icon={faPlus} />,
           label: tag.name,
-          onClick: () =>
-            append({
-              tag: tag._id,
-            }),
+          onClick: () => append({ tag: tag._id }),
         })),
     [append, tags, fields],
+  );
+
+  const finalPrice = useMemo(() => {
+    const p = Number(price) || 0;
+    const v = Number(discountValue) || 0;
+    return discountType === "percentage" ? p - (p * v) / 100 : p - v;
+  }, [price, discountValue, discountType]);
+
+  const filters = useMemo(
+    () => parseProductsFiltersFromParams(searchParams, productsMeta),
+    [searchParams, productsMeta],
   );
 
   const onSave = async () => {
@@ -200,28 +223,20 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
     try {
       setLoading(true);
-
       const dto = getValues();
 
-      dto.price = Number(dto.price);
-      dto.quantity = Number(dto.quantity);
-
-      if (!dto.discount?.type) {
-        delete dto.discount;
-      } else {
-        if (dto.discount?.value) {
-          dto.discount.value = Number(dto.discount.value);
-        }
-      }
-
-      // @ts-expect-error We send the tag IDs only
-      dto.tags = dto.tags?.map((tag) => tag.tag) as string[];
+      const payload = {
+        ...dto,
+        price: Number(dto.price),
+        quantity: Number(dto.quantity),
+        discount: dto.discount?.type
+          ? { ...dto.discount, value: Number(dto.discount.value) }
+          : undefined,
+        tags: dto.tags?.map((t) => t.tag),
+      };
 
       await dispatch(
-        productActions.updateProduct({
-          ...dto,
-          ...(dto?.price ? { price: Number(dto.price) } : {}),
-        }),
+        productActions.updateProduct(payload as UpdateProductDto),
       ).unwrap();
 
       setSearchParams(buildProductsParams(filters, searchParams), {
@@ -229,6 +244,8 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       });
 
       onClose();
+    } catch (e) {
+      Toast.apiError(e);
     } finally {
       setLoading(false);
     }
@@ -244,9 +261,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         quantity: product.quantity || 0,
         discount: product.discount,
         categoryId: product.category?._id,
-        tags: (product?.tags || []).map((tag) => ({
-          tag: tag._id,
-        })),
+        tags: (product?.tags || []).map((tag) => ({ tag: tag._id })),
         userId,
       });
     }
@@ -256,7 +271,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={onClose}
-      title="Edit product"
+      title="Update Product"
       size="large"
       extra={
         <DrawerExtraHeader
@@ -267,188 +282,148 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         />
       }
     >
-      <Content>
-        <Hero>
-          <HeroIcon>
-            <Icon icon={faBox} />
-          </HeroIcon>
+      <FormContainer>
+        <GlassHeader>
+          <IconWrapper>
+            <Icon icon={faBoxOpen} />
+          </IconWrapper>
+          <TitleGroup>
+            <h2>Edit Product</h2>
+            <span>Modify the properties of your existing item</span>
+          </TitleGroup>
+        </GlassHeader>
 
-          <HeroText>
-            <h2>Edit product</h2>
-            <p>Update product information</p>
-          </HeroText>
-        </Hero>
-
-        <Card>
-          <SectionHeader>
-            <Icon icon={faTag} />
-            <h4>Product details</h4>
-          </SectionHeader>
-
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faLayerGroup} />
+            <h4>Identification</h4>
+          </SectionLabel>
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Product name is required" }}
+            rules={{ required: "Required" }}
             render={({ field, fieldState }) => (
               <Input
-                title="Name"
+                title="Product Title"
                 errorMessage={fieldState.error?.message}
+                required
                 {...field}
               />
             )}
           />
-
           <Controller
             control={control}
             name="description"
             render={({ field }) => (
-              <Textarea title="Description" rows={4} {...field} />
+              <Textarea title="Description" rows={3} {...field} />
             )}
           />
-        </Card>
+        </FormSection>
 
-        <Card>
-          <SectionHeader>
-            <Icon icon={faDollarSign} />
-            <h4>Pricing & stock</h4>
-          </SectionHeader>
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faCoins} />
+            <h4>Economics</h4>
+          </SectionLabel>
+          <InputGrid>
+            <Controller
+              control={control}
+              name="price"
+              rules={{ required: "Required" }}
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title="Base Price"
+                  required
+                  errorMessage={error?.message}
+                  type="number"
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="quantity"
+              rules={{ required: "Required" }}
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title="Stock"
+                  required
+                  errorMessage={error?.message}
+                  type="number"
+                  {...field}
+                />
+              )}
+            />
+          </InputGrid>
+        </FormSection>
 
-          <Controller
-            control={control}
-            name="price"
-            rules={{ min: { value: 0, message: "Price must be ≥ 0" } }}
-            render={({ field, fieldState }) => (
-              <Input
-                title="Price"
-                type="number"
-                placeholder="0.00"
-                errorMessage={fieldState.error?.message}
-                {...field}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="quantity"
-            rules={{ min: { value: 0, message: "Quantity must be ≥ 0" } }}
-            render={({ field, fieldState }) => (
-              <Input
-                title="Quantity"
-                type="number"
-                placeholder="0"
-                errorMessage={fieldState.error?.message}
-                {...field}
-              />
-            )}
-          />
-        </Card>
-
-        <Card>
-          <SectionHeader>
-            <Icon icon={faPercent} />
-            <h4>Discount</h4>
-          </SectionHeader>
-
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faTicket} />
+            <h4>Promotions</h4>
+          </SectionLabel>
           <Controller
             control={control}
             name="discount.type"
             render={({ field: { value, onChange } }) => (
               <Select
-                title="Discount type"
+                title="Strategy"
                 value={value}
                 onChange={onChange}
                 options={[
-                  { value: "percentage", label: "Percentage" },
-                  { value: "fixed", label: "Fixed" },
+                  { value: "percentage", label: "Percent Off (%)" },
+                  { value: "fixed", label: "Fixed Amount ($)" },
                 ]}
               />
             )}
           />
-
           <Controller
             control={control}
             name="discount.value"
-            rules={{
-              min: { value: 0, message: "Discount must be ≥ 0" },
-              validate: (v) =>
-                discountType !== "percentage" ||
-                (!isNaN(v || 0) && Number(v) <= 100) ||
-                "Max is 100%",
-            }}
-            render={({ field, fieldState }) => (
-              <Input
-                title="Discount value"
-                type="number"
-                placeholder={discountType === "percentage" ? "0 – 100" : "0.00"}
-                errorMessage={fieldState.error?.message}
-                {...field}
-              />
+            render={({ field }) => (
+              <Input title="Value" type="number" {...field} />
             )}
           />
+          <PriceBadge>
+            <span>Live Price (After Discount):</span>
+            <b>${finalPrice.toFixed(2)}</b>
+          </PriceBadge>
+        </FormSection>
 
-          {!isNaN(Number(discountValue)) &&
-          !isNaN(Number(price)) &&
-          discountType ? (
-            <Text color="textSecondary" fontSize="small">
-              Price after discount:{" "}
-              <b>
-                $
-                {(discountType === "percentage"
-                  ? price! - (price! * discountValue!) / 100
-                  : price! - discountValue!
-                ).toFixed(2)}
-              </b>
-            </Text>
-          ) : null}
-        </Card>
-
-        <Card>
-          <SectionHeader>
-            <Icon icon={faFolder} />
-            <h4>Category</h4>
-          </SectionHeader>
-
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faTags} />
+            <h4>Taxonomy</h4>
+          </SectionLabel>
           <Controller
             control={control}
             name="categoryId"
             render={({ field: { value, onChange } }) => (
               <Select
-                title="Select category"
-                value={categoriesOptions?.find((c) => c.value === value)}
-                onChange={(v) => onChange(v || null)}
+                title="Primary Category"
+                value={value}
+                onChange={onChange}
                 options={categoriesOptions}
               />
             )}
           />
-        </Card>
-
-        <Card>
-          <SectionHeader>
-            <Icon icon={faTags} />
-            <h4>Tags</h4>
-          </SectionHeader>
 
           <Dropdown menu={{ items: tagsOptions }}>
-            <TagsButton icon={faAngleDown} variant="ghost">
-              Tags
-            </TagsButton>
+            <Button variant="ghost" icon={faChevronDown}>
+              Attach Tags
+            </Button>
           </Dropdown>
 
-          <TagsWrapper>
-            {fields?.map((field, index) => (
-              <TagButton
-                variant="ghost"
-                icon={faXmarkCircle}
-                onClick={() => remove(index)}
-                key={field.id}
-              >
+          <TagCloud>
+            {fields.map((field, index) => (
+              <ElegantTag key={field.id} onClick={() => remove(index)}>
                 {tags?.find((t) => t._id === field.tag)?.name}
-              </TagButton>
+                <Icon icon={faCircleXmark} />
+              </ElegantTag>
             ))}
-          </TagsWrapper>
-        </Card>
-      </Content>
+          </TagCloud>
+        </FormSection>
+      </FormContainer>
     </Drawer>
   );
 };
