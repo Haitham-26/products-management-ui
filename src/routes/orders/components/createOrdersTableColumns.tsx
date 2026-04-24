@@ -11,11 +11,13 @@ import capitalize from "lodash/capitalize";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import type { Product } from "../../../model/product/types/Product";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
+import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
+import isFunction from "lodash/isFunction";
 
 type FNType = (category: Order) => void;
 
 type CreateOrdersTableColumnsArgs = {
-  onEdit: FNType;
+  onEdit?: FNType;
   onRead: FNType;
   onManageStatus: FNType;
   products: Product[];
@@ -100,12 +102,17 @@ export const createOrdersTableColumns = ({
                 label: "View",
                 onClick: () => onRead(record),
               },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
-                onClick: () => onEdit(record),
-              },
+              ...(record.status === OrderStatus.PENDING && isFunction(onEdit)
+                ? [
+                    {
+                      key: "edit",
+                      icon: <Icon icon={faPenToSquare} />,
+                      label: "Edit",
+                      onClick: () => onEdit(record),
+                    },
+                  ]
+                : []),
+
               {
                 key: "manage-status",
                 icon: <Icon icon={faGear} />,

@@ -14,7 +14,7 @@ const Container = styled.div`
   }
 `;
 
-type SelectProps = AntdSelectProps;
+export type SelectProps = AntdSelectProps;
 
 export const Select: React.FC<SelectProps> = (props) => {
   return (

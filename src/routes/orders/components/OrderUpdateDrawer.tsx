@@ -1,10 +1,9 @@
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
 import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
-import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
 import { Text } from "../../../components/Text";
@@ -19,11 +18,7 @@ import {
 } from "../utils/orderUtils";
 import orderSliceSelectors from "../../../redux/order/orders.selector";
 import { orderActions } from "../../../redux/order/orders.slice";
-import { Button } from "../../../components/Button";
-import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import productSliceSelectors from "../../../redux/product/products.selector";
-import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
-import { Select } from "../../../components/Select";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
 
@@ -82,27 +77,6 @@ const SectionHeader = styled.div`
   }
 `;
 
-const ProductRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const StyledSelect = styled(Select)`
-  width: 27rem !important;
-`;
-
-const QuantityInputWrapper = styled.div`
-  margin-top: auto !important;
-`;
-
-const RemoveButton = styled(Button)`
-  margin-top: auto !important;
-  padding: ${({ theme }) => theme.spacing.sm} !important;
-  height: 2rem !important;
-  width: 2rem !important;
-`;
-
 type OrderUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -123,28 +97,8 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { control, handleSubmit, reset, getValues, watch } =
-    useForm<UpdateOrderDto>();
+  const { control, handleSubmit, reset, getValues } = useForm<UpdateOrderDto>();
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items",
-  });
-
-  const items = watch("items");
-
-  const getProductsOptions = (currentProductId?: string) => {
-    const selectedIds = items?.map((i) => i.productId).filter(Boolean);
-
-    return products
-      .filter(
-        (p) => !selectedIds?.includes(p._id) || p._id === currentProductId,
-      )
-      .map((product) => ({
-        label: product.name,
-        value: product._id,
-      }));
-  };
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
     [searchParams, ordersMeta],
@@ -158,17 +112,8 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const onUpdate = async () => {
     const dto = getValues();
 
-    if (!dto?.items?.length) {
-      return;
-    }
-
     try {
       setLoading(true);
-
-      dto.items = dto.items.map((item) => ({
-        ...item,
-        quantity: Number(item.quantity),
-      }));
 
       await dispatch(
         orderActions.updateOrder({
@@ -189,12 +134,13 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
 
   useEffect(() => {
     reset({
-      items: order?.items || [],
       note: order?.note || "",
       orderId: order?._id || "",
       userId,
     });
   }, [order, reset, userId]);
+
+  if (!order) return null;
 
   return (
     <Drawer
@@ -218,68 +164,36 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
           </HeroIcon>
 
           <HeroText>
-            <Text fontSize="title">Update Order</Text>
+            <Text fontSize="title">Order #{order._id}</Text>
             <Text fontSize="small" color="textSecondary">
-              Edit order details
+              Only note can be edited
             </Text>
           </HeroText>
         </Hero>
 
+        {/* ITEMS (READ ONLY) */}
         <Card>
           <SectionHeader>
             <Icon icon={faTag} />
-            <Text fontSize="subtitle">Order Items</Text>
+            <Text fontSize="subtitle">Items (Read-only)</Text>
           </SectionHeader>
 
-          {fields.map((field, index) => (
-            <ProductRow key={field.id}>
-              <Controller
-                control={control}
-                name={`items.${index}.productId`}
-                render={({ field: { value, onChange } }) => {
-                  const options = getProductsOptions(value);
+          {order.items.map((item, index) => {
+            const product = products.find((p) => p._id === item.productId);
 
-                  return (
-                    <StyledSelect
-                      title="Select product"
-                      value={options.find((p) => p.value === value)}
-                      onChange={onChange}
-                      options={options}
-                    />
-                  );
-                }}
-              />
+            return (
+              <div key={index}>
+                <Text>
+                  {product?.name || item.productId} × {item.quantity}
+                </Text>
+              </div>
+            );
+          })}
+        </Card>
 
-              <Controller
-                control={control}
-                name={`items.${index}.quantity`}
-                render={({ field: { value, onChange } }) => (
-                  <QuantityInputWrapper>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={value}
-                      onChange={onChange}
-                    />
-                  </QuantityInputWrapper>
-                )}
-              />
-
-              <RemoveButton
-                icon={faXmark}
-                onClick={() => remove(index)}
-                variant="danger"
-              />
-            </ProductRow>
-          ))}
-
-          <Button
-            onClick={() => append({ productId: "", quantity: 1 })}
-            icon={faPlus}
-            disabled={loading || fields.length === products.length}
-          >
-            Add Item
-          </Button>
+        <Card>
+          <Text fontSize="subtitle">Total price</Text>
+          <Text>${order.totalPriceAtPurchase}</Text>
         </Card>
 
         <Card>
@@ -289,7 +203,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             render={({ field: { value, onChange } }) => (
               <Textarea
                 title="Note"
-                placeholder="Optional note"
+                placeholder="Update note..."
                 value={value}
                 onChange={onChange}
               />

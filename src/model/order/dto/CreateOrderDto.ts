@@ -1,7 +1,7 @@
 import type { GenericWithUserId } from "../../shared/GenericWithUserId";
-import type { CreateUpdateOrderItem } from "../types/CreateUpdateOrderItem";
+import type { CreateOrderItem } from "../types/CreateOrderItem";
 
 export interface CreateOrderDto extends GenericWithUserId {
-  items: CreateUpdateOrderItem[];
+  items: CreateOrderItem[];
   note?: string;
 }

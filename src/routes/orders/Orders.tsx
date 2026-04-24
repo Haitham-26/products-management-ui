@@ -27,6 +27,7 @@ import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import productSliceSelectors from "../../redux/product/products.selector";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
+import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -135,7 +136,8 @@ export const Orders: React.FC = () => {
     () =>
       createOrdersTableColumns({
         onEdit,
-        onRead,
+        onRead: (order) =>
+          order.status === OrderStatus.PENDING ? onRead(order) : undefined,
         onManageStatus,
         products,
       }),

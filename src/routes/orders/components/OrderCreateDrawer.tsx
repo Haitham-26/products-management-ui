@@ -24,7 +24,7 @@ import { Button } from "../../../components/Button";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
-import { Select } from "../../../components/Select";
+import { Select, type SelectProps } from "../../../components/Select";
 
 const Content = styled.div`
   display: flex;
@@ -88,11 +88,12 @@ const ProductRow = styled.div`
 `;
 
 const StyledSelect = styled(Select)`
-  width: 27rem !important;
+  width: 25rem;
 `;
 
 const QuantityInputWrapper = styled.div`
   margin-top: auto !important;
+  width: 100%;
 `;
 
 const RemoveButton = styled(Button)`
@@ -100,6 +101,18 @@ const RemoveButton = styled(Button)`
   padding: ${({ theme }) => theme.spacing.sm} !important;
   height: 2rem !important;
   width: 2rem !important;
+`;
+
+const ErrorText = styled(Text)`
+  color: ${({ theme }) => theme.colors.error};
+  font-size: ${({ theme }) => theme.typography.small};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const AddItemButton = styled(Button)`
+  max-width: 12rem;
+  margin-inline-start: auto;
 `;
 
 type OrderCreateDrawerProps = {
@@ -120,14 +133,21 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { control, handleSubmit, reset, getValues, watch } =
-    useForm<CreateOrderDto>({
-      defaultValues: {
-        items: [{ productId: "", quantity: 1 }],
-        note: "",
-        userId,
-      },
-    });
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm<CreateOrderDto>({
+    defaultValues: {
+      items: [{ productId: "", quantity: 1 }],
+      note: "",
+      userId,
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -144,8 +164,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       .map((product) => ({
         label: product.name,
         value: product._id,
-      }));
+        disabled: !product.quantity,
+      })) as SelectProps["options"];
   };
+
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
     [searchParams, ordersMeta],
@@ -154,6 +176,22 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const localOnClose = () => {
     reset();
     onClose();
+  };
+
+  const onSelectProduct = (index: number, productId: string) => {
+    const product = products.find((p) => p._id === productId);
+
+    setValue(`items.${index}.productId`, productId);
+
+    if (!product) {
+      return;
+    }
+
+    const currentQty = getValues(`items.${index}.quantity`);
+
+    if (currentQty > product.quantity) {
+      setValue(`items.${index}.quantity`, product.quantity);
+    }
   };
 
   const onCreate = async () => {
@@ -223,54 +261,114 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           </SectionHeader>
 
           {fields.map((field, index) => (
-            <ProductRow key={field.id}>
-              <Controller
-                control={control}
-                name={`items.${index}.productId`}
-                render={({ field: { value, onChange } }) => {
-                  const options = getProductsOptions(value);
+            <div key={field.id}>
+              <ProductRow>
+                <Controller
+                  control={control}
+                  name={`items.${index}.productId`}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: "Please select a product or remove this item",
+                    },
+                  }}
+                  render={({ field: { value } }) => {
+                    const options = getProductsOptions(value);
 
-                  return (
-                    <StyledSelect
-                      title="Select product"
-                      value={options.find((p) => p.value === value)}
-                      onChange={onChange}
-                      options={options}
-                    />
-                  );
-                }}
-              />
+                    return (
+                      <StyledSelect
+                        title="Select product"
+                        value={options?.find((p) => p.value === value)}
+                        onChange={(value) => onSelectProduct(index, value)}
+                        options={options}
+                      />
+                    );
+                  }}
+                />
 
-              <Controller
-                control={control}
-                name={`items.${index}.quantity`}
-                render={({ field: { value, onChange } }) => (
-                  <QuantityInputWrapper>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={value}
-                      onChange={onChange}
-                    />
-                  </QuantityInputWrapper>
-                )}
-              />
+                <Controller
+                  control={control}
+                  name={`items.${index}.quantity`}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: "Quantity is required",
+                    },
+                    min: {
+                      value: 1,
+                      message: "Quantity must be at least 1",
+                    },
+                    max: {
+                      value:
+                        products.find((p) => p._id === items[index]?.productId)
+                          ?.quantity || 0,
+                      message:
+                        "This product does not have enough quantity available",
+                    },
+                  }}
+                  render={({ field: { value, onChange } }) => {
+                    const maxAvailableQty =
+                      Number(
+                        products.find((p) => p._id === items[index]?.productId)
+                          ?.quantity,
+                      ) || 0;
 
-              <RemoveButton
-                icon={faXmark}
-                onClick={() => remove(index)}
-                variant="danger"
-              />
-            </ProductRow>
+                    return (
+                      <QuantityInputWrapper>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={maxAvailableQty}
+                          value={value}
+                          onChange={(e) => {
+                            const rawValue = e.target.value;
+
+                            if (rawValue === "") {
+                              onChange("");
+                              return;
+                            }
+
+                            const val = Number(rawValue);
+
+                            onChange(
+                              val > maxAvailableQty ? maxAvailableQty : val,
+                            );
+                          }}
+                        />
+                      </QuantityInputWrapper>
+                    );
+                  }}
+                />
+
+                <RemoveButton
+                  icon={faXmark}
+                  onClick={() => remove(index)}
+                  variant="danger"
+                  disabled={fields.length === 1}
+                />
+              </ProductRow>
+
+              {errors.items?.[index]?.quantity && items[index]?.productId ? (
+                <ErrorText>
+                  {errors.items[index].quantity?.message as string}
+                </ErrorText>
+              ) : null}
+
+              {errors.items?.[index]?.productId ? (
+                <ErrorText>
+                  {errors.items[index].productId?.message as string}
+                </ErrorText>
+              ) : null}
+            </div>
           ))}
 
-          <Button
+          <AddItemButton
             onClick={() => append({ productId: "", quantity: 1 })}
             icon={faPlus}
             disabled={loading || fields.length === products.length}
           >
             Add Item
-          </Button>
+          </AddItemButton>
         </Card>
 
         <Card>
