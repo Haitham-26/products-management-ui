@@ -1,6 +1,7 @@
 import isNil from "lodash/isNil";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
 export const parseProductsFiltersFromParams = (
   params: URLSearchParams,
@@ -81,4 +82,19 @@ export const countProductsActiveFilters = (
     n++;
   }
   return n;
+};
+
+//
+
+export const calculateProductFinalPrice = (
+  price: number,
+  discount?: ProductDiscount,
+) => {
+  const discountValue = Number(discount?.value) || 0;
+
+  if (discount?.type === ProductDiscountTypes.PERCENTAGE) {
+    return price - (price * discountValue) / 100;
+  }
+
+  return price - discountValue;
 };

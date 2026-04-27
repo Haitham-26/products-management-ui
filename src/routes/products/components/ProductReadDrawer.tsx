@@ -10,6 +10,7 @@ import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { faFingerprint } from "@fortawesome/free-solid-svg-icons/faFingerprint";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { formatDate } from "../../../utils/Date";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
 const FormContainer = styled.div`
   display: flex;
@@ -161,7 +162,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
       return "None";
     }
 
-    if (product.discount.type === "percentage") {
+    if (product.discount.type === ProductDiscountTypes.PERCENTAGE) {
       return `${product.discount.value}%`;
     }
 
@@ -172,7 +173,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
     const price = product.price || 0;
     const discountValue = product.discount?.value || 0;
 
-    if (product.discount?.type === "percentage") {
+    if (product.discount?.type === ProductDiscountTypes.PERCENTAGE) {
       return price - (price * discountValue) / 100;
     }
 

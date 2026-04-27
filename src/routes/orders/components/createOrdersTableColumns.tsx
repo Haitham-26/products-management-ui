@@ -9,7 +9,6 @@ import { formatDate } from "../../../utils/Date";
 import type { Order } from "../../../model/order/types/Order";
 import capitalize from "lodash/capitalize";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
-import type { Product } from "../../../model/product/types/Product";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import isFunction from "lodash/isFunction";
@@ -20,14 +19,12 @@ type CreateOrdersTableColumnsArgs = {
   onEdit?: FNType;
   onRead: FNType;
   onManageStatus: FNType;
-  products: Product[];
 };
 
 export const createOrdersTableColumns = ({
   onEdit,
   onRead,
   onManageStatus,
-  products = [],
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
@@ -65,9 +62,7 @@ export const createOrdersTableColumns = ({
       width: 220,
       ellipsis: true,
       render: (items: OrderItem[]) =>
-        items
-          .map((i) => products.find((p) => p._id === i.productId)?.name)
-          .join(", "),
+        items.map((i) => i.productName).join(", "),
     },
     {
       title: "Note",

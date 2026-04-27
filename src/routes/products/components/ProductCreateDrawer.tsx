@@ -28,8 +28,10 @@ import productSliceSelectors from "../../../redux/product/products.selector";
 import { useSearchParams } from "react-router-dom";
 import {
   buildProductsParams,
+  calculateProductFinalPrice,
   parseProductsFiltersFromParams,
 } from "../utils/productUtils";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
 const FormContainer = styled.div`
   display: flex;
@@ -160,7 +162,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         description: "",
         price: 0,
         quantity: 0,
-        discount: { type: "percentage", value: 0 },
+        discount: { type: ProductDiscountTypes.PERCENTAGE, value: 0 },
         userId,
         categoryId: "",
         tags: [],
@@ -169,11 +171,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
   const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
-  const [discountType, discountValue, price] = watch([
-    "discount.type",
-    "discount.value",
-    "price",
-  ]);
+  const [discount, price] = watch(["discount", "price"]);
 
   const categoriesOptions = useMemo(
     () => categories.map((c) => ({ label: c.name, value: c._id })),
@@ -193,10 +191,8 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   );
 
   const finalPrice = useMemo(() => {
-    const p = Number(price) || 0;
-    const v = Number(discountValue) || 0;
-    return discountType === "percentage" ? p - (p * v) / 100 : p - v;
-  }, [price, discountValue, discountType]);
+    return calculateProductFinalPrice(price, discount);
+  }, [price, discount]);
 
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
@@ -358,8 +354,14 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                 value={value}
                 onChange={onChange}
                 options={[
-                  { value: "percentage", label: "Percent Off (%)" },
-                  { value: "fixed", label: "Fixed Amount ($)" },
+                  {
+                    value: ProductDiscountTypes.PERCENTAGE,
+                    label: "Percent Off (%)",
+                  },
+                  {
+                    value: ProductDiscountTypes.FIXED,
+                    label: "Fixed Amount ($)",
+                  },
                 ]}
               />
             )}

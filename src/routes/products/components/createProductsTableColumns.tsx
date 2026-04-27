@@ -12,6 +12,7 @@ import type { ProductDiscount } from "../../../model/product/types/ProductDiscou
 import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
 import { isNaN } from "lodash";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
 type FNType = (product: Product) => void;
 
@@ -86,10 +87,12 @@ export const createProductsTableColumns = ({
       key: "discount",
       width: 140,
       render: (value: ProductDiscount) =>
-        value ? `${value.value}${value.type === "percentage" ? "%" : "$"}` : "",
+        value
+          ? `${value.value}${value.type === ProductDiscountTypes.PERCENTAGE ? "%" : "$"}`
+          : "",
     },
     {
-      title: "Price After Discount",
+      title: "Final Price",
       key: "priceAfterDiscount",
       width: 180,
       render: (_: unknown, record: Product) => {

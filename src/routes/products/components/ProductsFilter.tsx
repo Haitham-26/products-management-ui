@@ -17,6 +17,7 @@ import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import productSliceSelectors from "../../../redux/product/products.selector";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
 const PopoverBody = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
@@ -162,8 +163,8 @@ export const ProductsFilter: React.FC = () => {
             allowClear
             style={{ width: "100%" }}
           >
-            <Option value="percentage">Percentage</Option>
-            <Option value="fixed">Fixed Price</Option>
+            <Option value={ProductDiscountTypes.PERCENTAGE}>Percentage</Option>
+            <Option value={ProductDiscountTypes.FIXED}>Fixed Price</Option>
           </Select>
         </PopoverSection>
 

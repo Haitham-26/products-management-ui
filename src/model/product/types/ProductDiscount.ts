@@ -1,4 +1,6 @@
+import type { ProductDiscountTypes } from "./ProductDiscountTypes.enum";
+
 export interface ProductDiscount {
-  type: "percentage" | "fixed";
+  type: ProductDiscountTypes;
   value: number;
 }

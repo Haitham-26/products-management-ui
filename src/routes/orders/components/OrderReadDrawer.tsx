@@ -2,62 +2,147 @@ import type React from "react";
 import styled from "styled-components";
 import { Drawer } from "../../../components/Drawer";
 import { Icon } from "../../../components/Icon";
-import { Text } from "../../../components/Text";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { faAlignLeft } from "@fortawesome/free-solid-svg-icons/faAlignLeft";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import type { Order } from "../../../model/order/types/Order";
-import { useAppSelector } from "../../../redux/store";
-import productSliceSelectors from "../../../redux/product/products.selector";
+import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
-const Content = styled.div`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const Hero = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-  padding-bottom: ${({ theme }) => theme.spacing.lg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const HeroIcon = styled.div`
-  width: 56px;
-  height: 56px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary}1a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 1.5rem;
-  }
-`;
-
-const HeroText = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+const GlassHeader = styled.header`
   padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.primary}0D;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.primary}20;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const Row = styled.div`
+const IconWrapper = styled.div`
+  font-size: 2rem;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-size: ${({ theme }) => theme.typography.title};
+  }
+
+  span {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: ${({ theme }) => theme.typography.small};
+  }
+`;
+
+const InfoSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const SectionLabel = styled.div`
   display: flex;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary}20;
+  padding-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+
+  h4 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: ${({ theme }) => theme.typography.small};
+    color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 0;
+  }
+`;
+
+const OrderLineItem = styled.div`
+  display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.sm} 0;
+  border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ItemInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ItemTitle = styled.span`
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-weight: 600;
+`;
+
+const PriceCalculation = styled.span`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const PriceColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`;
+
+const ItemTotal = styled.span`
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const DiscountBadge = styled.span`
+  font-size: 0.7rem;
+  background: ${({ theme }) => theme.colors.error}15;
+  color: ${({ theme }) => theme.colors.error};
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-top: 2px;
+`;
+
+const GrandTotalSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 2px solid ${({ theme }) => theme.colors.border};
+`;
+
+const TotalAmount = styled.span`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const NoteText = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.5;
+  font-style: italic;
 `;
 
 type Props = {
@@ -71,82 +156,77 @@ export const OrderReadDrawer: React.FC<Props> = ({
   onClose,
   order,
 }) => {
-  const products = useAppSelector(productSliceSelectors.selectProducts);
-
   if (!order) {
     return null;
   }
 
-  console.log(order);
+  const renderDiscount = (item: Order["items"][0]) => {
+    if (!item.discountAtPurchase) return null;
+
+    const { type, value } = item.discountAtPurchase;
+    const label =
+      type === ProductDiscountTypes.PERCENTAGE
+        ? `${value}% OFF`
+        : `$${value} OFF`;
+
+    return <DiscountBadge>{label}</DiscountBadge>;
+  };
 
   return (
-    <Drawer open={open} onClose={onClose} title="Order details" size="large">
-      <Content>
-        {/* HERO */}
-        <Hero>
-          <HeroIcon>
+    <Drawer open={open} onClose={onClose} title="Order Overview" size="large">
+      <FormContainer>
+        <GlassHeader>
+          <IconWrapper>
             <Icon icon={faCartShopping} />
-          </HeroIcon>
+          </IconWrapper>
+          <TitleGroup>
+            <h2>Order #{order._id.slice(-6).toUpperCase()}</h2>
+            <span>
+              Status: <strong>{order.status}</strong>
+            </span>
+          </TitleGroup>
+        </GlassHeader>
 
-          <HeroText>
-            <Text fontSize="title">Order #{order._id}</Text>
-            <Text fontSize="small" color="textSecondary">
-              Status: {order.status}
-            </Text>
-            <Text fontSize="small">Total: {order.totalPriceAtPurchase}</Text>
-          </HeroText>
-        </Hero>
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faBoxOpen} />
+            <h4>Purchased Items</h4>
+          </SectionLabel>
 
-        {/* ITEMS */}
-        <Card>
-          <Text fontSize="subtitle">Items</Text>
+          {order.items.map((item, index) => (
+            <OrderLineItem key={`${item.productId}-${index}`}>
+              <ItemInfo>
+                <ItemTitle>{item.productName}</ItemTitle>
+                <PriceCalculation>
+                  {item.quantity} × ${item.priceAtPurchase.toFixed(2)}
+                </PriceCalculation>
+                {renderDiscount(item)}
+              </ItemInfo>
 
-          {order.items.map((item, index) => {
-            const product = products.find(
-              (p) => p._id.toString() === item.productId.toString(),
-            );
+              <PriceColumn>
+                <ItemTotal>
+                  ${(item.finalPrice * item.quantity).toFixed(2)}
+                </ItemTotal>
+              </PriceColumn>
+            </OrderLineItem>
+          ))}
 
-            return (
-              <Row key={index}>
-                <div>
-                  <Text>{product?.name || "Unknown product"}</Text>
+          <GrandTotalSection>
+            <ItemTitle>Total Amount</ItemTitle>
+            <TotalAmount>${order.totalPriceAtPurchase.toFixed(2)}</TotalAmount>
+          </GrandTotalSection>
+        </InfoSection>
 
-                  <Text fontSize="small" color="textSecondary">
-                    {item.priceAtPurchase} × {item.quantity}
-                  </Text>
-                </div>
-
-                <Text>
-                  {(item.priceAtPurchase * item.quantity).toFixed(2)}$
-                </Text>
-              </Row>
-            );
-          })}
-        </Card>
-
-        {/* NOTE */}
-        <Card>
-          <Row>
+        <InfoSection>
+          <SectionLabel>
             <Icon icon={faAlignLeft} />
-            <div>
-              <Text fontSize="subtitle" color="textSecondary">
-                Note
-              </Text>
-              <Text>{order.note || "No note provided"}</Text>
-            </div>
-          </Row>
-        </Card>
-
-        <Card>
-          <Row>
-            <Text fontSize="subtitle" color="textSecondary">
-              Total price
-            </Text>
-
-            <Text fontSize="subtitle">{order.totalPriceAtPurchase}$</Text>
-          </Row>
-        </Card>
-      </Content>
+            <h4>Order Note</h4>
+          </SectionLabel>
+          <NoteText>
+            {order.note || "No additional notes provided for this transaction."}
+          </NoteText>
+        </InfoSection>
+      </FormContainer>
     </Drawer>
   );
 };

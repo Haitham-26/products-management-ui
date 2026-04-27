@@ -24,7 +24,6 @@ import { OrderUpdateDrawer } from "./components/OrderUpdateDrawer";
 import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { productActions } from "../../redux/product/products.slice";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
-import productSliceSelectors from "../../redux/product/products.selector";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
@@ -60,7 +59,6 @@ export const Orders: React.FC = () => {
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
-  const products = useAppSelector(productSliceSelectors.selectProducts);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -139,9 +137,8 @@ export const Orders: React.FC = () => {
         onRead: (order) =>
           order.status === OrderStatus.PENDING ? onRead(order) : undefined,
         onManageStatus,
-        products,
       }),
-    [products],
+    [],
   );
 
   useEffect(() => {
