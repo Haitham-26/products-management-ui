@@ -226,8 +226,8 @@ export const Categories: React.FC = () => {
       />
 
       <WarningModal
-        title={`Delete "${currentCategory?.name}" category?`}
-        description={`Are you sure you want to delete "${currentCategory?.name}" category? Once you confirm, you cannot undo it later.`}
+        title={`Delete "${currentCategory?.name}" Category?`}
+        description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
         open={categoryDeleteVisible}
         onClose={() => setCategoryDeleteVisible(false)}
         onConfirm={deleteCategory}

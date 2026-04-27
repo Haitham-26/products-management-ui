@@ -4,7 +4,7 @@ import { Spinner } from "./Spinner";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Icon } from "./Icon";
 
-type Variant = "primary" | "danger" | "ghost";
+type Variant = "primary" | "secondary" | "danger" | "ghost";
 
 const variantStyles = {
   primary: css`
@@ -34,7 +34,10 @@ const StyledButton = styled.button<{ variant: Variant }>`
   gap: ${({ theme }) => theme.spacing.sm};
   position: relative;
 
-  ${({ variant }) => variantStyles[variant]}
+  ${({ variant }) =>
+    Object.keys(variantStyles).includes(variant)
+      ? variantStyles[variant as keyof typeof variantStyles]
+      : variant}
 
   &:disabled {
     cursor: not-allowed;

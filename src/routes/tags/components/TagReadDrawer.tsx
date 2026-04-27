@@ -2,64 +2,118 @@ import type React from "react";
 import styled from "styled-components";
 import { Drawer } from "../../../components/Drawer";
 import { Icon } from "../../../components/Icon";
-import { Text } from "../../../components/Text";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
+import { faAlignLeft } from "@fortawesome/free-solid-svg-icons/faAlignLeft";
+import { faFingerprint } from "@fortawesome/free-solid-svg-icons/faFingerprint";
+import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
 import type { Tag } from "../../../model/tag/types/Tag";
 
-const Content = styled.div`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const Hero = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-  padding-bottom: ${({ theme }) => theme.spacing.lg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const HeroIcon = styled.div`
-  width: 56px;
-  height: 56px;
+const GlassHeader = styled.header`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.primary}0D;
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary}1a;
+  border: 1px solid ${({ theme }) => theme.colors.primary}20;
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 1.5rem;
-  }
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const HeroText = styled.div`
+const IconWrapper = styled.div`
+  font-size: 2rem;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const TitleGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
+const TagTitle = styled.h2`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.title};
+`;
+
+const Subtitle = styled.span`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.small};
+`;
+
+const InfoSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
 `;
 
-const Row = styled.div`
+const SectionLabel = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.md};
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary}20;
+  padding-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  svg {
-    margin-top: 2px;
+  h4 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 0;
   }
+`;
+
+const DataGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const DataItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const Label = styled.label`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  font-weight: 600;
+`;
+
+const ValueText = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 1rem;
+  line-height: 1.5;
+`;
+
+const HighlightText = styled(ValueText)`
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const IDText = styled.code`
+  background: ${({ theme }) => theme.colors.background};
+  padding: 4px 8px;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  align-self: flex-start;
 `;
 
 type TagReadDrawerProps = {
@@ -78,33 +132,66 @@ export const TagReadDrawer: React.FC<TagReadDrawerProps> = ({
   }
 
   return (
-    <Drawer open={open} onClose={onClose} title="Tag details" size="large">
-      <Content>
-        <Hero>
-          <HeroIcon>
+    <Drawer open={open} onClose={onClose} title="Tag Details" size="large">
+      <FormContainer>
+        <GlassHeader>
+          <IconWrapper>
             <Icon icon={faTag} />
-          </HeroIcon>
+          </IconWrapper>
+          <TitleGroup>
+            <TagTitle>{tag.name}</TagTitle>
+            <Subtitle>Product Metadata Label</Subtitle>
+          </TitleGroup>
+        </GlassHeader>
 
-          <HeroText>
-            <Text fontSize="title">{tag.name}</Text>
-            <Text fontSize="small" color="textSecondary">
-              Category overview
-            </Text>
-          </HeroText>
-        </Hero>
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faChartLine} />
+            <h4>Usage Statistics</h4>
+          </SectionLabel>
+          <DataGrid>
+            <DataItem>
+              <Label>Active Assignments</Label>
+              <HighlightText>{tag.usageCount ?? 0} Products</HighlightText>
+            </DataItem>
+          </DataGrid>
+        </InfoSection>
 
-        <Card>
-          <Row>
+        <InfoSection>
+          <SectionLabel>
             <Icon icon={faTag} />
-            <div>
-              <Text fontSize="subtitle" color="textSecondary">
-                Name
-              </Text>
-              <Text>{tag.name}</Text>
-            </div>
-          </Row>
-        </Card>
-      </Content>
+            <h4>Classification</h4>
+          </SectionLabel>
+          <DataItem>
+            <Label>Tag Name</Label>
+            <ValueText>{tag.name}</ValueText>
+          </DataItem>
+        </InfoSection>
+
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faAlignLeft} />
+            <h4>Usage Context</h4>
+          </SectionLabel>
+          <DataItem>
+            <Label>Description</Label>
+            <ValueText>
+              {tag.description || "No description provided for this tag."}
+            </ValueText>
+          </DataItem>
+        </InfoSection>
+
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faFingerprint} />
+            <h4>System Reference</h4>
+          </SectionLabel>
+          <DataItem>
+            <Label>Unique Identifier</Label>
+            <IDText>{tag._id}</IDText>
+          </DataItem>
+        </InfoSection>
+      </FormContainer>
     </Drawer>
   );
 };

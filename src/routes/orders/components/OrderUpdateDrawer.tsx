@@ -6,9 +6,10 @@ import { Drawer } from "../../../components/Drawer";
 import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { Text } from "../../../components/Text";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
+import { faNoteSticky } from "@fortawesome/free-solid-svg-icons/faNoteSticky";
+import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
@@ -21,60 +22,100 @@ import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
+import { Toast } from "../../../utils/Toast";
 
-const Content = styled.div`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const Hero = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-  padding-bottom: ${({ theme }) => theme.spacing.lg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const HeroIcon = styled.div`
-  width: 56px;
-  height: 56px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary}1a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 1.5rem;
-  }
-`;
-
-const HeroText = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+const GlassHeader = styled.header`
   padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.primary}0D;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.primary}20;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const SectionHeader = styled.div`
+const IconWrapper = styled.div`
+  font-size: 2rem;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-size: ${({ theme }) => theme.typography.title};
+  }
+
+  span {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: ${({ theme }) => theme.typography.small};
+  }
+`;
+
+const InfoSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const SectionLabel = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary}20;
+  padding-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  svg {
+  h4 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 0;
   }
+`;
+
+const ReadOnlyItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+  border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ItemName = styled.span`
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-weight: 500;
+`;
+
+const ItemQty = styled.span`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-family: monospace;
+`;
+
+const PriceText = styled.div`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 type OrderUpdateDrawerProps = {
@@ -89,64 +130,63 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   order,
 }) => {
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const products = useAppSelector(productSliceSelectors.selectProducts);
 
-  const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const { control, handleSubmit, reset, getValues } = useForm<UpdateOrderDto>();
+  const { control, handleSubmit, reset } = useForm<UpdateOrderDto>();
 
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
     [searchParams, ordersMeta],
   );
 
+  useEffect(() => {
+    if (order && open) {
+      reset({
+        note: order.note || "",
+        orderId: order._id,
+        userId,
+      });
+    }
+  }, [order, open, reset, userId]);
+
   const localOnClose = () => {
     reset();
     onClose();
   };
 
-  const onUpdate = async () => {
-    const dto = getValues();
-
+  const onUpdate = async (data: UpdateOrderDto) => {
     try {
       setLoading(true);
 
-      await dispatch(
-        orderActions.updateOrder({
-          ...dto,
-          userId,
-        }),
-      ).unwrap();
+      await dispatch(orderActions.updateOrder(data)).unwrap();
 
       setSearchParams(buildOrdersParams(filters, searchParams), {
         replace: true,
       });
 
       localOnClose();
+      Toast.success("Order updated successfully");
+    } catch (e) {
+      Toast.apiError(e);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    reset({
-      note: order?.note || "",
-      orderId: order?._id || "",
-      userId,
-    });
-  }, [order, reset, userId]);
-
-  if (!order) return null;
+  if (!order) {
+    return null;
+  }
 
   return (
     <Drawer
       open={open}
       onClose={localOnClose}
-      title="Update order"
+      title="Update Order"
       size="large"
       extra={
         <DrawerExtraHeader
@@ -157,60 +197,60 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
         />
       }
     >
-      <Content>
-        <Hero>
-          <HeroIcon>
+      <FormContainer>
+        <GlassHeader>
+          <IconWrapper>
             <Icon icon={faCartShopping} />
-          </HeroIcon>
+          </IconWrapper>
+          <TitleGroup>
+            <h2>Order #{order._id.slice(-6).toUpperCase()}</h2>
+            <span>Transaction Management</span>
+          </TitleGroup>
+        </GlassHeader>
 
-          <HeroText>
-            <Text fontSize="title">Order #{order._id}</Text>
-            <Text fontSize="small" color="textSecondary">
-              Only note can be edited
-            </Text>
-          </HeroText>
-        </Hero>
-
-        {/* ITEMS (READ ONLY) */}
-        <Card>
-          <SectionHeader>
+        <InfoSection>
+          <SectionLabel>
             <Icon icon={faTag} />
-            <Text fontSize="subtitle">Items (Read-only)</Text>
-          </SectionHeader>
-
+            <h4>Order Contents</h4>
+          </SectionLabel>
           {order.items.map((item, index) => {
             const product = products.find((p) => p._id === item.productId);
-
             return (
-              <div key={index}>
-                <Text>
-                  {product?.name || item.productId} × {item.quantity}
-                </Text>
-              </div>
+              <ReadOnlyItem key={index}>
+                <ItemName>{product?.name || "Unknown Product"}</ItemName>
+                <ItemQty>× {item.quantity}</ItemQty>
+              </ReadOnlyItem>
             );
           })}
-        </Card>
+        </InfoSection>
 
-        <Card>
-          <Text fontSize="subtitle">Total price</Text>
-          <Text>${order.totalPriceAtPurchase}</Text>
-        </Card>
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faReceipt} />
+            <h4>Financial Summary</h4>
+          </SectionLabel>
+          <PriceText>${order.totalPriceAtPurchase.toFixed(2)}</PriceText>
+        </InfoSection>
 
-        <Card>
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faNoteSticky} />
+            <h4>Editorial Remarks</h4>
+          </SectionLabel>
           <Controller
             control={control}
             name="note"
-            render={({ field: { value, onChange } }) => (
+            render={({ field }) => (
               <Textarea
-                title="Note"
-                placeholder="Update note..."
-                value={value}
-                onChange={onChange}
+                title="Internal Note"
+                placeholder="Add specific details or changes..."
+                rows={5}
+                {...field}
               />
             )}
           />
-        </Card>
-      </Content>
+        </InfoSection>
+      </FormContainer>
     </Drawer>
   );
 };
