@@ -30,8 +30,8 @@ export const createProductsTableColumns = ({
   return [
     {
       title: "ID",
-      dataIndex: "_id",
-      key: "id",
+      dataIndex: "identifier",
+      key: "identifier",
       width: 220,
     },
     {

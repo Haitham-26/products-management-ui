@@ -4,6 +4,7 @@ import type { ProductDiscount } from "./ProductDiscount";
 
 export interface Product {
   _id: string;
+  identifier: string;
   name: string;
   description?: string;
   price: number;

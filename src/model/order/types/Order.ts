@@ -3,6 +3,7 @@ import type { OrderStatus } from "./OrderStatus.enum";
 
 export interface Order {
   _id: string;
+  identifier: string;
   userId: string;
   items: OrderItem[];
   note?: string;

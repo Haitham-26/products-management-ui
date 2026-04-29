@@ -28,9 +28,9 @@ export const createOrdersTableColumns = ({
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
-      title: "Order ID",
-      dataIndex: "_id",
-      key: "id",
+      title: "ID",
+      dataIndex: "identifier",
+      key: "identifier",
       width: 220,
       ellipsis: true,
     },
