@@ -76,13 +76,29 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
 
-  const statusOptions = useMemo(
-    () =>
-      Object.values(OrderStatus)
-        .filter((s) => s !== order?.status)
-        .map((s) => ({ label: capitalize(s), value: s })),
-    [order?.status],
-  );
+  const statusOptions = useMemo(() => {
+    if (!order) {
+      return [];
+    }
+
+    return Object.values(OrderStatus)
+      .filter((s) => {
+        if (s === order.status) {
+          return false;
+        }
+
+        if (
+          order.status === OrderStatus.CANCELLED &&
+          s === OrderStatus.CONFIRMED
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .map((s) => ({ label: capitalize(s), value: s }));
+  }, [order]);
+
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
     [searchParams, ordersMeta],

@@ -97,24 +97,23 @@ export const createOrdersTableColumns = ({
                 label: "View",
                 onClick: () => onRead(record),
               },
-              ...(record.status === OrderStatus.PENDING && isFunction(onEdit)
-                ? [
-                    {
-                      key: "edit",
-                      icon: <Icon icon={faPenToSquare} />,
-                      label: "Edit",
-                      onClick: () => onEdit(record),
-                    },
-                  ]
-                : []),
-
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit?.(record),
+                disabled: !(
+                  record.status === OrderStatus.PENDING && isFunction(onEdit)
+                ),
+              },
               {
                 key: "manage-status",
                 icon: <Icon icon={faGear} />,
                 label: "Manage Status",
                 onClick: () => onManageStatus(record),
+                disabled: record.status === OrderStatus.CONFIRMED,
               },
-            ],
+            ].filter((o) => o.disabled !== true),
           }}
         >
           <span style={{ cursor: "pointer" }}>
