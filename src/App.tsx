@@ -7,6 +7,7 @@ import { theme } from "./theme/theme";
 import { AntdConfigProvider } from "./AntdConfigProvider";
 import { Toaster } from "sonner";
 import { PersistGate } from "redux-persist/integration/react";
+import "react-phone-number-input/style.css";
 
 export default function App() {
   return (

@@ -26,6 +26,8 @@ import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
 import { Toast } from "../../../utils/Toast";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { PhoneInput } from "../../../components/PhoneInputs";
 
 const FormContainer = styled.div`
   display: flex;
@@ -156,6 +158,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     formState: { errors },
   } = useForm<CreateOrderDto>({
     defaultValues: {
+      customerName: "",
+      customerPhone: "",
       items: [{ productId: "", quantity: 1 }],
       note: "",
       userId,
@@ -207,7 +211,9 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   };
 
   const onCreate = async (data: CreateOrderDto) => {
-    if (!data.items.length) return;
+    if (!data.items.length) {
+      return;
+    }
 
     try {
       setLoading(true);
@@ -260,6 +266,47 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             <span>Select products and set stock quantities</span>
           </TitleGroup>
         </GlassHeader>
+
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faUser} />
+            <h4>Customer Information</h4>
+          </SectionLabel>
+          <Controller
+            control={control}
+            name="customerName"
+            rules={{
+              required: {
+                value: true,
+                message: "Customer name is required.",
+              },
+              maxLength: {
+                value: 30,
+                message: "Customer name must be 30 at most.",
+              },
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                title="Customer Name"
+                required
+                errorMessage={error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerPhone"
+            render={({ field, fieldState: { error } }) => (
+              <PhoneInput
+                title="Customer Phone"
+                errorMessage={error?.message}
+                {...field}
+              />
+            )}
+          />
+        </FormSection>
 
         <FormSection>
           <SectionLabel>
@@ -331,16 +378,17 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                   />
                 </ProductRow>
 
-                {errors.items?.[index]?.productId && (
+                {errors.items?.[index]?.productId ? (
                   <ErrorText>
                     {errors.items[index]?.productId?.message}
                   </ErrorText>
-                )}
-                {errors.items?.[index]?.quantity && (
+                ) : null}
+
+                {errors.items?.[index]?.quantity ? (
                   <ErrorText>
                     {errors.items[index]?.quantity?.message}
                   </ErrorText>
-                )}
+                ) : null}
               </div>
             );
           })}

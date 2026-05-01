@@ -15,16 +15,19 @@ const fontWeights: Record<
 const StyledP = styled.p<StyledTextProps>`
   font-size: ${({ theme, fontSize }) => theme.typography[fontSize || "body"]};
   color: ${({ theme, color }) => theme.colors[color || "textPrimary"]};
-  font-weight: ${({ fontSize }) => fontWeights[fontSize || "body"]};
+  font-weight: ${({ fontSize, fontWeight }) =>
+    fontWeight || fontWeights[fontSize || "body"]};
 `;
 
 type StyledTextProps = {
   fontSize?: TextProps["fontSize"];
+  fontWeight?: TextProps["fontWeight"];
   color?: TextProps["color"];
 };
 
 type TextProps = {
   fontSize?: keyof ThemeType["typography"];
+  fontWeight?: React.CSSProperties["fontWeight"];
   children: React.ReactNode;
   color?: keyof ThemeType["colors"];
 };

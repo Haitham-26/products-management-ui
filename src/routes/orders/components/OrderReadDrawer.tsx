@@ -7,6 +7,8 @@ import { faAlignLeft } from "@fortawesome/free-solid-svg-icons/faAlignLeft";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import type { Order } from "../../../model/order/types/Order";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
 
 const FormContainer = styled.div`
   display: flex;
@@ -95,6 +97,7 @@ const ItemInfo = styled.div`
 const ItemTitle = styled.span`
   color: ${({ theme }) => theme.colors.textPrimary};
   font-weight: 600;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const PriceCalculation = styled.span`
@@ -180,12 +183,28 @@ export const OrderReadDrawer: React.FC<Props> = ({
             <Icon icon={faCartShopping} />
           </IconWrapper>
           <TitleGroup>
-            <h2>Order #{order._id.slice(-6).toUpperCase()}</h2>
+            <h2>Order #{order.identifier}</h2>
             <span>
               Status: <strong>{order.status}</strong>
             </span>
           </TitleGroup>
         </GlassHeader>
+
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faUser} />
+            <h4>Customer Info</h4>
+          </SectionLabel>
+
+          <ItemInfo>
+            <ItemTitle>{order.customerName}</ItemTitle>
+
+            <PriceCalculation>
+              <Icon icon={faPhone} />
+              {order.customerPhone || "No phone provided"}
+            </PriceCalculation>
+          </ItemInfo>
+        </InfoSection>
 
         <InfoSection>
           <SectionLabel>

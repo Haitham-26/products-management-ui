@@ -23,6 +23,9 @@ import productSliceSelectors from "../../../redux/product/products.selector";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
 import { Toast } from "../../../utils/Toast";
+import { Input } from "../../../components/Input";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { PhoneInput } from "../../../components/PhoneInputs";
 
 const FormContainer = styled.div`
   display: flex;
@@ -144,16 +147,6 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
     [searchParams, ordersMeta],
   );
 
-  useEffect(() => {
-    if (order && open) {
-      reset({
-        note: order.note || "",
-        orderId: order._id,
-        userId,
-      });
-    }
-  }, [order, open, reset, userId]);
-
   const localOnClose = () => {
     reset();
     onClose();
@@ -177,6 +170,18 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (order && open) {
+      reset({
+        customerName: order.customerName || "",
+        customerPhone: order?.customerPhone || "",
+        note: order.note || "",
+        orderId: order._id,
+        userId,
+      });
+    }
+  }, [order, open, reset, userId]);
 
   if (!order) {
     return null;
@@ -207,6 +212,38 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             <span>Transaction Management</span>
           </TitleGroup>
         </GlassHeader>
+
+        <InfoSection>
+          <SectionLabel>
+            <Icon icon={faUser} />
+            <h4>Customer Information</h4>
+          </SectionLabel>
+          <Controller
+            control={control}
+            name="customerName"
+            rules={{ required: "Customer cannot be empty" }}
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                title="Customer Name"
+                required
+                errorMessage={error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerPhone"
+            render={({ field, fieldState: { error } }) => (
+              <PhoneInput
+                title="Customer Phone"
+                errorMessage={error?.message}
+                {...field}
+              />
+            )}
+          />
+        </InfoSection>
 
         <InfoSection>
           <SectionLabel>

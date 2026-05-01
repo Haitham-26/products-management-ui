@@ -35,15 +35,17 @@ const InfoCard = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
+const StatusLabel = styled.span<{ type: OrderStatus }>`
+  font-weight: 600;
+  color: ${({ theme, type }) =>
+    theme.colors[type.toLowerCase() as keyof typeof theme.colors]};
+  text-transform: capitalize;
+`;
+
 const RuleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const Status = styled.span<{ type: "pending" | "confirmed" | "cancelled" }>`
-  font-weight: 600;
-  color: ${({ theme, type }) => theme.colors[type]};
 `;
 
 const Hint = styled(Text)`
@@ -140,43 +142,59 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   };
 
   return (
-    <Modal title="Update order status" open={open} onCancel={localOnClose}>
+    <Modal title="Update Order Status" open={open} onCancel={localOnClose}>
       <Container>
         <InfoCard>
-          <Text fontSize="small">
-            Changing the status will immediately update your stock.
+          <Text fontSize="small" fontWeight={"bold"}>
+            Inventory Update Rules:
           </Text>
 
           <RuleRow>
-            <Status type="confirmed">Confirmed</Status>
-            <Hint>Stock will be reduced</Hint>
+            <div>
+              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
+              <span> → </span>
+              <StatusLabel type={OrderStatus.CANCELLED}>Cancelled</StatusLabel>
+            </div>
+            <Hint>Stock will be restored (+)</Hint>
           </RuleRow>
 
           <RuleRow>
             <div>
-              <Status type="cancelled">Cancelled</Status>
-              <Hint as="span"> / </Hint>
-              <Status type="pending">Pending</Status>
+              <StatusLabel type={OrderStatus.CANCELLED}>Cancelled</StatusLabel>
+              <span> → </span>
+              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
             </div>
-            <Hint>Stock will be restored</Hint>
+            <Hint>Stock will be deducted (-)</Hint>
+          </RuleRow>
+
+          <RuleRow>
+            <div>
+              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
+              <span> → </span>
+              <StatusLabel type={OrderStatus.CONFIRMED}>Confirmed</StatusLabel>
+            </div>
+            <Hint>No stock change</Hint>
           </RuleRow>
         </InfoCard>
 
         <Select
-          title="New status"
+          title="New Status"
           placeholder="Select a new status"
           value={statusOptions?.find((s) => s.value === status)}
-          onChange={(v) => setStatus(v)}
+          onChange={(v) => setStatus(v as OrderStatus)}
           options={statusOptions}
         />
 
         {status ? (
-          <Hint>This change cannot be undone automatically.</Hint>
+          <Hint>
+            This change involves a database transaction to ensure stock
+            integrity.
+          </Hint>
         ) : null}
 
         <Footer>
           <Button loading={loading} disabled={!status} onClick={onConfirm}>
-            Confirm change
+            Update Status
           </Button>
         </Footer>
       </Container>

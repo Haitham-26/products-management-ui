@@ -1,5 +1,4 @@
-import type React from "react";
-import { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import styled from "styled-components";
 import { Icon } from "./Icon";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
@@ -9,6 +8,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
+  width: 100%;
 `;
 
 const Label = styled.label`
@@ -84,49 +84,44 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   errorMessage?: string;
 };
 
-export const Input: React.FC<InputProps> = ({
-  title,
-  errorMessage,
-  type,
-  id,
-  required,
-  ...props
-}) => {
-  const [show, setShow] = useState(false);
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ title, errorMessage, type, id, required, ...props }, ref) => {
+    const [show, setShow] = useState(false);
 
-  const hasError = Boolean(errorMessage);
+    const hasError = Boolean(errorMessage);
+    const isPassword = type === "password";
 
-  const isPassword = type === "password";
-
-  return (
-    <Wrapper>
-      {title ? (
-        <Label htmlFor={id}>
-          {title} {required ? <span>*</span> : null}
-        </Label>
-      ) : null}
-
-      <InputWrapper>
-        <StyledInput
-          id={id}
-          type={isPassword && show ? "text" : type}
-          hasError={hasError}
-          originalType={type}
-          {...props}
-        />
-
-        {isPassword ? (
-          <EyeButton
-            type="button"
-            onClick={() => setShow((v) => !v)}
-            aria-label="Toggle password visibility"
-          >
-            <Icon icon={show ? faEyeSlash : faEye} />
-          </EyeButton>
+    return (
+      <Wrapper>
+        {title ? (
+          <Label htmlFor={id}>
+            {title} {required ? <span>*</span> : null}
+          </Label>
         ) : null}
-      </InputWrapper>
 
-      {hasError ? <ErrorText>{errorMessage}</ErrorText> : null}
-    </Wrapper>
-  );
-};
+        <InputWrapper>
+          <StyledInput
+            id={id}
+            ref={ref}
+            type={isPassword && show ? "text" : type}
+            hasError={hasError}
+            originalType={type}
+            {...props}
+          />
+
+          {isPassword ? (
+            <EyeButton
+              type="button"
+              onClick={() => setShow((v) => !v)}
+              aria-label="Toggle password visibility"
+            >
+              <Icon icon={show ? faEyeSlash : faEye} />
+            </EyeButton>
+          ) : null}
+        </InputWrapper>
+
+        {hasError ? <ErrorText>{errorMessage}</ErrorText> : null}
+      </Wrapper>
+    );
+  },
+);
