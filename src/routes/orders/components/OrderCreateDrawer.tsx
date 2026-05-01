@@ -298,11 +298,12 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           <Controller
             control={control}
             name="customerPhone"
-            render={({ field, fieldState: { error } }) => (
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
               <PhoneInput
                 title="Customer Phone"
                 errorMessage={error?.message}
-                {...field}
+                value={value}
+                onChange={onChange}
               />
             )}
           />
