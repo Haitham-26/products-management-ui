@@ -73,16 +73,21 @@ const Error = styled.span`
   color: ${({ theme }) => theme.colors.error};
 `;
 
-type PhoneInputProps = React.ComponentProps<typeof PhoneInputLib> & {
+type PhoneInputProps = Omit<
+  React.ComponentProps<typeof PhoneInputLib>,
+  "onChange"
+> & {
   title?: string;
   required?: boolean;
   errorMessage?: string;
+  onChange: (value: string) => void;
 };
 
 export const PhoneInput: React.FC<PhoneInputProps> = ({
   title,
   required = false,
   errorMessage,
+
   ...props
 }) => {
   const hasError = Boolean(errorMessage);
@@ -97,6 +102,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
 
       <PhoneInputLib
         {...props}
+        onChange={(v) => props.onChange(v || "")}
         hasError={hasError}
         flags={flags}
         international
