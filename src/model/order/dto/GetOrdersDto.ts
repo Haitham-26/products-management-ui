@@ -8,4 +8,5 @@ export interface GetOrdersDto extends GenericWithUserId {
   minTotalPrice?: number;
   maxTotalPrice?: number;
   status?: OrderStatus;
+  visibility?: "active" | "archived";
 }

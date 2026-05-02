@@ -12,6 +12,8 @@ import type { OrderItem } from "../../../model/order/types/OrderItem";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import isFunction from "lodash/isFunction";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
+import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
 
 type FNType = (category: Order) => void;
 
@@ -19,12 +21,14 @@ type CreateOrdersTableColumnsArgs = {
   onEdit?: FNType;
   onRead: FNType;
   onManageStatus: FNType;
+  onToggleArchive: FNType;
 };
 
 export const createOrdersTableColumns = ({
   onEdit,
   onRead,
   onManageStatus,
+  onToggleArchive,
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
@@ -117,9 +121,10 @@ export const createOrdersTableColumns = ({
                 icon: <Icon icon={faPenToSquare} />,
                 label: "Edit",
                 onClick: () => onEdit?.(record),
-                disabled: !(
-                  record.status === OrderStatus.PENDING && isFunction(onEdit)
-                ),
+                disabled:
+                  record.status !== OrderStatus.PENDING ||
+                  !isFunction(onEdit) ||
+                  record.isArchived,
               },
               {
                 key: "manage-status",
@@ -127,6 +132,14 @@ export const createOrdersTableColumns = ({
                 label: "Manage Status",
                 onClick: () => onManageStatus(record),
                 disabled: record.status === OrderStatus.CONFIRMED,
+              },
+              {
+                key: "toggle-archive",
+                icon: (
+                  <Icon icon={record.isArchived ? faBoxOpen : faBoxArchive} />
+                ),
+                label: record.isArchived ? "Unarchive" : "Archive",
+                onClick: () => onToggleArchive(record),
               },
             ].filter((o) => o.disabled !== true),
           }}

@@ -11,6 +11,7 @@ export interface Order {
   note?: string;
   status: OrderStatus;
   totalPriceAtPurchase: number;
+  isArchived: boolean;
   createdAt: string;
   updatedAt: string;
 }

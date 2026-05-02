@@ -27,6 +27,7 @@ import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
+import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -51,6 +52,8 @@ export const Orders: React.FC = () => {
   const [orderReadVisible, setOrderReadVisible] = useState(false);
   const [orderCreateVisible, setOrderCreateVisible] = useState(false);
   const [orderManageStatusVisible, setOrderManageStatusVisible] =
+    useState(false);
+  const [orderToggleArchiveVisible, setOrderToggleArchiveVisible] =
     useState(false);
 
   const dispatch = useAppDispatch();
@@ -130,6 +133,11 @@ export const Orders: React.FC = () => {
     setOrderManageStatusVisible(true);
   };
 
+  const onToggleArchive = (order: Order) => {
+    setCurrentOrder(order);
+    setOrderToggleArchiveVisible(true);
+  };
+
   const tableColumns = useMemo(
     () =>
       createOrdersTableColumns({
@@ -137,6 +145,7 @@ export const Orders: React.FC = () => {
         onRead: (order) =>
           order.status === OrderStatus.PENDING ? onRead(order) : undefined,
         onManageStatus,
+        onToggleArchive,
       }),
     [],
   );
@@ -209,6 +218,12 @@ export const Orders: React.FC = () => {
       <OrderManageStatusModal
         open={orderManageStatusVisible}
         onClose={() => setOrderManageStatusVisible(false)}
+        order={currentOrder}
+      />
+
+      <OrderToggleArchiveModal
+        open={orderToggleArchiveVisible}
+        onClose={() => setOrderToggleArchiveVisible(false)}
         order={currentOrder}
       />
     </StyledContainer>

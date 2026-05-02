@@ -16,6 +16,7 @@ import orderSliceSelectors from "../../../redux/order/orders.selector";
 import { Select } from "../../../components/Select";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import capitalize from "lodash/capitalize";
+import { OrderVisibility } from "../../../model/order/types/OrderVisibility.enum";
 
 const statusOptions = [
   { label: "All", value: null },
@@ -151,6 +152,19 @@ export const OrdersFilter: React.FC = () => {
               min={0}
             />
           </RangeRow>
+        </Section>
+
+        <Section>
+          <Select
+            title="Visibility"
+            options={[
+              { label: "All", value: null },
+              { label: "Active", value: OrderVisibility.ACTIVE },
+              { label: "Archived", value: OrderVisibility.ARCHIVED },
+            ]}
+            value={filters.visibility}
+            onChange={(value) => applyFilter("visibility", value)}
+          />
         </Section>
       </PopoverContent>
 
