@@ -1,79 +1,114 @@
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import type React from "react";
+import React, { Fragment, useState } from "react";
 import styled from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 import { Button } from "./Button";
 import { Popover } from "antd";
-import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
 import { Input } from "./Input";
-import { useState } from "react";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
-const Header = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const TopRow = styled.div`
+const Top = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+`;
+
+const TitleBlock = styled.div`
+  display: flex;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const FilterBar = styled.div`
+const IconBox = styled.div`
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: ${({ theme }) => theme.radius.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: ${({ theme }) => theme.colors.primary}15;
+  border: 1px solid ${({ theme }) => theme.colors.primary}30;
+
+  svg {
+    color: ${({ theme }) => theme.colors.primary};
+    font-size: 18px;
+  }
+`;
+
+const TitleGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  span {
+    font-size: 0.75rem;
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const ContextBar = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
   flex-wrap: wrap;
+
+  padding: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-const SearchWrapper = styled.div`
+const Search = styled.div`
   position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 10rem;
 
   input {
-    padding-inline-end: ${({ theme }) => theme.spacing.md};
-    min-width: 16rem;
+    padding-inline-start: ${({ theme }) => theme.spacing.md};
+    min-width: 14rem;
   }
 
   svg {
     position: absolute;
-    z-index: 2;
-    inset-inline-end: ${({ theme }) => theme.spacing.sm};
+    top: 50%;
+    transform: translateY(-50%);
+    inset-block-start: ${({ theme }) => theme.spacing.sm};
+    font-size: 12px;
     color: ${({ theme }) => theme.colors.textSecondary};
-    pointer-events: none;
-    font-size: 13px;
   }
 `;
 
-const FilterButton = styled.button<{ active?: boolean }>`
-  display: inline-flex;
+const FilterChip = styled.button<{ active?: boolean }>`
+  display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
-  height: 2rem;
-  padding: 0 ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.md};
+  margin-inline-start: auto;
+
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  height: 28px;
+
+  border-radius: ${({ theme }) => theme.radius.full};
   border: 1px solid
     ${({ theme, active }) =>
       active ? theme.colors.primary : theme.colors.border};
+
   background: ${({ theme, active }) =>
     active ? `${theme.colors.primary}12` : theme.colors.surface};
+
   color: ${({ theme, active }) =>
     active ? theme.colors.primary : theme.colors.textSecondary};
-  font-size: 0.8rem;
-  font-weight: 500;
+
+  font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  margin-inline-start: auto;
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
@@ -81,102 +116,116 @@ const FilterButton = styled.button<{ active?: boolean }>`
   }
 `;
 
-const FilterBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: ${({ theme }) => theme.colors.primary};
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1;
+const ClearFilters = styled.button`
+  border: none;
+  background: none;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.error};
+  }
 `;
 
 type PageHeaderProps = {
   title: string;
   icon: IconProp;
+
+  subtitle?: string;
+
   action?: {
     title: string;
     icon: IconProp;
     onClick: VoidFunction;
   };
-  filters?: {
-    content: React.ReactNode;
-    activeCount: number;
-  };
+
   search?: {
     placeholder?: string;
     onChange: (value: string) => void;
+  };
+
+  filters?: {
+    content: React.ReactNode;
+    activeCount: number;
+    onClear?: VoidFunction;
   };
 };
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   icon,
+  subtitle,
   action,
-  filters,
   search,
+  filters,
 }) => {
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [open, setOpen] = useState(false);
 
   return (
-    <Header>
-      <TopRow>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Icon icon={icon} color="primary" size="xl" />
-          <Text fontSize="title">{title}</Text>
-        </div>
+    <Wrapper>
+      <Top>
+        <TitleBlock>
+          <IconBox>
+            <Icon icon={icon} />
+          </IconBox>
+
+          <TitleGroup>
+            <Text fontSize="title">{title}</Text>
+            {subtitle ? <span>{subtitle}</span> : null}
+          </TitleGroup>
+        </TitleBlock>
+
         {action ? (
           <Button icon={action.icon} onClick={action.onClick}>
             {action.title}
           </Button>
         ) : null}
-      </TopRow>
+      </Top>
 
       {search || filters ? (
-        <FilterBar>
+        <ContextBar>
           {search ? (
-            <SearchWrapper>
+            <Search>
               <Icon icon={faMagnifyingGlass} />
               <Input
-                placeholder={search?.placeholder || "Search..."}
-                value={searchKeyword}
+                placeholder={search.placeholder || "Search..."}
+                value={searchValue}
                 onChange={(e) => {
-                  const value = e.target.value;
-
-                  setSearchKeyword(value);
-                  search.onChange(value);
+                  const val = e.target.value;
+                  setSearchValue(val);
+                  search.onChange(val);
                 }}
               />
-            </SearchWrapper>
+            </Search>
           ) : null}
 
           {filters ? (
-            <Popover
-              content={filters.content}
-              trigger="click"
-              placement="bottomLeft"
-              open={popoverOpen}
-              onOpenChange={setPopoverOpen}
-              arrow={false}
-            >
-              <FilterButton active={Boolean(filters.activeCount)}>
-                <Icon icon={faFilter} />
-                Filters
-                {filters.activeCount ? (
-                  <FilterBadge>{filters.activeCount}</FilterBadge>
-                ) : (
-                  <Icon icon={faChevronDown} />
-                )}
-              </FilterButton>
-            </Popover>
+            <Fragment>
+              <Popover
+                content={filters.content}
+                trigger="click"
+                open={open}
+                onOpenChange={setOpen}
+                arrow={false}
+              >
+                <FilterChip active={filters.activeCount > 0}>
+                  <Icon icon={faFilter} />
+                  Filters
+                  {filters.activeCount ? ` (${filters.activeCount})` : ""}
+                </FilterChip>
+              </Popover>
+
+              {filters.activeCount && filters.onClear ? (
+                <ClearFilters onClick={filters.onClear}>
+                  <Icon icon={faXmark} /> Clear
+                </ClearFilters>
+              ) : null}
+            </Fragment>
           ) : null}
-        </FilterBar>
+        </ContextBar>
       ) : null}
-    </Header>
+    </Wrapper>
   );
 };

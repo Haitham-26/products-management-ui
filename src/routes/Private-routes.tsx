@@ -6,6 +6,7 @@ import { Products } from "./products/Products";
 import { Categories } from "./categories/Categories";
 import { Tags } from "./tags/Tags";
 import { Orders } from "./orders/Orders";
+import { settingsRoutes } from "./settings/SettingsRoutes";
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
@@ -30,6 +31,7 @@ export const PrivateRoutes: RouteObject = {
       path: "/orders",
       element: <AppPrivateRoute component={<Orders />} />,
     },
+    settingsRoutes,
     {
       path: "*",
       element: <AppPrivateRoute redirect="/" replace />,
