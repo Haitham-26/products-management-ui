@@ -28,6 +28,7 @@ import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
 import { Toast } from "../../../utils/Toast";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { PhoneInput } from "../../../components/PhoneInputs";
+import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 
 const FormContainer = styled.div`
   display: flex;
@@ -131,6 +132,29 @@ const AddItemButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
+const StockAlert = styled.span<{ status: ProductStockStatus }>`
+  font-size: ${({ theme }) => theme.typography.small};
+  color: ${({ theme, status }) => {
+    switch (status) {
+      case ProductStockStatus.OUT_OF_STOCK:
+        return theme.colors.error;
+      case ProductStockStatus.LOW_STOCK:
+        return theme.colors.warning;
+      default:
+        return theme.colors.textSecondary;
+    }
+  }};
+  font-weight: 700;
+`;
+
+const ProductOptionContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.sm};
+  width: 100%;
+`;
+
 type OrderCreateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -178,15 +202,43 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     [searchParams, ordersMeta],
   );
 
-  const getProductsOptions = (currentProductId?: string) => {
+  const getProductsOptions = (
+    currentProductId?: string,
+  ): SelectProps["options"] => {
     const selectedIds = watchedItems?.map((i) => i.productId).filter(Boolean);
+
     return products
       .filter((p) => !selectedIds.includes(p._id) || p._id === currentProductId)
-      .map((product) => ({
-        label: `${product.name}${!product.quantity ? " (out of stock)" : ""}`,
-        value: product._id,
-        disabled: !product.quantity,
-      })) as SelectProps["options"];
+      .map((product) => {
+        const threshold = product.minStock || 10;
+
+        const isOutOfStock = product.quantity <= 0;
+        const isLowStock = !isOutOfStock && product.quantity <= threshold;
+
+        return {
+          label: (
+            <ProductOptionContainer>
+              <span>{product.name}</span>
+
+              {isOutOfStock ? (
+                <StockAlert status={ProductStockStatus.OUT_OF_STOCK}>
+                  Out of stock
+                </StockAlert>
+              ) : isLowStock ? (
+                <StockAlert status={ProductStockStatus.LOW_STOCK}>
+                  Only {product.quantity} left
+                </StockAlert>
+              ) : (
+                <StockAlert status={ProductStockStatus.IN_STOCK}>
+                  {product.quantity} left
+                </StockAlert>
+              )}
+            </ProductOptionContainer>
+          ),
+          value: product._id,
+          disabled: isOutOfStock,
+        };
+      });
   };
 
   const localOnClose = () => {

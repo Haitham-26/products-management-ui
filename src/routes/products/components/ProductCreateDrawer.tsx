@@ -166,6 +166,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         userId,
         categoryId: "",
         tags: [],
+        minStock: 10,
       },
     });
 
@@ -220,6 +221,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             }
           : undefined,
         tags: data.tags?.map((t) => t.tag),
+        minStock: Number(data.minStock),
       };
 
       await dispatch(
@@ -333,6 +335,20 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  {...field}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="minStock"
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title="Minimum Stock Alert"
+                  type="number"
+                  info="You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, and during creating orders)."
+                  errorMessage={error?.message}
                   {...field}
                 />
               )}

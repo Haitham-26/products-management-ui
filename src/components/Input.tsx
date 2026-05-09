@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Icon } from "./Icon";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
+import { Tooltip } from "antd";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,6 +19,10 @@ const Label = styled.label`
 
   span {
     color: ${({ theme }) => theme.colors.error};
+  }
+
+  svg {
+    margin-inline-end: ${({ theme }) => theme.spacing.xs};
   }
 `;
 
@@ -82,10 +88,11 @@ const ErrorText = styled.span`
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   title?: string;
   errorMessage?: string;
+  info?: string;
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ title, errorMessage, type, id, required, ...props }, ref) => {
+  ({ title, errorMessage, type, id, required, info, ...props }, ref) => {
     const [show, setShow] = useState(false);
 
     const hasError = Boolean(errorMessage);
@@ -95,6 +102,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <Wrapper>
         {title ? (
           <Label htmlFor={id}>
+            {info ? (
+              <Tooltip title={info}>
+                <Icon icon={faCircleInfo} />
+              </Tooltip>
+            ) : null}
             {title} {required ? <span>*</span> : null}
           </Label>
         ) : null}

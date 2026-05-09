@@ -27,6 +27,7 @@ export const parseProductsFiltersFromParams = (
           limit: params.get("limit") ? Number(params.get("limit")) : undefined,
         }
       : meta,
+  stockStatus: params.get("stockStatus") as GetProductsDto["stockStatus"],
 });
 
 export const buildProductsParams = (
@@ -52,6 +53,7 @@ export const buildProductsParams = (
   set("maxQuantity", filters.maxQuantity?.toString());
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
+  set("stockStatus", filters.stockStatus);
 
   // to force reload
   next.set("u", new Date().getTime().toString());
@@ -79,6 +81,9 @@ export const countProductsActiveFilters = (
     n++;
   }
   if (!isNil(filters.minQuantity) || !isNil(filters.maxQuantity)) {
+    n++;
+  }
+  if (filters.stockStatus) {
     n++;
   }
   return n;

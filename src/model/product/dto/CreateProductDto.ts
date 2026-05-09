@@ -13,4 +13,5 @@ export interface CreateProductDto extends GenericWithUserId {
   discount?: ProductDiscount;
   categoryId?: string;
   tags?: Tag[];
+  minStock?: number;
 }

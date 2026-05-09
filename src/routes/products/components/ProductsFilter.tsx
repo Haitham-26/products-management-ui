@@ -18,6 +18,19 @@ import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
+import capitalize from "lodash/capitalize";
+
+const stockStatusOptions = [
+  {
+    label: "All",
+    value: null,
+  },
+  ...Object.values(ProductStockStatus).map((s) => ({
+    label: capitalize(s.replaceAll("_", " ")),
+    value: s,
+  })),
+];
 
 const PopoverBody = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
@@ -199,6 +212,18 @@ export const ProductsFilter: React.FC = () => {
               min={0}
             />
           </RangeRow>
+        </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>Stock Status</PopoverLabel>
+          <Select
+            placeholder="All"
+            value={filters.stockStatus}
+            onChange={(val) => applyFilter("stockStatus", val)}
+            allowClear
+            options={stockStatusOptions}
+            style={{ width: "100%" }}
+          />
         </PopoverSection>
 
         <PopoverSection>

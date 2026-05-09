@@ -168,19 +168,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
 
   const { control, handleSubmit, reset, getValues, watch } =
-    useForm<UpdateProductDto>({
-      defaultValues: {
-        name: "",
-        description: "",
-        price: 0,
-        discount: { type: ProductDiscountTypes.PERCENTAGE, value: 0 },
-        quantity: 0,
-        userId,
-        productId: "",
-        categoryId: "",
-        tags: [],
-      },
-    });
+    useForm<UpdateProductDto>();
 
   const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
@@ -229,6 +217,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           ? { ...dto.discount, value: Number(dto.discount.value) }
           : undefined,
         tags: dto.tags?.map((t) => t.tag),
+        minStock: dto.minStock ? Number(dto.minStock) : undefined,
       };
 
       await dispatch(
@@ -255,9 +244,13 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         price: product.price,
         productId: product._id,
         quantity: product.quantity || 0,
-        discount: product.discount,
+        discount: product.discount || {
+          type: ProductDiscountTypes.PERCENTAGE,
+          value: 0,
+        },
         categoryId: product.category?._id,
         tags: (product?.tags || []).map((tag) => ({ tag: tag._id })),
+        minStock: product?.minStock,
         userId,
       });
     }
@@ -346,6 +339,20 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  {...field}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="minStock"
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title="Minimum Stock Alert"
+                  type="number"
+                  info="You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, and during creating orders)."
+                  errorMessage={error?.message}
                   {...field}
                 />
               )}

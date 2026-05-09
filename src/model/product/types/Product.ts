@@ -13,6 +13,7 @@ export interface Product {
   priceAfterDiscount?: number;
   category?: Partial<Category>;
   tags?: Partial<Tag>[];
+  minStock?: number;
   createdAt: string;
   updatedAt: string;
 }

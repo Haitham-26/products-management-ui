@@ -12,6 +12,7 @@ export const theme = {
     border: "#e5e7eb",
 
     error: "#ef4444",
+    warning: "#fbbf24",
     success: "#22c55e",
 
     pending: "#fbbf24",

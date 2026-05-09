@@ -14,4 +14,5 @@ export interface UpdateProductDto extends GenericWithUserId {
   discount?: ProductDiscount;
   categoryId?: string;
   tags?: Tag[];
+  minStock?: number;
 }

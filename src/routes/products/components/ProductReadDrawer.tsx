@@ -9,6 +9,7 @@ import { faLayerGroup } from "@fortawesome/free-solid-svg-icons/faLayerGroup";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { faFingerprint } from "@fortawesome/free-solid-svg-icons/faFingerprint";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 import { formatDate } from "../../../utils/Date";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 
@@ -21,7 +22,7 @@ const FormContainer = styled.div`
 
 const GlassHeader = styled.header`
   padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
+  background: ${({ theme }) => theme.colors.primary}0d;
   border-radius: ${({ theme }) => theme.radius.lg};
   border: 1px solid ${({ theme }) => theme.colors.primary}20;
   display: flex;
@@ -30,8 +31,19 @@ const GlassHeader = styled.header`
 `;
 
 const IconWrapper = styled.div`
-  font-size: 2rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.primary}15;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.75rem;
   color: ${({ theme }) => theme.colors.primary};
+
+  flex-shrink: 0;
 `;
 
 const TitleGroup = styled.div`
@@ -48,6 +60,31 @@ const TitleGroup = styled.div`
     color: ${({ theme }) => theme.colors.textSecondary};
     font-size: ${({ theme }) => theme.typography.small};
   }
+`;
+
+const StockAlert = styled.div<{ danger?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  width: fit-content;
+  margin-top: ${({ theme }) => theme.spacing.sm};
+  padding: 6px 10px;
+
+  border-radius: ${({ theme }) => theme.radius.full};
+
+  background: ${({ theme, danger }) =>
+    danger ? `${theme.colors.error}15` : `${theme.colors.warning}15`};
+
+  color: ${({ theme, danger }) =>
+    danger ? theme.colors.error : theme.colors.warning};
+
+  border: 1px solid
+    ${({ theme, danger }) =>
+      danger ? `${theme.colors.error}35` : `${theme.colors.warning}35`};
+
+  font-size: 0.78rem;
+  font-weight: 700;
 `;
 
 const InfoSection = styled.section`
@@ -157,6 +194,11 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
     return null;
   }
 
+  const minStock = product.minStock || 10;
+
+  const isLowStock = product.quantity <= minStock;
+  const isOutOfStock = product.quantity <= 0;
+
   const formatDiscount = () => {
     if (!product.discount || product.discount.value === 0) {
       return "None";
@@ -187,9 +229,21 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
           <IconWrapper>
             <Icon icon={faBoxOpen} />
           </IconWrapper>
+
           <TitleGroup>
             <h2>{product.name}</h2>
+
             <span>Inventory Specifications</span>
+
+            {(isLowStock || isOutOfStock) && (
+              <StockAlert danger={isOutOfStock}>
+                <Icon icon={faTriangleExclamation} />
+
+                {isOutOfStock
+                  ? "Out of stock"
+                  : `Low stock • ${product.quantity} left`}
+              </StockAlert>
+            )}
           </TitleGroup>
         </GlassHeader>
 
@@ -198,12 +252,15 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Icon icon={faCircleInfo} />
             <h4>General Information</h4>
           </SectionLabel>
+
           <DataItem>
             <label>Description</label>
             <p>{product.description || "No description provided."}</p>
           </DataItem>
+
           <DataItem>
             <label>Tags</label>
+
             <TagCloud>
               {product.tags?.length ? (
                 product.tags.map((t) => (
@@ -221,21 +278,26 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Icon icon={faCoins} />
             <h4>Pricing & Stock</h4>
           </SectionLabel>
+
           <DataGrid>
             <DataItem>
               <label>List Price</label>
               <p>${product.price.toFixed(2)}</p>
             </DataItem>
+
             <DataItem>
               <label>Discount</label>
               <p>{formatDiscount()}</p>
             </DataItem>
+
             <DataItem>
               <label>Selling Price</label>
+
               <FinalPriceText>
                 ${calculateFinalPrice().toFixed(2)}
               </FinalPriceText>
             </DataItem>
+
             <DataItem>
               <label>On Hand</label>
               <p>{product.quantity} Units</p>
@@ -248,6 +310,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Icon icon={faLayerGroup} />
             <h4>Taxonomy</h4>
           </SectionLabel>
+
           <DataItem>
             <label>Category</label>
             <p>{product.category?.name || "Uncategorized"}</p>
@@ -259,11 +322,13 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Icon icon={faClock} />
             <h4>Lifecycle</h4>
           </SectionLabel>
+
           <DataGrid>
             <DataItem>
               <label>Created</label>
               <p>{formatDate(product.createdAt, true)}</p>
             </DataItem>
+
             <DataItem>
               <label>Last Modify</label>
               <p>{formatDate(product.updatedAt, true)}</p>
@@ -276,6 +341,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Icon icon={faFingerprint} />
             <h4>Identification</h4>
           </SectionLabel>
+
           <DataItem>
             <label>System ID</label>
             <IDText>{product._id}</IDText>
