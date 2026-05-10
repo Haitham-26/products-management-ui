@@ -16,6 +16,7 @@ import categoriesSlice from "./category/categories.slice";
 import tagsSlice from "./tag/tags.slice";
 import userSlice from "./user/user.slice";
 import ordersSlice from "./order/orders.slice";
+import settingsSlice from "./settings/settings.slice";
 import storage from "redux-persist/lib/storage";
 
 const rootReducer = combineReducers({
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   tags: tagsSlice,
   orders: ordersSlice,
   user: userSlice,
+  settings: settingsSlice,
 });
 
 const persistedReducer = persistReducer(

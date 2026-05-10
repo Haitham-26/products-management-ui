@@ -32,6 +32,7 @@ import {
   parseProductsFiltersFromParams,
 } from "../utils/productUtils";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const FormContainer = styled.div`
   display: flex;
@@ -154,6 +155,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { control, handleSubmit, getValues, reset, watch } =
     useForm<CreateProductDto>({
@@ -166,7 +168,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         userId,
         categoryId: "",
         tags: [],
-        minStock: 10,
+        minStock: settings.inventory.defaultMinStock || 10,
       },
     });
 
