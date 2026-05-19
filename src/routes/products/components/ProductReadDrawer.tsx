@@ -12,6 +12,9 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 import { formatDate } from "../../../utils/Date";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import { useAppSelector } from "../../../redux/store";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 const FormContainer = styled.div`
   display: flex;
@@ -190,17 +193,15 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
   onClose,
   product,
 }) => {
-  if (!product) {
-    return null;
-  }
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const minStock = product.minStock || 10;
+  const minStock = product?.minStock || 10;
 
-  const isLowStock = product.quantity <= minStock;
-  const isOutOfStock = product.quantity <= 0;
+  const isLowStock = (product?.quantity || 0) <= minStock;
+  const isOutOfStock = (product?.quantity || 0) <= 0;
 
   const formatDiscount = () => {
-    if (!product.discount || product.discount.value === 0) {
+    if (!product || !product.discount || product.discount.value === 0) {
       return "None";
     }
 
@@ -208,10 +209,14 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
       return `${product.discount.value}%`;
     }
 
-    return `$${product.discount.value.toFixed(2)}`;
+    return stringWithCurrencyCode(settings.currency, product.discount.value);
   };
 
   const calculateFinalPrice = () => {
+    if (!product) {
+      return 0;
+    }
+
     const price = product.price || 0;
     const discountValue = product.discount?.value || 0;
 
@@ -221,6 +226,10 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
 
     return price - discountValue;
   };
+
+  if (!product) {
+    return null;
+  }
 
   return (
     <Drawer open={open} onClose={onClose} title="Product Details" size="large">
@@ -282,7 +291,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
           <DataGrid>
             <DataItem>
               <label>List Price</label>
-              <p>${product.price.toFixed(2)}</p>
+              <p>{stringWithCurrencyCode(settings.currency, product.price)}</p>
             </DataItem>
 
             <DataItem>
@@ -294,7 +303,10 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
               <label>Selling Price</label>
 
               <FinalPriceText>
-                ${calculateFinalPrice().toFixed(2)}
+                {stringWithCurrencyCode(
+                  settings.currency,
+                  calculateFinalPrice(),
+                )}
               </FinalPriceText>
             </DataItem>
 

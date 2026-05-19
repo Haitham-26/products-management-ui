@@ -9,6 +9,9 @@ import type { Order } from "../../../model/order/types/Order";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
+import { useAppSelector } from "../../../redux/store";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 const FormContainer = styled.div`
   display: flex;
@@ -159,6 +162,8 @@ export const OrderReadDrawer: React.FC<Props> = ({
   onClose,
   order,
 }) => {
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+
   if (!order) {
     return null;
   }
@@ -217,14 +222,21 @@ export const OrderReadDrawer: React.FC<Props> = ({
               <ItemInfo>
                 <ItemTitle>{item.productName}</ItemTitle>
                 <PriceCalculation>
-                  {item.quantity} × ${item.priceAtPurchase.toFixed(2)}
+                  {item.quantity} ×
+                  {` ${stringWithCurrencyCode(
+                    settings.currency,
+                    item.priceAtPurchase,
+                  )}`}
                 </PriceCalculation>
                 {renderDiscount(item)}
               </ItemInfo>
 
               <PriceColumn>
                 <ItemTotal>
-                  ${(item.finalPrice * item.quantity).toFixed(2)}
+                  {stringWithCurrencyCode(
+                    settings.currency,
+                    item.finalPrice * item.quantity,
+                  )}
                 </ItemTotal>
               </PriceColumn>
             </OrderLineItem>
@@ -232,7 +244,12 @@ export const OrderReadDrawer: React.FC<Props> = ({
 
           <GrandTotalSection>
             <ItemTitle>Total Amount</ItemTitle>
-            <TotalAmount>${order.totalPriceAtPurchase.toFixed(2)}</TotalAmount>
+            <TotalAmount>
+              {stringWithCurrencyCode(
+                settings.currency,
+                order.totalPriceAtPurchase,
+              )}
+            </TotalAmount>
           </GrandTotalSection>
         </InfoSection>
 

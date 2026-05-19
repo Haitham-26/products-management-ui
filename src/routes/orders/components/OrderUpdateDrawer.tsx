@@ -26,6 +26,8 @@ import { Toast } from "../../../utils/Toast";
 import { Input } from "../../../components/Input";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { PhoneInput } from "../../../components/PhoneInputs";
+import { stringWithCurrencyCode } from "../../../utils/String";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const FormContainer = styled.div`
   display: flex;
@@ -139,6 +141,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const products = useAppSelector(productSliceSelectors.selectProducts);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { control, handleSubmit, reset } = useForm<UpdateOrderDto>();
 
@@ -208,7 +211,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             <Icon icon={faCartShopping} />
           </IconWrapper>
           <TitleGroup>
-            <h2>Order #{order._id.slice(-6).toUpperCase()}</h2>
+            <h2>Order #{order.identifier}</h2>
             <span>Transaction Management</span>
           </TitleGroup>
         </GlassHeader>
@@ -266,7 +269,12 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             <Icon icon={faReceipt} />
             <h4>Financial Summary</h4>
           </SectionLabel>
-          <PriceText>${order.totalPriceAtPurchase.toFixed(2)}</PriceText>
+          <PriceText>
+            {stringWithCurrencyCode(
+              settings.currency,
+              order.totalPriceAtPurchase,
+            )}
+          </PriceText>
         </InfoSection>
 
         <InfoSection>

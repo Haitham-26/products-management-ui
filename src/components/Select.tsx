@@ -14,18 +14,38 @@ const Container = styled.div`
   }
 `;
 
-export type SelectProps = AntdSelectProps;
+const Label = styled(Text)`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.small};
 
-export const Select: React.FC<SelectProps> = (props) => {
+  span {
+    color: ${({ theme }) => theme.colors.error};
+  }
+`;
+
+const ErrorText = styled.span`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.colors.error};
+`;
+
+export type SelectProps = AntdSelectProps & {
+  required?: boolean;
+  errorMessage?: string;
+};
+
+export const Select: React.FC<SelectProps> = ({ errorMessage, ...props }) => {
   return (
     <Container>
       {props?.title ? (
-        <Text color="textSecondary" fontSize="small">
+        <Label>
           {props.title}
-        </Text>
+          {props.required ? <span> *</span> : null}
+        </Label>
       ) : null}
 
       <AntdSelect {...props} />
+
+      {errorMessage?.length ? <ErrorText>{errorMessage}</ErrorText> : null}
     </Container>
   );
 };

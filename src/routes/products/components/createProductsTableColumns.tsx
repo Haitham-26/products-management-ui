@@ -16,6 +16,8 @@ import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscou
 import styled from "styled-components";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
+import type { CurrencyCodeRecord } from "currency-codes";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -70,15 +72,17 @@ const StockAlert = styled.div<{ danger?: boolean }>`
 type FNType = (product: Product) => void;
 
 type CreateProductsTableColumnsArgs = {
-  onEdit: FNType;
-  onDelete: FNType;
-  onRead: FNType;
+  functions: {
+    onEdit: FNType;
+    onDelete: FNType;
+    onRead: FNType;
+  };
+  currency: CurrencyCodeRecord["code"];
 };
 
 export const createProductsTableColumns = ({
-  onEdit,
-  onDelete,
-  onRead,
+  functions: { onEdit, onDelete, onRead },
+  currency,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
   return [
     {
@@ -100,7 +104,7 @@ export const createProductsTableColumns = ({
       dataIndex: "price",
       key: "price",
       width: 140,
-      render: (value: number) => `${value.toFixed(2)}$`,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
       sorter: (a, b) => (b?.price || 0) - (a?.price || 0),
     },
     {
@@ -145,10 +149,17 @@ export const createProductsTableColumns = ({
       dataIndex: "discount",
       key: "discount",
       width: 140,
-      render: (value: ProductDiscount) =>
-        value
-          ? `${value.value}${value.type === ProductDiscountTypes.PERCENTAGE ? "%" : "$"}`
-          : "",
+      render: (value: ProductDiscount) => {
+        if (!value) {
+          return "";
+        }
+
+        if (value.type === ProductDiscountTypes.PERCENTAGE) {
+          return `${value.value}%`;
+        }
+
+        return stringWithCurrencyCode(currency, value.value);
+      },
     },
     {
       title: "Final Price",
@@ -156,8 +167,8 @@ export const createProductsTableColumns = ({
       width: 180,
       render: (_: unknown, record: Product) => {
         return record.priceAfterDiscount && !isNaN(record.priceAfterDiscount)
-          ? `$${record.priceAfterDiscount.toFixed(2)}`
-          : `$0.00`;
+          ? stringWithCurrencyCode(currency, record.priceAfterDiscount)
+          : stringWithCurrencyCode(currency, 0);
       },
       sorter: (a: Product, b: Product) => {
         return (b?.priceAfterDiscount || 0) - (a?.priceAfterDiscount || 0);

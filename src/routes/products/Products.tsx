@@ -28,6 +28,8 @@ import {
 } from "./utils/productUtils";
 import { PageHeader } from "../../components/PageHeader";
 import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
+import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import { settingsActions } from "../../redux/settings/settings.slice";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -47,6 +49,7 @@ export const Products: React.FC = () => {
     productSliceSelectors.selectProductsLoading,
   );
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = useMemo(
@@ -166,8 +169,12 @@ export const Products: React.FC = () => {
   };
 
   const tableColumns = useMemo(
-    () => createProductsTableColumns({ onDelete, onEdit, onRead }),
-    [],
+    () =>
+      createProductsTableColumns({
+        functions: { onDelete, onEdit, onRead },
+        currency: settings.currency,
+      }),
+    [settings.currency],
   );
 
   useEffect(() => {
@@ -179,6 +186,7 @@ export const Products: React.FC = () => {
     );
     dispatch(categoryActions.getCategories({ userId }));
     dispatch(tagActions.getTags({ userId }));
+    dispatch(settingsActions.getSettings({ userId }));
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 

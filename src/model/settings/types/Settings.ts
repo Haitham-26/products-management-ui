@@ -4,6 +4,7 @@ export interface Settings {
   inventory: {
     defaultMinStock: number;
   };
+  currency: string;
   createdAt: string;
   updatedAt: string;
 }

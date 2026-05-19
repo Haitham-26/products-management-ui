@@ -33,6 +33,8 @@ import {
   parseProductsFiltersFromParams,
 } from "../utils/productUtils";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 const FormContainer = styled.div`
   display: flex;
@@ -166,6 +168,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const categories = useAppSelector(categorySliceSelectors.selectCategories)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { control, handleSubmit, reset, getValues, watch } =
     useForm<UpdateProductDto>();
@@ -380,7 +383,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                   },
                   {
                     value: ProductDiscountTypes.FIXED,
-                    label: "Fixed Amount ($)",
+                    label: `Fixed Amount (${settings.currency})`,
                   },
                 ]}
               />
@@ -395,7 +398,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           />
           <PriceBadge>
             <span>Live Price (After Discount):</span>
-            <b>${finalPrice.toFixed(2)}</b>
+            <b>{stringWithCurrencyCode(settings.currency, finalPrice)}</b>
           </PriceBadge>
         </FormSection>
 

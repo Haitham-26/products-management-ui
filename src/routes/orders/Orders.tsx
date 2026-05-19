@@ -23,11 +23,12 @@ import { OrderCreateDrawer } from "./components/OrderCreateDrawer";
 import { OrderUpdateDrawer } from "./components/OrderUpdateDrawer";
 import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { productActions } from "../../redux/product/products.slice";
-import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
+import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import { settingsActions } from "../../redux/settings/settings.slice";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -62,6 +63,7 @@ export const Orders: React.FC = () => {
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -141,13 +143,16 @@ export const Orders: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createOrdersTableColumns({
-        onEdit,
-        onRead: (order) =>
-          order.status === OrderStatus.PENDING ? onRead(order) : undefined,
-        onManageStatus,
-        onToggleArchive,
+        functions: {
+          onEdit,
+          onRead: (order) =>
+            order.status === OrderStatus.PENDING ? onRead(order) : undefined,
+          onManageStatus,
+          onToggleArchive,
+        },
+        currency: settings.currency,
       }),
-    [],
+    [settings.currency],
   );
 
   useEffect(() => {
@@ -155,9 +160,10 @@ export const Orders: React.FC = () => {
       orderActions.getOrders({
         ...filters,
         userId,
-      } as GetOrdersDto),
+      }),
     );
-    dispatch(productActions.getProducts({ userId } as GetProductsDto));
+    dispatch(productActions.getProducts({ userId }));
+    dispatch(settingsActions.getSettings({ userId }));
 
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps

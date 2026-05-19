@@ -14,21 +14,24 @@ import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import isFunction from "lodash/isFunction";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
+import { stringWithCurrencyCode } from "../../../utils/String";
+import type { CurrencyCodeRecord } from "currency-codes";
 
 type FNType = (category: Order) => void;
 
 type CreateOrdersTableColumnsArgs = {
-  onEdit?: FNType;
-  onRead: FNType;
-  onManageStatus: FNType;
-  onToggleArchive: FNType;
+  functions: {
+    onEdit?: FNType;
+    onRead: FNType;
+    onManageStatus: FNType;
+    onToggleArchive: FNType;
+  };
+  currency: CurrencyCodeRecord["code"];
 };
 
 export const createOrdersTableColumns = ({
-  onEdit,
-  onRead,
-  onManageStatus,
-  onToggleArchive,
+  functions: { onEdit, onRead, onManageStatus, onToggleArchive },
+  currency,
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
@@ -70,7 +73,7 @@ export const createOrdersTableColumns = ({
       key: "totalPriceAtPurchase",
       width: 120,
       ellipsis: true,
-      render: (value: number) => (value ? `$${value.toFixed(2)}` : "$0"),
+      render: (value: number) => stringWithCurrencyCode(currency, value),
       sorter: (a, b) =>
         (a?.totalPriceAtPurchase || 0) - (b?.totalPriceAtPurchase || 0),
     },

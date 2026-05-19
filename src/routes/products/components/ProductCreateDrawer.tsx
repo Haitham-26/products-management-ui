@@ -33,6 +33,7 @@ import {
 } from "../utils/productUtils";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 const FormContainer = styled.div`
   display: flex;
@@ -378,7 +379,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                   },
                   {
                     value: ProductDiscountTypes.FIXED,
-                    label: "Fixed Amount ($)",
+                    label: `Fixed Amount (${settings.currency})`,
                   },
                 ]}
               />
@@ -393,7 +394,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
           />
           <PriceBadge>
             <span>Projected Revenue per Unit:</span>
-            <b>${finalPrice.toFixed(2)}</b>
+            <b>{stringWithCurrencyCode(settings.currency, finalPrice)}</b>
           </PriceBadge>
         </FormSection>
 
