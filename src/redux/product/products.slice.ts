@@ -9,6 +9,7 @@ import type { UpdateProductDto } from "../../model/product/dto/UpdateProductDto"
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
+import type { ManageProductStockDto } from "../../model/product/dto/ManageProductStockDto";
 
 interface ProductState {
   products?: Product[];
@@ -49,6 +50,11 @@ const updateProduct = AppThunk<void, UpdateProductDto>(
   ProductAxios.updateProduct,
 );
 
+const manageProductStock = AppThunk<void, ManageProductStockDto>(
+  "/products/:id/manage-stock",
+  ProductAxios.manageProductStock,
+);
+
 export const productSlice = createSlice({
   name: "products",
   initialState,
@@ -75,6 +81,7 @@ const productActions = {
   getProducts,
   deleteProduct,
   updateProduct,
+  manageProductStock,
 };
 
 export { productActions };

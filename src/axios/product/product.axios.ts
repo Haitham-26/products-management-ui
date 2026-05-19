@@ -1,6 +1,7 @@
 import type { CreateProductDto } from "../../model/product/dto/CreateProductDto";
 import type { DeleteProductDto } from "../../model/product/dto/DeleteProductDto";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
+import type { ManageProductStockDto } from "../../model/product/dto/ManageProductStockDto";
 import type { UpdateProductDto } from "../../model/product/dto/UpdateProductDto";
 import type { Product } from "../../model/product/types/Product";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
@@ -27,5 +28,12 @@ export class ProductAxios {
     return AppAxios.patch<void>(`/products/${dto.productId}/update`, dto).then(
       ({ data }) => data,
     );
+  }
+
+  static manageProductStock(dto: ManageProductStockDto) {
+    return AppAxios.patch<void>(
+      `/products/${dto.productId}/manage-stock`,
+      dto,
+    ).then(({ data }) => data);
   }
 }

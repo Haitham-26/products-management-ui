@@ -18,6 +18,7 @@ import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTrian
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 import type { CurrencyCodeRecord } from "currency-codes";
 import { stringWithCurrencyCode } from "../../../utils/String";
+import { faBoxesStacked } from "@fortawesome/free-solid-svg-icons/faBoxesStacked";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -76,12 +77,13 @@ type CreateProductsTableColumnsArgs = {
     onEdit: FNType;
     onDelete: FNType;
     onRead: FNType;
+    onManageStock: FNType;
   };
   currency: CurrencyCodeRecord["code"];
 };
 
 export const createProductsTableColumns = ({
-  functions: { onEdit, onDelete, onRead },
+  functions: { onEdit, onDelete, onRead, onManageStock },
   currency,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
   return [
@@ -228,6 +230,12 @@ export const createProductsTableColumns = ({
                 icon: <Icon icon={faPenToSquare} />,
                 label: "Edit",
                 onClick: () => onEdit(record),
+              },
+              {
+                key: "manage-stock",
+                icon: <Icon icon={faBoxesStacked} />,
+                label: "Manage Stock",
+                onClick: () => onManageStock(record),
               },
               {
                 key: "delete",

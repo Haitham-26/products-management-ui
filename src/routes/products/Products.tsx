@@ -30,6 +30,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
+import { ProductStockManageModal } from "./components/ProductStockManageModal";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -42,6 +43,8 @@ export const Products: React.FC = () => {
   const [productReadVisible, setProductReadVisible] = useState(false);
   const [productCreateVisible, setProductCreateVisible] = useState(false);
   const [productDeleteLoading, setProductDeleteLoading] = useState(false);
+  const [productStockManageVisible, setProductStockManageVisible] =
+    useState(false);
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
@@ -122,6 +125,11 @@ export const Products: React.FC = () => {
     setProductReadVisible(true);
   };
 
+  const onManageStock = (product: Product) => {
+    setCurrentProduct(product);
+    setProductStockManageVisible(true);
+  };
+
   const deleteProduct = async () => {
     if (!currentProduct) {
       return;
@@ -171,7 +179,7 @@ export const Products: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createProductsTableColumns({
-        functions: { onDelete, onEdit, onRead },
+        functions: { onDelete, onEdit, onRead, onManageStock },
         currency: settings.currency,
       }),
     [settings.currency],
@@ -247,6 +255,11 @@ export const Products: React.FC = () => {
       <ProductReadDrawer
         open={productReadVisible}
         onClose={() => setProductReadVisible(false)}
+        product={currentProduct}
+      />
+      <ProductStockManageModal
+        open={productStockManageVisible}
+        onClose={() => setProductStockManageVisible(false)}
         product={currentProduct}
       />
     </StyledContainer>
