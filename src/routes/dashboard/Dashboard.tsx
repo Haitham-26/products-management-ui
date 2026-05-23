@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
 import userSliceSelectors from "../../redux/user/user.selector";
 import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
+import { SpinnerFullScreen } from "../../components/SpinnerFullScreen";
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
@@ -56,6 +57,9 @@ export const Dashboard: React.FC = () => {
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const stats = useAppSelector(dashboardSliceSelectors.selectDashboardStats);
+  const loading = useAppSelector(
+    dashboardSliceSelectors.selectDashboardStatsLoading,
+  );
 
   const { products, orders, lowStockProducts, outOfStockProducts } = stats;
 
@@ -67,56 +71,60 @@ export const Dashboard: React.FC = () => {
     <StyledContainer>
       <PageHeader icon={faChartBar} title="Dashboard" />
 
-      <DashboardGrid>
-        <AreaWrapper area="total-products">
-          <DashboardTopCard
-            title="Total Products"
-            link="/products"
-            totalCount={products.totalCount}
-            trends={{
-              today: products.todayCount,
-              lastWeek: products.lastWeekCount,
-              lastMonth: products.lastMonthCount,
-            }}
-            variant="MAIN"
-          />
-        </AreaWrapper>
+      {!loading ? (
+        <DashboardGrid>
+          <AreaWrapper area="total-products">
+            <DashboardTopCard
+              title="Total Products"
+              link="/products"
+              totalCount={products.totalCount}
+              trends={{
+                today: products.todayCount,
+                lastWeek: products.lastWeekCount,
+                lastMonth: products.lastMonthCount,
+              }}
+              variant="MAIN"
+            />
+          </AreaWrapper>
 
-        <AreaWrapper area="total-orders">
-          <DashboardTopCard
-            title="Total Orders"
-            link="/orders"
-            totalCount={orders.totalCount}
-            trends={{
-              today: orders.todayCount,
-              lastWeek: orders.lastWeekCount,
-              lastMonth: orders.lastMonthCount,
-            }}
-          />
-        </AreaWrapper>
+          <AreaWrapper area="total-orders">
+            <DashboardTopCard
+              title="Total Orders"
+              link="/orders"
+              totalCount={orders.totalCount}
+              trends={{
+                today: orders.todayCount,
+                lastWeek: orders.lastWeekCount,
+                lastMonth: orders.lastMonthCount,
+              }}
+            />
+          </AreaWrapper>
 
-        <AreaWrapper area="top-products">
-          <DashboardTopProductsCard />
-        </AreaWrapper>
+          <AreaWrapper area="top-products">
+            <DashboardTopProductsCard />
+          </AreaWrapper>
 
-        <AreaWrapper area="low-stock">
-          <DashboardTopCard
-            title="Low Stock Products"
-            link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
-            totalCount={lowStockProducts.totalCount}
-            variant="WARNING"
-          />
-        </AreaWrapper>
+          <AreaWrapper area="low-stock">
+            <DashboardTopCard
+              title="Low Stock Products"
+              link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
+              totalCount={lowStockProducts.totalCount}
+              variant="WARNING"
+            />
+          </AreaWrapper>
 
-        <AreaWrapper area="out-of-stock">
-          <DashboardTopCard
-            title="Out of Stock Products"
-            link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
-            totalCount={outOfStockProducts.totalCount}
-            variant="DANGER"
-          />
-        </AreaWrapper>
-      </DashboardGrid>
+          <AreaWrapper area="out-of-stock">
+            <DashboardTopCard
+              title="Out of Stock Products"
+              link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
+              totalCount={outOfStockProducts.totalCount}
+              variant="DANGER"
+            />
+          </AreaWrapper>
+        </DashboardGrid>
+      ) : (
+        <SpinnerFullScreen />
+      )}
     </StyledContainer>
   );
 };
