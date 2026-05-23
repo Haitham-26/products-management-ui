@@ -6,6 +6,11 @@ import { PageHeader } from "../../components/PageHeader";
 import { DashboardTopCard } from "./components/DashboardTopCard";
 import { DashboardTopProductsCard } from "./components/DashboardTopProductsCard";
 import { ProductStockStatus } from "../../model/product/types/ProductStockStatus.enum";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
+import userSliceSelectors from "../../redux/user/user.selector";
+import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
@@ -47,6 +52,17 @@ const AreaWrapper = styled.div<{ area: string }>`
 `;
 
 export const Dashboard: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const stats = useAppSelector(dashboardSliceSelectors.selectDashboardStats);
+
+  const { products, orders, lowStockProducts, outOfStockProducts } = stats;
+
+  useEffect(() => {
+    dispatch(dashboardActions.getDashboardStats({ userId }));
+  }, [dispatch, userId]);
+
   return (
     <StyledContainer>
       <PageHeader icon={faChartBar} title="Dashboard" />
@@ -56,11 +72,11 @@ export const Dashboard: React.FC = () => {
           <DashboardTopCard
             title="Total Products"
             link="/products"
-            totalCount={50}
+            totalCount={products.totalCount}
             trends={{
-              today: 1,
-              lastWeek: 5,
-              lastMonth: 10,
+              today: products.todayCount,
+              lastWeek: products.lastWeekCount,
+              lastMonth: products.lastMonthCount,
             }}
             variant="MAIN"
           />
@@ -70,11 +86,11 @@ export const Dashboard: React.FC = () => {
           <DashboardTopCard
             title="Total Orders"
             link="/orders"
-            totalCount={20}
+            totalCount={orders.totalCount}
             trends={{
-              today: 1,
-              lastWeek: 5,
-              lastMonth: 10,
+              today: orders.todayCount,
+              lastWeek: orders.lastWeekCount,
+              lastMonth: orders.lastMonthCount,
             }}
           />
         </AreaWrapper>
@@ -87,7 +103,7 @@ export const Dashboard: React.FC = () => {
           <DashboardTopCard
             title="Low Stock Products"
             link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
-            totalCount={50}
+            totalCount={lowStockProducts.totalCount}
             variant="WARNING"
           />
         </AreaWrapper>
@@ -96,7 +112,7 @@ export const Dashboard: React.FC = () => {
           <DashboardTopCard
             title="Out of Stock Products"
             link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
-            totalCount={12}
+            totalCount={outOfStockProducts.totalCount}
             variant="DANGER"
           />
         </AreaWrapper>

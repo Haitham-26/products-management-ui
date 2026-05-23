@@ -13,8 +13,8 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { useAppSelector } from "../../../redux/store";
-import productSliceSelectors from "../../../redux/product/products.selector";
 import type { ThemeType } from "../../../theme/theme";
+import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -107,11 +107,14 @@ const ChartCanvasWrapper = styled.div`
 
 export const DashboardTopProductsCard: React.FC = () => {
   const theme = useTheme();
-  const rawProducts = useAppSelector(productSliceSelectors.selectProducts);
 
-  const products = [...rawProducts]
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 5);
+  const rawProducts = useAppSelector(
+    dashboardSliceSelectors.selectDashboardStats,
+  );
+
+  const products = [...rawProducts.mostSoldProducts].sort(
+    (a, b) => b.quantity - a.quantity,
+  );
 
   const labels = products.map((product) => product.name);
 

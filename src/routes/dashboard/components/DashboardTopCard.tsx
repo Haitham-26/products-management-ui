@@ -6,13 +6,14 @@ import { Link } from "react-router-dom";
 import { Text } from "../../../components/Text";
 import { Icon } from "../../../components/Icon";
 
-import {
-  faArrowRight,
-  faAngleUp,
-  faAngleDown,
-  faExclamationTriangle,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
+import { faAngleUp } from "@fortawesome/free-solid-svg-icons/faAngleUp";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
+
+import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
+import type { ThemeType } from "../../../theme/theme";
 
 type Variants = "MAIN" | "WARNING" | "DANGER" | "DEFAULT";
 
@@ -208,17 +209,17 @@ const ValueWrapper = styled.div`
 `;
 
 const TrendIcon = styled(Icon)<{
-  isNegative?: boolean;
+  color: string;
   variant: Variants;
 }>`
   font-size: 10px;
 
-  color: ${({ isNegative, variant, theme }) => {
+  color: ${({ color, variant, theme }) => {
     if (variant === "MAIN") {
       return theme.colors.onPrimary;
     }
 
-    return isNegative ? theme.colors.error : theme.colors.success;
+    return theme.colors[color as keyof ThemeType["colors"]];
   }};
 `;
 
@@ -251,13 +252,29 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
     const isNegative = value < 0;
     const absoluteValue = Math.abs(value);
 
+    const getIcon = () => {
+      if (isNegative) {
+        return faAngleDown;
+      } else if (value === 0) {
+        return faMinus;
+      } else {
+        return faAngleUp;
+      }
+    };
+
+    const getColor = () => {
+      if (isNegative) {
+        return "error";
+      } else if (value === 0) {
+        return "textSecondary";
+      } else {
+        return "success";
+      }
+    };
+
     return (
       <ValueWrapper>
-        <TrendIcon
-          icon={isNegative ? faAngleDown : faAngleUp}
-          isNegative={isNegative}
-          variant={variant}
-        />
+        <TrendIcon icon={getIcon()} color={getColor()} variant={variant} />
 
         <Text fontWeight="bold" fontSize="body" color={textColor}>
           {absoluteValue}
