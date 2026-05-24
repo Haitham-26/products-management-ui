@@ -77,11 +77,11 @@ export const Dashboard: React.FC = () => {
             <DashboardTopCard
               title="Total Products"
               link="/products"
-              totalCount={products.totalCount}
+              totalCount={products?.totalCount || 0}
               trends={{
-                today: products.todayCount,
-                lastWeek: products.lastWeekCount,
-                lastMonth: products.lastMonthCount,
+                today: products?.todayCount || 0,
+                lastWeek: products?.lastWeekCount || 0,
+                lastMonth: products?.lastMonthCount || 0,
               }}
               variant="MAIN"
             />
@@ -91,11 +91,11 @@ export const Dashboard: React.FC = () => {
             <DashboardTopCard
               title="Total Orders"
               link="/orders"
-              totalCount={orders.totalCount}
+              totalCount={orders?.totalCount || 0}
               trends={{
-                today: orders.todayCount,
-                lastWeek: orders.lastWeekCount,
-                lastMonth: orders.lastMonthCount,
+                today: orders?.todayCount || 0,
+                lastWeek: orders?.lastWeekCount || 0,
+                lastMonth: orders?.lastMonthCount || 0,
               }}
             />
           </AreaWrapper>
@@ -108,7 +108,7 @@ export const Dashboard: React.FC = () => {
             <DashboardTopCard
               title="Low Stock Products"
               link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
-              totalCount={lowStockProducts.totalCount}
+              totalCount={lowStockProducts?.totalCount}
               variant="WARNING"
             />
           </AreaWrapper>
@@ -117,7 +117,7 @@ export const Dashboard: React.FC = () => {
             <DashboardTopCard
               title="Out of Stock Products"
               link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
-              totalCount={outOfStockProducts.totalCount}
+              totalCount={outOfStockProducts?.totalCount}
               variant="DANGER"
             />
           </AreaWrapper>

@@ -112,18 +112,18 @@ export const DashboardTopProductsCard: React.FC = () => {
     dashboardSliceSelectors.selectDashboardStats,
   );
 
-  const products = [...rawProducts.mostSoldProducts].sort(
+  const products = [...(rawProducts?.mostSoldProducts || [])].sort(
     (a, b) => b.quantity - a.quantity,
   );
 
-  const labels = products.map((product) => product.name);
+  const labels = products?.map((product) => product.name);
 
   const data = {
     labels,
     datasets: [
       {
-        data: products.map((product) => product.quantity),
-        backgroundColor: getChartColors(theme).slice(0, products.length),
+        data: products?.map((product) => product.quantity),
+        backgroundColor: getChartColors(theme).slice(0, products?.length),
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 32,

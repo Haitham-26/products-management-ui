@@ -50,6 +50,7 @@ export const dashboardSlice = createSlice({
     });
     addCase(getDashboardStats.fulfilled, (state, action) => {
       state.stats = action.payload;
+      state.statsLoading = false;
     });
     addCase(getDashboardStats.rejected, (state) => {
       state.statsLoading = false;

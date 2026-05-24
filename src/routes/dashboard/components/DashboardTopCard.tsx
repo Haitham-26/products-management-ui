@@ -7,13 +7,8 @@ import { Text } from "../../../components/Text";
 import { Icon } from "../../../components/Icon";
 
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
-import { faAngleUp } from "@fortawesome/free-solid-svg-icons/faAngleUp";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
-
-import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
-import type { ThemeType } from "../../../theme/theme";
 
 type Variants = "MAIN" | "WARNING" | "DANGER" | "DEFAULT";
 
@@ -202,27 +197,6 @@ const TimeframeLabel = styled(Text)<{ variant: Variants }>`
   opacity: ${({ variant }) => (variant === "MAIN" ? 0.7 : 1)};
 `;
 
-const ValueWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const TrendIcon = styled(Icon)<{
-  color: string;
-  variant: Variants;
-}>`
-  font-size: 10px;
-
-  color: ${({ color, variant, theme }) => {
-    if (variant === "MAIN") {
-      return theme.colors.onPrimary;
-    }
-
-    return theme.colors[color as keyof ThemeType["colors"]];
-  }};
-`;
-
 type CardTrends = {
   today: number;
   lastWeek: number;
@@ -244,44 +218,20 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
   variant = "DEFAULT",
   trends,
 }) => {
-  const isMain = variant === "MAIN";
-
-  const textColor = isMain ? "onPrimary" : "textPrimary";
-
-  const renderStat = (value: number) => {
-    const isNegative = value < 0;
-    const absoluteValue = Math.abs(value);
-
-    const getIcon = () => {
-      if (isNegative) {
-        return faAngleDown;
-      } else if (value === 0) {
-        return faMinus;
-      } else {
-        return faAngleUp;
-      }
-    };
-
-    const getColor = () => {
-      if (isNegative) {
+  const getTextColor = () => {
+    switch (variant) {
+      case "MAIN":
+        return "onPrimary";
+      case "DANGER":
         return "error";
-      } else if (value === 0) {
-        return "textSecondary";
-      } else {
-        return "success";
-      }
-    };
-
-    return (
-      <ValueWrapper>
-        <TrendIcon icon={getIcon()} color={getColor()} variant={variant} />
-
-        <Text fontWeight="bold" fontSize="body" color={textColor}>
-          {absoluteValue}
-        </Text>
-      </ValueWrapper>
-    );
+      case "WARNING":
+        return "warning";
+      default:
+        return "textPrimary";
+    }
   };
+
+  const textColor = getTextColor();
 
   const bgIcon = getBackgroundIcon(variant);
 
@@ -312,20 +262,25 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
           <FooterGrid>
             <StatGroup>
               <TimeframeLabel variant={variant}>Today</TimeframeLabel>
-
-              {renderStat(trends.today)}
+              <Text fontWeight="bold" fontSize="body" color={textColor}>
+                {trends.today}
+              </Text>
             </StatGroup>
 
             <StatGroup>
               <TimeframeLabel variant={variant}>Last Week</TimeframeLabel>
 
-              {renderStat(trends.lastWeek)}
+              <Text fontWeight="bold" fontSize="body" color={textColor}>
+                {trends.lastWeek}
+              </Text>
             </StatGroup>
 
             <StatGroup>
               <TimeframeLabel variant={variant}>Last Month</TimeframeLabel>
 
-              {renderStat(trends.lastMonth)}
+              <Text fontWeight="bold" fontSize="body" color={textColor}>
+                {trends.lastMonth}
+              </Text>
             </StatGroup>
           </FooterGrid>
         </Fragment>

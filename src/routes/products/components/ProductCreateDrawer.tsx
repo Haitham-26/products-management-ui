@@ -169,7 +169,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         userId,
         categoryId: "",
         tags: [],
-        minStock: settings.inventory.defaultMinStock || 10,
+        minStock: settings?.inventory?.defaultMinStock || 10,
       },
     });
 
