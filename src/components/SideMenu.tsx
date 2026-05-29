@@ -13,13 +13,12 @@ import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping
 
 const StyledContainer = styled(Container)`
   width: 250px;
-  /* 7rem = header's height */
-  height: ${({ theme }) => `calc(100vh - 7rem - ${theme.spacing.lg})`};
+  /* 7.5rem = header's height */
+  height: ${({ theme }) => `calc(100vh - 7.5rem - ${theme.spacing.lg})`};
+  top: 7.5rem;
   display: flex;
   flex-direction: column;
   position: sticky;
-  /* 7rem = header's height */
-  top: 7rem;
 `;
 
 const Logo = styled.div`

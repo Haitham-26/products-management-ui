@@ -7,6 +7,7 @@ import { Categories } from "./categories/Categories";
 import { Tags } from "./tags/Tags";
 import { Orders } from "./orders/Orders";
 import { settingsRoutes } from "./settings/SettingsRoutes";
+import { UsersPermissions } from "./users-permissions/UsersPermissions";
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
@@ -32,6 +33,10 @@ export const PrivateRoutes: RouteObject = {
       element: <AppPrivateRoute component={<Orders />} />,
     },
     settingsRoutes,
+    {
+      path: "/users-permissions",
+      element: <AppPrivateRoute component={<UsersPermissions />} />,
+    },
     {
       path: "*",
       element: <AppPrivateRoute redirect="/" replace />,

@@ -8,9 +8,13 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
+
+  .ant-dropdown-trigger {
+    cursor: pointer;
+  }
 `;
 
-type DropdownProps = AntdDropdownProps & {
+export type DropdownProps = AntdDropdownProps & {
   title?: string;
 };
 

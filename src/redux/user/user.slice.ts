@@ -6,13 +6,17 @@ import { UserAxios } from "../../axios/user/user.axios";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { User } from "../../model/user/types/User";
+import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 
 interface UserState {
   user?: User;
+  organizationMembers?: Partial<User>[];
 }
 
 const initialState: UserState = {
   user: undefined,
+  organizationMembers: undefined,
 };
 
 const login = AppThunk<LoginResponseDto, LoginDto>(
@@ -30,6 +34,16 @@ const signUpToken = AppThunk<LoginResponseDto, SignUpTokenDto>(
   UserAxios.signUpToken,
 );
 
+const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
+  "/organization/members",
+  UserAxios.getOrganizationMembers,
+);
+
+const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
+  "/organization/members/update",
+  UserAxios.updateMembersPermissions,
+);
+
 const logout = AppThunk<void, void>("/auth/logout", async () => {
   localStorage.removeItem("token");
 });
@@ -45,6 +59,45 @@ export const userSlice = createSlice({
     addCase(signUpToken.fulfilled, (state, action) => {
       state.user = action.payload.user;
     });
+
+    addCase(getOrganizationMembers.fulfilled, (state, action) => {
+      state.organizationMembers = action.payload;
+    });
+    addCase(getOrganizationMembers.rejected, (state) => {
+      state.organizationMembers = [
+        {
+          _id: "1",
+          name: "Any",
+          email: "clslknvlksd@gmail.com",
+          permissions: {
+            products: {
+              CREATE: false,
+              READ: true,
+              UPDATE: false,
+              DELETE: false,
+            },
+            orders: {
+              CREATE: false,
+              READ: true,
+              UPDATE: false,
+              DELETE: false,
+            },
+            categories: {
+              CREATE: false,
+              READ: true,
+              UPDATE: false,
+              DELETE: false,
+            },
+            tags: {
+              CREATE: false,
+              READ: true,
+              UPDATE: false,
+              DELETE: false,
+            },
+          },
+        },
+      ];
+    });
     addCase(logout.fulfilled, () => initialState);
   },
 });
@@ -53,6 +106,8 @@ const userActions = {
   login,
   signUpEmail,
   signUpToken,
+  getOrganizationMembers,
+  updateMembersPermissions,
   logout,
 };
 
