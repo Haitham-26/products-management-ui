@@ -30,6 +30,7 @@ type TextProps = {
   fontWeight?: React.CSSProperties["fontWeight"];
   children: React.ReactNode;
   color?: keyof ThemeType["colors"];
+  as?: React.ElementType;
 };
 
 export const Text: React.FC<TextProps> = ({ children, ...props }) => {

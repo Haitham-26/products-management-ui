@@ -9,6 +9,8 @@ import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
 import { UserPermissionsMembersTab } from "./components/UserPermissionsMembersTab";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
+import { useState } from "react";
+import { InviteMembersModal } from "./components/InviteMembersModal";
 
 const tabs: TabsProps["items"] = [
   {
@@ -28,15 +30,27 @@ const tabs: TabsProps["items"] = [
 const StyledContainer = styled(Container)``;
 
 export const UsersPermissions: React.FC = () => {
+  const [inviteMembersModalVisible, setInviteMembersModalVisible] =
+    useState(false);
+
   return (
     <StyledContainer>
       <PageHeader
         title="Users & Permissions"
         icon={faUsersGear}
-        action={{ icon: faUserPlus, title: "Invite member", onClick: () => {} }}
+        action={{
+          icon: faUserPlus,
+          title: "Invite member",
+          onClick: () => setInviteMembersModalVisible(true),
+        }}
       />
 
       <Tabs items={tabs} />
+
+      <InviteMembersModal
+        open={inviteMembersModalVisible}
+        onClose={() => setInviteMembersModalVisible(false)}
+      />
     </StyledContainer>
   );
 };

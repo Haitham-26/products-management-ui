@@ -1,5 +1,9 @@
 import currencyCodes, { type CurrencyCodeRecord } from "currency-codes";
 
+export const REGEXES = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+};
+
 export const CURRENCY_OPTIONS = currencyCodes.data.map((currency) => ({
   label: `${currency.code} - ${currency.currency}`,
   value: currency.code,
