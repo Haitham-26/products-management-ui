@@ -13,11 +13,24 @@ import type { PendingInvitation } from "../../../model/user/users-permissions/ty
 import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import styled from "styled-components";
+import { Icon } from "../../../components/Icon";
+import { faCircle } from "@fortawesome/free-solid-svg-icons/faCircle";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const Title = styled(Text)`
+  font-weight: bold;
+
+  svg {
+    font-size: calc(${({ theme }) => theme.typography.small} / 2);
+    margin-inline-end: ${({ theme }) => theme.spacing.sm};
+    color: ${({ theme }) => theme.colors.pending};
+    vertical-align: middle;
+  }
 `;
 
 type UserPermissionsInvitationsTabProps = {
@@ -77,7 +90,10 @@ export const UserPermissionsInvitationsTab: React.FC<
 
   return (
     <Container>
-      <Text fontWeight="bold">Pending Invitations</Text>
+      <Title>
+        <Icon icon={faCircle} />
+        Pending Invitations
+      </Title>
 
       {invitations.map((inv) => (
         <PendingInvitationItem

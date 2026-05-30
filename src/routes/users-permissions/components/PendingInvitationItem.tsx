@@ -28,13 +28,6 @@ const InfoSection = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const MetaRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  flex-wrap: wrap;
-`;
-
 const ActionsSection = styled.div`
   display: flex;
   align-items: center;
@@ -50,20 +43,6 @@ const ActionsSection = styled.div`
       flex: 1;
     }
   }
-`;
-
-const Badge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  padding: 2px ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.small};
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: ${({ theme }) => `${theme.colors.pending}15`};
-  color: ${({ theme }) => theme.colors.pending};
-  border: 1px solid ${({ theme }) => `${theme.colors.pending}30`};
 `;
 
 type PendingInvitationItemProps = {
@@ -84,12 +63,9 @@ export const PendingInvitationItem: React.FC<PendingInvitationItemProps> = ({
     <Card>
       <InfoSection>
         <Text fontWeight="bold">{invitation.email}</Text>
-        <MetaRow>
-          <Badge>Pending</Badge>
-          <Text color="textSecondary">
-            Sent {formatDate(invitation.createdAt, true)}
-          </Text>
-        </MetaRow>
+        <Text color="textSecondary" fontSize="small">
+          Sent {formatDate(invitation.createdAt, true)}
+        </Text>
       </InfoSection>
 
       <ActionsSection>
