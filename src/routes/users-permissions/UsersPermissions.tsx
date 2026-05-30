@@ -11,21 +11,7 @@ import { UserPermissionsMembersTab } from "./components/UserPermissionsMembersTa
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { useState } from "react";
 import { InviteMembersModal } from "./components/InviteMembersModal";
-
-const tabs: TabsProps["items"] = [
-  {
-    key: "members",
-    label: "Members",
-    icon: <Icon icon={faUsers} />,
-    children: <UserPermissionsMembersTab />,
-  },
-  {
-    key: "invites",
-    label: "Invitations",
-    icon: <Icon icon={faEnvelope} />,
-    children: <div>Roles</div>,
-  },
-];
+import { UserPermissionsInvitationsTab } from "./components/UserPermissionsInvitationsTab";
 
 const StyledContainer = styled(Container)``;
 
@@ -40,12 +26,31 @@ export const UsersPermissions: React.FC = () => {
         icon={faUsersGear}
         action={{
           icon: faUserPlus,
-          title: "Invite member",
+          title: "Invite members",
           onClick: () => setInviteMembersModalVisible(true),
         }}
       />
 
-      <Tabs items={tabs} />
+      <Tabs
+        items={[
+          {
+            key: "members",
+            label: "Members",
+            icon: <Icon icon={faUsers} />,
+            children: <UserPermissionsMembersTab />,
+          },
+          {
+            key: "invites",
+            label: "Invitations",
+            icon: <Icon icon={faEnvelope} />,
+            children: (
+              <UserPermissionsInvitationsTab
+                setInviteMembersModalVisible={setInviteMembersModalVisible}
+              />
+            ),
+          },
+        ]}
+      />
 
       <InviteMembersModal
         open={inviteMembersModalVisible}

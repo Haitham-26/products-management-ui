@@ -44,7 +44,7 @@ const Actions = styled.div`
 `;
 
 type WarningModalProps = ModalProps & {
-  description?: string;
+  description?: string | React.ReactNode;
   onClose: VoidFunction;
   onConfirm?: VoidFunction;
   confirmText?: string;

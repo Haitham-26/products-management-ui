@@ -121,18 +121,17 @@ export const UserPermissionsMembersTab: React.FC = () => {
   const [shouldBlurStickyHeader, setShouldBlurStickyHeader] = useState(false);
 
   const members = useAppSelector(userSliceSelectors.selectOrganizationMembers);
-  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  // const isOrganization = useAppSelector(
-  //   userSliceSelectors.selectIsOrganization,
-  // );
-  const isOrganization = true;
+  const user = useAppSelector(userSliceSelectors.selectUser);
+  const isOrganization = useAppSelector(
+    userSliceSelectors.selectIsOrganization,
+  );
 
   const dispatch = useAppDispatch();
 
   const { control, setValue, handleSubmit } =
     useForm<UpdateMembersPermissionsDto>({
       defaultValues: {
-        userId,
+        userId: user._id,
         members: Object.fromEntries(members.map((m) => [m._id, m.permissions])),
       },
     });
@@ -147,8 +146,8 @@ export const UserPermissionsMembersTab: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(userActions.getOrganizationMembers({ userId }));
-  }, [dispatch, userId]);
+    dispatch(userActions.getOrganizationMembers({ userId: user._id }));
+  }, [dispatch, user._id]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,11 +182,13 @@ export const UserPermissionsMembersTab: React.FC = () => {
 
       <Collapse
         expandIconPlacement="end"
-        expandIcon={({ isActive }) => (
-          <ExpandIcon icon={faAngleDown} isActive={Boolean(isActive)} />
-        )}
+        expandIcon={({ isActive }) =>
+          isOrganization ? (
+            <ExpandIcon icon={faAngleDown} isActive={Boolean(isActive)} />
+          ) : null
+        }
         collapsible="icon"
-        items={members.map((m) => {
+        items={[user, ...members].map((m) => {
           const permissions = liveMembers[m._id!];
           const availableActions = Object.values(CRUDPermissions);
           const entities = Object.keys(m.permissions || {});
@@ -202,7 +203,12 @@ export const UserPermissionsMembersTab: React.FC = () => {
                   </Text>
                 </Avatar>
                 <Info>
-                  <Text fontWeight="bold">{m.name}</Text>
+                  <Text fontWeight="bold">
+                    {m.name}
+                    {m._id === user._id ? (
+                      <span style={{ fontStyle: "italic" }}> (You)</span>
+                    ) : null}
+                  </Text>
                   <Text fontSize="small" color="textSecondary">
                     {m.email}
                   </Text>
