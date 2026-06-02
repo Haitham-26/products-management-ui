@@ -8,6 +8,7 @@ import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
+import { Toast } from "../../utils/Toast";
 
 const Card = styled.div`
   width: 100%;
@@ -73,6 +74,9 @@ export const SignUpEmail: React.FC = () => {
 
       await dispatch(userActions.signUpEmail(dto)).unwrap();
       navigate("/signup/email-verification", { state: { email: dto.email } });
+    } catch (e) {
+      console.error(e);
+      Toast.apiError(e);
     } finally {
       setLoading(false);
     }

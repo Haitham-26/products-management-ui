@@ -8,6 +8,7 @@ import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
+import { Toast } from "../../utils/Toast";
 
 const Card = styled.div`
   width: 100%;
@@ -38,7 +39,7 @@ const Header = styled.div`
 
   p {
     color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.sm};
+    font-size: ${({ theme }) => theme.typography.small};
   }
 `;
 
@@ -66,6 +67,9 @@ export const SignUpToken: React.FC = () => {
       setLoading(true);
       await dispatch(userActions.signUpToken(getValues())).unwrap();
       navigate("/dashboard", { replace: true });
+    } catch (e) {
+      console.error(e);
+      Toast.apiError(e);
     } finally {
       setLoading(false);
     }
