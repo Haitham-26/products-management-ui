@@ -34,6 +34,7 @@ import {
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
+import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 
 const FormContainer = styled.div`
   display: flex;
@@ -175,7 +176,11 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
   const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
-  const [discount, price] = watch(["discount", "price"]);
+  const [discountValue, discountType, price] = watch([
+    "discount.value",
+    "discount.type",
+    "price",
+  ]);
 
   const categoriesOptions = useMemo(
     () => categories.map((c) => ({ label: c.name, value: c._id })),
@@ -195,8 +200,11 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   );
 
   const finalPrice = useMemo(() => {
-    return calculateProductFinalPrice(price, discount);
-  }, [price, discount]);
+    return calculateProductFinalPrice(price, {
+      type: discountType as ProductDiscount["type"],
+      value: discountValue || 0,
+    });
+  }, [price, discountType, discountValue]);
 
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
@@ -324,6 +332,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  min={0}
                   {...field}
                 />
               )}
@@ -338,6 +347,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  min={0}
                   {...field}
                 />
               )}
@@ -352,6 +362,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                   type="number"
                   info="You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, and during creating orders)."
                   errorMessage={error?.message}
+                  min={0}
                   {...field}
                 />
               )}
@@ -389,7 +400,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             control={control}
             name="discount.value"
             render={({ field }) => (
-              <Input title="Value" type="number" {...field} />
+              <Input title="Value" type="number" min={0} {...field} />
             )}
           />
           <PriceBadge>

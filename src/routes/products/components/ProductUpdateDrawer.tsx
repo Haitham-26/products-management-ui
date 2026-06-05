@@ -175,7 +175,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
   const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
-  const [discount, price] = watch(["discount", "price"]);
+  const [discountValue, discountType, price] = watch([
+    "discount.value",
+    "discount.type",
+    "price",
+  ]);
 
   const categoriesOptions = useMemo(
     () => categories.map((c) => ({ label: c.name, value: c._id })),
@@ -195,8 +199,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   );
 
   const finalPrice = useMemo(() => {
-    return calculateProductFinalPrice(price || 0, discount);
-  }, [price, discount]);
+    return calculateProductFinalPrice(price || 0, {
+      type: discountType as ProductDiscountTypes,
+      value: discountValue || 0,
+    });
+  }, [price, discountType, discountValue]);
 
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
@@ -328,6 +335,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  min={0}
                   {...field}
                 />
               )}
@@ -342,6 +350,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                   required
                   errorMessage={error?.message}
                   type="number"
+                  min={0}
                   {...field}
                 />
               )}
@@ -354,6 +363,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                 <Input
                   title="Minimum Stock Alert"
                   type="number"
+                  min={0}
                   info="You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, and during creating orders)."
                   errorMessage={error?.message}
                   {...field}
@@ -393,7 +403,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
             control={control}
             name="discount.value"
             render={({ field }) => (
-              <Input title="Value" type="number" {...field} />
+              <Input title="Value" type="number" min={0} {...field} />
             )}
           />
           <PriceBadge>
