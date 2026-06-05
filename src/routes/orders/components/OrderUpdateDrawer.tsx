@@ -25,7 +25,7 @@ import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
 import { Toast } from "../../../utils/Toast";
 import { Input } from "../../../components/Input";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
-import { PhoneInput } from "../../../components/PhoneInputs";
+import { PhoneInput } from "../../../components/PhoneInput";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
@@ -242,6 +242,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
               <PhoneInput
                 title="Customer Phone"
                 errorMessage={error?.message}
+                valid={!error}
                 {...field}
               />
             )}

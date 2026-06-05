@@ -12,7 +12,7 @@ const Label = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const StyledTextarea = styled.textarea<{ $hasError: boolean }>`
+const StyledTextarea = styled.textarea<{ valid: boolean }>`
   width: 100%;
   min-height: 6rem;
   resize: vertical;
@@ -23,8 +23,7 @@ const StyledTextarea = styled.textarea<{ $hasError: boolean }>`
   color: ${({ theme }) => theme.colors.textPrimary};
 
   border: 1px solid
-    ${({ theme, $hasError }) =>
-      $hasError ? theme.colors.error : theme.colors.border};
+    ${({ theme, valid }) => (!valid ? theme.colors.error : theme.colors.border)};
 
   border-radius: ${({ theme }) => theme.radius.md};
 
@@ -41,12 +40,12 @@ const StyledTextarea = styled.textarea<{ $hasError: boolean }>`
 
   &:focus {
     outline: none;
-    border-color: ${({ theme, $hasError }) =>
-      $hasError ? theme.colors.error : theme.colors.primary};
+    border-color: ${({ theme, valid }) =>
+      !valid ? theme.colors.error : theme.colors.primary};
 
     box-shadow: 0 0 0 2px
-      ${({ theme, $hasError }) =>
-        $hasError ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
+      ${({ theme, valid }) =>
+        !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
   }
 
   &:disabled {
@@ -65,23 +64,23 @@ const ErrorText = styled.span`
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   title?: string;
   errorMessage?: string;
+  valid?: boolean;
 };
 
 export const Textarea: React.FC<TextareaProps> = ({
   title,
   errorMessage,
   id,
+  valid = true,
   ...props
 }) => {
-  const hasError = Boolean(errorMessage);
-
   return (
     <Wrapper>
       {title ? <Label htmlFor={id}>{title}</Label> : null}
 
-      <StyledTextarea id={id} $hasError={hasError} {...props} />
+      <StyledTextarea id={id} valid={valid} {...props} />
 
-      {hasError ? <ErrorText>{errorMessage}</ErrorText> : null}
+      {errorMessage?.length ? <ErrorText>{errorMessage}</ErrorText> : null}
     </Wrapper>
   );
 };

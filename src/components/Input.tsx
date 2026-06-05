@@ -30,7 +30,7 @@ const InputWrapper = styled.div`
   position: relative;
 `;
 
-const StyledInput = styled.input<{ hasError: boolean; originalType?: string }>`
+const StyledInput = styled.input<{ valid: boolean; originalType?: string }>`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg}
     ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
@@ -39,8 +39,7 @@ const StyledInput = styled.input<{ hasError: boolean; originalType?: string }>`
   color: ${({ theme }) => theme.colors.textPrimary};
 
   border: 1px solid
-    ${({ theme, hasError }) =>
-      hasError ? theme.colors.error : theme.colors.border};
+    ${({ theme, valid }) => (!valid ? theme.colors.error : theme.colors.border)};
 
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: 0.875rem;
@@ -53,12 +52,12 @@ const StyledInput = styled.input<{ hasError: boolean; originalType?: string }>`
 
   &:focus {
     outline: none;
-    border-color: ${({ theme, hasError }) =>
-      hasError ? theme.colors.error : theme.colors.primary};
+    border-color: ${({ theme, valid }) =>
+      !valid ? theme.colors.error : theme.colors.primary};
 
     box-shadow: 0 0 0 2px
-      ${({ theme, hasError }) =>
-        hasError ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
+      ${({ theme, valid }) =>
+        !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
   }
 `;
 
@@ -88,14 +87,17 @@ const ErrorText = styled.span`
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   title?: string;
   errorMessage?: string;
+  valid?: boolean;
   info?: string;
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ title, errorMessage, type, id, required, info, ...props }, ref) => {
+  (
+    { title, errorMessage, type, id, required, info, valid = true, ...props },
+    ref,
+  ) => {
     const [show, setShow] = useState(false);
 
-    const hasError = Boolean(errorMessage);
     const isPassword = type === "password";
 
     return (
@@ -116,7 +118,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={id}
             ref={ref}
             type={isPassword && show ? "text" : type}
-            hasError={hasError}
+            valid={valid}
             originalType={type}
             {...props}
           />
@@ -132,7 +134,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ) : null}
         </InputWrapper>
 
-        {hasError ? <ErrorText>{errorMessage}</ErrorText> : null}
+        {errorMessage?.length ? <ErrorText>{errorMessage}</ErrorText> : null}
       </Wrapper>
     );
   },

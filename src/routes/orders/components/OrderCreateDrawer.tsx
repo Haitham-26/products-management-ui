@@ -1,7 +1,7 @@
 import type React from "react";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
 import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
@@ -27,8 +27,11 @@ import productSliceSelectors from "../../../redux/product/products.selector";
 import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
 import { Toast } from "../../../utils/Toast";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
-import { PhoneInput } from "../../../components/PhoneInputs";
+import { PhoneInput } from "../../../components/PhoneInput";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
+import { Text } from "../../../components/Text";
+import { stringWithCurrencyCode } from "../../../utils/String";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const FormContainer = styled.div`
   display: flex;
@@ -102,7 +105,6 @@ const ProductRow = styled.div`
   grid-template-columns: 1fr 120px 44px;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
-  padding-bottom: ${({ theme }) => theme.spacing.md};
   border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
 
   &:last-of-type {
@@ -155,6 +157,13 @@ const ProductOptionContainer = styled.div`
   width: 100%;
 `;
 
+const Hr = styled.hr`
+  border: 0;
+  height: 1px;
+  background: ${({ theme }) => theme.colors.border};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
 type OrderCreateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -171,6 +180,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const products = useAppSelector(productSliceSelectors.selectProducts);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const {
     control,
@@ -178,7 +188,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     reset,
     setValue,
     getValues,
-    watch,
     formState: { errors },
   } = useForm<CreateOrderDto>({
     defaultValues: {
@@ -195,12 +204,24 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     name: "items",
   });
 
-  const watchedItems = watch("items");
+  const watchedItems = useWatch({ control, name: "items" });
 
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
     [searchParams, ordersMeta],
   );
+
+  const productsMap = useMemo(() => {
+    return new Map(products.map((p) => [p._id, p.priceAfterDiscount]));
+  }, [products]);
+
+  const totalAmount = useMemo(() => {
+    return watchedItems.reduce((total, item) => {
+      const productFinalPrice = productsMap.get(item.productId);
+
+      return total + (productFinalPrice || 0) * item.quantity;
+    }, 0);
+  }, [watchedItems, productsMap]);
 
   const getProductsOptions = (
     currentProductId?: string,
@@ -342,6 +363,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                 title="Customer Name"
                 required
                 errorMessage={error?.message}
+                valid={!error}
                 {...field}
               />
             )}
@@ -356,6 +378,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                 errorMessage={error?.message}
                 value={value}
                 onChange={onChange}
+                valid={!error}
               />
             )}
           />
@@ -378,8 +401,13 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                   <Controller
                     control={control}
                     name={`items.${index}.productId`}
-                    rules={{ required: "Product selection is required" }}
-                    render={({ field: { value } }) => {
+                    rules={{
+                      required:
+                        index === 0
+                          ? "Please select a product"
+                          : "Please select a product or remove this row",
+                    }}
+                    render={({ field: { value }, fieldState: { error } }) => {
                       const options = getProductsOptions(value);
                       return (
                         <Select
@@ -387,6 +415,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           value={options?.find((p) => p.value === value)}
                           onChange={(val) => onSelectProduct(index, val)}
                           options={options}
+                          allowClear
+                          valid={!error}
                         />
                       );
                     }}
@@ -397,13 +427,20 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                     name={`items.${index}.quantity`}
                     rules={{
                       required: "Required",
-                      min: { value: 1, message: "Min 1" },
-                      max: {
-                        value: maxAvailableQty,
-                        message: `Max ${maxAvailableQty}`,
-                      },
+                      min: { value: 1, message: "Quantity must be at least 1" },
+                      ...(field.productId
+                        ? {
+                            max: {
+                              value: maxAvailableQty,
+                              message: `Quantity must be at most ${maxAvailableQty}, current stock of this product is ${maxAvailableQty}`,
+                            },
+                          }
+                        : {}),
                     }}
-                    render={({ field: { value, onChange } }) => (
+                    render={({
+                      field: { value, onChange },
+                      fieldState: { error },
+                    }) => (
                       <Input
                         title="Qty"
                         type="number"
@@ -419,6 +456,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                               : val,
                           );
                         }}
+                        valid={!error}
                       />
                     )}
                   />
@@ -433,18 +471,27 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
 
                 {errors.items?.[index]?.productId ? (
                   <ErrorText>
-                    {errors.items[index]?.productId?.message}
+                    * {errors.items[index]?.productId?.message}
                   </ErrorText>
                 ) : null}
 
                 {errors.items?.[index]?.quantity ? (
                   <ErrorText>
-                    {errors.items[index]?.quantity?.message}
+                    * {errors.items[index]?.quantity?.message}
                   </ErrorText>
                 ) : null}
               </div>
             );
           })}
+
+          <div>
+            <Hr />
+
+            <Text color="textSecondary" fontSize="small" fontWeight="bold">
+              Total order's amount:{" "}
+              {stringWithCurrencyCode(settings.currency, totalAmount)}
+            </Text>
+          </div>
 
           <AddItemButton
             onClick={() => append({ productId: "", quantity: 1 })}
