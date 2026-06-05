@@ -25,7 +25,6 @@ import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { productActions } from "../../redux/product/products.slice";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
-import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
@@ -145,8 +144,7 @@ export const Orders: React.FC = () => {
       createOrdersTableColumns({
         functions: {
           onEdit,
-          onRead: (order) =>
-            order.status === OrderStatus.PENDING ? onRead(order) : undefined,
+          onRead,
           onManageStatus,
           onToggleArchive,
         },
