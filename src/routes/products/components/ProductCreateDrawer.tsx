@@ -412,6 +412,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                 value={value}
                 onChange={onChange}
                 options={categoriesOptions}
+                allowClear
               />
             )}
           />
