@@ -1,9 +1,9 @@
 import type React from "react";
-import PhoneInputLib from "react-phone-number-input";
+import PhoneInputLib, { isValidPhoneNumber } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 import styled from "styled-components";
 
-const Wrapper = styled.div<{ hasError: boolean }>`
+const Wrapper = styled.div<{ valid: boolean }>`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
@@ -22,8 +22,8 @@ const Wrapper = styled.div<{ hasError: boolean }>`
     color: ${({ theme }) => theme.colors.textPrimary};
 
     border: 1px solid
-      ${({ theme, hasError }) =>
-        hasError ? theme.colors.error : theme.colors.border};
+      ${({ theme, valid }) =>
+        !valid ? theme.colors.error : theme.colors.border} !important;
 
     border-radius: ${({ theme }) => theme.radius.md};
     border-end-start-radius: 0;
@@ -33,19 +33,19 @@ const Wrapper = styled.div<{ hasError: boolean }>`
     transition: all 0.2s ease;
 
     &:focus {
-      border-color: ${({ theme, hasError }) =>
-        hasError ? theme.colors.error : theme.colors.primary};
+      border-color: ${({ theme, valid }) =>
+        !valid ? theme.colors.error : theme.colors.primary};
       box-shadow: 0 0 0 2px
-        ${({ theme, hasError }) =>
-          hasError ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
+        ${({ theme, valid }) =>
+          !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
     }
   }
 
   .PhoneInputCountry {
     background: ${({ theme }) => theme.colors.surface};
     border: 1px solid
-      ${({ theme, hasError }) =>
-        hasError ? theme.colors.error : theme.colors.border};
+      ${({ theme, valid }) =>
+        !valid ? theme.colors.error : theme.colors.border};
     border-radius: ${({ theme }) => theme.radius.md};
     border-end-end-radius: 0;
     border-start-end-radius: 0;
@@ -80,20 +80,22 @@ type PhoneInputProps = Omit<
   title?: string;
   required?: boolean;
   errorMessage?: string;
-  onChange: (value: string) => void;
+  onChange: VoidCallback<string>;
+  valid?: boolean;
 };
 
 export const PhoneInput: React.FC<PhoneInputProps> = ({
   title,
   required = false,
   errorMessage,
-
+  valid = true,
   ...props
 }) => {
-  const hasError = Boolean(errorMessage);
+  const localValid =
+    valid && (props.value ? isValidPhoneNumber(props.value) : true);
 
   return (
-    <Wrapper hasError={hasError}>
+    <Wrapper valid={localValid}>
       {title ? (
         <Label>
           {title} {required ? <span>*</span> : null}
@@ -103,7 +105,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
       <PhoneInputLib
         {...props}
         onChange={(v) => props.onChange(v || "")}
-        hasError={hasError}
+        valid={localValid}
         flags={flags}
         international
         withCountryCallingCode
@@ -111,7 +113,9 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
         inputClassName="PhoneInputInput"
       />
 
-      {errorMessage ? <Error>{errorMessage}</Error> : null}
+      {errorMessage?.length || !localValid ? (
+        <Error>{errorMessage || "Invalid phone number"}</Error>
+      ) : null}
     </Wrapper>
   );
 };
