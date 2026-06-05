@@ -16,17 +16,14 @@ export class CategoryAxios {
       params: dto,
     }).then(({ data }) => data);
   }
-
-  static deleteCategory(dto: DeleteCategoryDto) {
-    return AppAxios.delete(`/categories/${dto.categoryId}/delete`).then(
+  static updateCategory(dto: UpdateCategoryDto) {
+    return AppAxios.patch<void>(`/categories/update`, dto).then(
       ({ data }) => data,
     );
   }
-
-  static updateCategory(dto: UpdateCategoryDto) {
-    return AppAxios.patch<void>(
-      `/categories/${dto.categoryId}/update`,
-      dto,
-    ).then(({ data }) => data);
+  static deleteCategory(dto: DeleteCategoryDto) {
+    return AppAxios.delete(`/categories/delete`, { data: dto }).then(
+      ({ data }) => data,
+    );
   }
 }

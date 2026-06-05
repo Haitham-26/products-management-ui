@@ -414,8 +414,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
               <Select
                 title="Primary Category"
                 value={value}
-                onChange={onChange}
+                onChange={(v) => onChange(v || null)}
                 options={categoriesOptions}
+                allowClear
               />
             )}
           />
