@@ -63,41 +63,6 @@ export const userSlice = createSlice({
     addCase(getOrganizationMembers.fulfilled, (state, action) => {
       state.organizationMembers = action.payload;
     });
-    addCase(getOrganizationMembers.rejected, (state) => {
-      state.organizationMembers = [
-        {
-          _id: "1",
-          name: "Any",
-          email: "clslknvlksd@gmail.com",
-          permissions: {
-            products: {
-              CREATE: false,
-              READ: true,
-              UPDATE: false,
-              DELETE: false,
-            },
-            orders: {
-              CREATE: false,
-              READ: true,
-              UPDATE: false,
-              DELETE: false,
-            },
-            categories: {
-              CREATE: false,
-              READ: true,
-              UPDATE: false,
-              DELETE: false,
-            },
-            tags: {
-              CREATE: false,
-              READ: true,
-              UPDATE: false,
-              DELETE: false,
-            },
-          },
-        },
-      ];
-    });
     addCase(logout.fulfilled, () => initialState);
   },
 });
