@@ -45,7 +45,7 @@ const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
 );
 
 const logout = AppThunk<void, void>("/auth/logout", async () => {
-  localStorage.removeItem("token");
+  localStorage.clear();
 });
 
 export const userSlice = createSlice({

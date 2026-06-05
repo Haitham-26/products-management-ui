@@ -3,20 +3,37 @@ import { Row } from "./Row";
 import { Column } from "./Column";
 import { Container } from "./Container";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 import { Icon } from "./Icon";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { Dropdown } from "./Dropdown";
 import type { MenuItemType } from "antd/es/menu/interface";
 import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
+import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
+import { userActions } from "../redux/user/user.slice";
+import { useAppDispatch, type AppDispatch } from "../redux/store";
 
-const getDropdownItems = (navigate: VoidCallback<string>) =>
+const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
   [
     {
-      key: "1",
+      key: "users-permissions",
       label: "Users & Permissions",
       icon: <Icon icon={faUsersGear} />,
       onClick: () => navigate("/users-permissions"),
+    },
+    {
+      key: "hr-1",
+      type: "divider",
+    },
+    {
+      key: "logout",
+      label: "Logout",
+      icon: <Icon icon={faPersonWalkingArrowRight} />,
+      onClick: () => {
+        dispatch(userActions.logout());
+        navigate("/login", { replace: true });
+      },
+      danger: true,
     },
   ] as MenuItemType[];
 
@@ -44,6 +61,7 @@ const ImagePlaceholder = styled.div`
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <Wrapper>
@@ -61,7 +79,7 @@ export const Header: React.FC = () => {
 
               <Dropdown
                 trigger={["click"]}
-                menu={{ items: getDropdownItems(navigate) }}
+                menu={{ items: getDropdownItems(navigate, dispatch) }}
               >
                 <ImagePlaceholder />
               </Dropdown>
