@@ -8,8 +8,10 @@ export interface GetProductsDto extends GenericWithUserId {
   categoryId?: string;
   tagIds?: string[];
   keyword?: string;
-  minPrice?: number;
-  maxPrice?: number;
+  minBasePrice?: number;
+  maxBasePrice?: number;
+  minFinalPrice?: number;
+  maxFinalPrice?: number;
   minQuantity?: number;
   maxQuantity?: number;
   discountType?: ProductDiscount["type"];
