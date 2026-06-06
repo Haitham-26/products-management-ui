@@ -4,7 +4,7 @@ import { userActions } from "../user/user.slice";
 import type { Settings } from "../../model/settings/types/Settings";
 import type { UpdateSettingsDto } from "../../model/settings/dto/UpdateSettingsDto";
 import { SettingsAxios } from "../../axios/settings/settings.axios";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 
 interface SettingsState {
   settings?: Settings;

@@ -1,5 +1,5 @@
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
-import type { LoginResponseDto } from "../../model/shared/LoginResponseDto";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
+import type { LoginResponseDto } from "../../model/shared/dto/LoginResponseDto";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";

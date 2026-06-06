@@ -8,12 +8,23 @@ export const parseProductsFiltersFromParams = (
   meta: GetProductsDto["meta"],
 ): Partial<GetProductsDto> => ({
   keyword: params.get("keyword") || "",
+  creationDate: params.get("creationDate") as GetProductsDto["creationDate"],
   categoryId: params.get("categoryId") || undefined,
   discountType:
     (params.get("discountType") as ProductDiscount["type"]) || undefined,
   tagIds: params.getAll("tagIds"),
-  minPrice: params.get("minPrice") ? Number(params.get("minPrice")) : undefined,
-  maxPrice: params.get("maxPrice") ? Number(params.get("maxPrice")) : undefined,
+  minBasePrice: params.get("minBasePrice")
+    ? Number(params.get("minBasePrice"))
+    : undefined,
+  maxBasePrice: params.get("maxBasePrice")
+    ? Number(params.get("maxBasePrice"))
+    : undefined,
+  minFinalPrice: params.get("minFinalPrice")
+    ? Number(params.get("minFinalPrice"))
+    : undefined,
+  maxFinalPrice: params.get("maxFinalPrice")
+    ? Number(params.get("maxFinalPrice"))
+    : undefined,
   minQuantity: params.get("minQuantity")
     ? Number(params.get("minQuantity"))
     : undefined,
@@ -45,10 +56,13 @@ export const buildProductsParams = (
   };
 
   set("keyword", filters.keyword);
+  set("creationDate", filters.creationDate);
   set("categoryId", filters.categoryId);
   set("discountType", filters.discountType);
-  set("minPrice", filters.minPrice?.toString());
-  set("maxPrice", filters.maxPrice?.toString());
+  set("minBasePrice", filters.minBasePrice?.toString());
+  set("maxBasePrice", filters.maxBasePrice?.toString());
+  set("minFinalPrice", filters.minFinalPrice?.toString());
+  set("maxFinalPrice", filters.maxFinalPrice?.toString());
   set("minQuantity", filters.minQuantity?.toString());
   set("maxQuantity", filters.maxQuantity?.toString());
   set("page", filters.meta?.page?.toString() || "0");
@@ -68,6 +82,9 @@ export const countProductsActiveFilters = (
   filters: Partial<GetProductsDto>,
 ) => {
   let n = 0;
+  if (filters.creationDate) {
+    n++;
+  }
   if (filters.categoryId) {
     n++;
   }
@@ -77,7 +94,10 @@ export const countProductsActiveFilters = (
   if (filters.tagIds?.length) {
     n++;
   }
-  if (!isNil(filters.minPrice) || !isNil(filters.maxPrice)) {
+  if (!isNil(filters.minBasePrice) || !isNil(filters.maxBasePrice)) {
+    n++;
+  }
+  if (!isNil(filters.minFinalPrice) || !isNil(filters.maxFinalPrice)) {
     n++;
   }
   if (!isNil(filters.minQuantity) || !isNil(filters.maxQuantity)) {

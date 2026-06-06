@@ -6,7 +6,7 @@ import { UsersPermissionsAxios } from "../../axios/users-permissions/users-permi
 import { userActions } from "../user/user.slice";
 import type { PendingInvitation } from "../../model/user/users-permissions/types/PendingInvitation";
 import type { GetPendingInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetPendingInvitationsResponseDto";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { CancelInvitationDto } from "../../model/user/users-permissions/dto/CancelInvitationDto";
 
 interface UsersPermissionsState {

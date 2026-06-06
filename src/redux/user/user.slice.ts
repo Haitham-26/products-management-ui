@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
-import type { LoginResponseDto } from "../../model/shared/LoginResponseDto";
+import type { LoginResponseDto } from "../../model/shared/dto/LoginResponseDto";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
 import { UserAxios } from "../../axios/user/user.axios";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { User } from "../../model/user/types/User";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 
 interface UserState {

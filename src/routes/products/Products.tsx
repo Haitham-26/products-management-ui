@@ -210,10 +210,10 @@ export const Products: React.FC = () => {
         }}
         filters={{
           activeCount: activeFiltersCount,
-          content: <ProductsFilter />,
+          content: <ProductsFilter activeFiltersCount={activeFiltersCount} />,
         }}
         search={{
-          placeholder: "Search by name or description...",
+          placeholder: "Search by name, description or id...",
           onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
         }}
       />

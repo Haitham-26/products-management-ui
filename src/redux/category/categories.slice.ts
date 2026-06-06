@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import { userActions } from "../user/user.slice";
 import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";

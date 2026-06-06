@@ -1,4 +1,4 @@
-import type { GenericWithUserId } from "../../shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 
 export interface UpdateTagDto extends GenericWithUserId {
   tagId: string;

@@ -2,7 +2,7 @@ import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { Order } from "../../model/order/types/Order";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
 

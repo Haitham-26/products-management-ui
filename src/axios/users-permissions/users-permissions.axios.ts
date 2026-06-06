@@ -1,4 +1,4 @@
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { CancelInvitationDto } from "../../model/user/users-permissions/dto/CancelInvitationDto";
 import type { GetPendingInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetPendingInvitationsResponseDto";
 import type { InviteMembersDto } from "../../model/user/users-permissions/dto/InviteMembersDto";
