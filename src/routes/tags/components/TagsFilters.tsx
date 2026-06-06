@@ -1,18 +1,11 @@
 import type React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../../redux/store";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
-import {
-  buildTagsParams,
-  countTagsActiveFilters,
-  parseTagsFiltersFromParams,
-} from "../utils/tagUtils";
-import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { Select } from "../../../components/Select";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 
@@ -91,35 +84,29 @@ const PopoverFooter = styled.div`
   padding-top: 4px;
 `;
 
-export const TagsFilter: React.FC = () => {
+type Range = {
+  min?: number;
+  max?: number;
+} | null;
+
+type TagsFiltersProps = {
+  filters: Partial<GetTagsDto>;
+  activeFiltersCount: number;
+  applyFilter: (
+    key: keyof GetTagsDto,
+    value: GetTagsDto[keyof GetTagsDto],
+    debounce?: boolean,
+  ) => void;
+};
+
+export const TagsFilters: React.FC<TagsFiltersProps> = ({
+  filters,
+  activeFiltersCount,
+  applyFilter,
+}) => {
+  const [usageCountRange, setUsageCountRange] = useState<Range>(null);
+
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
-
-  const filters = useMemo(
-    () => parseTagsFiltersFromParams(searchParams, tagsMeta),
-    [searchParams, tagsMeta],
-  );
-  const activeCount = countTagsActiveFilters(filters);
-
-  const applyFilter = useCallback(
-    (key: keyof GetTagsDto, value: unknown) => {
-      setSearchParams(
-        buildTagsParams(
-          {
-            ...filters,
-            meta: { ...(filters?.meta || {}), page: 0 },
-            [key]: value,
-          },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
-    },
-    [filters, searchParams, setSearchParams],
-  );
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -146,33 +133,43 @@ export const TagsFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minUsageCount || ""}
-              onChange={(e) =>
+              value={usageCountRange?.min || ""}
+              onChange={(e) => {
+                setUsageCountRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
                 applyFilter(
                   "minUsageCount",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
             <RangeDash>–</RangeDash>
             <Input
               type="number"
               placeholder="Max"
-              value={filters.maxUsageCount || ""}
-              onChange={(e) =>
+              value={usageCountRange?.max || ""}
+              onChange={(e) => {
+                setUsageCountRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
                 applyFilter(
                   "maxUsageCount",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
           </RangeRow>
         </PopoverSection>
       </PopoverContent>
 
-      {activeCount ? (
+      {activeFiltersCount ? (
         <FiltersClearContainer>
           <PopoverSeparator />
           <PopoverFooter>

@@ -102,9 +102,9 @@ export const createProductsTableColumns = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Price",
+      title: "Base Price",
       dataIndex: "price",
-      key: "price",
+      key: "base-price",
       width: 140,
       render: (value: number) => stringWithCurrencyCode(currency, value),
       sorter: (a, b) => (b?.price || 0) - (a?.price || 0),

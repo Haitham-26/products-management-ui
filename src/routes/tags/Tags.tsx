@@ -23,7 +23,7 @@ import {
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
-import { TagsFilter } from "./components/TagsFilter";
+import { TagsFilters } from "./components/TagsFilters";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -78,7 +78,11 @@ export const Tags: React.FC = () => {
   };
 
   const applyFilter = useCallback(
-    (key: keyof GetTagsDto, value: unknown) => {
+    (
+      key: keyof GetTagsDto,
+      value: GetTagsDto[keyof GetTagsDto],
+      debounce?: boolean,
+    ) => {
       const newFilters = {
         ...filters,
         meta: {
@@ -90,7 +94,7 @@ export const Tags: React.FC = () => {
 
       const nextParams = buildTagsParams(newFilters, searchParams);
 
-      if (key === "keyword") {
+      if (key === "keyword" || debounce) {
         debouncedSetSearchParams(nextParams);
       } else {
         setSearchParams(nextParams, { replace: true });
@@ -198,7 +202,13 @@ export const Tags: React.FC = () => {
         }}
         filters={{
           activeCount: activeFiltersCount,
-          content: <TagsFilter />,
+          content: (
+            <TagsFilters
+              filters={filters}
+              activeFiltersCount={activeFiltersCount}
+              applyFilter={applyFilter}
+            />
+          ),
         }}
         search={{
           placeholder: "Search by name or description...",

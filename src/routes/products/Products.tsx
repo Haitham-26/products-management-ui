@@ -20,7 +20,7 @@ import { ProductReadDrawer } from "./components/ProductReadDrawer";
 import { createProductsTableColumns } from "./components/createProductsTableColumns";
 import type { Product } from "../../model/product/types/Product";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
-import { ProductsFilter } from "./components/ProductsFilter";
+import { ProductsFilters } from "./components/ProductsFilters";
 import {
   buildProductsParams,
   countProductsActiveFilters,
@@ -87,7 +87,11 @@ export const Products: React.FC = () => {
   };
 
   const applyFilter = useCallback(
-    (key: keyof GetProductsDto, value: unknown) => {
+    (
+      key: keyof GetProductsDto,
+      value: GetProductsDto[keyof GetProductsDto],
+      debounce?: boolean,
+    ) => {
       const newFilters = {
         ...filters,
         meta: {
@@ -99,7 +103,7 @@ export const Products: React.FC = () => {
 
       const nextParams = buildProductsParams(newFilters, searchParams);
 
-      if (key === "keyword") {
+      if (key === "keyword" || debounce) {
         // Debounce the URL update for typing
         debouncedSetSearchParams(nextParams);
       } else {
@@ -210,7 +214,13 @@ export const Products: React.FC = () => {
         }}
         filters={{
           activeCount: activeFiltersCount,
-          content: <ProductsFilter activeFiltersCount={activeFiltersCount} />,
+          content: (
+            <ProductsFilters
+              activeFiltersCount={activeFiltersCount}
+              filters={filters}
+              applyFilter={applyFilter}
+            />
+          ),
         }}
         search={{
           placeholder: "Search by name, description or id...",

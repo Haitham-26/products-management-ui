@@ -4,22 +4,16 @@ import { Select } from "../../../components/Select";
 import { useAppSelector } from "../../../redux/store";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useSearchParams } from "react-router-dom";
-import {
-  buildProductsParams,
-  parseProductsFiltersFromParams,
-} from "../utils/productUtils";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
-import productSliceSelectors from "../../../redux/product/products.selector";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 import capitalize from "lodash/capitalize";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import debounce from "lodash/debounce";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 
 const creationDateOptions = [
@@ -115,10 +109,18 @@ type Range = {
 
 type ProductsFiltersProps = {
   activeFiltersCount: number;
+  filters: Partial<GetProductsDto>;
+  applyFilter: (
+    key: keyof GetProductsDto,
+    value: GetProductsDto[keyof GetProductsDto],
+    debounce?: boolean,
+  ) => void;
 };
 
-export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
+export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
   activeFiltersCount,
+  filters,
+  applyFilter,
 }) => {
   const [basePriceRange, setBasePriceRange] = useState<Range>(null);
   const [finalPriceRange, setFinalPriceRange] = useState<Range>(null);
@@ -126,38 +128,9 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
 
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
-  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const filters = useMemo(
-    () => parseProductsFiltersFromParams(searchParams, productsMeta),
-    [searchParams, productsMeta],
-  );
-
-  const applyFilter = useCallback(
-    (key: keyof GetProductsDto, value: unknown) => {
-      setSearchParams(
-        buildProductsParams(
-          {
-            ...filters,
-            meta: { ...(filters?.meta || {}), page: 0 },
-            [key]: value,
-          },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
-    },
-    [filters, searchParams, setSearchParams],
-  );
-
-  const debouncedApplyFilter = useMemo(() => {
-    return debounce(applyFilter, 400);
-  }, [applyFilter]);
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -190,9 +163,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "minBasePrice",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
@@ -207,9 +181,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "maxBasePrice",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
@@ -229,9 +204,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "minFinalPrice",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
@@ -246,9 +222,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "maxFinalPrice",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
@@ -336,9 +313,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "minQuantity",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
@@ -353,9 +331,10 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
-                debouncedApplyFilter(
+                applyFilter(
                   "maxQuantity",
                   e.target.value ? Number(e.target.value) : undefined,
+                  true,
                 );
               }}
               min={0}
