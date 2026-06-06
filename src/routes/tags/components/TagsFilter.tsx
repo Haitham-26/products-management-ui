@@ -13,6 +13,23 @@ import {
   parseTagsFiltersFromParams,
 } from "../utils/tagUtils";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
+import { Select } from "../../../components/Select";
+import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+
+const creationDateOptions = [
+  {
+    label: "Default",
+    value: null,
+  },
+  {
+    label: "Newest First",
+    value: CreationDateFilters.NEWEST,
+  },
+  {
+    label: "Oldest First",
+    value: CreationDateFilters.OLDEST,
+  },
+];
 
 const PopoverBody = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
@@ -25,6 +42,7 @@ const PopoverContent = styled.div`
   width: 16rem;
   max-height: 45vh;
   overflow-y: auto;
+  padding-inline-end: ${({ theme }) => theme.spacing.sm};
 `;
 
 const FiltersClearContainer = styled.div`
@@ -45,9 +63,9 @@ const PopoverLabel = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const PopoverSeparator = styled.div`
+const PopoverSeparator = styled.hr`
   height: 1px;
-  background: ${({ theme }) => theme.colors.border};
+  border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
 const RangeRow = styled.div`
@@ -110,6 +128,18 @@ export const TagsFilter: React.FC = () => {
   return (
     <PopoverBody>
       <PopoverContent>
+        <PopoverSection>
+          <PopoverLabel>Creation date</PopoverLabel>
+          <Select
+            placeholder="Default"
+            value={filters.creationDate}
+            onChange={(val) => applyFilter("creationDate", val)}
+            options={creationDateOptions}
+          />
+        </PopoverSection>
+
+        <PopoverSeparator />
+
         <PopoverSection>
           <PopoverLabel>Usage count</PopoverLabel>
           <RangeRow>
