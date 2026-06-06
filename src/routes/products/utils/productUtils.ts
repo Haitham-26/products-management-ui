@@ -8,6 +8,7 @@ export const parseProductsFiltersFromParams = (
   meta: GetProductsDto["meta"],
 ): Partial<GetProductsDto> => ({
   keyword: params.get("keyword") || "",
+  creationDate: params.get("creationDate") as GetProductsDto["creationDate"],
   categoryId: params.get("categoryId") || undefined,
   discountType:
     (params.get("discountType") as ProductDiscount["type"]) || undefined,
@@ -55,6 +56,7 @@ export const buildProductsParams = (
   };
 
   set("keyword", filters.keyword);
+  set("creationDate", filters.creationDate);
   set("categoryId", filters.categoryId);
   set("discountType", filters.discountType);
   set("minBasePrice", filters.minBasePrice?.toString());
@@ -80,6 +82,9 @@ export const countProductsActiveFilters = (
   filters: Partial<GetProductsDto>,
 ) => {
   let n = 0;
+  if (filters.creationDate) {
+    n++;
+  }
   if (filters.categoryId) {
     n++;
   }

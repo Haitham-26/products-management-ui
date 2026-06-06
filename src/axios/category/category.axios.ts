@@ -2,7 +2,7 @@ import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryD
 import type { DeleteCategoryDto } from "../../model/category/dto/DeleteCategoryDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
 import type { Category } from "../../model/category/types/Category";
-import type { GenericWithUserId } from "../../model/shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
 

@@ -74,7 +74,7 @@ const Search = styled.div`
 
   input {
     padding-inline-start: ${({ theme }) => theme.spacing.md};
-    min-width: 14rem;
+    min-width: 17rem;
   }
 
   svg {
@@ -197,6 +197,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                   setSearchValue(val);
                   search.onChange(val);
                 }}
+                spellCheck={false}
               />
             </Search>
           ) : null}

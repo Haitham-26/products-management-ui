@@ -1,4 +1,4 @@
-import type { GenericWithUserId } from "../../shared/GenericWithUserId";
+import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 
 export interface CreateCategoryDto extends GenericWithUserId {
   name: string;

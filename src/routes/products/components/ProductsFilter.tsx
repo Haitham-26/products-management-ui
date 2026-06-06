@@ -20,6 +20,22 @@ import { ProductStockStatus } from "../../../model/product/types/ProductStockSta
 import capitalize from "lodash/capitalize";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import debounce from "lodash/debounce";
+import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+
+const creationDateOptions = [
+  {
+    label: "Default",
+    value: null,
+  },
+  {
+    label: "Newest First",
+    value: CreationDateFilters.NEWEST,
+  },
+  {
+    label: "Oldest First",
+    value: CreationDateFilters.OLDEST,
+  },
+];
 
 const stockStatusOptions = [
   {
@@ -43,6 +59,7 @@ const PopoverContent = styled.div`
   width: 16rem;
   max-height: 45vh;
   overflow-y: auto;
+  padding-inline-end: ${({ theme }) => theme.spacing.sm};
 `;
 
 const FiltersClearContainer = styled.div`
@@ -63,9 +80,9 @@ const PopoverLabel = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const PopoverSeparator = styled.div`
+const PopoverSeparator = styled.hr`
   height: 1px;
-  background: ${({ theme }) => theme.colors.border};
+  border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
 const RangeRow = styled.div`
@@ -150,57 +167,12 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>Tags</PopoverLabel>
+          <PopoverLabel>Creation date</PopoverLabel>
           <Select
-            mode="multiple"
-            placeholder="Select tags"
-            maxTagCount="responsive"
-            value={filters.tagIds}
-            onChange={(vals) => applyFilter("tagIds", vals)}
-            options={tags.map((tag) => ({
-              label: tag.name,
-              value: tag._id,
-            }))}
-          />
-        </PopoverSection>
-
-        <PopoverSeparator />
-
-        <PopoverSection>
-          <PopoverLabel>Category</PopoverLabel>
-          <Select
-            placeholder="All categories"
-            value={filters.categoryId}
-            onChange={(val) => applyFilter("categoryId", val)}
-            allowClear
-            options={categories.map((c) => ({
-              label: c.name,
-              value: c._id,
-            }))}
-          />
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>Offer Type</PopoverLabel>
-          <Select
-            placeholder="Any"
-            value={filters.discountType}
-            onChange={(val) => applyFilter("discountType", val)}
-            allowClear
-            options={[
-              {
-                label: "Any",
-                value: null,
-              },
-              {
-                label: "Fixed Value",
-                value: ProductDiscountTypes.FIXED,
-              },
-              {
-                label: "Percentage",
-                value: ProductDiscountTypes.PERCENTAGE,
-              },
-            ]}
+            placeholder="Default"
+            value={filters.creationDate}
+            onChange={(val) => applyFilter("creationDate", val)}
+            options={creationDateOptions}
           />
         </PopoverSection>
 
@@ -245,8 +217,6 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
           </RangeRow>
         </PopoverSection>
 
-        <PopoverSeparator />
-
         <PopoverSection>
           <PopoverLabel>Final Price ({settings.currency})</PopoverLabel>
           <RangeRow>
@@ -285,6 +255,63 @@ export const ProductsFilter: React.FC<ProductsFiltersProps> = ({
             />
           </RangeRow>
         </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>Offer Type</PopoverLabel>
+          <Select
+            placeholder="Any"
+            value={filters.discountType}
+            onChange={(val) => applyFilter("discountType", val)}
+            allowClear
+            options={[
+              {
+                label: "Any",
+                value: null,
+              },
+              {
+                label: "Fixed Value",
+                value: ProductDiscountTypes.FIXED,
+              },
+              {
+                label: "Percentage",
+                value: ProductDiscountTypes.PERCENTAGE,
+              },
+            ]}
+          />
+        </PopoverSection>
+
+        <PopoverSeparator />
+
+        <PopoverSection>
+          <PopoverLabel>Category</PopoverLabel>
+          <Select
+            placeholder="All categories"
+            value={filters.categoryId}
+            onChange={(val) => applyFilter("categoryId", val)}
+            allowClear
+            options={categories.map((c) => ({
+              label: c.name,
+              value: c._id,
+            }))}
+          />
+        </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>Tags</PopoverLabel>
+          <Select
+            mode="multiple"
+            placeholder="Select tags"
+            maxTagCount="responsive"
+            value={filters.tagIds}
+            onChange={(vals) => applyFilter("tagIds", vals)}
+            options={tags.map((tag) => ({
+              label: tag.name,
+              value: tag._id,
+            }))}
+          />
+        </PopoverSection>
+
+        <PopoverSeparator />
 
         <PopoverSection>
           <PopoverLabel>Stock Status</PopoverLabel>
