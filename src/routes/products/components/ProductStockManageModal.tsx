@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Modal } from "../../../components/Modal";
 import { Icon } from "../../../components/Icon";
@@ -15,11 +15,8 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { productActions } from "../../../redux/product/products.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
-import {
-  buildProductsParams,
-  parseProductsFiltersFromParams,
-} from "../utils/productUtils";
-import productSliceSelectors from "../../../redux/product/products.selector";
+import { buildProductsParams } from "../utils/productUtils";
+import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 
 const Container = styled.div`
   display: flex;
@@ -167,11 +164,12 @@ type ProductStockManageModalProps = {
   open: boolean;
   onClose: VoidFunction;
   product: Product | null;
+  filters: Partial<GetProductsDto>;
 };
 
 export const ProductStockManageModal: React.FC<
   ProductStockManageModalProps
-> = ({ open = false, onClose, product }) => {
+> = ({ open = false, onClose, product, filters }) => {
   const [mode, setMode] = useState<"add" | "remove">("add");
   const [quantity, setQuantity] = useState<number>(0);
   const [loading, setLoading] = useState(false);
@@ -180,17 +178,11 @@ export const ProductStockManageModal: React.FC<
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
 
   const currentStock = product?.quantity || 0;
 
   const calculatedChange = mode === "add" ? quantity : -quantity;
   const previewStock = Math.max(0, currentStock + calculatedChange);
-
-  const filters = useMemo(
-    () => parseProductsFiltersFromParams(searchParams, productsMeta),
-    [searchParams, productsMeta],
-  );
 
   const onSetMode = (newMode: "add" | "remove") => {
     setMode(newMode);

@@ -257,11 +257,13 @@ export const Products: React.FC = () => {
       <ProductCreateDrawer
         open={productCreateVisible}
         onClose={() => setProductCreateVisible(false)}
+        filters={filters}
       />
       <ProductUpdateDrawer
         open={productEditVisible}
         onClose={() => setProductEditVisible(false)}
         product={currentProduct}
+        filters={filters}
       />
       <ProductReadDrawer
         open={productReadVisible}
@@ -272,6 +274,7 @@ export const Products: React.FC = () => {
         open={productStockManageVisible}
         onClose={() => setProductStockManageVisible(false)}
         product={currentProduct}
+        filters={filters}
       />
     </StyledContainer>
   );

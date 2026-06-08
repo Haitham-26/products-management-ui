@@ -247,12 +247,14 @@ export const Tags: React.FC = () => {
       <TagCreateDrawer
         open={tagCreateVisible}
         onClose={() => setTagCreateVisible(false)}
+        filters={filters}
       />
 
       <TagUpdateDrawer
         open={tagEditVisible}
         onClose={() => setTagEditVisible(false)}
         tag={currentTag}
+        filters={filters}
       />
 
       <TagReadDrawer

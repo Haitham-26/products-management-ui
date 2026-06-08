@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -13,11 +13,7 @@ import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
-import {
-  buildOrdersParams,
-  parseOrdersFiltersFromParams,
-} from "../utils/orderUtils";
-import orderSliceSelectors from "../../../redux/order/orders.selector";
+import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { Order } from "../../../model/order/types/Order";
@@ -28,6 +24,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { PhoneInput } from "../../../components/PhoneInput";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const FormContainer = styled.div`
   display: flex;
@@ -127,28 +124,24 @@ type OrderUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
   order: Order | null;
+  filters: Partial<GetOrdersDto>;
 };
 
 export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   open = false,
   onClose,
   order,
+  filters,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { control, handleSubmit, reset } = useForm<UpdateOrderDto>();
-
-  const filters = useMemo(
-    () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
-    [searchParams, ordersMeta],
-  );
 
   const localOnClose = () => {
     reset();

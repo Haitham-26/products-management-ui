@@ -9,8 +9,8 @@ import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { Select } from "../../../components/Select";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import capitalize from "lodash/capitalize";
-import { OrderVisibility } from "../../../model/order/types/OrderVisibility.enum";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import { Checkbox } from "antd";
 
 const statusOptions = [
   { label: "All", value: null },
@@ -186,16 +186,12 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
         </Section>
 
         <Section>
-          <Select
-            title="Visibility"
-            options={[
-              { label: "All", value: null },
-              { label: "Active", value: OrderVisibility.ACTIVE },
-              { label: "Archived", value: OrderVisibility.ARCHIVED },
-            ]}
-            value={filters.visibility}
-            onChange={(value) => applyFilter("visibility", value)}
-          />
+          <Checkbox
+            checked={filters.showArchived}
+            onChange={(e) => applyFilter("showArchived", e.target.checked)}
+          >
+            <Label>Show archived</Label>
+          </Checkbox>
         </Section>
       </PopoverContent>
 

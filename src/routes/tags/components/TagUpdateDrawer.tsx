@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -14,10 +14,10 @@ import type { UpdateTagDto } from "../../../model/tag/dto/UpdateTagDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { buildTagsParams, parseTagsFiltersFromParams } from "../utils/tagUtils";
+import { buildTagsParams } from "../utils/tagUtils";
 import { useSearchParams } from "react-router-dom";
-import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { Toast } from "../../../utils/Toast";
+import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 
 const FormContainer = styled.div`
   display: flex;
@@ -90,26 +90,22 @@ type TagUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
   tag: Tag | null;
+  filters: Partial<GetTagsDto>;
 };
 
 export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
   open = false,
   onClose,
   tag,
+  filters,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
 
   const { control, handleSubmit, reset, getValues } = useForm<UpdateTagDto>();
-
-  const filters = useMemo(
-    () => parseTagsFiltersFromParams(searchParams, tagsMeta),
-    [searchParams, tagsMeta],
-  );
 
   useEffect(() => {
     if (tag && open) {

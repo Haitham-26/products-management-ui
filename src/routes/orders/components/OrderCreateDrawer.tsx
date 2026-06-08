@@ -17,11 +17,7 @@ import { faNoteSticky } from "@fortawesome/free-solid-svg-icons/faNoteSticky";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
-import {
-  buildOrdersParams,
-  parseOrdersFiltersFromParams,
-} from "../utils/orderUtils";
-import orderSliceSelectors from "../../../redux/order/orders.selector";
+import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
@@ -32,6 +28,7 @@ import { ProductStockStatus } from "../../../model/product/types/ProductStockSta
 import { Text } from "../../../components/Text";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const FormContainer = styled.div`
   display: flex;
@@ -167,18 +164,19 @@ const Hr = styled.hr`
 type OrderCreateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
+  filters: Partial<GetOrdersDto>;
 };
 
 export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   open = false,
   onClose,
+  filters,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
@@ -206,11 +204,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   });
 
   const watchedItems = useWatch({ control, name: "items" });
-
-  const filters = useMemo(
-    () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
-    [searchParams, ordersMeta],
-  );
 
   const productsMap = useMemo(() => {
     return new Map(products.map((p) => [p._id, p.priceAfterDiscount]));

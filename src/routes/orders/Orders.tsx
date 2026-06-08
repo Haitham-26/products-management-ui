@@ -43,6 +43,16 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.cancelled} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
+
+  .archived {
+    background-color: ${({ theme }) => theme.colors.cancelled} !important;
+    color: ${({ theme }) => theme.colors.surface};
+    opacity: 0.8;
+  }
+  .visible {
+    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+    color: ${({ theme }) => theme.colors.surface};
+  }
 `;
 
 export const Orders: React.FC = () => {
@@ -216,12 +226,14 @@ export const Orders: React.FC = () => {
       <OrderCreateDrawer
         open={orderCreateVisible}
         onClose={() => setOrderCreateVisible(false)}
+        filters={filters}
       />
 
       <OrderUpdateDrawer
         open={orderEditVisible}
         onClose={() => setOrderEditVisible(false)}
         order={currentOrder}
+        filters={filters}
       />
 
       <OrderReadDrawer
@@ -234,12 +246,14 @@ export const Orders: React.FC = () => {
         open={orderManageStatusVisible}
         onClose={() => setOrderManageStatusVisible(false)}
         order={currentOrder}
+        filters={filters}
       />
 
       <OrderToggleArchiveModal
         open={orderToggleArchiveVisible}
         onClose={() => setOrderToggleArchiveVisible(false)}
         order={currentOrder}
+        filters={filters}
       />
     </StyledContainer>
   );

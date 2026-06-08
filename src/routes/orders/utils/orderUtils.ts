@@ -21,7 +21,7 @@ export const parseOrdersFiltersFromParams = (
     ? Number(params.get("maxTotalPrice"))
     : undefined,
   status: params.get("status") as GetOrdersDto["status"],
-  visibility: params.get("visibility") as GetOrdersDto["visibility"],
+  showArchived: params.get("showArchived") === "true",
 });
 
 export const buildOrdersParams = (
@@ -45,7 +45,7 @@ export const buildOrdersParams = (
   set("minTotalPrice", filters.minTotalPrice?.toString());
   set("maxTotalPrice", filters.maxTotalPrice?.toString());
   set("status", filters.status);
-  set("visibility", filters.visibility);
+  set("showArchived", filters.showArchived?.toString());
 
   // to force reload
   next.set("u", new Date().getTime().toString());
@@ -68,7 +68,7 @@ export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
     n++;
   }
 
-  if (filters.visibility) {
+  if (filters.showArchived) {
     n++;
   }
 

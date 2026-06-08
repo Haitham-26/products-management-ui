@@ -59,7 +59,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
   onConfirm,
   confirmText = "Confirm",
   cancelText = "Cancel",
-  confirmLoading = false,
+  loading = false,
   ...props
 }) => {
   return (
@@ -77,7 +77,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
           <Button variant="ghost" onClick={onClose}>
             {cancelText}
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={confirmLoading}>
+          <Button variant="danger" onClick={onConfirm} loading={loading}>
             {confirmText}
           </Button>
         </Actions>

@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -14,13 +14,10 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import type { Category } from "../../../model/category/types/Category";
-import {
-  buildCategoriesParams,
-  parseCategoriesFiltersFromParams,
-} from "../utils/categoryUtils";
-import categorySliceSelectors from "../../../redux/category/categories.selector";
+import { buildCategoriesParams } from "../utils/categoryUtils";
 import { useSearchParams } from "react-router-dom";
 import { Toast } from "../../../utils/Toast";
+import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 
 const FormContainer = styled.div`
   display: flex;
@@ -93,29 +90,23 @@ type CategoryUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
   category: Category | null;
+  filters: Partial<GetCategoriesDto>;
 };
 
 export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
   open = false,
   onClose,
   category,
+  filters,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const categoriesMeta = useAppSelector(
-    categorySliceSelectors.selectCategoriesMeta,
-  );
 
   const { control, handleSubmit, reset, getValues } =
     useForm<UpdateCategoryDto>();
-
-  const filters = useMemo(
-    () => parseCategoriesFiltersFromParams(searchParams, categoriesMeta),
-    [searchParams, categoriesMeta],
-  );
 
   const localOnClose = () => {
     reset();

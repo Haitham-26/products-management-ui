@@ -250,12 +250,14 @@ export const Categories: React.FC = () => {
       <CategoryCreateDrawer
         open={categoryCreateVisible}
         onClose={() => setCategoryCreateVisible(false)}
+        filters={filters}
       />
 
       <CategoryUpdateDrawer
         open={categoryEditVisible}
         onClose={() => setCategoryEditVisible(false)}
         category={currentCategory}
+        filters={filters}
       />
 
       <CategoryReadDrawer

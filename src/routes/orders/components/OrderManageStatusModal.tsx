@@ -12,12 +12,9 @@ import { Toast } from "../../../utils/Toast";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { orderActions } from "../../../redux/order/orders.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import {
-  buildOrdersParams,
-  parseOrdersFiltersFromParams,
-} from "../utils/orderUtils";
+import { buildOrdersParams } from "../utils/orderUtils";
 import { useSearchParams } from "react-router-dom";
-import orderSliceSelectors from "../../../redux/order/orders.selector";
+import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const Container = styled.div`
   display: flex;
@@ -62,12 +59,14 @@ interface OrderManageStatusModalProps {
   open: boolean;
   onClose: () => void;
   order: Order | null;
+  filters: Partial<GetOrdersDto>;
 }
 
 export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   open = false,
   onClose,
   order,
+  filters,
 }) => {
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [loading, setLoading] = useState(false);
@@ -76,7 +75,6 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
 
   const statusOptions = useMemo(() => {
     if (!order) {
@@ -100,11 +98,6 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
       })
       .map((s) => ({ label: capitalize(s), value: s }));
   }, [order]);
-
-  const filters = useMemo(
-    () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
-    [searchParams, ordersMeta],
-  );
 
   const localOnClose = () => {
     setStatus(null);
