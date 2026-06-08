@@ -1,18 +1,28 @@
 import type React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../../redux/store";
-import categorySliceSelectors from "../../../redux/category/categories.selector";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
-import {
-  buildCategoriesParams,
-  countCategoriesActiveFilters,
-  parseCategoriesFiltersFromParams,
-} from "../utils/categoryUtils";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
+import { Select } from "../../../components/Select";
+import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+
+const creationDateOptions = [
+  {
+    label: "Default",
+    value: null,
+  },
+  {
+    label: "Newest First",
+    value: CreationDateFilters.NEWEST,
+  },
+  {
+    label: "Oldest First",
+    value: CreationDateFilters.OLDEST,
+  },
+];
 
 const PopoverBody = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
@@ -25,6 +35,7 @@ const PopoverContent = styled.div`
   width: 16rem;
   max-height: 45vh;
   overflow-y: auto;
+  padding-inline-end: ${({ theme }) => theme.spacing.sm};
 `;
 
 const FiltersClearContainer = styled.div`
@@ -45,9 +56,9 @@ const PopoverLabel = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const PopoverSeparator = styled.div`
+const PopoverSeparator = styled.hr`
   height: 1px;
-  background: ${({ theme }) => theme.colors.border};
+  border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
 const RangeRow = styled.div`
@@ -73,37 +84,29 @@ const PopoverFooter = styled.div`
   padding-top: 4px;
 `;
 
-export const CategoriesFilter: React.FC = () => {
+type Range = {
+  min?: number;
+  max?: number;
+} | null;
+
+type CategoriesFiltersProps = {
+  filters: Partial<GetCategoriesDto>;
+  activeFiltersCount: number;
+  applyFilter: (
+    key: keyof GetCategoriesDto,
+    value: GetCategoriesDto[keyof GetCategoriesDto],
+    debounce?: boolean,
+  ) => void;
+};
+
+export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
+  filters,
+  activeFiltersCount,
+  applyFilter,
+}) => {
+  const [childrenCountRange, setChildrenCountRange] = useState<Range>(null);
+
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const categoriesMeta = useAppSelector(
-    categorySliceSelectors.selectCategoriesMeta,
-  );
-
-  const filters = useMemo(
-    () => parseCategoriesFiltersFromParams(searchParams, categoriesMeta),
-    [searchParams, categoriesMeta],
-  );
-  const activeCount = countCategoriesActiveFilters(filters);
-
-  const applyFilter = useCallback(
-    (key: keyof GetCategoriesDto, value: unknown) => {
-      setSearchParams(
-        buildCategoriesParams(
-          {
-            ...filters,
-            meta: { ...(filters?.meta || {}), page: 0 },
-            [key]: value,
-          },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
-    },
-    [filters, searchParams, setSearchParams],
-  );
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -113,38 +116,60 @@ export const CategoriesFilter: React.FC = () => {
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
+          <PopoverLabel>Creation date</PopoverLabel>
+          <Select
+            placeholder="Default"
+            value={filters.creationDate}
+            onChange={(val) => applyFilter("creationDate", val)}
+            options={creationDateOptions}
+          />
+        </PopoverSection>
+
+        <PopoverSeparator />
+
+        <PopoverSection>
           <PopoverLabel>Children count</PopoverLabel>
           <RangeRow>
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minChildrenCount || ""}
-              onChange={(e) =>
+              value={childrenCountRange?.min || ""}
+              onChange={(e) => {
+                setChildrenCountRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
                 applyFilter(
                   "minChildrenCount",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
             <RangeDash>–</RangeDash>
             <Input
               type="number"
               placeholder="Max"
-              value={filters.maxChildrenCount || ""}
-              onChange={(e) =>
+              value={childrenCountRange?.max || ""}
+              onChange={(e) => {
+                setChildrenCountRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
                 applyFilter(
                   "maxChildrenCount",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
           </RangeRow>
         </PopoverSection>
       </PopoverContent>
 
-      {activeCount ? (
+      {activeFiltersCount ? (
         <FiltersClearContainer>
           <PopoverSeparator />
           <PopoverFooter>

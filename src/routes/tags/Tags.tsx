@@ -94,7 +94,7 @@ export const Tags: React.FC = () => {
 
       const nextParams = buildTagsParams(newFilters, searchParams);
 
-      if (key === "keyword" || debounce) {
+      if (debounce) {
         debouncedSetSearchParams(nextParams);
       } else {
         setSearchParams(nextParams, { replace: true });
@@ -212,7 +212,8 @@ export const Tags: React.FC = () => {
         }}
         search={{
           placeholder: "Search by name or description...",
-          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+          onChange: (searchKeyword) =>
+            applyFilter("keyword", searchKeyword, true),
         }}
       />
 
