@@ -52,7 +52,9 @@ export const OrderToggleArchiveModal: React.FC<
         replace: true,
       });
 
-      Toast.success("Order updated successfully");
+      Toast.success(
+        `Order ${order.isArchived ? "unarchived" : "archived"} successfully`,
+      );
       onClose();
     } catch (e) {
       console.log(e);
