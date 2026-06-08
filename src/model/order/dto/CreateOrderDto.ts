@@ -4,6 +4,7 @@ import type { CreateOrderItem } from "../types/CreateOrderItem";
 export interface CreateOrderDto extends GenericWithUserId {
   customerName: string;
   customerPhone?: string;
+  customerEmail?: string;
   items: CreateOrderItem[];
   note?: string;
 }

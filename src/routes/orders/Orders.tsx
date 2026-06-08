@@ -8,7 +8,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { createOrdersTableColumns } from "./components/createOrdersTableColumns";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
-import { OrdersFilter } from "./components/OrdersFilter";
+import { OrdersFilters } from "./components/OrdersFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { orderActions } from "../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
@@ -96,7 +96,11 @@ export const Orders: React.FC = () => {
   };
 
   const applyFilter = useCallback(
-    (key: keyof GetOrdersDto, value: unknown) => {
+    (
+      key: keyof GetOrdersDto,
+      value: GetOrdersDto[keyof GetOrdersDto],
+      debounce?: boolean,
+    ) => {
       const newFilters = {
         ...filters,
         meta: {
@@ -108,7 +112,7 @@ export const Orders: React.FC = () => {
 
       const nextParams = buildOrdersParams(newFilters, searchParams);
 
-      if (key === "keyword") {
+      if (debounce) {
         debouncedSetSearchParams(nextParams);
       } else {
         setSearchParams(nextParams, { replace: true });
@@ -178,11 +182,18 @@ export const Orders: React.FC = () => {
         }}
         filters={{
           activeCount: activeFiltersCount,
-          content: <OrdersFilter />,
+          content: (
+            <OrdersFilters
+              activeFiltersCount={activeFiltersCount}
+              filters={filters}
+              applyFilter={applyFilter}
+            />
+          ),
         }}
         search={{
-          placeholder: "Search by ID...",
-          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+          placeholder: "Search by customer's info ot ID...",
+          onChange: (searchKeyword) =>
+            applyFilter("keyword", searchKeyword, true),
         }}
       />
 

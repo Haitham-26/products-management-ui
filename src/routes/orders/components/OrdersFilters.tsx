@@ -1,22 +1,16 @@
 import type React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../../redux/store";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
-import {
-  buildOrdersParams,
-  countOrdersActiveFilters,
-  parseOrdersFiltersFromParams,
-} from "../utils/orderUtils";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
-import orderSliceSelectors from "../../../redux/order/orders.selector";
 import { Select } from "../../../components/Select";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import capitalize from "lodash/capitalize";
 import { OrderVisibility } from "../../../model/order/types/OrderVisibility.enum";
+import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 
 const statusOptions = [
   { label: "All", value: null },
@@ -24,6 +18,21 @@ const statusOptions = [
     label: capitalize(s),
     value: s,
   })),
+];
+
+const creationDateOptions = [
+  {
+    label: "Default",
+    value: null,
+  },
+  {
+    label: "Newest First",
+    value: CreationDateFilters.NEWEST,
+  },
+  {
+    label: "Oldest First",
+    value: CreationDateFilters.OLDEST,
+  },
 ];
 
 const PopoverBody = styled.div`
@@ -48,6 +57,11 @@ const Label = styled.label`
   font-weight: 700;
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const PopoverSeparator = styled.hr`
+  height: 1px;
+  border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
 // const Row = styled.div`
@@ -78,34 +92,29 @@ const Footer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
-export const OrdersFilter: React.FC = () => {
+type Range = {
+  min?: number;
+  max?: number;
+} | null;
+
+type OrdersFiltersProps = {
+  activeFiltersCount: number;
+  filters: Partial<GetOrdersDto>;
+  applyFilter: (
+    key: keyof GetOrdersDto,
+    value: GetOrdersDto[keyof GetOrdersDto],
+    debounce?: boolean,
+  ) => void;
+};
+
+export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
+  activeFiltersCount,
+  filters,
+  applyFilter,
+}) => {
+  const [totalPriceRange, setTotalPriceRange] = useState<Range>(null);
+
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
-
-  const filters = useMemo(
-    () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
-    [searchParams, ordersMeta],
-  );
-
-  const activeCount = countOrdersActiveFilters(filters);
-
-  const applyFilter = useCallback(
-    (key: keyof GetOrdersDto, value: unknown) => {
-      setSearchParams(
-        buildOrdersParams(
-          {
-            ...filters,
-            meta: { ...(filters.meta || {}), page: 0 },
-            [key]: value,
-          },
-          searchParams,
-        ),
-        { replace: true },
-      );
-    },
-    [filters, searchParams, setSearchParams],
-  );
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -114,6 +123,18 @@ export const OrdersFilter: React.FC = () => {
   return (
     <PopoverBody>
       <PopoverContent>
+        <Section>
+          <Label>Creation date</Label>
+          <Select
+            placeholder="Default"
+            value={filters.creationDate}
+            onChange={(val) => applyFilter("creationDate", val)}
+            options={creationDateOptions}
+          />
+        </Section>
+
+        <PopoverSeparator />
+
         <Section>
           <Select
             title="Status"
@@ -129,26 +150,36 @@ export const OrdersFilter: React.FC = () => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minTotalPrice || ""}
-              onChange={(e) =>
+              value={totalPriceRange?.min || ""}
+              onChange={(e) => {
+                setTotalPriceRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
                 applyFilter(
                   "minTotalPrice",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
             <RangeDash>–</RangeDash>
             <Input
               type="number"
               placeholder="Max"
-              value={filters.maxTotalPrice || ""}
-              onChange={(e) =>
+              value={totalPriceRange?.max || ""}
+              onChange={(e) => {
+                setTotalPriceRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
                 applyFilter(
                   "maxTotalPrice",
                   e.target.value ? Number(e.target.value) : undefined,
-                )
-              }
+                  true,
+                );
+              }}
               min={0}
             />
           </RangeRow>
@@ -168,7 +199,7 @@ export const OrdersFilter: React.FC = () => {
         </Section>
       </PopoverContent>
 
-      {activeCount ? (
+      {activeFiltersCount ? (
         <Footer>
           <Button icon={faRotateLeft} onClick={resetFilters}>
             Clear all
