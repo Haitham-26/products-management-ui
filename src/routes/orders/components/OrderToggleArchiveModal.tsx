@@ -2,15 +2,12 @@ import type React from "react";
 import type { Order } from "../../../model/order/types/Order";
 import { WarningModal } from "../../../components/WarningModal";
 import { Toast } from "../../../utils/Toast";
-import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { useMemo, useState } from "react";
+import { useAppDispatch } from "../../../redux/store";
+import { useState } from "react";
 import { orderActions } from "../../../redux/order/orders.slice";
-import {
-  buildOrdersParams,
-  parseOrdersFiltersFromParams,
-} from "../utils/orderUtils";
-import orderSliceSelectors from "../../../redux/order/orders.selector";
+import { buildOrdersParams } from "../utils/orderUtils";
 import { useSearchParams } from "react-router-dom";
+import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const descriptions = {
   archive:
@@ -24,22 +21,16 @@ type OrderToggleArchiveModalProps = {
   open: boolean;
   onClose: VoidFunction;
   order: Order | null;
+  filters: Partial<GetOrdersDto>;
 };
 
 export const OrderToggleArchiveModal: React.FC<
   OrderToggleArchiveModalProps
-> = ({ open = false, onClose, order }) => {
+> = ({ open = false, onClose, order, filters }) => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
-
-  const filters = useMemo(
-    () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
-    [searchParams, ordersMeta],
-  );
 
   const onConfirm = async () => {
     if (!order) {

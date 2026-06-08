@@ -75,6 +75,17 @@ export const createOrdersTableColumns = ({
       }),
     },
     {
+      title: "Visibility",
+      dataIndex: "isArchived",
+      key: "isArchived",
+      width: 90,
+      ellipsis: true,
+      render: (isArchived: boolean) => (isArchived ? "Archived" : "Active"),
+      onCell: (record) => ({
+        className: record.isArchived ? "archived" : "visible",
+      }),
+    },
+    {
       title: "Total Price",
       dataIndex: "totalPriceAtPurchase",
       key: "totalPriceAtPurchase",
