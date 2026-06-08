@@ -24,17 +24,16 @@ import { Button } from "../../../components/Button";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { Dropdown } from "../../../components/Dropdown";
 import { Toast } from "../../../utils/Toast";
-import productSliceSelectors from "../../../redux/product/products.selector";
 import { useSearchParams } from "react-router-dom";
 import {
   buildProductsParams,
   calculateProductFinalPrice,
-  parseProductsFiltersFromParams,
 } from "../utils/productUtils";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
+import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 
 const FormContainer = styled.div`
   display: flex;
@@ -143,11 +142,13 @@ const ElegantTag = styled(Button)`
 type ProductCreateDrawerProps = {
   open: boolean;
   onClose: () => void;
+  filters: Partial<GetProductsDto>;
 };
 
 export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   open,
   onClose,
+  filters,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -156,7 +157,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
-  const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { control, handleSubmit, getValues, reset, watch } =
@@ -205,11 +205,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       value: discountValue || 0,
     });
   }, [price, discountType, discountValue]);
-
-  const filters = useMemo(
-    () => parseProductsFiltersFromParams(searchParams, productsMeta),
-    [searchParams, productsMeta],
-  );
 
   const localOnClose = () => {
     reset();
