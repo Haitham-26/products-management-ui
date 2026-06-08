@@ -103,7 +103,7 @@ export const Products: React.FC = () => {
 
       const nextParams = buildProductsParams(newFilters, searchParams);
 
-      if (key === "keyword" || debounce) {
+      if (debounce) {
         // Debounce the URL update for typing
         debouncedSetSearchParams(nextParams);
       } else {
@@ -224,7 +224,8 @@ export const Products: React.FC = () => {
         }}
         search={{
           placeholder: "Search by name, description or id...",
-          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+          onChange: (searchKeyword) =>
+            applyFilter("keyword", searchKeyword, true),
         }}
       />
 

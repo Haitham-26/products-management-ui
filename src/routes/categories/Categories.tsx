@@ -22,7 +22,7 @@ import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
 import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
-import { CategoriesFilter } from "./components/CategoriesFilter";
+import { CategoriesFilters } from "./components/CategoriesFilters";
 import { PageHeader } from "../../components/PageHeader";
 
 const StyledContainer = styled(Container)`
@@ -81,7 +81,11 @@ export const Categories: React.FC = () => {
   };
 
   const applyFilter = useCallback(
-    (key: keyof GetCategoriesDto, value: unknown) => {
+    (
+      key: keyof GetCategoriesDto,
+      value: GetCategoriesDto[keyof GetCategoriesDto],
+      debounce?: boolean,
+    ) => {
       const newFilters = {
         ...filters,
         meta: {
@@ -93,7 +97,7 @@ export const Categories: React.FC = () => {
 
       const nextParams = buildCategoriesParams(newFilters, searchParams);
 
-      if (key === "keyword") {
+      if (debounce) {
         debouncedSetSearchParams(nextParams);
       } else {
         setSearchParams(nextParams, { replace: true });
@@ -201,11 +205,18 @@ export const Categories: React.FC = () => {
         }}
         filters={{
           activeCount: activeFiltersCount,
-          content: <CategoriesFilter />,
+          content: (
+            <CategoriesFilters
+              activeFiltersCount={activeFiltersCount}
+              filters={filters}
+              applyFilter={applyFilter}
+            />
+          ),
         }}
         search={{
           placeholder: "Search by name or description...",
-          onChange: (searchKeyword) => applyFilter("keyword", searchKeyword),
+          onChange: (searchKeyword) =>
+            applyFilter("keyword", searchKeyword, true),
         }}
       />
 
