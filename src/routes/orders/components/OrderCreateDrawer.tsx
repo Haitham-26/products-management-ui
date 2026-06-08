@@ -193,6 +193,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     defaultValues: {
       customerName: "",
       customerPhone: "",
+      customerEmail: "",
       items: [{ productId: "", quantity: 1 }],
       note: "",
       userId,
@@ -360,8 +361,21 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Customer Name"
+                title="Name"
                 required
+                errorMessage={error?.message}
+                valid={!error}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerEmail"
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                title="Email"
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}
@@ -374,7 +388,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             name="customerPhone"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <PhoneInput
-                title="Customer Phone"
+                title="Phone"
                 errorMessage={error?.message}
                 value={value}
                 onChange={onChange}

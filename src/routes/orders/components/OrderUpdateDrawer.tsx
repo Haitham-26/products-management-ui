@@ -179,6 +179,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       reset({
         customerName: order.customerName || "",
         customerPhone: order?.customerPhone || "",
+        customerEmail: order.customerEmail || "",
         note: order.note || "",
         orderId: order._id,
         userId,
@@ -227,9 +228,22 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             rules={{ required: "Customer cannot be empty" }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Customer Name"
+                title="Name"
                 required
                 errorMessage={error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerEmail"
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                title="Email"
+                errorMessage={error?.message}
+                valid={!error}
                 {...field}
               />
             )}
@@ -240,7 +254,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             name="customerPhone"
             render={({ field, fieldState: { error } }) => (
               <PhoneInput
-                title="Customer Phone"
+                title="Phone"
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}

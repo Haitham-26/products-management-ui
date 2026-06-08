@@ -6,6 +6,7 @@ export interface Order {
   identifier: string;
   customerName: string;
   customerPhone?: string;
+  customerEmail?: string;
   userId: string;
   items: OrderItem[];
   note?: string;

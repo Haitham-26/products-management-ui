@@ -50,6 +50,13 @@ export const createOrdersTableColumns = ({
       sorter: (a, b) => a.customerName.localeCompare(b.customerName),
     },
     {
+      title: "Customer Email",
+      dataIndex: "customerEmail",
+      key: "customerEmail",
+      width: 220,
+      ellipsis: true,
+    },
+    {
       title: "Customer Phone",
       dataIndex: "customerPhone",
       key: "customerPhone",

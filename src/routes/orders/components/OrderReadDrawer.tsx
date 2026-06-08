@@ -12,6 +12,7 @@ import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
 import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
 
 const FormContainer = styled.div`
   display: flex;
@@ -100,12 +101,15 @@ const ItemInfo = styled.div`
 const ItemTitle = styled.span`
   color: ${({ theme }) => theme.colors.textPrimary};
   font-weight: 600;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const PriceCalculation = styled.span`
+const ValueText = styled.span`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.xs};
   font-size: 0.85rem;
   color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const PriceColumn = styled.div`
@@ -204,10 +208,19 @@ export const OrderReadDrawer: React.FC<Props> = ({
           <ItemInfo>
             <ItemTitle>{order.customerName}</ItemTitle>
 
-            <PriceCalculation>
-              <Icon icon={faPhone} />
-              {order.customerPhone || "No phone provided"}
-            </PriceCalculation>
+            {order?.customerEmail ? (
+              <ValueText>
+                <Icon icon={faEnvelope} />
+                {order.customerEmail || "No email provided"}
+              </ValueText>
+            ) : null}
+
+            {order?.customerPhone ? (
+              <ValueText>
+                <Icon icon={faPhone} />
+                {order.customerPhone || "No phone provided"}
+              </ValueText>
+            ) : null}
           </ItemInfo>
         </InfoSection>
 
@@ -221,13 +234,13 @@ export const OrderReadDrawer: React.FC<Props> = ({
             <OrderLineItem key={`${item.productId}-${index}`}>
               <ItemInfo>
                 <ItemTitle>{item.productName}</ItemTitle>
-                <PriceCalculation>
+                <ValueText>
                   {item.quantity} ×
                   {` ${stringWithCurrencyCode(
                     settings.currency,
                     item.priceAtPurchase,
                   )}`}
-                </PriceCalculation>
+                </ValueText>
                 {renderDiscount(item)}
               </ItemInfo>
 
