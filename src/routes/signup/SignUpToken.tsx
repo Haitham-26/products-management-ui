@@ -1,6 +1,5 @@
 import type React from "react";
 import styled from "styled-components";
-import { Input } from "../../components/Input";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
@@ -9,6 +8,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import { Toast } from "../../utils/Toast";
+import { VerificationCodeInput } from "../../components/VerificationCodeInput";
+import { Text } from "../../components/Text";
 
 const Card = styled.div`
   width: 100%;
@@ -31,16 +32,12 @@ const Brand = styled.div`
 `;
 
 const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-
-  h1 {
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Form = styled.div`
@@ -65,8 +62,12 @@ export const SignUpToken: React.FC = () => {
   const onSignUp = async () => {
     try {
       setLoading(true);
+
       await dispatch(userActions.signUpToken(getValues())).unwrap();
+
       navigate("/dashboard", { replace: true });
+
+      Toast.success("Account verified successfully");
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -86,11 +87,13 @@ export const SignUpToken: React.FC = () => {
       <Brand>Productly</Brand>
 
       <Header>
-        <h1>Confirm your email</h1>
-        <p>
+        <Text fontSize="title" fontWeight="bold">
+          Confirm your email
+        </Text>
+        <Text color="textSecondary">
           We sent the verification code to your email{" "}
           <strong>"{state?.email}"</strong>, please enter it below.
-        </p>
+        </Text>
       </Header>
 
       <Form>
@@ -109,9 +112,7 @@ export const SignUpToken: React.FC = () => {
             },
           }}
           render={({ field, fieldState }) => (
-            <Input
-              title="Verification code"
-              placeholder="abc123"
+            <VerificationCodeInput
               errorMessage={fieldState.error?.message}
               {...field}
             />
