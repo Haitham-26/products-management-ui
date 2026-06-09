@@ -62,8 +62,12 @@ export const SignUpToken: React.FC = () => {
   const onSignUp = async () => {
     try {
       setLoading(true);
+
       await dispatch(userActions.signUpToken(getValues())).unwrap();
+
       navigate("/dashboard", { replace: true });
+
+      Toast.success("Account verified successfully");
     } catch (e) {
       console.error(e);
       Toast.apiError(e);

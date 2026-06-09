@@ -74,6 +74,8 @@ export const SignUpEmail: React.FC = () => {
 
       await dispatch(userActions.signUpEmail(dto)).unwrap();
       navigate("/signup/email-verification", { state: { email: dto.email } });
+
+      Toast.success("We sent you an email to verify your account");
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
