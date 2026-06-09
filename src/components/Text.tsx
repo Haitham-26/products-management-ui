@@ -17,6 +17,7 @@ const StyledP = styled.p<StyledTextProps>`
   color: ${({ theme, color }) => theme.colors[color || "textPrimary"]};
   font-weight: ${({ fontSize, fontWeight }) =>
     fontWeight || fontWeights[fontSize || "body"]};
+  line-height: 1.5;
 `;
 
 type StyledTextProps = {

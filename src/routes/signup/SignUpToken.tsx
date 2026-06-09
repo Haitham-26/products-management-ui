@@ -9,6 +9,7 @@ import { Button } from "../../components/Button";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import { Toast } from "../../utils/Toast";
 import { VerificationCodeInput } from "../../components/VerificationCodeInput";
+import { Text } from "../../components/Text";
 
 const Card = styled.div`
   width: 100%;
@@ -31,16 +32,12 @@ const Brand = styled.div`
 `;
 
 const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-
-  h1 {
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Form = styled.div`
@@ -86,11 +83,13 @@ export const SignUpToken: React.FC = () => {
       <Brand>Productly</Brand>
 
       <Header>
-        <h1>Confirm your email</h1>
-        <p>
+        <Text fontSize="title" fontWeight="bold">
+          Confirm your email
+        </Text>
+        <Text color="textSecondary">
           We sent the verification code to your email{" "}
           <strong>"{state?.email}"</strong>, please enter it below.
-        </p>
+        </Text>
       </Header>
 
       <Form>
