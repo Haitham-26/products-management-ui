@@ -56,7 +56,7 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
   onChange,
   length = 6,
   disabled = false,
-  errorMessage = "hello",
+  errorMessage,
 }) => {
   return (
     <Wrapper>
