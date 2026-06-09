@@ -1,6 +1,5 @@
 import type React from "react";
 import styled from "styled-components";
-import { Input } from "../../components/Input";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
@@ -9,6 +8,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import { Toast } from "../../utils/Toast";
+import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 
 const Card = styled.div`
   width: 100%;
@@ -109,9 +109,7 @@ export const SignUpToken: React.FC = () => {
             },
           }}
           render={({ field, fieldState }) => (
-            <Input
-              title="Verification code"
-              placeholder="abc123"
+            <VerificationCodeInput
               errorMessage={fieldState.error?.message}
               {...field}
             />
