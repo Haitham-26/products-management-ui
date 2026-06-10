@@ -82,7 +82,7 @@ export const SignUpEmail: React.FC = () => {
           )}
         />,
         <Button loading={loading} onClick={handleSubmit(onSignUp)}>
-          Sign Up
+          Create account
         </Button>,
       ]}
       footerContent={
