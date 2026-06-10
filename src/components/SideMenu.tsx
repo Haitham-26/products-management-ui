@@ -21,14 +21,6 @@ const StyledContainer = styled(Container)`
   position: sticky;
 `;
 
-const Logo = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-`;
-
 const MenuStyle = createGlobalStyle`
   .ant-menu {
     border: 0 !important;
@@ -81,7 +73,6 @@ export const SideMenu: React.FC = () => {
 
   return (
     <StyledContainer>
-      <Logo>LOGO</Logo>
       <StyledMenu
         mode="inline"
         theme="light"

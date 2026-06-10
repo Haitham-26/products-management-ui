@@ -1,63 +1,14 @@
 import type React from "react";
-import styled from "styled-components";
 import { Input } from "../../components/Input";
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import { Toast } from "../../utils/Toast";
-
-const Card = styled.div`
-  width: 100%;
-  max-width: 24rem;
-  padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  box-shadow: ${({ theme }) => theme.shadow.md};
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Brand = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: ${({ theme }) => theme.colors.primary};
-  letter-spacing: -0.02em;
-`;
-
-const Header = styled.div`
-  text-align: center;
-
-  h1 {
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const Footer = styled.div`
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.small};
-
-  a {
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: 500;
-  }
-`;
+import { AuthContainer } from "../../components/AuthContainer";
 
 export const SignUpEmail: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -85,15 +36,10 @@ export const SignUpEmail: React.FC = () => {
   };
 
   return (
-    <Card>
-      <Brand>Productly</Brand>
-
-      <Header>
-        <h1>Welcome back</h1>
-        <p>Create an account</p>
-      </Header>
-
-      <Form>
+    <AuthContainer
+      title="Welcome back"
+      description="Create an account"
+      formItems={[
         <Controller
           control={control}
           name="name"
@@ -106,8 +52,7 @@ export const SignUpEmail: React.FC = () => {
               {...field}
             />
           )}
-        />
-
+        />,
         <Controller
           control={control}
           name="email"
@@ -120,7 +65,7 @@ export const SignUpEmail: React.FC = () => {
               {...field}
             />
           )}
-        />
+        />,
 
         <Controller
           control={control}
@@ -135,16 +80,16 @@ export const SignUpEmail: React.FC = () => {
               {...field}
             />
           )}
-        />
-
+        />,
         <Button loading={loading} onClick={handleSubmit(onSignUp)}>
           Sign Up
-        </Button>
-      </Form>
-
-      <Footer>
-        Already have an account? <Link to="/login">Login</Link>
-      </Footer>
-    </Card>
+        </Button>,
+      ]}
+      footerContent={
+        <Fragment>
+          Already have an account? <Link to="/login">Login</Link>
+        </Fragment>
+      }
+    />
   );
 };
