@@ -4,6 +4,9 @@ import { Login } from "./login/Login";
 import { SignUpEmail } from "./signup/SignUpEmail";
 import { AppPublicRoute } from "./AppPublicRoute";
 import { SignUpToken } from "./signup/SignUpToken";
+import { ForgotPasswordEmailStep } from "./forgot-password/ForgotPasswordEmailStep";
+import { ForgotPasswordTokenStep } from "./forgot-password/ForgotPasswordTokenStep";
+import { ForgotPasswordNewStep } from "./forgot-password/ForgotPasswordNew";
 
 export const PublicRoutes: RouteObject = {
   element: <PublicLayout />,
@@ -23,6 +26,18 @@ export const PublicRoutes: RouteObject = {
     {
       path: "/signup/email-verification",
       element: <AppPublicRoute component={<SignUpToken />} />,
+    },
+    {
+      path: "/forgot-password",
+      element: <AppPublicRoute component={<ForgotPasswordEmailStep />} />,
+    },
+    {
+      path: "/forgot-password/token",
+      element: <AppPublicRoute component={<ForgotPasswordTokenStep />} />,
+    },
+    {
+      path: "/forgot-password/new",
+      element: <AppPublicRoute component={<ForgotPasswordNewStep />} />,
     },
     {
       path: "*",

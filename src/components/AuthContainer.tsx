@@ -14,6 +14,16 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
+
+  a {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+    transition: color 0.2s ease-in-out;
+  }
+
+  a:hover {
+    color: ${({ theme }) => theme.colors.primaryHover};
+  }
 `;
 
 const Brand = styled.div`
@@ -38,11 +48,6 @@ const Form = styled.div`
 const Footer = styled.div`
   text-align: center;
   font-size: ${({ theme }) => theme.typography.small};
-
-  a {
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: 500;
-  }
 `;
 
 type AuthContainerProps = {
@@ -68,7 +73,9 @@ export const AuthContainer: React.FC<AuthContainerProps> = ({
         <Text fontWeight="bold" fontSize="title">
           {title}
         </Text>
-        <Text color="textSecondary">{description}</Text>
+        <Text color="textSecondary" fontSize="small">
+          {description}
+        </Text>
       </Header>
 
       <Form>{formItems.map((item) => item)}</Form>

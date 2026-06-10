@@ -9,6 +9,18 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
+import styled from "styled-components";
+
+const PasswordWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: calc(${({ theme }) => theme.spacing.md} / 2);
+  align-items: flex-end;
+`;
+
+const ForgotPasswordLink = styled(Link)`
+  font-size: calc(${({ theme }) => theme.typography.small} / 1.1);
+`;
 
 export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -54,20 +66,26 @@ export const Login: React.FC = () => {
           )}
         />,
 
-        <Controller
-          control={control}
-          name="password"
-          rules={{ required: "Password is required" }}
-          render={({ field, fieldState }) => (
-            <Input
-              title="Password"
-              type="password"
-              placeholder="••••••••"
-              errorMessage={fieldState.error?.message}
-              {...field}
-            />
-          )}
-        />,
+        <PasswordWrapper>
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: "Password is required" }}
+            render={({ field, fieldState }) => (
+              <Input
+                title="Password"
+                type="password"
+                placeholder="••••••••"
+                errorMessage={fieldState.error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <ForgotPasswordLink to="/forgot-password">
+            Forgot password?
+          </ForgotPasswordLink>
+        </PasswordWrapper>,
 
         <Button loading={loading} onClick={handleSubmit(onLogin)}>
           Login

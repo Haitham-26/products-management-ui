@@ -8,6 +8,9 @@ import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { User } from "../../model/user/types/User";
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
+import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
+import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
+import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 
 interface UserState {
   user?: User;
@@ -32,6 +35,19 @@ const signUpEmail = AppThunk<void, SignUpEmailDto>(
 const signUpToken = AppThunk<LoginResponseDto, SignUpTokenDto>(
   "/auth/signup/token",
   UserAxios.signUpToken,
+);
+
+const forgotPasswordEmail = AppThunk<void, ForgotPasswordEmailDto>(
+  "/auth/forgot-password/email",
+  UserAxios.forgotPasswordEmail,
+);
+const forgotPasswordToken = AppThunk<void, ForgotPasswordTokenDto>(
+  "/auth/forgot-password/token",
+  UserAxios.forgotPasswordToken,
+);
+const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
+  "/auth/forgot-password/new",
+  UserAxios.forgotPasswordNew,
 );
 
 const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
@@ -71,6 +87,9 @@ const userActions = {
   login,
   signUpEmail,
   signUpToken,
+  forgotPasswordEmail,
+  forgotPasswordToken,
+  forgotPasswordNew,
   getOrganizationMembers,
   updateMembersPermissions,
   logout,
