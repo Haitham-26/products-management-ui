@@ -9,6 +9,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import { VerificationCodeInput } from "../../components/VerificationCodeInput";
+import styled from "styled-components";
+import { ResendVerificationButton } from "../../components/ResendTokenButton";
+
+const LAST_RESEND_LOCAL_STORAGE_KEY = "forgot-password-token-last-resend-time";
+
+const TokenInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: calc(${({ theme }) => theme.spacing.md} / 2);
+`;
 
 export const ForgotPasswordTokenStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -28,6 +38,12 @@ export const ForgotPasswordTokenStep: React.FC = () => {
 
   const token = watch("token");
 
+  const resendToken = () => {
+    return dispatch(
+      userActions.forgotPasswordEmail({ email: getValues("email") }),
+    ).unwrap();
+  };
+
   const onSubmit = async () => {
     try {
       setLoading(true);
@@ -39,6 +55,8 @@ export const ForgotPasswordTokenStep: React.FC = () => {
       Toast.success(
         "We verified your email, now you can create a new password!",
       );
+
+      localStorage.removeItem(LAST_RESEND_LOCAL_STORAGE_KEY);
 
       navigate("/forgot-password/new", { state: dto, replace: true });
     } catch (e) {
@@ -60,14 +78,34 @@ export const ForgotPasswordTokenStep: React.FC = () => {
       title="Reset password"
       description="Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step."
       formItems={[
-        <Controller
-          control={control}
-          name="token"
-          rules={{ required: "Please enter your email" }}
-          render={({ field, fieldState: { error } }) => (
-            <VerificationCodeInput {...field} errorMessage={error?.message} />
-          )}
-        />,
+        <TokenInputContainer>
+          <Controller
+            control={control}
+            name="token"
+            rules={{
+              required: "Token is required",
+              minLength: {
+                value: 6,
+                message: "Token must be at 6 characters",
+              },
+              maxLength: {
+                value: 6,
+                message: "Token must be at 6 characters",
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <VerificationCodeInput
+                errorMessage={fieldState.error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <ResendVerificationButton
+            localStorageKey={LAST_RESEND_LOCAL_STORAGE_KEY}
+            onResend={resendToken}
+          />
+        </TokenInputContainer>,
         <Button
           onClick={handleSubmit(onSubmit)}
           loading={loading}
