@@ -56,7 +56,7 @@ const getOptions = (theme: ThemeType) =>
       },
       y: {
         grid: {
-          color: `${theme.colors.border}40`,
+          color: `${theme.colors.border}20`,
         },
         border: {
           dash: [4, 4],
@@ -74,21 +74,24 @@ const getOptions = (theme: ThemeType) =>
 
 const getChartColors = (theme: ThemeType) => [
   theme.colors.primary,
-  `${theme.colors.primary}cc`,
+  `${theme.colors.primary}dd`,
+  `${theme.colors.primary}ba`,
   `${theme.colors.primary}99`,
-  `${theme.colors.primary}73`,
-  `${theme.colors.primary}40`,
+  `${theme.colors.primary}70`,
 ];
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 16rem;
+  height: 100%;
+  min-height: 22rem;
   gap: ${({ theme }) => theme.spacing.md};
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 `;
 
 const Header = styled.div`
@@ -102,7 +105,7 @@ const ChartCanvasWrapper = styled.div`
   flex-grow: 1;
   width: 100%;
   position: relative;
-  min-height: 12rem;
+  min-height: 16rem;
 `;
 
 export const DashboardTopProductsCard: React.FC = () => {

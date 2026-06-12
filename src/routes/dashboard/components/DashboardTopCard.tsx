@@ -16,10 +16,8 @@ const getBackgroundIcon = (variant: Variants) => {
   switch (variant) {
     case "DANGER":
       return faTimesCircle;
-
     case "WARNING":
       return faExclamationTriangle;
-
     default:
       return null;
   }
@@ -29,38 +27,37 @@ const Container = styled.div<{ variant: Variants }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 12rem;
+  flex-grow: 1;
+  min-height: 13rem;
   gap: ${({ theme }) => theme.spacing.md};
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.lg};
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border}20;
 
   ${({ variant, theme }) => {
     switch (variant) {
       case "MAIN":
         return `
-          background:
-            linear-gradient(
-              180deg,
-              rgba(255, 255, 255, 0) 0%,
-              rgba(0, 0, 0, 0.25) 100%
-            ),
-            ${theme.colors.primary};
+          background: linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primary}dd 100%);
+          border: none;
         `;
       case "WARNING":
         return `
-          background: ${theme.colors.warning}12;
+          background: ${theme.colors.warning}08;
+          border-left: 4px solid ${theme.colors.warning};
         `;
-
       case "DANGER":
         return `
-          background: ${theme.colors.error}12;
+          background: ${theme.colors.error}08;
+          border-left: 4px solid ${theme.colors.error};
         `;
-
       default:
         return `
           background: ${theme.colors.surface};
+          border: 1px solid ${theme.colors.border};
         `;
     }
   }}
@@ -68,9 +65,9 @@ const Container = styled.div<{ variant: Variants }>`
 
 const BackgroundIcon = styled(Icon)<{ variant: Variants }>`
   position: absolute;
-  inset-inline-end: -1rem;
-  bottom: -1rem;
-  font-size: 6rem;
+  inset-inline-end: -0.5rem;
+  bottom: -0.5rem;
+  font-size: 7rem;
   pointer-events: none;
   z-index: 0;
 
@@ -79,15 +76,13 @@ const BackgroundIcon = styled(Icon)<{ variant: Variants }>`
       case "WARNING":
         return `
           color: ${theme.colors.warning};
-          opacity: 0.08;
+          opacity: 0.06;
         `;
-
       case "DANGER":
         return `
           color: ${theme.colors.error};
-          opacity: 0.08;
+          opacity: 0.06;
         `;
-
       default:
         return `display: none;`;
     }
@@ -106,55 +101,39 @@ const StyledLink = styled(Link)<{ variant: Variants }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: ${({ theme }) => theme.radius.full};
-  transform: rotate(315deg);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
 
   ${({ variant, theme }) => {
     if (variant === "MAIN") {
       return `
-        background: ${theme.colors.surface};
-        border: 1px solid transparent;
-
-        svg {
-          color: ${theme.colors.primary};
-        }
-
+        background: rgba(255, 255, 255, 0.2);
+        svg { color: ${theme.colors.onPrimary}; }
         &:hover {
-          transform: rotate(360deg);
-          background: ${theme.colors.surface}e5;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translateX(3px);
         }
       `;
     }
 
-    const hoverColor =
+    const accentColor =
       variant === "DANGER"
         ? theme.colors.error
         : variant === "WARNING"
           ? theme.colors.warning
           : theme.colors.primary;
 
-    const borderColor =
-      variant === "DEFAULT" ? theme.colors.border : `${hoverColor}40`;
-
     return `
-      background: transparent;
-      border: 1px solid ${borderColor};
-
-      svg {
-        color: ${theme.colors.textPrimary};
-      }
-
+      background: ${theme.colors.surface};
+      border: 1px solid ${theme.colors.border};
+      svg { color: ${theme.colors.textSecondary}; }
       &:hover {
-        transform: rotate(360deg);
-        background: ${borderColor};
-
-        svg {
-          color: ${hoverColor};
-        }
+        border-color: ${accentColor};
+        svg { color: ${accentColor}; }
+        transform: translateX(3px);
       }
     `;
   }}
@@ -171,6 +150,8 @@ const Divider = styled.hr<{ variant: Variants }>`
 
 const ContentWrapper = styled.div`
   z-index: 1;
+  margin-top: auto;
+  margin-bottom: auto;
 `;
 
 const FooterGrid = styled.div`
@@ -178,23 +159,25 @@ const FooterGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: ${({ theme }) => theme.spacing.sm};
   z-index: 1;
+  padding-top: ${({ theme }) => theme.spacing.xs};
 `;
 
 const StatGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 `;
 
 const TimeframeLabel = styled(Text)<{ variant: Variants }>`
   text-transform: uppercase;
-  font-size: 0.6rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 
   color: ${({ variant, theme }) =>
     variant === "MAIN" ? theme.colors.onPrimary : theme.colors.textSecondary};
 
-  opacity: ${({ variant }) => (variant === "MAIN" ? 0.7 : 1)};
+  opacity: ${({ variant }) => (variant === "MAIN" ? 0.75 : 0.85)};
 `;
 
 type CardTrends = {
@@ -232,7 +215,6 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
   };
 
   const textColor = getTextColor();
-
   const bgIcon = getBackgroundIcon(variant);
 
   return (
@@ -240,7 +222,7 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
       {bgIcon ? <BackgroundIcon icon={bgIcon} variant={variant} /> : null}
 
       <Header>
-        <Text fontWeight="bold" fontSize="subtitle" color={textColor}>
+        <Text fontWeight="bold" fontSize="body" color={textColor}>
           {title}
         </Text>
 
@@ -263,23 +245,21 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
             <StatGroup>
               <TimeframeLabel variant={variant}>Today</TimeframeLabel>
               <Text fontWeight="bold" fontSize="body" color={textColor}>
-                {trends.today}
+                {trends.today.toLocaleString()}
               </Text>
             </StatGroup>
 
             <StatGroup>
               <TimeframeLabel variant={variant}>Last Week</TimeframeLabel>
-
               <Text fontWeight="bold" fontSize="body" color={textColor}>
-                {trends.lastWeek}
+                {trends.lastWeek.toLocaleString()}
               </Text>
             </StatGroup>
 
             <StatGroup>
               <TimeframeLabel variant={variant}>Last Month</TimeframeLabel>
-
               <Text fontWeight="bold" fontSize="body" color={textColor}>
-                {trends.lastMonth}
+                {trends.lastMonth.toLocaleString()}
               </Text>
             </StatGroup>
           </FooterGrid>

@@ -19,9 +19,8 @@ const StyledContainer = styled(Container)`
 
 const DashboardGrid = styled.div`
   display: grid;
-  gap: ${({ theme }) => theme.spacing.md};
-  align-items: stretch;
-
+  gap: ${({ theme }) => theme.spacing.lg};
+  align-items: start;
   grid-template-columns: 1fr;
   grid-template-areas:
     "total-products"
@@ -41,8 +40,8 @@ const DashboardGrid = styled.div`
   @media (min-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
     grid-template-areas:
-      "total-products total-orders   low-stock"
-      "top-products   top-products   out-of-stock";
+      "total-products total-orders   top-products"
+      "low-stock       out-of-stock   top-products";
   }
 `;
 
@@ -50,6 +49,7 @@ const AreaWrapper = styled.div<{ area: string }>`
   grid-area: ${({ area }) => area};
   display: flex;
   flex-direction: column;
+  align-self: stretch;
 `;
 
 export const Dashboard: React.FC = () => {
@@ -100,10 +100,6 @@ export const Dashboard: React.FC = () => {
             />
           </AreaWrapper>
 
-          <AreaWrapper area="top-products">
-            <DashboardTopProductsCard />
-          </AreaWrapper>
-
           <AreaWrapper area="low-stock">
             <DashboardTopCard
               title="Low Stock Products"
@@ -120,6 +116,10 @@ export const Dashboard: React.FC = () => {
               totalCount={outOfStockProducts?.totalCount}
               variant="DANGER"
             />
+          </AreaWrapper>
+
+          <AreaWrapper area="top-products">
+            <DashboardTopProductsCard />
           </AreaWrapper>
         </DashboardGrid>
       ) : (
