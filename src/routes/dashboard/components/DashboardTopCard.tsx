@@ -251,7 +251,7 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
 
       <ContentWrapper>
         <Text fontWeight="bold" fontSize="subtitle" color={textColor}>
-          {totalCount.toLocaleString()}
+          {totalCount?.toLocaleString()}
         </Text>
       </ContentWrapper>
 

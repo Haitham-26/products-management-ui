@@ -113,7 +113,7 @@ export const DashboardTopProductsCard: React.FC = () => {
   );
 
   const products = [...(rawProducts?.mostSoldProducts || [])].sort(
-    (a, b) => b.quantity - a.quantity,
+    (a, b) => b.totalSold - a.totalSold,
   );
 
   const labels = products?.map((product) => product.name);
@@ -122,7 +122,7 @@ export const DashboardTopProductsCard: React.FC = () => {
     labels,
     datasets: [
       {
-        data: products?.map((product) => product.quantity),
+        data: products?.map((product) => product.totalSold),
         backgroundColor: getChartColors(theme).slice(0, products?.length),
         borderRadius: 6,
         borderSkipped: false,
