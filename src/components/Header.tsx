@@ -12,6 +12,8 @@ import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { userActions } from "../redux/user/user.slice";
 import { useAppDispatch, type AppDispatch } from "../redux/store";
+import { Image } from "./Image";
+import { Images } from "../assets";
 
 const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
   [
@@ -46,6 +48,11 @@ const Wrapper = styled.div`
   z-index: 100;
 `;
 
+const LogoLink = styled(Link)`
+  width: calc(250px - ${({ theme: { spacing } }) => spacing.lg} * 3);
+  display: block;
+`;
+
 const EndContainer = styled.div`
   display: flex;
   align-items: center;
@@ -68,7 +75,9 @@ export const Header: React.FC = () => {
       <Container>
         <Row justify="space-between" align="middle" gutter={16}>
           <Column>
-            <h1>LOGO</h1>
+            <LogoLink to="/">
+              <Image src={Images.Logo} alt="Inventix" />
+            </LogoLink>
           </Column>
 
           <Column>

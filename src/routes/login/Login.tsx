@@ -1,62 +1,25 @@
 import type React from "react";
-import styled from "styled-components";
 import { Input } from "../../components/Input";
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Toast } from "../../utils/Toast";
+import { AuthContainer } from "../../components/AuthContainer";
+import styled from "styled-components";
 
-const Card = styled.div`
-  width: 100%;
-  max-width: 24rem;
-  padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  box-shadow: ${({ theme }) => theme.shadow.md};
+const PasswordWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: calc(${({ theme }) => theme.spacing.md} / 2);
+  align-items: flex-end;
 `;
 
-const Brand = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: ${({ theme }) => theme.colors.primary};
-  letter-spacing: -0.02em;
-`;
-
-const Header = styled.div`
-  text-align: center;
-
-  h1 {
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const Footer = styled.div`
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.small};
-
-  a {
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: 500;
-  }
+const ForgotPasswordLink = styled(Link)`
+  font-size: calc(${({ theme }) => theme.typography.small} / 1.1);
 `;
 
 export const Login: React.FC = () => {
@@ -85,15 +48,10 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <Card>
-      <Brand>Productly</Brand>
-
-      <Header>
-        <h1>Welcome back</h1>
-        <p>Sign in to manage your products</p>
-      </Header>
-
-      <Form>
+    <AuthContainer
+      title="Welcome back"
+      description="Sign in to manage your products"
+      formItems={[
         <Controller
           control={control}
           name="email"
@@ -106,31 +64,38 @@ export const Login: React.FC = () => {
               {...field}
             />
           )}
-        />
+        />,
 
-        <Controller
-          control={control}
-          name="password"
-          rules={{ required: "Password is required" }}
-          render={({ field, fieldState }) => (
-            <Input
-              title="Password"
-              type="password"
-              placeholder="••••••••"
-              errorMessage={fieldState.error?.message}
-              {...field}
-            />
-          )}
-        />
+        <PasswordWrapper>
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: "Password is required" }}
+            render={({ field, fieldState }) => (
+              <Input
+                title="Password"
+                type="password"
+                placeholder="••••••••"
+                errorMessage={fieldState.error?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <ForgotPasswordLink to="/forgot-password">
+            Forgot password?
+          </ForgotPasswordLink>
+        </PasswordWrapper>,
 
         <Button loading={loading} onClick={handleSubmit(onLogin)}>
           Login
-        </Button>
-      </Form>
-
-      <Footer>
-        Don’t have an account? <Link to="/signup">Create one</Link>
-      </Footer>
-    </Card>
+        </Button>,
+      ]}
+      footerContent={
+        <Fragment>
+          Don’t have an account? <Link to="/signup">Create one</Link>
+        </Fragment>
+      }
+    />
   );
 };

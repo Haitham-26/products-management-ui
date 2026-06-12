@@ -1,18 +1,18 @@
 import type React from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Fragment, useEffect, useState } from "react";
-import { useAppDispatch } from "../../redux/store";
-import { userActions } from "../../redux/user/user.slice";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "../../components/Button";
-import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
-import { Toast } from "../../utils/Toast";
-import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import { AuthContainer } from "../../components/AuthContainer";
+import { Controller, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../redux/store";
+import { Toast } from "../../utils/Toast";
+import { userActions } from "../../redux/user/user.slice";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "../../components/Button";
+import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
+import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
 
-const LAST_RESEND_LOCAL_STORAGE_KEY = "signup-token-last-resend-time";
+const LAST_RESEND_LOCAL_STORAGE_KEY = "forgot-password-token-last-resend-time";
 
 const TokenInputContainer = styled.div`
   display: flex;
@@ -20,42 +20,47 @@ const TokenInputContainer = styled.div`
   gap: calc(${({ theme }) => theme.spacing.md} / 2);
 `;
 
-const BoldSpan = styled.span`
-  font-weight: 600;
-`;
-
-export const SignUpToken: React.FC = () => {
+export const ForgotPasswordTokenStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { control, handleSubmit, getValues } = useForm<SignUpTokenDto>({
-    defaultValues: {
-      email: state?.email,
-      token: "",
-    },
-  });
+  const {
+    state: { email },
+  } = useLocation();
+  const { control, getValues, handleSubmit, watch } =
+    useForm<ForgotPasswordTokenDto>({
+      defaultValues: {
+        email,
+        token: "",
+      },
+    });
+
+  const token = watch("token");
 
   const resendToken = () => {
     return dispatch(
-      userActions.signUpResendToken({ email: getValues("email") }),
+      userActions.forgotPasswordEmail({ email: getValues("email") }),
     ).unwrap();
   };
 
-  const onSignUp = async () => {
+  const onSubmit = async () => {
     try {
       setLoading(true);
 
-      await dispatch(userActions.signUpToken(getValues())).unwrap();
+      const dto = getValues();
+
+      await dispatch(userActions.forgotPasswordToken(dto)).unwrap();
+
+      Toast.success(
+        "We verified your email, now you can create a new password!",
+      );
 
       localStorage.removeItem(LAST_RESEND_LOCAL_STORAGE_KEY);
 
-      navigate("/dashboard", { replace: true });
-
-      Toast.success("Account verified successfully");
+      navigate("/forgot-password/new", { state: dto, replace: true });
     } catch (e) {
-      console.error(e);
+      console.log(e);
       Toast.apiError(e);
     } finally {
       setLoading(false);
@@ -63,20 +68,15 @@ export const SignUpToken: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!state?.email) {
-      navigate("/", { replace: true });
+    if (!email) {
+      navigate("/forgot-password", { replace: true });
     }
-  }, [state?.email, navigate]);
+  }, [email, navigate]);
 
   return (
     <AuthContainer
-      title="Confirm your email"
-      description={
-        <Fragment>
-          We sent the verification code to your email
-          <BoldSpan> "{state?.email}"</BoldSpan>, please enter it below.
-        </Fragment>
-      }
+      title="Reset password"
+      description="Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step."
       formItems={[
         <TokenInputContainer>
           <Controller
@@ -106,7 +106,11 @@ export const SignUpToken: React.FC = () => {
             onResend={resendToken}
           />
         </TokenInputContainer>,
-        <Button loading={loading} onClick={handleSubmit(onSignUp)}>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          loading={loading}
+          disabled={!token.length || token.length < 6}
+        >
           Verify & Continue
         </Button>,
       ]}

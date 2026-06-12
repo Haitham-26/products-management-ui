@@ -1,7 +1,11 @@
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { LoginResponseDto } from "../../model/shared/dto/LoginResponseDto";
+import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
+import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
+import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
+import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { User } from "../../model/user/types/User";
@@ -27,6 +31,27 @@ export class UserAxios {
         localStorage.setItem("token", data.token);
         return data;
       },
+    );
+  }
+  static signUpResendToken(dto: SignUpResendTokenDto) {
+    return AppAxios.post("/auth/signup/token-resend", dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static forgotPasswordEmail(dto: ForgotPasswordEmailDto) {
+    return AppAxios.post("/auth/forgot-password/email", dto).then(
+      ({ data }) => data,
+    );
+  }
+  static forgotPasswordToken(dto: ForgotPasswordTokenDto) {
+    return AppAxios.post("/auth/forgot-password/token", dto).then(
+      ({ data }) => data,
+    );
+  }
+  static forgotPasswordNew(dto: ForgotPasswordNewDto) {
+    return AppAxios.post("/auth/forgot-password/new", dto).then(
+      ({ data }) => data,
     );
   }
 
