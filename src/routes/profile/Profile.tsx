@@ -162,6 +162,17 @@ export const Profile: React.FC = () => {
             <Controller
               control={control}
               name="name"
+              rules={{
+                required: "Full name is required",
+                minLength: {
+                  value: 3,
+                  message: "Full name must be at least 3 characters",
+                },
+                maxLength: {
+                  value: 30,
+                  message: "Full name must be at most 30 characters",
+                },
+              }}
               render={({ field, fieldState: { error } }) => (
                 <Input
                   title="Full Name"
