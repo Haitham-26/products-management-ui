@@ -8,10 +8,19 @@ import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
+import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
 import type { User } from "../../model/user/types/User";
 import AppAxios from "../AppAxios";
 
 export class UserAxios {
+  static getUserById(dto: GenericWithUserId) {
+    return AppAxios.post<User>("/user", dto).then(({ data }) => data);
+  }
+
+  static updateUser(dto: UpdateUserDto) {
+    return AppAxios.patch("/user/update", dto).then(({ data }) => data);
+  }
+
   static login(dto: LoginDto) {
     return AppAxios.post<LoginResponseDto>("/auth/login", dto).then(
       ({ data }) => {
