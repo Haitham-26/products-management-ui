@@ -13,6 +13,7 @@ import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPassword
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
+import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 
 interface UserState {
   user?: User;
@@ -51,6 +52,11 @@ const signUpToken = AppThunk<LoginResponseDto, SignUpTokenDto>(
 const signUpResendToken = AppThunk<void, SignUpResendTokenDto>(
   "/auth/signup/resend-token",
   UserAxios.signUpResendToken,
+);
+
+const resetPassword = AppThunk<void, ResetPasswordDto>(
+  "/user/reset-password",
+  UserAxios.resetPassword,
 );
 
 const forgotPasswordEmail = AppThunk<void, ForgotPasswordEmailDto>(
@@ -108,6 +114,7 @@ const userActions = {
   signUpEmail,
   signUpToken,
   signUpResendToken,
+  resetPassword,
   forgotPasswordEmail,
   forgotPasswordToken,
   forgotPasswordNew,

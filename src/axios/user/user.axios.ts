@@ -4,6 +4,7 @@ import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPassword
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
+import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
@@ -19,6 +20,10 @@ export class UserAxios {
 
   static updateUser(dto: UpdateUserDto) {
     return AppAxios.patch("/user/update", dto).then(({ data }) => data);
+  }
+
+  static resetPassword(dto: ResetPasswordDto) {
+    return AppAxios.patch("/user/reset-password", dto).then(({ data }) => data);
   }
 
   static login(dto: LoginDto) {

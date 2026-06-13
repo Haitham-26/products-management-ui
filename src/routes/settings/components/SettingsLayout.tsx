@@ -8,6 +8,7 @@ import { Container } from "../../../components/Container";
 import { PageHeader } from "../../../components/PageHeader";
 import { PageSidebar } from "../../../components/PageSidebar";
 import { SettingsKeys } from "../../../model/settings/types/SettingsKeys.enum";
+import { faShield } from "@fortawesome/free-solid-svg-icons/faShield";
 
 const Layout = styled.div`
   display: flex;
@@ -21,6 +22,7 @@ const Content = styled.div`
 const sections = [
   { key: SettingsKeys.GENERAL, label: "General", icon: faSliders },
   { key: SettingsKeys.INVENTORY, label: "Inventory", icon: faBox },
+  { key: SettingsKeys.SECURITY, label: "Security", icon: faShield },
 ];
 
 export const SettingsLayout: React.FC = () => {
