@@ -20,6 +20,6 @@ export interface GetDashboardStatsResponseDto {
   mostSoldProducts: Array<{
     _id: string;
     name: string;
-    quantity: number;
+    totalSold: number;
   }>;
 }

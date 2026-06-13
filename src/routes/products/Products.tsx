@@ -185,8 +185,9 @@ export const Products: React.FC = () => {
       createProductsTableColumns({
         functions: { onDelete, onEdit, onRead, onManageStock },
         currency: settings.currency,
+        settings,
       }),
-    [settings.currency],
+    [settings],
   );
 
   useEffect(() => {

@@ -19,6 +19,7 @@ import { ProductStockStatus } from "../../../model/product/types/ProductStockSta
 import type { CurrencyCodeRecord } from "currency-codes";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import { faBoxesStacked } from "@fortawesome/free-solid-svg-icons/faBoxesStacked";
+import type { Settings } from "../../../model/settings/types/Settings";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -80,11 +81,13 @@ type CreateProductsTableColumnsArgs = {
     onManageStock: FNType;
   };
   currency: CurrencyCodeRecord["code"];
+  settings: Settings;
 };
 
 export const createProductsTableColumns = ({
   functions: { onEdit, onDelete, onRead, onManageStock },
   currency,
+  settings,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
   return [
     {
@@ -115,7 +118,7 @@ export const createProductsTableColumns = ({
       key: "quantity",
       width: 180,
       render: (value: number, record) => {
-        const threshold = record.minStock || 10;
+        const threshold = record.minStock || settings.inventory.defaultMinStock;
 
         const isOutOfStock = value <= 0;
         const isLowStock = !isOutOfStock && value <= threshold;
