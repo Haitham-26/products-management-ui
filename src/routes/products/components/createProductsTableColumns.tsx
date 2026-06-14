@@ -11,7 +11,8 @@ import { formatDate } from "../../../utils/Date";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
-import { isNaN } from "lodash";
+import capitalize from "lodash/capitalize";
+import isNaN from "lodash/isNaN";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import styled from "styled-components";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
@@ -20,6 +21,9 @@ import type { CurrencyCodeRecord } from "currency-codes";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import { faBoxesStacked } from "@fortawesome/free-solid-svg-icons/faBoxesStacked";
 import type { Settings } from "../../../model/settings/types/Settings";
+import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
+import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
+import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -79,13 +83,14 @@ type CreateProductsTableColumnsArgs = {
     onDelete: FNType;
     onRead: FNType;
     onManageStock: FNType;
+    onToggleStatus: FNType;
   };
   currency: CurrencyCodeRecord["code"];
   settings: Settings;
 };
 
 export const createProductsTableColumns = ({
-  functions: { onEdit, onDelete, onRead, onManageStock },
+  functions: { onEdit, onDelete, onRead, onManageStock, onToggleStatus },
   currency,
   settings,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
@@ -103,6 +108,18 @@ export const createProductsTableColumns = ({
       width: 220,
       ellipsis: true,
       sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      render: (value: ProductStatus) =>
+        capitalize(value || ProductStatus.PUBLISHED),
+      onCell: (record) => ({
+        className: `${(record.status || ProductStatus.PUBLISHED).toLowerCase()}-product`,
+      }),
     },
     {
       title: "Base Price",
@@ -239,6 +256,23 @@ export const createProductsTableColumns = ({
                 icon: <Icon icon={faBoxesStacked} />,
                 label: "Manage Stock",
                 onClick: () => onManageStock(record),
+              },
+              {
+                key: "toggle-status",
+                icon: (
+                  <Icon
+                    icon={
+                      record.status === ProductStatus.DRAFT
+                        ? faCloudArrowUp
+                        : faCloudArrowDown
+                    }
+                  />
+                ),
+                label:
+                  record.status === ProductStatus.DRAFT
+                    ? "Publish Product"
+                    : "Move to Draft",
+                onClick: () => onToggleStatus(record),
               },
               {
                 key: "delete",

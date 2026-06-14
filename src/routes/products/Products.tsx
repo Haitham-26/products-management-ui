@@ -31,9 +31,32 @@ import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import { ProductStockManageModal } from "./components/ProductStockManageModal";
+import { ProductStatus } from "../../model/product/types/ProductStatus.enum";
+import { Toast } from "../../utils/Toast";
+
+const toggleStatusModalTexts = {
+  [ProductStatus.DRAFT]: {
+    title: "Publish product",
+    description: "This product will become available for creating new orders.",
+  },
+  [ProductStatus.PUBLISHED]: {
+    title: "Move product to draft",
+    description:
+      "This product will be hidden from the product list by default unless draft filter is enabled, and it will no longer be available for creating new orders.",
+  },
+};
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
+
+  .published-product {
+    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+    color: ${({ theme }) => theme.colors.surface};
+  }
+
+  .draft-product {
+    background-color: ${({ theme }) => theme.colors.pending} !important;
+  }
 `;
 
 export const Products: React.FC = () => {
@@ -44,6 +67,10 @@ export const Products: React.FC = () => {
   const [productCreateVisible, setProductCreateVisible] = useState(false);
   const [productDeleteLoading, setProductDeleteLoading] = useState(false);
   const [productStockManageVisible, setProductStockManageVisible] =
+    useState(false);
+  const [productToggleStatusVisible, setProductToggleStatusVisible] =
+    useState(false);
+  const [productToggleStatusLoading, setProductToggleStatusLoading] =
     useState(false);
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -134,18 +161,13 @@ export const Products: React.FC = () => {
     setProductStockManageVisible(true);
   };
 
-  const deleteProduct = async () => {
-    if (!currentProduct) {
-      return;
-    }
+  const onToggleStatus = (product: Product) => {
+    setCurrentProduct(product);
+    setProductToggleStatusVisible(true);
+  };
 
+  const fetchProducts = async () => {
     try {
-      setProductDeleteLoading(true);
-
-      await dispatch(
-        productActions.deleteProduct({ productId: currentProduct._id, userId }),
-      ).unwrap();
-
       const meta = productsMeta;
       const currentPage = meta?.page || 1;
       const limit = meta?.limit || 10;
@@ -170,11 +192,69 @@ export const Products: React.FC = () => {
           replace: true,
         },
       );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    }
+  };
+
+  const toggleProductStatus = async () => {
+    if (!currentProduct) {
+      return;
+    }
+
+    try {
+      setProductToggleStatusLoading(true);
+
+      await dispatch(
+        productActions.updateProduct({
+          productId: currentProduct._id,
+          status:
+            ProductStatus[
+              currentProduct.status === ProductStatus.DRAFT
+                ? ProductStatus.PUBLISHED
+                : ProductStatus.DRAFT
+            ],
+
+          userId,
+        }),
+      ).unwrap();
+
+      await fetchProducts();
+
+      setProductToggleStatusVisible(false);
+      setCurrentProduct(null);
+
+      Toast.success("Product status updated successfully");
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setProductToggleStatusLoading(false);
+    }
+  };
+
+  const deleteProduct = async () => {
+    if (!currentProduct) {
+      return;
+    }
+
+    try {
+      setProductDeleteLoading(true);
+
+      await dispatch(
+        productActions.deleteProduct({ productId: currentProduct._id, userId }),
+      ).unwrap();
+
+      await fetchProducts();
 
       setProductDeleteVisible(false);
       setCurrentProduct(null);
+
+      Toast.success("Product deleted successfully");
     } catch (e) {
       console.error("Delete failed:", e);
+      Toast.apiError(e);
     } finally {
       setProductDeleteLoading(false);
     }
@@ -183,7 +263,7 @@ export const Products: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createProductsTableColumns({
-        functions: { onDelete, onEdit, onRead, onManageStock },
+        functions: { onDelete, onEdit, onRead, onManageStock, onToggleStatus },
         currency: settings.currency,
         settings,
       }),
@@ -253,6 +333,23 @@ export const Products: React.FC = () => {
         onClose={() => setProductDeleteVisible(false)}
         onConfirm={deleteProduct}
         confirmLoading={productDeleteLoading}
+      />
+
+      <WarningModal
+        title={
+          toggleStatusModalTexts[
+            currentProduct?.status || ProductStatus.PUBLISHED
+          ].title
+        }
+        description={
+          toggleStatusModalTexts[
+            currentProduct?.status || ProductStatus.PUBLISHED
+          ].description
+        }
+        open={productToggleStatusVisible}
+        onClose={() => setProductToggleStatusVisible(false)}
+        loading={productToggleStatusLoading}
+        onConfirm={toggleProductStatus}
       />
 
       <ProductCreateDrawer

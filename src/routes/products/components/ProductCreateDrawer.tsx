@@ -1,5 +1,5 @@
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -159,7 +159,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const { control, handleSubmit, getValues, reset, watch } =
+  const { control, handleSubmit, getValues, reset, watch, setValue } =
     useForm<CreateProductDto>({
       defaultValues: {
         name: "",
@@ -246,6 +246,17 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const maxValue =
+      discountType === ProductDiscountTypes.PERCENTAGE
+        ? 100
+        : Number(price) || 0;
+
+    if (Number(discountValue) > maxValue) {
+      setValue("discount.value", maxValue);
+    }
+  }, [price, discountType, discountValue, setValue]);
 
   return (
     <Drawer
