@@ -15,6 +15,7 @@ import { ProductStockStatus } from "../../../model/product/types/ProductStockSta
 import capitalize from "lodash/capitalize";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import { Checkbox } from "antd";
 
 const creationDateOptions = [
   {
@@ -147,6 +148,17 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             onChange={(val) => applyFilter("creationDate", val)}
             options={creationDateOptions}
           />
+        </PopoverSection>
+
+        <PopoverSeparator />
+
+        <PopoverSection>
+          <Checkbox
+            checked={filters.showDraft}
+            onChange={(e) => applyFilter("showDraft", e.target.checked)}
+          >
+            <PopoverLabel>Show draft</PopoverLabel>
+          </Checkbox>
         </PopoverSection>
 
         <PopoverSeparator />

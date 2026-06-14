@@ -34,6 +34,7 @@ import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscou
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
+import { Text } from "../../../components/Text";
 
 const FormContainer = styled.div`
   display: flex;
@@ -282,7 +283,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
             <Icon icon={faBoxOpen} />
           </IconWrapper>
           <TitleGroup>
-            <h2>Edit Product</h2>
+            <Text fontWeight="bold" fontSize="title">
+              Edit Product
+            </Text>
             <span>Modify the properties of your existing item</span>
           </TitleGroup>
         </GlassHeader>

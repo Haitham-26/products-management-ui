@@ -9,6 +9,7 @@ export interface GetProductsDto extends GenericWithUserId {
   categoryId?: string;
   tagIds?: string[];
   keyword?: string;
+  showDraft?: boolean;
   creationDate?: CreationDateFilters;
   minBasePrice?: number;
   maxBasePrice?: number;
