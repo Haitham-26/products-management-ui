@@ -12,6 +12,8 @@ import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPassword
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
+import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
+import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 
 interface UserState {
   user?: User;
@@ -22,6 +24,16 @@ const initialState: UserState = {
   user: undefined,
   organizationMembers: undefined,
 };
+
+const getUserById = AppThunk<User, GenericWithUserId>(
+  "/user",
+  UserAxios.getUserById,
+);
+
+const updateUser = AppThunk<void, UpdateUserDto>(
+  "/user/update",
+  UserAxios.updateUser,
+);
 
 const login = AppThunk<LoginResponseDto, LoginDto>(
   "/auth/login",
@@ -41,6 +53,11 @@ const signUpResendToken = AppThunk<void, SignUpResendTokenDto>(
   "/auth/signup/resend-token",
   UserAxios.signUpResendToken,
 );
+
+const resetPassword = AppThunk<
+  Pick<LoginResponseDto, "token">,
+  ResetPasswordDto
+>("/user/reset-password", UserAxios.resetPassword);
 
 const forgotPasswordEmail = AppThunk<void, ForgotPasswordEmailDto>(
   "/auth/forgot-password/email",
@@ -80,6 +97,9 @@ export const userSlice = createSlice({
     addCase(signUpToken.fulfilled, (state, action) => {
       state.user = action.payload.user;
     });
+    addCase(getUserById.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
 
     addCase(getOrganizationMembers.fulfilled, (state, action) => {
       state.organizationMembers = action.payload;
@@ -89,10 +109,13 @@ export const userSlice = createSlice({
 });
 
 const userActions = {
+  getUserById,
+  updateUser,
   login,
   signUpEmail,
   signUpToken,
   signUpResendToken,
+  resetPassword,
   forgotPasswordEmail,
   forgotPasswordToken,
   forgotPasswordNew,

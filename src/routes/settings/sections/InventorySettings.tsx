@@ -8,39 +8,11 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import type { UpdateSettingsDto } from "../../../model/settings/dto/UpdateSettingsDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.primary}1a;
-`;
+import { SettingsSection } from "../components/SettingsSection";
 
 const Alert = styled.div`
   display: flex;
@@ -55,9 +27,9 @@ const Alert = styled.div`
   line-height: 1.6;
 `;
 
-const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const StyledButton = styled(Button)`
+  width: fit-content;
+  margin-inline-start: auto;
 `;
 
 export const InventorySettings: React.FC = () => {
@@ -97,54 +69,52 @@ export const InventorySettings: React.FC = () => {
   }, [dispatch, userId]);
 
   return (
-    <Section>
-      <Header>
-        <h3>Inventory Threshold</h3>
+    <SettingsSection
+      title="Inventory Threshold"
+      description="Configure the default minimum stock level used to trigger low stock alerts across your inventory."
+      content={
+        <Fragment>
+          <Alert>
+            <Icon icon={faCircleInfo} />
 
-        <p>
-          Configure the default minimum stock level used to trigger low stock
-          alerts across your inventory.
-        </p>
-      </Header>
+            <span>
+              Products without a custom minimum stock value will use this
+              threshold automatically.
+            </span>
+          </Alert>
 
-      <Alert>
-        <Icon icon={faCircleInfo} />
-
-        <span>
-          Products without a custom minimum stock value will use this threshold
-          automatically.
-        </span>
-      </Alert>
-
-      <Controller
-        name="inventory.defaultMinStock"
-        control={control}
-        rules={{
-          required: "Default minimum stock is required.",
-          min: {
-            value: 1,
-            message: "Default minimum stock must be at least 1.",
-          },
-        }}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <Input
-            value={value}
-            onChange={(e) => onChange(Number(e.currentTarget.value))}
-            type="number"
-            min={1}
-            title="Default Minimum Stock"
-            placeholder="Ex: 10"
-            required
-            errorMessage={error?.message}
+          <Controller
+            name="inventory.defaultMinStock"
+            control={control}
+            rules={{
+              required: "Default minimum stock is required.",
+              min: {
+                value: 1,
+                message: "Default minimum stock must be at least 1.",
+              },
+            }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Input
+                value={value}
+                onChange={(e) => onChange(Number(e.currentTarget.value))}
+                type="number"
+                min={1}
+                title="Default Minimum Stock"
+                placeholder="Ex: 10"
+                required
+                errorMessage={error?.message}
+              />
+            )}
           />
-        )}
-      />
 
-      <Footer>
-        <Button onClick={handleSubmit(onUpdate)} loading={updateLoading}>
-          Save Changes
-        </Button>
-      </Footer>
-    </Section>
+          <StyledButton
+            onClick={handleSubmit(onUpdate)}
+            loading={updateLoading}
+          >
+            Save Changes
+          </StyledButton>
+        </Fragment>
+      }
+    />
   );
 };

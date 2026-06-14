@@ -14,9 +14,16 @@ import { userActions } from "../redux/user/user.slice";
 import { useAppDispatch, type AppDispatch } from "../redux/store";
 import { Image } from "./Image";
 import { Images } from "../assets";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 
 const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
   [
+    {
+      key: "profile",
+      label: "Profile",
+      icon: <Icon icon={faUser} />,
+      onClick: () => navigate("/profile"),
+    },
     {
       key: "users-permissions",
       label: "Users & Permissions",
