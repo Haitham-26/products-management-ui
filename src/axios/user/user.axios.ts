@@ -23,7 +23,13 @@ export class UserAxios {
   }
 
   static resetPassword(dto: ResetPasswordDto) {
-    return AppAxios.patch("/user/reset-password", dto).then(({ data }) => data);
+    return AppAxios.patch<Pick<LoginResponseDto, "token">>(
+      "/user/reset-password",
+      dto,
+    ).then(({ data }) => {
+      localStorage.setItem("token", data.token);
+      return data;
+    });
   }
 
   static login(dto: LoginDto) {

@@ -54,10 +54,10 @@ const signUpResendToken = AppThunk<void, SignUpResendTokenDto>(
   UserAxios.signUpResendToken,
 );
 
-const resetPassword = AppThunk<void, ResetPasswordDto>(
-  "/user/reset-password",
-  UserAxios.resetPassword,
-);
+const resetPassword = AppThunk<
+  Pick<LoginResponseDto, "token">,
+  ResetPasswordDto
+>("/user/reset-password", UserAxios.resetPassword);
 
 const forgotPasswordEmail = AppThunk<void, ForgotPasswordEmailDto>(
   "/auth/forgot-password/email",
@@ -100,6 +100,7 @@ export const userSlice = createSlice({
     addCase(getUserById.fulfilled, (state, action) => {
       state.user = action.payload;
     });
+
     addCase(getOrganizationMembers.fulfilled, (state, action) => {
       state.organizationMembers = action.payload;
     });
