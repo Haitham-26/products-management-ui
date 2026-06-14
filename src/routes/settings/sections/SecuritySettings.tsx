@@ -18,10 +18,11 @@ const StyledButton = styled(Button)`
 
 export const SecuritySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const user = useAppSelector(userSliceSelectors.selectUser);
-  const dispatch = useAppDispatch();
 
-  const { control, handleSubmit, getValues, reset } = useForm<
+  const user = useAppSelector(userSliceSelectors.selectUser);
+
+  const dispatch = useAppDispatch();
+  const { control, handleSubmit, getValues, reset, watch } = useForm<
     ResetPasswordDto & { confirmPassword: string }
   >({
     defaultValues: {
@@ -30,6 +31,12 @@ export const SecuritySettings: React.FC = () => {
       confirmPassword: "",
     },
   });
+
+  const [currentPassword, newPassword, confirmPassword] = watch([
+    "currentPassword",
+    "newPassword",
+    "confirmPassword",
+  ]);
 
   const onSubmit = async () => {
     try {
@@ -148,7 +155,11 @@ export const SecuritySettings: React.FC = () => {
             )}
           />
 
-          <StyledButton onClick={handleSubmit(onSubmit)} loading={loading}>
+          <StyledButton
+            onClick={handleSubmit(onSubmit)}
+            loading={loading}
+            disabled={!currentPassword || !newPassword || !confirmPassword}
+          >
             Update Password
           </StyledButton>
         </Fragment>
