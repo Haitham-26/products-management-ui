@@ -171,7 +171,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const { control, handleSubmit, reset, getValues, watch } =
+  const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
 
   const { append, remove, fields } = useFieldArray({ control, name: "tags" });
@@ -261,6 +261,17 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       });
     }
   }, [product, reset, open, userId]);
+
+  useEffect(() => {
+    const maxValue =
+      discountType === ProductDiscountTypes.PERCENTAGE
+        ? 100
+        : Number(price) || 0;
+
+    if (Number(discountValue) > maxValue) {
+      setValue("discount.value", maxValue);
+    }
+  }, [price, discountType, discountValue, setValue]);
 
   return (
     <Drawer
