@@ -29,6 +29,7 @@ import { Text } from "../../../components/Text";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
+import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
 
 const FormContainer = styled.div`
   display: flex;
@@ -206,7 +207,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const watchedItems = useWatch({ control, name: "items" });
 
   const productsMap = useMemo(() => {
-    return new Map(products.map((p) => [p._id, p.priceAfterDiscount]));
+    return new Map(
+      products
+        .filter((p) => p.status !== ProductStatus.DRAFT)
+        .map((p) => [p._id, p.priceAfterDiscount]),
+    );
   }, [products]);
 
   const totalAmount = useMemo(() => {
