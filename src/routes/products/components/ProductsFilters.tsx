@@ -1,10 +1,10 @@
 import type React from "react";
 import styled from "styled-components";
 import { Select } from "../../../components/Select";
-import { useAppSelector } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
@@ -16,6 +16,11 @@ import capitalize from "lodash/capitalize";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 import { Checkbox } from "antd";
+import { SearchSelect } from "../../../components/SearchSelect";
+import { categoryActions } from "../../../redux/category/categories.slice";
+import debounce from "lodash/debounce";
+import userSliceSelectors from "../../../redux/user/user.selector";
+import { tagActions } from "../../../redux/tag/tags.slice";
 
 const creationDateOptions = [
   {
@@ -126,12 +131,80 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
   const [basePriceRange, setBasePriceRange] = useState<Range>(null);
   const [finalPriceRange, setFinalPriceRange] = useState<Range>(null);
   const [quantityRange, setQuantityRange] = useState<Range>(null);
+  const [searchCategoriesLoading, setSearchCategoriesLoading] = useState(false);
+  const [searchTagsLoading, setSearchTagsLoading] = useState(false);
 
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchCategories = useCallback(
+    debounce(async (keyword: string) => {
+      try {
+        setSearchCategoriesLoading(true);
+
+        await dispatch(
+          categoryActions.getCategories({
+            userId,
+            keyword,
+            meta: { page: 1, limit: 50 },
+          }),
+        ).unwrap();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setSearchCategoriesLoading(false);
+      }
+    }, 800),
+    [dispatch, userId],
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchTags = useCallback(
+    debounce(async (keyword: string) => {
+      try {
+        setSearchTagsLoading(true);
+
+        await dispatch(
+          tagActions.getTags({
+            userId,
+            keyword,
+            meta: {
+              page: 1,
+              limit: 50,
+            },
+          }),
+        ).unwrap();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setSearchTagsLoading(false);
+      }
+    }, 800),
+    [dispatch, userId],
+  );
+
+  const categoriesOptions = useMemo(
+    () =>
+      categories.map((c) => ({
+        label: c.name,
+        value: c._id,
+      })),
+    [categories],
+  );
+
+  const tagsOptions = useMemo(
+    () =>
+      tags.map((t) => ({
+        label: t.name,
+        value: t._id,
+      })),
+    [tags],
+  );
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -273,30 +346,28 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
 
         <PopoverSection>
           <PopoverLabel>Category</PopoverLabel>
-          <Select
-            placeholder="All categories"
-            value={filters.categoryId}
+          <SearchSelect
+            value={filters.categoryId || undefined}
             onChange={(val) => applyFilter("categoryId", val)}
+            options={categoriesOptions}
+            onSearch={searchCategories}
             allowClear
-            options={categories.map((c) => ({
-              label: c.name,
-              value: c._id,
-            }))}
+            loading={searchCategoriesLoading}
+            placeholder="Search for a category..."
           />
         </PopoverSection>
 
         <PopoverSection>
           <PopoverLabel>Tags</PopoverLabel>
-          <Select
+          <SearchSelect
             mode="multiple"
-            placeholder="Select tags"
-            maxTagCount="responsive"
-            value={filters.tagIds}
-            onChange={(vals) => applyFilter("tagIds", vals)}
-            options={tags.map((tag) => ({
-              label: tag.name,
-              value: tag._id,
-            }))}
+            value={filters.tagIds || undefined}
+            onChange={(val) => applyFilter("tagIds", val)}
+            options={tagsOptions}
+            onSearch={searchTags}
+            loading={searchTagsLoading}
+            allowClear
+            placeholder="Search for tags..."
           />
         </PopoverSection>
 

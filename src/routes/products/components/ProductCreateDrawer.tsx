@@ -185,7 +185,11 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         setSearchCategoriesLoading(true);
 
         await dispatch(
-          categoryActions.getCategories({ userId, keyword }),
+          categoryActions.getCategories({
+            userId,
+            keyword,
+            meta: { page: 1, limit: 50 },
+          }),
         ).unwrap();
       } catch (e) {
         console.log(e);
@@ -201,7 +205,9 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       try {
         setSearchTagsLoading(true);
 
-        await dispatch(tagActions.getTags({ userId, keyword })).unwrap();
+        await dispatch(
+          tagActions.getTags({ userId, keyword, meta: { page: 1, limit: 50 } }),
+        ).unwrap();
       } catch (e) {
         console.log(e);
       } finally {

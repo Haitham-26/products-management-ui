@@ -169,7 +169,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         setSearchCategoriesLoading(true);
 
         await dispatch(
-          categoryActions.getCategories({ userId, keyword }),
+          categoryActions.getCategories({
+            userId,
+            keyword,
+            meta: { page: 1, limit: 50 },
+          }),
         ).unwrap();
       } catch (e) {
         console.log(e);
@@ -185,7 +189,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       try {
         setSearchTagsLoading(true);
 
-        await dispatch(tagActions.getTags({ userId, keyword })).unwrap();
+        await dispatch(
+          tagActions.getTags({ userId, keyword, meta: { page: 1, limit: 50 } }),
+        ).unwrap();
       } catch (e) {
         console.log(e);
       } finally {
