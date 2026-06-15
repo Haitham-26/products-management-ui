@@ -8,9 +8,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import productSliceSelectors from "../../redux/product/products.selector";
 import userSliceSelectors from "../../redux/user/user.selector";
 import { productActions } from "../../redux/product/products.slice";
-import { categoryActions } from "../../redux/category/categories.slice";
-import { tagActions } from "../../redux/tag/tags.slice";
-
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
 import { WarningModal } from "../../components/WarningModal";
@@ -277,8 +274,6 @@ export const Products: React.FC = () => {
         userId,
       } as GetProductsDto),
     );
-    dispatch(categoryActions.getCategories({ userId }));
-    dispatch(tagActions.getTags({ userId }));
     dispatch(settingsActions.getSettings({ userId }));
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps

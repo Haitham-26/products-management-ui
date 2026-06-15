@@ -1,7 +1,7 @@
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
 import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
@@ -11,8 +11,6 @@ import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons/faLayerGroup";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons/faCircleXmark";
 import { faTicket } from "@fortawesome/free-solid-svg-icons/faTicket";
 import type { Product } from "../../../model/product/types/Product";
 import type { UpdateProductDto } from "../../../model/product/dto/UpdateProductDto";
@@ -21,9 +19,7 @@ import { productActions } from "../../../redux/product/products.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
-import { Button } from "../../../components/Button";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { Dropdown } from "../../../components/Dropdown";
 import { Toast } from "../../../utils/Toast";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -35,6 +31,10 @@ import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { Text } from "../../../components/Text";
+import { SearchSelect } from "../../../components/SearchSelect";
+import { tagActions } from "../../../redux/tag/tags.slice";
+import debounce from "lodash/debounce";
+import { categoryActions } from "../../../redux/category/categories.slice";
 
 const FormContainer = styled.div`
   display: flex;
@@ -53,25 +53,9 @@ const GlassHeader = styled.header`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
 const TitleGroup = styled.div`
   display: flex;
   flex-direction: column;
-
-  h2 {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.title};
-  }
-
-  span {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
 `;
 
 const FormSection = styled.section`
@@ -94,12 +78,11 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
   }
 `;
 
@@ -124,31 +107,6 @@ const PriceBadge = styled.div`
   }
 `;
 
-const TagCloud = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.sm};
-  margin-top: ${({ theme }) => theme.spacing.sm};
-`;
-
-const ElegantTag = styled(Button)`
-  all: unset;
-  cursor: pointer;
-  background: ${({ theme }) => theme.colors.textPrimary};
-  color: ${({ theme }) => theme.colors.surface};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: 0.7rem;
-  transition: opacity 0.2s;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
 type ProductUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -163,6 +121,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   filters,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [searchCategoriesLoading, setSearchCategoriesLoading] = useState(false);
+  const [searchTagsLoading, setSearchTagsLoading] = useState(false);
+
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -173,8 +134,6 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
   const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
-
-  const { append, remove, fields } = useFieldArray({ control, name: "tags" });
 
   const [discountValue, discountType, price] = watch([
     "discount.value",
@@ -189,14 +148,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
   const tagsOptions = useMemo(
     () =>
-      tags
-        ?.filter((tag) => !fields.some((f) => f.tag === tag._id))
-        .map((tag) => ({
-          key: tag._id,
-          label: tag.name,
-          onClick: () => append({ tag: tag._id }),
-        })),
-    [append, tags, fields],
+      tags.map((tag) => ({
+        label: tag.name,
+        value: tag._id,
+      })),
+    [tags],
   );
 
   const finalPrice = useMemo(() => {
@@ -205,6 +161,39 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       value: discountValue || 0,
     });
   }, [price, discountType, discountValue]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchCategories = useCallback(
+    debounce(async (keyword: string) => {
+      try {
+        setSearchCategoriesLoading(true);
+
+        await dispatch(
+          categoryActions.getCategories({ userId, keyword }),
+        ).unwrap();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setSearchCategoriesLoading(false);
+      }
+    }, 800),
+    [dispatch, userId],
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchTags = useCallback(
+    debounce(async (keyword: string) => {
+      try {
+        setSearchTagsLoading(true);
+
+        await dispatch(tagActions.getTags({ userId, keyword })).unwrap();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setSearchTagsLoading(false);
+      }
+    }, 800),
+    [dispatch, userId],
+  );
 
   const onSave = async () => {
     if (!product) {
@@ -222,7 +211,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         discount: dto.discount?.type
           ? { ...dto.discount, value: Number(dto.discount.value) }
           : undefined,
-        tags: dto.tags?.map((t) => t.tag),
+        tags: dto.tags || [],
         minStock: dto.minStock ? Number(dto.minStock) : undefined,
       };
 
@@ -255,7 +244,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           value: 0,
         },
         categoryId: product.category?._id,
-        tags: (product?.tags || []).map((tag) => ({ tag: tag._id })),
+        tags: product?.tags?.map((t) => t._id) || [],
         minStock: product?.minStock,
         userId,
       });
@@ -290,21 +279,22 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     >
       <FormContainer>
         <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faBoxOpen} />
-          </IconWrapper>
+          <Icon icon={faBoxOpen} size="2xl" color="primary" />
+
           <TitleGroup>
-            <Text fontWeight="bold" fontSize="title">
+            <Text fontWeight="bold" fontSize="subtitle">
               Edit Product
             </Text>
-            <span>Modify the properties of your existing item</span>
+            <Text color="textSecondary" fontSize="small">
+              Modify the properties of your existing item
+            </Text>
           </TitleGroup>
         </GlassHeader>
 
         <FormSection>
           <SectionLabel>
             <Icon icon={faLayerGroup} />
-            <h4>Identification</h4>
+            <Text>Identification</Text>
           </SectionLabel>
           <Controller
             control={control}
@@ -331,7 +321,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faCoins} />
-            <h4>Economics</h4>
+            <Text>Economics</Text>
           </SectionLabel>
           <InputGrid>
             <Controller
@@ -385,7 +375,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faTicket} />
-            <h4>Promotions</h4>
+            <Text>Promotions</Text>
           </SectionLabel>
           <Controller
             control={control}
@@ -424,36 +414,42 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faTags} />
-            <h4>Taxonomy</h4>
+            <Text>Taxonomy</Text>
           </SectionLabel>
           <Controller
             control={control}
             name="categoryId"
             render={({ field: { value, onChange } }) => (
-              <Select
-                title="Primary Category"
-                value={value}
-                onChange={(v) => onChange(v || null)}
+              <SearchSelect
+                title="Select Category"
+                value={value || undefined}
+                onChange={onChange}
                 options={categoriesOptions}
+                onSearch={searchCategories}
                 allowClear
+                loading={searchCategoriesLoading}
+                placeholder="Search for a category..."
               />
             )}
           />
 
-          <Dropdown menu={{ items: tagsOptions }}>
-            <Button variant="ghost" icon={faChevronDown}>
-              Attach Tags
-            </Button>
-          </Dropdown>
-
-          <TagCloud>
-            {fields.map((field, index) => (
-              <ElegantTag key={field.id} onClick={() => remove(index)}>
-                {tags?.find((t) => t._id === field.tag)?.name}
-                <Icon icon={faCircleXmark} />
-              </ElegantTag>
-            ))}
-          </TagCloud>
+          <Controller
+            control={control}
+            name="tags"
+            render={({ field: { value: tags, onChange } }) => (
+              <SearchSelect
+                title="Select Tags"
+                mode="multiple"
+                value={tags}
+                onChange={onChange}
+                options={tagsOptions}
+                onSearch={searchTags}
+                loading={searchTagsLoading}
+                allowClear
+                placeholder="Search for tags..."
+              />
+            )}
+          />
         </FormSection>
       </FormContainer>
     </Drawer>

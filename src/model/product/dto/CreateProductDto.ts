@@ -1,10 +1,6 @@
 import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { ProductDiscount } from "../types/ProductDiscount";
 
-type Tag = {
-  tag: string;
-};
-
 export interface CreateProductDto extends GenericWithUserId {
   name: string;
   description?: string;
@@ -12,6 +8,6 @@ export interface CreateProductDto extends GenericWithUserId {
   quantity: number;
   discount?: ProductDiscount;
   categoryId?: string;
-  tags?: Tag[];
+  tags?: string[];
   minStock?: number;
 }
