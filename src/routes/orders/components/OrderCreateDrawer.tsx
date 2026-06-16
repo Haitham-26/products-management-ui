@@ -1,5 +1,5 @@
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Drawer } from "../../../components/Drawer";
@@ -8,7 +8,6 @@ import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { Select, type SelectProps } from "../../../components/Select";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
@@ -30,6 +29,9 @@ import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
+import debounce from "lodash/debounce";
+import { productActions } from "../../../redux/product/products.slice";
+import { SearchSelect } from "../../../components/SearchSelect";
 
 const FormContainer = styled.div`
   display: flex;
@@ -174,6 +176,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   filters,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [searchProductsLoading, setSearchProductsLoading] = useState(false);
+
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -222,44 +226,47 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     }, 0);
   }, [watchedItems, productsMap]);
 
-  const getProductsOptions = (
-    currentProductId?: string,
-  ): SelectProps["options"] => {
-    const selectedIds = watchedItems?.map((i) => i.productId).filter(Boolean);
+  const getProductsOptions = useCallback(
+    (currentProductId?: string) => {
+      const selectedIds = watchedItems?.map((i) => i.productId).filter(Boolean);
 
-    return products
-      .filter((p) => !selectedIds.includes(p._id) || p._id === currentProductId)
-      .map((product) => {
-        const threshold = product.minStock || 10;
+      return products
+        .filter(
+          (p) => !selectedIds.includes(p._id) || p._id === currentProductId,
+        )
+        .map((product) => {
+          const threshold = product.minStock || 10;
 
-        const isOutOfStock = product.quantity <= 0;
-        const isLowStock = !isOutOfStock && product.quantity <= threshold;
+          const isOutOfStock = product.quantity <= 0;
+          const isLowStock = !isOutOfStock && product.quantity <= threshold;
 
-        return {
-          label: (
-            <ProductOptionContainer>
-              <span>{product.name}</span>
+          return {
+            label: (
+              <ProductOptionContainer>
+                <span>{product.name}</span>
 
-              {isOutOfStock ? (
-                <StockAlert status={ProductStockStatus.OUT_OF_STOCK}>
-                  Out of stock
-                </StockAlert>
-              ) : isLowStock ? (
-                <StockAlert status={ProductStockStatus.LOW_STOCK}>
-                  Only {product.quantity} left
-                </StockAlert>
-              ) : (
-                <StockAlert status={ProductStockStatus.IN_STOCK}>
-                  {product.quantity} left
-                </StockAlert>
-              )}
-            </ProductOptionContainer>
-          ),
-          value: product._id,
-          disabled: isOutOfStock,
-        };
-      });
-  };
+                {isOutOfStock ? (
+                  <StockAlert status={ProductStockStatus.OUT_OF_STOCK}>
+                    Out of stock
+                  </StockAlert>
+                ) : isLowStock ? (
+                  <StockAlert status={ProductStockStatus.LOW_STOCK}>
+                    Only {product.quantity} left
+                  </StockAlert>
+                ) : (
+                  <StockAlert status={ProductStockStatus.IN_STOCK}>
+                    {product.quantity} left
+                  </StockAlert>
+                )}
+              </ProductOptionContainer>
+            ),
+            value: product._id,
+            disabled: isOutOfStock,
+          };
+        });
+    },
+    [products, watchedItems],
+  );
 
   const localOnClose = () => {
     reset();
@@ -281,6 +288,28 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       setValue(`items.${index}.quantity`, product.quantity);
     }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const searchProducts = useCallback(
+    debounce(async (keyword: string) => {
+      try {
+        setSearchProductsLoading(true);
+
+        await dispatch(
+          productActions.getProducts({
+            userId,
+            keyword,
+            meta: { page: 1, limit: 50 },
+          }),
+        ).unwrap();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setSearchProductsLoading(false);
+      }
+    }, 800),
+    [dispatch, userId],
+  );
 
   const onCreate = async (data: CreateOrderDto) => {
     if (!data.items.length) {
@@ -421,13 +450,20 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                     }}
                     render={({ field: { value }, fieldState: { error } }) => {
                       const options = getProductsOptions(value);
+
                       return (
-                        <Select
+                        <SearchSelect
                           title="Select Product"
-                          value={options?.find((p) => p.value === value)}
+                          value={
+                            options?.find((p) => p.value === value) || undefined
+                          }
                           onChange={(val) => onSelectProduct(index, val)}
                           options={options}
+                          onSearch={searchProducts}
                           allowClear
+                          loading={searchProductsLoading}
+                          placeholder="Search for a product..."
+                          errorMessage={error?.message}
                           valid={!error}
                         />
                       );
