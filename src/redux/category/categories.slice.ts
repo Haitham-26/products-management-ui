@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import { userActions } from "../user/user.slice";
 import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
@@ -9,6 +8,7 @@ import { CategoryAxios } from "../../axios/category/category.axios";
 import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { Category } from "../../model/category/types/Category";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
+import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
 
 interface CategoryState {
   categories?: Category[];
@@ -34,7 +34,7 @@ const createCategory = AppThunk<void, CreateCategoryDto>(
   CategoryAxios.createCategory,
 );
 
-const getCategories = AppThunk<PaginatedResponse<Category>, GenericWithUserId>(
+const getCategories = AppThunk<PaginatedResponse<Category>, GetCategoriesDto>(
   "/categories",
   CategoryAxios.getCategories,
 );

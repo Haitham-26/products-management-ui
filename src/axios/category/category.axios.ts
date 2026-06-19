@@ -1,8 +1,8 @@
 import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryDto";
 import type { DeleteCategoryDto } from "../../model/category/dto/DeleteCategoryDto";
+import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
 import type { Category } from "../../model/category/types/Category";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
 
@@ -11,7 +11,7 @@ export class CategoryAxios {
     return AppAxios.post("/categories/create", dto).then(({ data }) => data);
   }
 
-  static getCategories(dto: GenericWithUserId) {
+  static getCategories(dto: GetCategoriesDto) {
     return AppAxios.get<PaginatedResponse<Category>>("/categories", {
       params: dto,
     }).then(({ data }) => data);

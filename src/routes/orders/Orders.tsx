@@ -22,7 +22,6 @@ import {
 import { OrderCreateDrawer } from "./components/OrderCreateDrawer";
 import { OrderUpdateDrawer } from "./components/OrderUpdateDrawer";
 import { OrderReadDrawer } from "./components/OrderReadDrawer";
-import { productActions } from "../../redux/product/products.slice";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
@@ -174,7 +173,6 @@ export const Orders: React.FC = () => {
         userId,
       }),
     );
-    dispatch(productActions.getProducts({ userId }));
     dispatch(settingsActions.getSettings({ userId }));
 
     return () => debouncedSetSearchParams.cancel();
@@ -217,7 +215,7 @@ export const Orders: React.FC = () => {
           total: ordersMeta?.total || 0,
           onChange: handlePageChange,
           showSizeChanger: true,
-          pageSizeOptions: ["2", "10", "20", "50", "100"],
+          pageSizeOptions: ["10", "20", "50", "100"],
           position: ["bottomRight"],
           showTotal: (total) => `Total ${total} orders`,
         }}
