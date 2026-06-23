@@ -5,7 +5,7 @@ const appState = (state: RootState) => state.app;
 
 const selectLastSeenInvitationId = createSelector(
   appState,
-  (state) => state?.lastSeenInvitationId || [],
+  (state) => state?.lastSeenInvitationId,
 );
 
 const appSliceSelectors = {
