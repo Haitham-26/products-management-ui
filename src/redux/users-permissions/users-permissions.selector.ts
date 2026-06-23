@@ -7,14 +7,30 @@ const selectMembers = createSelector(
   usersPermissionsState,
   (state) => state?.members || [],
 );
-const selectPendingInvitations = createSelector(
+const selectOwnerInvitations = createSelector(
   usersPermissionsState,
-  (state) => state?.pendingInvitations || [],
+  (state) => state?.ownerInvitations || [],
+);
+const selectJoinOrgInvitations = createSelector(
+  usersPermissionsState,
+  (state) => state?.joinOrgInvitations || [],
+);
+const selectOwnerInvitationsLoading = createSelector(
+  usersPermissionsState,
+  (state) => state?.ownerInvitationsLoading,
+);
+
+const selectOrganizationMembers = createSelector(
+  usersPermissionsState,
+  (state) => state?.members || [],
 );
 
 const usersPermissionsSliceSelectors = {
   selectMembers,
-  selectPendingInvitations,
+  selectOwnerInvitations,
+  selectOrganizationMembers,
+  selectJoinOrgInvitations,
+  selectOwnerInvitationsLoading,
 };
 
 export default usersPermissionsSliceSelectors;

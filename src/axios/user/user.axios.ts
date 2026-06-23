@@ -8,7 +8,6 @@ import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
-import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
 import type { User } from "../../model/user/types/User";
 import AppAxios from "../AppAxios";
@@ -71,18 +70,6 @@ export class UserAxios {
   }
   static forgotPasswordNew(dto: ForgotPasswordNewDto) {
     return AppAxios.post("/auth/forgot-password/new", dto).then(
-      ({ data }) => data,
-    );
-  }
-
-  static getOrganizationMembers(dto: GenericWithUserId) {
-    return AppAxios.post<Partial<User>[]>("/organization/members", dto).then(
-      ({ data }) => data,
-    );
-  }
-
-  static updateMembersPermissions(dto: UpdateMembersPermissionsDto) {
-    return AppAxios.patch<void>("/organization/members/update", dto).then(
       ({ data }) => data,
     );
   }

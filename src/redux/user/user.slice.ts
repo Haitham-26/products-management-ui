@@ -7,7 +7,6 @@ import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { User } from "../../model/user/types/User";
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
-import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
@@ -17,12 +16,10 @@ import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 
 interface UserState {
   user?: User;
-  organizationMembers?: Partial<User>[];
 }
 
 const initialState: UserState = {
   user: undefined,
-  organizationMembers: undefined,
 };
 
 const getUserById = AppThunk<User, GenericWithUserId>(
@@ -72,16 +69,6 @@ const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
   UserAxios.forgotPasswordNew,
 );
 
-const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
-  "/organization/members",
-  UserAxios.getOrganizationMembers,
-);
-
-const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
-  "/organization/members/update",
-  UserAxios.updateMembersPermissions,
-);
-
 const logout = AppThunk<void, void>("/auth/logout", async () => {
   localStorage.clear();
 });
@@ -101,9 +88,6 @@ export const userSlice = createSlice({
       state.user = action.payload;
     });
 
-    addCase(getOrganizationMembers.fulfilled, (state, action) => {
-      state.organizationMembers = action.payload;
-    });
     addCase(logout.fulfilled, () => initialState);
   },
 });
@@ -119,8 +103,6 @@ const userActions = {
   forgotPasswordEmail,
   forgotPasswordToken,
   forgotPasswordNew,
-  getOrganizationMembers,
-  updateMembersPermissions,
   logout,
 };
 

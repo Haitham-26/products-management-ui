@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Container } from "../../components/Container";
 import { PageHeader } from "../../components/PageHeader";
 import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
-import { Tabs, type TabsProps } from "../../components/Tabs";
+import { Tabs } from "../../components/Tabs";
 import { Icon } from "../../components/Icon";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";

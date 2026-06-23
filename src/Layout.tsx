@@ -4,6 +4,7 @@ import { Outlet, ScrollRestoration } from "react-router-dom";
 import { Fragment } from "react";
 import styled from "styled-components";
 import { SideMenu } from "./components/SideMenu";
+import { JoinOrganizationInvitationModal } from "./JoinOrganizationInvitationModal";
 
 const Container = styled.div`
   display: flex;
@@ -18,6 +19,8 @@ const Container = styled.div`
 export const Layout: React.FC = () => {
   return (
     <Fragment>
+      <JoinOrganizationInvitationModal />
+
       <Header />
 
       <Container>
