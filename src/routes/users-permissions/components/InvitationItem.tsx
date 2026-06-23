@@ -128,6 +128,10 @@ const ActionsSection = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
 
+  button {
+    min-width: 10rem;
+  }
+
   @media (max-width: ${Breakpoints.MD}) {
     width: 100%;
     border-top: 1px solid ${({ theme }) => theme.colors.border};
@@ -136,7 +140,6 @@ const ActionsSection = styled.div`
 
     button {
       flex: 1;
-      max-width: 15rem;
     }
   }
 `;
