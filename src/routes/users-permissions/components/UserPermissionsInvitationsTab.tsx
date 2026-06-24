@@ -30,6 +30,7 @@ export const UserPermissionsInvitationsTab: React.FC<
 > = ({ setInviteMembersModalVisible }) => {
   const [selectedInvitation, setSelectedInvitation] =
     useState<OwnerInvitation | null>(null);
+  const [cancelInvitationLoading, setCancelInvitationLoading] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -47,6 +48,8 @@ export const UserPermissionsInvitationsTab: React.FC<
     }
 
     try {
+      setCancelInvitationLoading(true);
+
       await dispatch(
         usersPermissionsActions.cancelInvitation({
           invitationId: selectedInvitation._id,
@@ -56,9 +59,15 @@ export const UserPermissionsInvitationsTab: React.FC<
       await dispatch(
         usersPermissionsActions.getOwnerInvitations({ userId }),
       ).unwrap();
+
+      setSelectedInvitation(null);
+
+      Toast.success("Invitation canceled successfully");
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
+    } finally {
+      setCancelInvitationLoading(false);
     }
   };
 
@@ -107,6 +116,7 @@ export const UserPermissionsInvitationsTab: React.FC<
         open={Boolean(selectedInvitation)}
         onClose={() => setSelectedInvitation(null)}
         onConfirm={onCancelInvitation}
+        confirmLoading={cancelInvitationLoading}
       />
     </Container>
   );

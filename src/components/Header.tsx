@@ -11,7 +11,11 @@ import type { MenuItemType } from "antd/es/menu/interface";
 import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { userActions } from "../redux/user/user.slice";
-import { useAppDispatch, type AppDispatch } from "../redux/store";
+import {
+  useAppDispatch,
+  useAppSelector,
+  type AppDispatch,
+} from "../redux/store";
 import { Image } from "./Image";
 import { Images } from "../assets";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
@@ -19,6 +23,7 @@ import { Button } from "./Button";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { NotificationsDrawer } from "./notifications/NotificationsDrawer";
 import { useState } from "react";
+import usersPermissionsSliceSelectors from "../redux/users-permissions/users-permissions.selector";
 
 const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
   [
@@ -64,6 +69,30 @@ const LogoLink = styled(Link)`
   display: block;
 `;
 
+const NotificationsButtonWrapper = styled.div`
+  position: relative;
+`;
+
+const NotificationsDot = styled.div`
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: ${({ theme: { radius } }) => radius.full};
+  background-color: ${({ theme: { colors } }) => colors.error};
+  padding: ${({ theme: { spacing } }) => spacing.xs};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    color: ${({ theme: { colors } }) => colors.surface};
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+`;
+
 const IconButton = styled(Button)`
   background-color: transparent;
   padding: 0;
@@ -90,6 +119,10 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const joinOrgInvitations = useAppSelector(
+    usersPermissionsSliceSelectors.selectJoinOrgInvitations,
+  );
+
   return (
     <Wrapper>
       <Container>
@@ -106,11 +139,19 @@ export const Header: React.FC = () => {
                 <Icon icon={faGear} size="xl" />
               </Link>
 
-              <IconButton
-                icon={faBell}
-                iconSize="2x"
-                onClick={() => setNotificationsDrawerVisible(true)}
-              />
+              <NotificationsButtonWrapper>
+                <IconButton
+                  icon={faBell}
+                  iconSize="2x"
+                  onClick={() => setNotificationsDrawerVisible(true)}
+                />
+
+                {joinOrgInvitations.length ? (
+                  <NotificationsDot>
+                    <span>{joinOrgInvitations.length}</span>
+                  </NotificationsDot>
+                ) : null}
+              </NotificationsButtonWrapper>
 
               <Dropdown
                 trigger={["click"]}
