@@ -1,7 +1,7 @@
 import type React from "react";
 import styled, { css } from "styled-components";
 import { Spinner } from "./Spinner";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { Icon } from "./Icon";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
@@ -69,6 +69,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   variant?: Variant;
   icon?: IconProp;
+  iconSize?: SizeProp;
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -76,6 +77,7 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   variant = "primary",
   icon,
+  iconSize,
   ...props
 }) => {
   return (
@@ -85,7 +87,7 @@ export const Button: React.FC<ButtonProps> = ({
           <Spinner />
         </SpinnerWrapper>
       ) : null}
-      {icon ? <Icon icon={icon} /> : null}
+      {icon ? <Icon icon={icon} size={iconSize} /> : null}
       {children}
     </StyledButton>
   );

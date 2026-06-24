@@ -15,6 +15,10 @@ import { useAppDispatch, type AppDispatch } from "../redux/store";
 import { Image } from "./Image";
 import { Images } from "../assets";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { Button } from "./Button";
+import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
+import { NotificationsDrawer } from "./notifications/NotificationsDrawer";
+import { useState } from "react";
 
 const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
   [
@@ -60,6 +64,12 @@ const LogoLink = styled(Link)`
   display: block;
 `;
 
+const IconButton = styled(Button)`
+  background-color: transparent;
+  padding: 0;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
 const EndContainer = styled.div`
   display: flex;
   align-items: center;
@@ -74,6 +84,9 @@ const ImagePlaceholder = styled.div`
 `;
 
 export const Header: React.FC = () => {
+  const [notificationsDrawerVisible, setNotificationsDrawerVisible] =
+    useState(false);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -93,6 +106,12 @@ export const Header: React.FC = () => {
                 <Icon icon={faGear} size="xl" />
               </Link>
 
+              <IconButton
+                icon={faBell}
+                iconSize="2x"
+                onClick={() => setNotificationsDrawerVisible(true)}
+              />
+
               <Dropdown
                 trigger={["click"]}
                 menu={{ items: getDropdownItems(navigate, dispatch) }}
@@ -103,6 +122,11 @@ export const Header: React.FC = () => {
           </Column>
         </Row>
       </Container>
+
+      <NotificationsDrawer
+        open={notificationsDrawerVisible}
+        onClose={() => setNotificationsDrawerVisible(false)}
+      />
     </Wrapper>
   );
 };
