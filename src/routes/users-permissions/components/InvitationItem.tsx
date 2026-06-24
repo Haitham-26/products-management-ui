@@ -8,6 +8,9 @@ import { InvitationStatus } from "../../../model/user/users-permissions/types/In
 import { Toast } from "../../../utils/Toast";
 import { useState } from "react";
 import { Breakpoints } from "../../../theme/Breakpoints";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
+import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import userSliceSelectors from "../../../redux/user/user.selector";
 
 const Card = styled.div`
   position: relative;
@@ -155,9 +158,27 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
 }) => {
   const [reinviteLoading, setReinviteLoading] = useState(false);
 
+  const dispatch = useAppDispatch();
+
+  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+
   const onReinvite = async () => {
     try {
       setReinviteLoading(true);
+
+      await dispatch(
+        usersPermissionsActions.inviteMembers({
+          userId,
+          // @ts-expect-error the emails type is { content: string }[] just
+          // to get the useFieldArray to work in another file
+          emails: [invitation.inviteeEmail],
+        }),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOwnerInvitations({ userId }),
+      ).unwrap();
+
+      Toast.success("Invitation re-sent successfully");
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
