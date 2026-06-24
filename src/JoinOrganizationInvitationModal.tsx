@@ -12,8 +12,8 @@ import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [cancelLoading, setCancelLoading] = useState(false);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [declineLoading, setDeclineLoading] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -42,7 +42,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
 
   const onConfirm = async () => {
     try {
-      setConfirmLoading(true);
+      setAcceptLoading(true);
 
       // await dispatch(
       //   userActions.joinOrganization({
@@ -57,13 +57,13 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       console.log(e);
       Toast.apiError(e);
     } finally {
-      setConfirmLoading(false);
+      setAcceptLoading(false);
     }
   };
 
-  const onCancel = async () => {
+  const onDecline = async () => {
     try {
-      setCancelLoading(true);
+      setDeclineLoading(true);
 
       // await dispatch(
       //   userActions.declineInvitation({
@@ -76,7 +76,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       console.log(e);
       Toast.apiError(e);
     } finally {
-      setCancelLoading(false);
+      setDeclineLoading(false);
     }
   };
 
@@ -103,9 +103,9 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       confirmText="Join"
       cancelText="Decline"
       onConfirm={onConfirm}
-      onCancel={onCancel}
-      confirmLoading={confirmLoading}
-      cancelLoading={cancelLoading}
+      onCancel={onDecline}
+      confirmLoading={acceptLoading}
+      cancelLoading={declineLoading}
     />
   );
 };
