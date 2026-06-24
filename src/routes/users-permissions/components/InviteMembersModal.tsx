@@ -292,6 +292,10 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
             You can check delivery progress anytime under the
             <strong> Invitations Tab</strong>.
           </Text>
+          <Text as={"li"}>
+            Who accepts the invitation will have read-only access to products,
+            tags, categories and orders.
+          </Text>
         </InfoBox>
 
         <FormField>
