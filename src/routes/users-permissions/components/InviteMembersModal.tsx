@@ -261,6 +261,9 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
           emails: emails.map((e) => e.content),
         }),
       ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOwnerInvitations({ userId }),
+      ).unwrap();
 
       localOnClose();
       Toast.success("Invitations sent successfully");

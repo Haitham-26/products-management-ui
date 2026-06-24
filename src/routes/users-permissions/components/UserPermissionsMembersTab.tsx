@@ -4,7 +4,6 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import type { UpdateMembersPermissionsDto } from "../../../model/user/dto/UpdateMembersPermissionsDto";
 import { Fragment, useEffect, useState } from "react";
-import { userActions } from "../../../redux/user/user.slice";
 import { Collapse } from "../../../components/Collapse";
 import styled from "styled-components";
 import { Text } from "../../../components/Text";
@@ -18,6 +17,8 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
 import { faPersonCircleXmark } from "@fortawesome/free-solid-svg-icons/faPersonCircleXmark";
 import { Button } from "../../../components/Button";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
+import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -120,7 +121,9 @@ const CenterContainer = styled.div`
 export const UserPermissionsMembersTab: React.FC = () => {
   const [shouldBlurStickyHeader, setShouldBlurStickyHeader] = useState(false);
 
-  const members = useAppSelector(userSliceSelectors.selectOrganizationMembers);
+  const members = useAppSelector(
+    usersPermissionsSliceSelectors.selectOrganizationMembers,
+  );
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrganization = useAppSelector(
     userSliceSelectors.selectIsOrganization,
@@ -142,11 +145,13 @@ export const UserPermissionsMembersTab: React.FC = () => {
   });
 
   const onSubmit = (data: UpdateMembersPermissionsDto) => {
-    dispatch(userActions.updateMembersPermissions(data));
+    dispatch(usersPermissionsActions.updateMembersPermissions(data));
   };
 
   useEffect(() => {
-    dispatch(userActions.getOrganizationMembers({ userId: user._id }));
+    dispatch(
+      usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
+    );
   }, [dispatch, user._id]);
 
   useEffect(() => {

@@ -19,6 +19,7 @@ import ordersSlice from "./order/orders.slice";
 import settingsSlice from "./settings/settings.slice";
 import dashboardSlice from "./dashboard/dashboard.slice";
 import usersPermissionsSlice from "./users-permissions/users-permissions.slice";
+import appSlice from "./app/app.slice";
 import storage from "redux-persist/lib/storage";
 
 const rootReducer = combineReducers({
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   settings: settingsSlice,
   dashboard: dashboardSlice,
   usersPermissions: usersPermissionsSlice,
+  app: appSlice,
 });
 
 const persistedReducer = persistReducer(

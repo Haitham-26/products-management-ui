@@ -1,8 +1,10 @@
 import type { User } from "../../types/User";
 
-export interface PendingInvitation {
+export interface JoinOrgInvitation {
   _id: string;
-  email: User["email"];
+  inviter: {
+    name: User["name"];
+  };
   createdAt: Date;
   updatedAt: Date;
 }

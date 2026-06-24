@@ -8,29 +8,17 @@ import { Empty } from "../../../components/Empty";
 import { Button } from "../../../components/Button";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { Text } from "../../../components/Text";
-import { PendingInvitationItem } from "./PendingInvitationItem";
-import type { PendingInvitation } from "../../../model/user/users-permissions/types/PendingInvitation";
+import { InvitationItem } from "./InvitationItem";
+import type { OwnerInvitation } from "../../../model/user/users-permissions/types/OwnerInvitation";
 import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import styled from "styled-components";
-import { Icon } from "../../../components/Icon";
-import { faCircle } from "@fortawesome/free-solid-svg-icons/faCircle";
+import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const Title = styled(Text)`
-  font-weight: bold;
-
-  svg {
-    font-size: calc(${({ theme }) => theme.typography.small} / 2);
-    margin-inline-end: ${({ theme }) => theme.spacing.sm};
-    color: ${({ theme }) => theme.colors.pending};
-    vertical-align: middle;
-  }
 `;
 
 type UserPermissionsInvitationsTabProps = {
@@ -41,13 +29,16 @@ export const UserPermissionsInvitationsTab: React.FC<
   UserPermissionsInvitationsTabProps
 > = ({ setInviteMembersModalVisible }) => {
   const [selectedInvitation, setSelectedInvitation] =
-    useState<PendingInvitation | null>(null);
+    useState<OwnerInvitation | null>(null);
 
   const dispatch = useAppDispatch();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const invitations = useAppSelector(
-    usersPermissionsSliceSelectors.selectPendingInvitations,
+    usersPermissionsSliceSelectors.selectOwnerInvitations,
+  );
+  const invitationsLoading = useAppSelector(
+    usersPermissionsSliceSelectors.selectOwnerInvitationsLoading,
   );
 
   const onCancelInvitation = async () => {
@@ -63,7 +54,7 @@ export const UserPermissionsInvitationsTab: React.FC<
         }),
       ).unwrap();
       await dispatch(
-        usersPermissionsActions.getPendingInvitations({ userId }),
+        usersPermissionsActions.getOwnerInvitations({ userId }),
       ).unwrap();
     } catch (e) {
       console.log(e);
@@ -72,12 +63,12 @@ export const UserPermissionsInvitationsTab: React.FC<
   };
 
   useEffect(() => {
-    dispatch(usersPermissionsActions.getPendingInvitations({ userId }));
+    dispatch(usersPermissionsActions.getOwnerInvitations({ userId }));
   }, [dispatch, userId]);
 
-  if (!invitations.length) {
+  if (!invitations.length && !invitationsLoading) {
     return (
-      <Empty description="No pending invitations">
+      <Empty description="You didn't invite anyone yet">
         <Button
           icon={faUserPlus}
           onClick={() => setInviteMembersModalVisible(true)}
@@ -90,26 +81,27 @@ export const UserPermissionsInvitationsTab: React.FC<
 
   return (
     <Container>
-      <Title>
-        <Icon icon={faCircle} />
-        Pending Invitations
-      </Title>
+      <Text fontWeight="bold">Invitations</Text>
 
-      {invitations.map((inv) => (
-        <PendingInvitationItem
-          key={inv._id}
-          invitation={inv}
-          onCancel={() => setSelectedInvitation(inv)}
-        />
-      ))}
+      {!invitationsLoading ? (
+        invitations.map((inv) => (
+          <InvitationItem
+            key={inv._id}
+            invitation={inv}
+            onCancel={() => setSelectedInvitation(inv)}
+          />
+        ))
+      ) : (
+        <SpinnerFullScreen />
+      )}
 
       <WarningModal
         title={"Cancel Invitation"}
         description={
           <span>
             Are you sure you want to cancel the pending invitation for
-            <strong> {selectedInvitation?.email}</strong>? The invitation link
-            will be permanently invalidated.
+            <strong> {selectedInvitation?.inviteeEmail}</strong>? The invitation
+            link will be permanently invalidated.
           </span>
         }
         open={Boolean(selectedInvitation)}

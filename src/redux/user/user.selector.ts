@@ -13,10 +13,6 @@ const selectUserPermissions = createSelector(
   userState,
   (state) => state?.user?.permissions || [],
 );
-const selectOrganizationMembers = createSelector(
-  userState,
-  (state) => state?.organizationMembers || [],
-);
 const selectIsOrganization = createSelector(
   userState,
   (state) => state?.user?.organizationId?.length,
@@ -26,7 +22,6 @@ const userSliceSelectors = {
   selectUser,
   selectUserId,
   selectUserPermissions,
-  selectOrganizationMembers,
   selectIsOrganization,
 };
 

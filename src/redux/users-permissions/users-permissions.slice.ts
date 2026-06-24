@@ -4,19 +4,26 @@ import type { User } from "../../model/user/types/User";
 import type { InviteMembersDto } from "../../model/user/users-permissions/dto/InviteMembersDto";
 import { UsersPermissionsAxios } from "../../axios/users-permissions/users-permissions.axios";
 import { userActions } from "../user/user.slice";
-import type { PendingInvitation } from "../../model/user/users-permissions/types/PendingInvitation";
-import type { GetPendingInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetPendingInvitationsResponseDto";
+import type { OwnerInvitation } from "../../model/user/users-permissions/types/OwnerInvitation";
+import type { GetOwnerInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetOwnerInvitationsResponseDto";
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { CancelInvitationDto } from "../../model/user/users-permissions/dto/CancelInvitationDto";
+import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
+import type { GetJoinOrgInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetJoinOrgInvitationsResponseDto";
+import type { JoinOrgInvitation } from "../../model/user/users-permissions/types/JoinOrgInvitation";
 
 interface UsersPermissionsState {
   members: Partial<User>[];
-  pendingInvitations: PendingInvitation[];
+  ownerInvitations: OwnerInvitation[];
+  joinOrgInvitations: JoinOrgInvitation[];
+  ownerInvitationsLoading: boolean;
 }
 
 const initialState: UsersPermissionsState = {
   members: [],
-  pendingInvitations: [],
+  ownerInvitations: [],
+  joinOrgInvitations: [],
+  ownerInvitationsLoading: false,
 };
 
 const inviteMembers = AppThunk<void, InviteMembersDto>(
@@ -24,12 +31,20 @@ const inviteMembers = AppThunk<void, InviteMembersDto>(
   UsersPermissionsAxios.inviteMembers,
 );
 
-const getPendingInvitations = AppThunk<
-  GetPendingInvitationsResponseDto,
+const getOwnerInvitations = AppThunk<
+  GetOwnerInvitationsResponseDto,
   GenericWithUserId
 >(
-  "/users-permissions/pending-invitations",
-  UsersPermissionsAxios.getPendingInvitations,
+  "/users-permissions/owner-invitations",
+  UsersPermissionsAxios.getOwnerInvitations,
+);
+
+const getJoinOrgInvitatios = AppThunk<
+  GetJoinOrgInvitationsResponseDto,
+  GenericWithUserId
+>(
+  "/users-permissions/join-org-invitations",
+  UsersPermissionsAxios.getJoinOrgInvitatios,
 );
 
 const cancelInvitation = AppThunk<void, CancelInvitationDto>(
@@ -37,23 +52,38 @@ const cancelInvitation = AppThunk<void, CancelInvitationDto>(
   UsersPermissionsAxios.cancelInvitation,
 );
 
+const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
+  "/organization/members",
+  UsersPermissionsAxios.getOrganizationMembers,
+);
+
+const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
+  "/organization/members/update",
+  UsersPermissionsAxios.updateMembersPermissions,
+);
+
 export const usersPermissionsSlice = createSlice({
   name: "usersPermissions",
   initialState,
   reducers: {},
   extraReducers: ({ addCase }) => {
-    addCase(getPendingInvitations.fulfilled, (state, action) => {
-      state.pendingInvitations = action.payload.invitations;
+    addCase(getOwnerInvitations.pending, (state) => {
+      state.ownerInvitationsLoading = true;
     });
-    addCase(getPendingInvitations.rejected, (state) => {
-      state.pendingInvitations = [
-        {
-          _id: "1",
-          email: "clslknvlksd@gmail.com",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
+    addCase(getOwnerInvitations.fulfilled, (state, action) => {
+      state.ownerInvitations = action.payload.invitations;
+      state.ownerInvitationsLoading = false;
+    });
+    addCase(getOwnerInvitations.rejected, (state) => {
+      state.ownerInvitationsLoading = false;
+    });
+
+    addCase(getJoinOrgInvitatios.fulfilled, (state, action) => {
+      state.joinOrgInvitations = action.payload.invitations;
+    });
+
+    addCase(getOrganizationMembers.fulfilled, (state, action) => {
+      state.members = action.payload;
     });
 
     addCase(userActions.logout.fulfilled, () => initialState);
@@ -62,8 +92,11 @@ export const usersPermissionsSlice = createSlice({
 
 const usersPermissionsActions = {
   inviteMembers,
-  getPendingInvitations,
+  getOwnerInvitations,
+  getJoinOrgInvitatios,
   cancelInvitation,
+  getOrganizationMembers,
+  updateMembersPermissions,
 };
 
 export { usersPermissionsActions };

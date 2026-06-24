@@ -4,6 +4,9 @@ import styled from "styled-components";
 import { Icon } from "./Icon";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 import { Button } from "./Button";
+import isFunction from "lodash/isFunction";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { ThemeType } from "../theme/theme";
 
 const Container = styled.div`
   text-align: center;
@@ -14,14 +17,11 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const IconWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.error}1A;
+const IconWrapper = styled.div<{ variantColor: keyof ThemeType["colors"] }>`
+  background-color: ${({ theme, variantColor }) =>
+    theme.colors[variantColor]}1A;
   border-radius: 50%;
   padding: ${({ theme }) => theme.spacing.lg};
-
-  svg {
-    color: ${({ theme }) => theme.colors.error};
-  }
 `;
 
 const Title = styled.h3`
@@ -37,10 +37,15 @@ const Description = styled.p`
   max-width: 320px;
 `;
 
-const Actions = styled.div`
+const Actions = styled.div<{ variantColor: keyof ThemeType["colors"] }>`
   display: flex;
   gap: ${({ theme }) => theme.spacing.sm};
   margin-top: ${({ theme }) => theme.spacing.md};
+
+  button:nth-child(2) {
+    background-color: ${({ variantColor, theme }) =>
+      theme.colors[variantColor]};
+  }
 `;
 
 type WarningModalProps = ModalProps & {
@@ -49,6 +54,9 @@ type WarningModalProps = ModalProps & {
   onConfirm?: VoidFunction;
   confirmText?: string;
   cancelText?: string;
+  cancelLoading?: boolean;
+  icon?: IconProp;
+  variantColor?: keyof ThemeType["colors"];
 };
 
 export const WarningModal: React.FC<WarningModalProps> = ({
@@ -56,28 +64,36 @@ export const WarningModal: React.FC<WarningModalProps> = ({
   title = "Are you sure?",
   description = "Are you sure you want to do this? Once you confirm, you cannot undo it later.",
   onClose,
+  onCancel,
   onConfirm,
   confirmText = "Confirm",
   cancelText = "Cancel",
-  loading = false,
+  confirmLoading = false,
+  cancelLoading = false,
+  variantColor = "error",
+  icon = faTriangleExclamation,
   ...props
 }) => {
   return (
     <Modal open={open} onCancel={onClose} footer={null} {...props}>
       <Container>
-        <IconWrapper>
-          <Icon icon={faTriangleExclamation} size="2x" />
+        <IconWrapper variantColor={variantColor}>
+          <Icon icon={icon} size="2x" color={variantColor} />
         </IconWrapper>
 
         <Title>{title}</Title>
 
         <Description>{description}</Description>
 
-        <Actions>
-          <Button variant="ghost" onClick={onClose}>
+        <Actions variantColor={variantColor}>
+          <Button
+            variant="ghost"
+            onClick={isFunction(onCancel) ? onCancel : onClose}
+            loading={cancelLoading}
+          >
             {cancelText}
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={loading}>
+          <Button onClick={onConfirm} loading={confirmLoading}>
             {confirmText}
           </Button>
         </Actions>
