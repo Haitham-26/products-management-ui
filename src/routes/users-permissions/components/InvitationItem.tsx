@@ -212,14 +212,14 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
             </Text>
           </MetaItem>
 
-          {invitation.status === InvitationStatus.PENDING && (
+          {invitation.status === InvitationStatus.PENDING ? (
             <MetaItem>
               <MetaLabel>Valid Until</MetaLabel>
               <Text color="textSecondary" fontSize="small">
                 {getExpirationDate(invitation.createdAt)}
               </Text>
             </MetaItem>
-          )}
+          ) : null}
         </MetaGrid>
       </MainContent>
 

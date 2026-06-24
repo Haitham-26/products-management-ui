@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import { Spinner } from "./Spinner";
 import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { Icon } from "./Icon";
+import type { ThemeType } from "../theme/theme";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
 
@@ -58,11 +59,6 @@ const SpinnerWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  & > div {
-    border-color: ${({ theme }) => theme.colors.surface};
-    border-top-color: transparent;
-  }
 `;
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -70,6 +66,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   icon?: IconProp;
   iconSize?: SizeProp;
+  spinnerColor?: keyof ThemeType["colors"];
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -78,13 +75,14 @@ export const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   icon,
   iconSize,
+  spinnerColor = "surface",
   ...props
 }) => {
   return (
     <StyledButton variant={variant} {...props}>
       {loading ? (
         <SpinnerWrapper>
-          <Spinner />
+          <Spinner color={spinnerColor} />
         </SpinnerWrapper>
       ) : null}
       {icon ? <Icon icon={icon} size={iconSize} /> : null}

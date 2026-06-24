@@ -62,16 +62,22 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
   };
 
   const onDecline = async () => {
+    if (!lastInvitation) {
+      return;
+    }
+
     try {
       setDeclineLoading(true);
 
-      // await dispatch(
-      //   userActions.declineInvitation({
-      //     invitationId: lastInvitation._id,
-      //     userId: lastInvitation.userId,
-      //   }),
-      // ).unwrap();
-      // await dispatch(userActions.getOrgInvitations()).unwrap();
+      await dispatch(
+        usersPermissionsActions.declineInvitation({
+          invitationId: lastInvitation._id,
+          userId,
+        }),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOrganizationMembers({ userId }),
+      ).unwrap();
     } catch (e) {
       console.log(e);
       Toast.apiError(e);

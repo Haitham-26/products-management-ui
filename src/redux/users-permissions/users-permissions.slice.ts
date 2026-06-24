@@ -52,6 +52,11 @@ const cancelInvitation = AppThunk<void, CancelInvitationDto>(
   UsersPermissionsAxios.cancelInvitation,
 );
 
+const declineInvitation = AppThunk<void, CancelInvitationDto>(
+  "/users-permissions/decline-invitation",
+  UsersPermissionsAxios.declineInvitation,
+);
+
 const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
   "/organization/members",
   UsersPermissionsAxios.getOrganizationMembers,
@@ -95,6 +100,7 @@ const usersPermissionsActions = {
   getOwnerInvitations,
   getJoinOrgInvitatios,
   cancelInvitation,
+  declineInvitation,
   getOrganizationMembers,
   updateMembersPermissions,
 };
