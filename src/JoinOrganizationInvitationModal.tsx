@@ -95,7 +95,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
           <strong> {lastInvitation?.inviter.name}'s </strong>
           organization. Please note that your personal account data will be
           hidden while you are a member, and will become visible again if you
-          choose to leave the organization.`
+          choose to leave the organization.
         </Fragment>
       }
       open={open}
