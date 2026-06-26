@@ -96,6 +96,11 @@ export const usersPermissionsSlice = createSlice({
       state.members = action.payload;
     });
 
+    addCase(acceptInvitation.fulfilled, (state) => {
+      state.joinOrgInvitations = [];
+      window.location.reload();
+    });
+
     addCase(userActions.logout.fulfilled, () => initialState);
   },
 });

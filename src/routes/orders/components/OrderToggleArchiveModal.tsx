@@ -69,7 +69,7 @@ export const OrderToggleArchiveModal: React.FC<
       title={order?.isArchived ? "Unarchive Order" : "Archive Order"}
       description={descriptions[order?.isArchived ? "unarchive" : "archive"]}
       open={open}
-      loading={loading}
+      confirmLoading={loading}
       onClose={onClose}
       onConfirm={onConfirm}
     />

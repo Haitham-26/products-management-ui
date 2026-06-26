@@ -343,7 +343,7 @@ export const Products: React.FC = () => {
         }
         open={productToggleStatusVisible}
         onClose={() => setProductToggleStatusVisible(false)}
-        loading={productToggleStatusLoading}
+        confirmLoading={productToggleStatusLoading}
         onConfirm={toggleProductStatus}
       />
 
