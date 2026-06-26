@@ -10,6 +10,7 @@ import usersPermissionsSliceSelectors from "./redux/users-permissions/users-perm
 import { usersPermissionsActions } from "./redux/users-permissions/users-permissions.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
+import { userActions } from "./redux/user/user.slice";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
   const [acceptLoading, setAcceptLoading] = useState(false);
@@ -40,19 +41,30 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
     dispatch(appActions.setLastSeenInvitationId(lastInvitation._id));
   };
 
-  const onConfirm = async () => {
+  const onAccept = async () => {
+    if (!lastInvitation) {
+      return;
+    }
+
     try {
       setAcceptLoading(true);
 
-      // await dispatch(
-      //   userActions.joinOrganization({
-      //     invitationId: lastInvitation._id,
-      //     userId: lastInvitation.userId,
-      //   }),
-      // ).unwrap();
-      // await dispatch(userActions.getOrgInvitations()).unwrap();
+      await Promise.all([
+        dispatch(
+          usersPermissionsActions.acceptInvitation({
+            invitationId: lastInvitation._id,
+            userId,
+          }),
+        ).unwrap(),
+        dispatch(
+          usersPermissionsActions.getJoinOrgInvitatios({ userId }),
+        ).unwrap(),
+        dispatch(userActions.getUserById({ userId })).unwrap(),
+      ]);
 
-      onClose();
+      Toast.success(
+        "Invitation accepted successfully! You are now a member of the organization",
+      );
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -106,9 +118,9 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       }
       open={open}
       onClose={onClose}
-      confirmText="Join"
+      confirmText="Accept"
       cancelText="Decline"
-      onConfirm={onConfirm}
+      onConfirm={onAccept}
       onCancel={onDecline}
       confirmLoading={acceptLoading}
       cancelLoading={declineLoading}

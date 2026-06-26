@@ -8,7 +8,7 @@ export interface User {
   emailVerified: boolean;
   signUpMethod: SignUpMethods;
   avatar?: string;
-  permissions: UserPermissions;
+  permissions?: UserPermissions;
   organizationId?: string;
   createdAt: string;
   updatedAt: string;

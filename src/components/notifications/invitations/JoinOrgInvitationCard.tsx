@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
 import styled from "styled-components";
+import { userActions } from "../../../redux/user/user.slice";
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
@@ -62,8 +63,32 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
     }
   };
 
-  const onAccept = () => {
-    console.log("Accept");
+  const onAccept = async () => {
+    try {
+      setAcceptLoading(true);
+
+      await Promise.all([
+        dispatch(
+          usersPermissionsActions.acceptInvitation({
+            invitationId: invitation._id,
+            userId,
+          }),
+        ).unwrap(),
+        dispatch(
+          usersPermissionsActions.getJoinOrgInvitatios({ userId }),
+        ).unwrap(),
+        dispatch(userActions.getUserById({ userId })).unwrap(),
+      ]);
+
+      Toast.success(
+        "Invitation accepted successfully! You are now a member of the organization",
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setAcceptLoading(false);
+    }
   };
 
   return (
@@ -89,7 +114,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
           Decline
         </Button>
 
-        <Button variant="primary" onClick={onAccept}>
+        <Button variant="primary" onClick={onAccept} loading={acceptLoading}>
           Accept
         </Button>
       </ActionsWrapper>
