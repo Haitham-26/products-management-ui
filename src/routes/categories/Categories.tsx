@@ -230,7 +230,7 @@ export const Categories: React.FC = () => {
           total: categoriesMeta?.total || 0,
           onChange: handlePageChange,
           showSizeChanger: true,
-          pageSizeOptions: ["2", "10", "20", "50", "100"],
+          pageSizeOptions: ["10", "20", "50", "100"],
           position: ["bottomRight"],
           showTotal: (total) => `Total ${total} categories`,
         }}

@@ -7,10 +7,10 @@ import { userActions } from "../user/user.slice";
 import type { OwnerInvitation } from "../../model/user/users-permissions/types/OwnerInvitation";
 import type { GetOwnerInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetOwnerInvitationsResponseDto";
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
-import type { CancelInvitationDto } from "../../model/user/users-permissions/dto/CancelInvitationDto";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { GetJoinOrgInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetJoinOrgInvitationsResponseDto";
 import type { JoinOrgInvitation } from "../../model/user/users-permissions/types/JoinOrgInvitation";
+import type { GenericWithInvitationId } from "../../model/user/users-permissions/dto/GenericWithInvitationId";
 
 interface UsersPermissionsState {
   members: Partial<User>[];
@@ -47,9 +47,19 @@ const getJoinOrgInvitatios = AppThunk<
   UsersPermissionsAxios.getJoinOrgInvitatios,
 );
 
-const cancelInvitation = AppThunk<void, CancelInvitationDto>(
+const cancelInvitation = AppThunk<void, GenericWithInvitationId>(
   "/users-permissions/cancel-invitation",
   UsersPermissionsAxios.cancelInvitation,
+);
+
+const declineInvitation = AppThunk<void, GenericWithInvitationId>(
+  "/users-permissions/decline-invitation",
+  UsersPermissionsAxios.declineInvitation,
+);
+
+const acceptInvitation = AppThunk<void, GenericWithInvitationId>(
+  "/users-permissions/accept-invitation",
+  UsersPermissionsAxios.acceptInvitation,
 );
 
 const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
@@ -86,6 +96,11 @@ export const usersPermissionsSlice = createSlice({
       state.members = action.payload;
     });
 
+    addCase(acceptInvitation.fulfilled, (state) => {
+      state.joinOrgInvitations = [];
+      window.location.reload();
+    });
+
     addCase(userActions.logout.fulfilled, () => initialState);
   },
 });
@@ -95,6 +110,8 @@ const usersPermissionsActions = {
   getOwnerInvitations,
   getJoinOrgInvitatios,
   cancelInvitation,
+  declineInvitation,
+  acceptInvitation,
   getOrganizationMembers,
   updateMembersPermissions,
 };

@@ -1,60 +1,123 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text } from "../../Text";
 import { Button } from "../../Button";
 import type { JoinOrgInvitation } from "../../../model/user/users-permissions/types/JoinOrgInvitation";
+import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
+import userSliceSelectors from "../../../redux/user/user.selector";
+import { Toast } from "../../../utils/Toast";
+import styled from "styled-components";
+import { userActions } from "../../../redux/user/user.slice";
 
-type Props = {
+const Container = styled.div`
+  padding: ${({ theme }) => theme.spacing.md};
+  border: ${({ theme }) => `1px solid ${theme.colors.border}`};
+  border-radius: ${({ theme }) => theme.radius.md};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.background};
+`;
+
+const ActionsWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+type JoinOrgInvitationCardProps = {
   invitation: JoinOrgInvitation;
 };
 
-export const JoinOrgInvitationCard: React.FC<Props> = ({ invitation }) => {
-  const onDecline = () => {
-    console.log("Decline");
+export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
+  invitation,
+}) => {
+  const [declineLoading, setDeclineLoading] = useState(false);
+  const [acceptLoading, setAcceptLoading] = useState(false);
+
+  const dispatch = useAppDispatch();
+
+  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+
+  const onDecline = async () => {
+    try {
+      setDeclineLoading(true);
+
+      await dispatch(
+        usersPermissionsActions.declineInvitation({
+          invitationId: invitation._id,
+          userId,
+        }),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getJoinOrgInvitatios({ userId }),
+      ).unwrap();
+
+      Toast.success("Invitation declined successfully");
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setDeclineLoading(false);
+    }
   };
 
-  const onAccept = () => {
-    console.log("Accept");
+  const onAccept = async () => {
+    try {
+      setAcceptLoading(true);
+
+      await Promise.all([
+        dispatch(
+          usersPermissionsActions.acceptInvitation({
+            invitationId: invitation._id,
+            userId,
+          }),
+        ).unwrap(),
+        dispatch(
+          usersPermissionsActions.getJoinOrgInvitatios({ userId }),
+        ).unwrap(),
+        dispatch(userActions.getUserById({ userId })).unwrap(),
+      ]);
+
+      Toast.success(
+        "Invitation accepted successfully! You are now a member of the organization",
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setAcceptLoading(false);
+    }
   };
 
   return (
-    <div
-      style={{
-        padding: 12,
-        border: "1px solid #e5e7eb",
-        borderRadius: 8,
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        background: "#fff",
-      }}
-    >
+    <Container>
       <Text fontWeight={600}>
         {invitation.inviter.name} invited you to join their organization
       </Text>
 
       <Text color="textSecondary" fontSize="small">
-        You have been invited to join{" "}
-        <strong>{invitation.inviter.name}'s</strong> organization. Please note
+        You have been invited to join
+        <strong> {invitation.inviter.name}'s</strong> organization. Please note
         that your personal account data will be hidden while you are a member,
         and will become visible again if you choose to leave the organization.
       </Text>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 8,
-          marginTop: 6,
-        }}
-      >
-        <Button variant="secondary" onClick={onDecline}>
+      <ActionsWrapper>
+        <Button
+          variant="secondary"
+          onClick={onDecline}
+          loading={declineLoading}
+          spinnerColor="textPrimary"
+        >
           Decline
         </Button>
 
-        <Button variant="primary" onClick={onAccept}>
+        <Button variant="primary" onClick={onAccept} loading={acceptLoading}>
           Accept
         </Button>
-      </div>
-    </div>
+      </ActionsWrapper>
+    </Container>
   );
 };

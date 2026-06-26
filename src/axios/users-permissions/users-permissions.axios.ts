@@ -1,7 +1,7 @@
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { User } from "../../model/user/types/User";
-import type { CancelInvitationDto } from "../../model/user/users-permissions/dto/CancelInvitationDto";
+import type { GenericWithInvitationId } from "../../model/user/users-permissions/dto/GenericWithInvitationId";
 import type { GetJoinOrgInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetJoinOrgInvitationsResponseDto";
 import type { GetOwnerInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetOwnerInvitationsResponseDto";
 import type { InviteMembersDto } from "../../model/user/users-permissions/dto/InviteMembersDto";
@@ -28,8 +28,20 @@ export class UsersPermissionsAxios {
     ).then(({ data }) => data);
   }
 
-  static cancelInvitation(dto: CancelInvitationDto) {
+  static cancelInvitation(dto: GenericWithInvitationId) {
     return AppAxios.post("/users-permissions/cancel-invitation", dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static declineInvitation(dto: GenericWithInvitationId) {
+    return AppAxios.post("/users-permissions/decline-invitation", dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static acceptInvitation(dto: GenericWithInvitationId) {
+    return AppAxios.post("/users-permissions/accept-invitation", dto).then(
       ({ data }) => data,
     );
   }
