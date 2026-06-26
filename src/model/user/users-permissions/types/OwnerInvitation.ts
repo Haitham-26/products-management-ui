@@ -5,6 +5,7 @@ export interface OwnerInvitation {
   inviterId: string;
   inviteeEmail: string;
   status: InvitationStatus;
+  sentAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }

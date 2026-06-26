@@ -187,11 +187,11 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
     }
   };
 
-  const getExpirationDate = (createdAtString: Date) => {
-    const createdDate = new Date(createdAtString);
-    createdDate.setDate(createdDate.getDate() + 30);
+  const getExpirationDate = (sentAt: Date) => {
+    const sentDate = new Date(sentAt);
+    sentDate.setDate(sentDate.getDate() + 30);
 
-    return formatDate(createdDate.toISOString(), true);
+    return formatDate(sentDate.toISOString(), true);
   };
 
   return (
@@ -208,7 +208,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
           <MetaItem>
             <MetaLabel>Sent On</MetaLabel>
             <Text color="textSecondary" fontSize="small">
-              {formatDate(invitation.createdAt, true)}
+              {formatDate(invitation.sentAt, true)}
             </Text>
           </MetaItem>
 
