@@ -24,6 +24,10 @@ const selectOrganizationMembers = createSelector(
   usersPermissionsState,
   (state) => state?.members || [],
 );
+const selectOrganizationMembersLoading = createSelector(
+  usersPermissionsState,
+  (state) => state?.membersLoading,
+);
 
 const usersPermissionsSliceSelectors = {
   selectMembers,
@@ -31,6 +35,7 @@ const usersPermissionsSliceSelectors = {
   selectOrganizationMembers,
   selectJoinOrgInvitations,
   selectOwnerInvitationsLoading,
+  selectOrganizationMembersLoading,
 };
 
 export default usersPermissionsSliceSelectors;
