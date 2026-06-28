@@ -1,13 +1,14 @@
 import type React from "react";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Text } from "../../../components/Text";
 import { Button } from "../../../components/Button";
 import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
+import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
 
 const Container = styled.div`
   display: flex;
@@ -63,6 +64,8 @@ type UsersPermissionsOrgTabProps = {
 export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
   setLeaveOrgModalVisible,
 }) => {
+  const dispatch = useAppDispatch();
+
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
   const members = useAppSelector(
@@ -75,6 +78,12 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
   const orgOwner = members.find((m) => m._id === user.organizationId);
 
   const company = orgOwner?.company || orgOwner?.name;
+
+  useEffect(() => {
+    dispatch(
+      usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
+    );
+  }, [dispatch, user._id]);
 
   if (membersLoading) {
     return <SpinnerFullScreen />;
