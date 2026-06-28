@@ -61,7 +61,7 @@ const SpinnerWrapper = styled.div`
   justify-content: center;
 `;
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   variant?: Variant;
   icon?: IconProp;

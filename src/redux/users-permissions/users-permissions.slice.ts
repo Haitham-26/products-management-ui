@@ -80,6 +80,11 @@ const removeMember = AppThunk<void, GenericWithMemberId>(
   UsersPermissionsAxios.removeMember,
 );
 
+const leaveOrg = AppThunk<void, GenericWithUserId>(
+  "/users-permissions/organization/leave",
+  UsersPermissionsAxios.leaveOrg,
+);
+
 export const usersPermissionsSlice = createSlice({
   name: "usersPermissions",
   initialState,
@@ -113,7 +118,10 @@ export const usersPermissionsSlice = createSlice({
 
     addCase(acceptInvitation.fulfilled, (state) => {
       state.joinOrgInvitations = [];
-      window.location.reload();
+    });
+
+    addCase(leaveOrg.fulfilled, (state) => {
+      state.members = [];
     });
 
     addCase(userActions.logout.fulfilled, () => initialState);
@@ -130,6 +138,7 @@ const usersPermissionsActions = {
   getOrganizationMembers,
   updateMembersPermissions,
   removeMember,
+  leaveOrg,
 };
 
 export { usersPermissionsActions };

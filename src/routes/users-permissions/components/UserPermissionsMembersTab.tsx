@@ -26,6 +26,8 @@ import { WarningModal } from "../../../components/WarningModal";
 import isEmpty from "lodash/isEmpty";
 import { UserRoles } from "../../../model/user/types/UserRoles.enum";
 import type { ThemeType } from "../../../theme/theme";
+import { Empty } from "../../../components/Empty";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -144,7 +146,13 @@ const CenterContainer = styled.div`
   justify-content: flex-start;
 `;
 
-export const UserPermissionsMembersTab: React.FC = () => {
+type UserPermissionsMembersTabProps = {
+  setInviteMembersModalVisible: VoidCallback<boolean>;
+};
+
+export const UserPermissionsMembersTab: React.FC<
+  UserPermissionsMembersTabProps
+> = ({ setInviteMembersModalVisible }) => {
   const [shouldBlurStickyHeader, setShouldBlurStickyHeader] = useState(false);
   useState(false);
   const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
@@ -167,7 +175,11 @@ export const UserPermissionsMembersTab: React.FC = () => {
     useForm<UpdateMembersPermissionsDto>({
       defaultValues: {
         userId: user._id,
-        members: Object.fromEntries(members.map((m) => [m._id, m.permissions])),
+        members: Object.fromEntries(
+          members
+            .filter((m) => m._id !== user._id)
+            .map((m) => [m._id, m.permissions]),
+        ),
       },
     });
 
@@ -238,12 +250,23 @@ export const UserPermissionsMembersTab: React.FC = () => {
 
   return (
     <Fragment>
-      {isOrganization ? (
+      {isOrganization && members.length ? (
         <StickyBar blur={shouldBlurStickyHeader}>
           <Text fontWeight="bold">Members Permissions</Text>
 
           <Button onClick={handleSubmit(onSubmit)}>Save changes</Button>
         </StickyBar>
+      ) : null}
+
+      {!membersLoading && !members.length ? (
+        <Empty description="You have no members yet">
+          <Button
+            icon={faUserPlus}
+            onClick={() => setInviteMembersModalVisible(true)}
+          >
+            Invite members
+          </Button>
+        </Empty>
       ) : null}
 
       {!membersLoading ? (
@@ -255,7 +278,7 @@ export const UserPermissionsMembersTab: React.FC = () => {
             ) : null
           }
           collapsible="icon"
-          items={[user, ...members].map((m) => {
+          items={members.map((m) => {
             const permissions = liveMembers[m._id!];
             const availableActions = Object.values(CRUDPermissions);
             const entities = Object.keys(m.permissions || {});

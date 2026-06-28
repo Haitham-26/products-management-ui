@@ -40,6 +40,8 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const company = invitation.inviter?.company || invitation.inviter.name;
+
   const onDecline = async () => {
     try {
       setDeclineLoading(true);
@@ -53,6 +55,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       await dispatch(
         usersPermissionsActions.getJoinOrgInvitatios({ userId }),
       ).unwrap();
+      await dispatch(userActions.getUserById({ userId })).unwrap();
 
       Toast.success("Invitation declined successfully");
     } catch (e) {
@@ -67,18 +70,13 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
     try {
       setAcceptLoading(true);
 
-      await Promise.all([
-        dispatch(
-          usersPermissionsActions.acceptInvitation({
-            invitationId: invitation._id,
-            userId,
-          }),
-        ).unwrap(),
-        dispatch(
-          usersPermissionsActions.getJoinOrgInvitatios({ userId }),
-        ).unwrap(),
-        dispatch(userActions.getUserById({ userId })).unwrap(),
-      ]);
+      await dispatch(
+        usersPermissionsActions.acceptInvitation({
+          invitationId: invitation._id,
+          userId,
+        }),
+      ).unwrap();
+      await dispatch(userActions.getUserById({ userId })).unwrap();
 
       Toast.success(
         "Invitation accepted successfully! You are now a member of the organization",
@@ -94,14 +92,14 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
   return (
     <Container>
       <Text fontWeight={600}>
-        {invitation.inviter.name} invited you to join their organization
+        {company} invited you to join their organization
       </Text>
 
       <Text color="textSecondary" fontSize="small">
         You have been invited to join
-        <strong> {invitation.inviter.name}'s</strong> organization. Please note
-        that your personal account data will be hidden while you are a member,
-        and will become visible again if you choose to leave the organization.
+        <strong> {company}'s</strong> organization. Please note that your
+        personal account data will be hidden while you are a member, and will
+        become visible again if you choose to leave the organization.
       </Text>
 
       <ActionsWrapper>

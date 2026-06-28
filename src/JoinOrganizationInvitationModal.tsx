@@ -12,12 +12,14 @@ import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
 import { userActions } from "./redux/user/user.slice";
 import { UserRoles } from "./model/user/types/UserRoles.enum";
+import { useNavigate } from "react-router-dom";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [declineLoading, setDeclineLoading] = useState(false);
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const lastSeenInvitationId = useAppSelector(
     appSliceSelectors.selectLastSeenInvitationId,
@@ -29,6 +31,9 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
   const user = useAppSelector(userSliceSelectors.selectUser)!;
 
   const lastInvitation = last(invitations);
+
+  const company =
+    lastInvitation?.inviter?.company || lastInvitation?.inviter.name;
 
   const open = Boolean(
     lastInvitation &&
@@ -51,18 +56,15 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
     try {
       setAcceptLoading(true);
 
-      await Promise.all([
-        dispatch(
-          usersPermissionsActions.acceptInvitation({
-            invitationId: lastInvitation._id,
-            userId,
-          }),
-        ).unwrap(),
-        dispatch(
-          usersPermissionsActions.getJoinOrgInvitatios({ userId }),
-        ).unwrap(),
-        dispatch(userActions.getUserById({ userId })).unwrap(),
-      ]);
+      await dispatch(
+        usersPermissionsActions.acceptInvitation({
+          invitationId: lastInvitation._id,
+          userId,
+        }),
+      ).unwrap();
+      await dispatch(userActions.getUserById({ userId })).unwrap();
+
+      navigate("/dashboard", { replace: true });
 
       Toast.success(
         "Invitation accepted successfully! You are now a member of the organization",
@@ -90,8 +92,11 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
         }),
       ).unwrap();
       await dispatch(
-        usersPermissionsActions.getOrganizationMembers({ userId }),
+        usersPermissionsActions.getJoinOrgInvitatios({ userId }),
       ).unwrap();
+      await dispatch(userActions.getUserById({ userId })).unwrap();
+
+      Toast.success("Invitation declined successfully");
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -116,7 +121,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       description={
         <Fragment>
           You have been invited to join
-          <strong> {lastInvitation?.inviter.name}'s </strong>
+          <strong> {company}'s </strong>
           organization. Please note that your personal account data will be
           hidden while you are a member, and will become visible again if you
           choose to leave the organization.

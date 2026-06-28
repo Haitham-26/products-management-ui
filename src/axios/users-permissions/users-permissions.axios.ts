@@ -65,4 +65,11 @@ export class UsersPermissionsAxios {
       ({ data }) => data,
     );
   }
+
+  static leaveOrg(dto: GenericWithUserId) {
+    return AppAxios.post<void>(
+      "/users-permissions/organization/leave",
+      dto,
+    ).then(({ data }) => data);
+  }
 }
