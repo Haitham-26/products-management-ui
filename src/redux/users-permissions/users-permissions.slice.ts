@@ -70,9 +70,9 @@ const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
   UsersPermissionsAxios.getOrganizationMembers,
 );
 
-const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
+const manageMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
   "/users-permissions/members/update",
-  UsersPermissionsAxios.updateMembersPermissions,
+  UsersPermissionsAxios.manageMembersPermissions,
 );
 
 const removeMember = AppThunk<void, GenericWithMemberId>(
@@ -136,7 +136,7 @@ const usersPermissionsActions = {
   declineInvitation,
   acceptInvitation,
   getOrganizationMembers,
-  updateMembersPermissions,
+  manageMembersPermissions,
   removeMember,
   leaveOrg,
 };

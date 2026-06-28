@@ -54,7 +54,7 @@ export class UsersPermissionsAxios {
     ).then(({ data }) => data);
   }
 
-  static updateMembersPermissions(dto: UpdateMembersPermissionsDto) {
+  static manageMembersPermissions(dto: UpdateMembersPermissionsDto) {
     return AppAxios.patch<void>("/users-permissions/update", dto).then(
       ({ data }) => data,
     );

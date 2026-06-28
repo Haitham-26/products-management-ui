@@ -36,6 +36,7 @@ const StickyBar = styled.div<{ blur: boolean }>`
   margin-bottom: ${({ theme, blur }) => (!blur ? theme.spacing.md : 0)};
 
   padding-inline-start: ${({ theme, blur }) => (blur ? theme.spacing.md : 0)};
+  padding-block: ${({ theme, blur }) => (blur ? theme.spacing.sm : 0)};
 
   display: flex;
   justify-content: space-between;
@@ -43,7 +44,7 @@ const StickyBar = styled.div<{ blur: boolean }>`
 
   transition:
     background 0.2s ease,
-    padding 0.4s ease;
+    padding 0.3s ease;
   background: ${({ blur }) =>
     blur ? "rgba(255, 255, 255, 0.65)" : "rgba(255, 255, 255, 0)"};
 
@@ -159,6 +160,7 @@ export const UserPermissionsMembersTab: React.FC<
   const [selectedMember, setSelectedMember] = useState<Partial<User> | null>(
     null,
   );
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const members = useAppSelector(
     usersPermissionsSliceSelectors.selectOrganizationMembers,
@@ -171,25 +173,40 @@ export const UserPermissionsMembersTab: React.FC<
 
   const dispatch = useAppDispatch();
 
-  const { control, setValue, handleSubmit } =
-    useForm<UpdateMembersPermissionsDto>({
-      defaultValues: {
-        userId: user._id,
-        members: Object.fromEntries(
-          members
-            .filter((m) => m._id !== user._id)
-            .map((m) => [m._id, m.permissions]),
-        ),
-      },
-    });
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { isDirty },
+  } = useForm<UpdateMembersPermissionsDto>();
 
   const liveMembers = useWatch({
     control,
     name: "members",
   });
 
-  const onSubmit = (data: UpdateMembersPermissionsDto) => {
-    dispatch(usersPermissionsActions.updateMembersPermissions(data));
+  const onManageMembersPermissions = async () => {
+    try {
+      setSaveLoading(true);
+
+      const dto = getValues();
+
+      await dispatch(
+        usersPermissionsActions.manageMembersPermissions(dto),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
+      ).unwrap();
+
+      Toast.success("Members permissions updated successfully");
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   const onRemoveMemebr = async () => {
@@ -220,6 +237,17 @@ export const UserPermissionsMembersTab: React.FC<
       setRemoveMemberLoading(false);
     }
   };
+
+  useEffect(() => {
+    reset({
+      userId: user._id,
+      members: Object.fromEntries(
+        members
+          .filter((m) => m._id !== user._id)
+          .map((m) => [m._id, m.permissions]),
+      ),
+    });
+  }, [members, user._id, reset]);
 
   useEffect(() => {
     dispatch(
@@ -254,7 +282,13 @@ export const UserPermissionsMembersTab: React.FC<
         <StickyBar blur={shouldBlurStickyHeader}>
           <Text fontWeight="bold">Members Permissions</Text>
 
-          <Button onClick={handleSubmit(onSubmit)}>Save changes</Button>
+          <Button
+            onClick={handleSubmit(onManageMembersPermissions)}
+            loading={saveLoading}
+            disabled={!isDirty}
+          >
+            Save changes
+          </Button>
         </StickyBar>
       ) : null}
 
@@ -279,7 +313,7 @@ export const UserPermissionsMembersTab: React.FC<
           }
           collapsible="icon"
           items={members.map((m) => {
-            const permissions = liveMembers[m._id!];
+            const permissions = liveMembers?.[m._id!];
             const availableActions = Object.values(CRUDPermissions);
             const entities = Object.keys(m.permissions || {});
 
@@ -388,7 +422,7 @@ export const UserPermissionsMembersTab: React.FC<
                                           >
                                             <Switch
                                               size="small"
-                                              checked={!!value}
+                                              checked={Boolean(value)}
                                               disabled={shouldDisable}
                                               onChange={(v) => {
                                                 onChange(v);
