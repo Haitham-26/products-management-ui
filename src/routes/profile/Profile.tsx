@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import { Container } from "../../components/Container";
 import { PageHeader } from "../../components/PageHeader";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Controller, useForm } from "react-hook-form";
 import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
@@ -83,6 +83,15 @@ const Avatar = styled.div`
 
 const UserInfo = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
+
+  p:nth-child(2) {
+    font-weight: 600;
+    margin-top: ${({ theme }) => theme.spacing.xs};
+  }
+
+  p:nth-child(3) {
+    margin-top: ${({ theme }) => theme.spacing.xs};
+  }
 `;
 
 const Form = styled.form`
@@ -101,12 +110,14 @@ const FormSectionTitle = styled(Text)`
 export const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const user = useAppSelector(userSliceSelectors.selectUser);
+  const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
   const dispatch = useAppDispatch();
 
   const { control, handleSubmit, getValues } = useForm<UpdateUserDto>({
     defaultValues: {
       name: user.name || "",
       userId: user._id,
+      company: user?.company || "",
     },
   });
 
@@ -143,6 +154,11 @@ export const Profile: React.FC = () => {
           </AvatarWrapper>
           <UserInfo>
             <Text fontWeight={"bold"}>{user.name}</Text>
+            {user?.company && !isOrgMember ? (
+              <Text fontSize="small" color="primary">
+                {user.company}
+              </Text>
+            ) : null}
             <Text fontSize="small" color="textSecondary">
               {user.email}
             </Text>
@@ -185,6 +201,32 @@ export const Profile: React.FC = () => {
             />
 
             <StyledInput title="Email Address" value={user.email} readOnly />
+
+            {!isOrgMember ? (
+              <Fragment>
+                <FormSectionTitle>Organization Information</FormSectionTitle>
+
+                <Controller
+                  control={control}
+                  name="company"
+                  rules={{
+                    maxLength: {
+                      value: 50,
+                      message: "Company name must be at most 50 characters",
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Input
+                      title="Company Name"
+                      placeholder="Enter your organization or company name"
+                      {...field}
+                      valid={!error}
+                      errorMessage={error?.message}
+                    />
+                  )}
+                />
+              </Fragment>
+            ) : null}
 
             <StyledButton onClick={handleSubmit(onSubmit)} loading={loading}>
               Save Changes

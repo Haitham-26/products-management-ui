@@ -1,6 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import type { User } from "../../model/user/types/User";
+import { UserRoles } from "../../model/user/types/UserRoles.enum";
 
 const userState = (state: RootState) => state.user;
 
@@ -13,16 +14,18 @@ const selectUserPermissions = createSelector(
   userState,
   (state) => state?.user?.permissions || [],
 );
-const selectIsOrganization = createSelector(
+const selectIsOrgMember = createSelector(
   userState,
-  (state) => state?.user?.organizationId?.length,
+  (state) =>
+    state?.user?.organizationId?.length &&
+    state.user.roles.includes(UserRoles.MEMBER),
 );
 
 const userSliceSelectors = {
   selectUser,
   selectUserId,
   selectUserPermissions,
-  selectIsOrganization,
+  selectIsOrgMember,
 };
 
 export default userSliceSelectors;

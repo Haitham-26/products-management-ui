@@ -1,4 +1,5 @@
 import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
+import type { GenericWithMemberId } from "../../model/user/dto/GenericWithMemberId";
 import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMembersPermissionsDto";
 import type { User } from "../../model/user/types/User";
 import type { GenericWithInvitationId } from "../../model/user/users-permissions/dto/GenericWithInvitationId";
@@ -53,9 +54,22 @@ export class UsersPermissionsAxios {
     ).then(({ data }) => data);
   }
 
-  static updateMembersPermissions(dto: UpdateMembersPermissionsDto) {
+  static manageMembersPermissions(dto: UpdateMembersPermissionsDto) {
     return AppAxios.patch<void>("/users-permissions/update", dto).then(
       ({ data }) => data,
     );
+  }
+
+  static removeMember(dto: GenericWithMemberId) {
+    return AppAxios.post<void>("/users-permissions/members/remove", dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static leaveOrg(dto: GenericWithUserId) {
+    return AppAxios.post<void>(
+      "/users-permissions/organization/leave",
+      dto,
+    ).then(({ data }) => data);
   }
 }

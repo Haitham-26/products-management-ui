@@ -5,6 +5,7 @@ import type { UserRoles } from "./UserRoles.enum";
 export interface User {
   _id: string;
   name: string;
+  company?: string;
   email: string;
   emailVerified: boolean;
   signUpMethod: SignUpMethods;

@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import styled from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
-import { Button } from "./Button";
+import { Button, type ButtonProps } from "./Button";
 import { Popover } from "antd";
 import { Input } from "./Input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
@@ -138,6 +138,7 @@ type PageHeaderProps = {
     title: string;
     icon: IconProp;
     onClick: VoidFunction;
+    variant?: ButtonProps["variant"];
   };
 
   search?: {
@@ -178,7 +179,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </TitleBlock>
 
         {action ? (
-          <Button icon={action.icon} onClick={action.onClick}>
+          <Button
+            icon={action.icon}
+            onClick={action.onClick}
+            variant={action.variant}
+          >
             {action.title}
           </Button>
         ) : null}

@@ -11,9 +11,11 @@ import type { UpdateMembersPermissionsDto } from "../../model/user/dto/UpdateMem
 import type { GetJoinOrgInvitationsResponseDto } from "../../model/user/users-permissions/dto/GetJoinOrgInvitationsResponseDto";
 import type { JoinOrgInvitation } from "../../model/user/users-permissions/types/JoinOrgInvitation";
 import type { GenericWithInvitationId } from "../../model/user/users-permissions/dto/GenericWithInvitationId";
+import type { GenericWithMemberId } from "../../model/user/dto/GenericWithMemberId";
 
 interface UsersPermissionsState {
   members: Partial<User>[];
+  membersLoading: boolean;
   ownerInvitations: OwnerInvitation[];
   joinOrgInvitations: JoinOrgInvitation[];
   ownerInvitationsLoading: boolean;
@@ -21,6 +23,7 @@ interface UsersPermissionsState {
 
 const initialState: UsersPermissionsState = {
   members: [],
+  membersLoading: false,
   ownerInvitations: [],
   joinOrgInvitations: [],
   ownerInvitationsLoading: false,
@@ -63,13 +66,23 @@ const acceptInvitation = AppThunk<void, GenericWithInvitationId>(
 );
 
 const getOrganizationMembers = AppThunk<Partial<User>[], GenericWithUserId>(
-  "/organization/members",
+  "/users-permissions/members",
   UsersPermissionsAxios.getOrganizationMembers,
 );
 
-const updateMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
-  "/organization/members/update",
-  UsersPermissionsAxios.updateMembersPermissions,
+const manageMembersPermissions = AppThunk<void, UpdateMembersPermissionsDto>(
+  "/users-permissions/members/update",
+  UsersPermissionsAxios.manageMembersPermissions,
+);
+
+const removeMember = AppThunk<void, GenericWithMemberId>(
+  "/users-permissions/members/remove",
+  UsersPermissionsAxios.removeMember,
+);
+
+const leaveOrg = AppThunk<void, GenericWithUserId>(
+  "/users-permissions/organization/leave",
+  UsersPermissionsAxios.leaveOrg,
 );
 
 export const usersPermissionsSlice = createSlice({
@@ -92,13 +105,23 @@ export const usersPermissionsSlice = createSlice({
       state.joinOrgInvitations = action.payload.invitations;
     });
 
+    addCase(getOrganizationMembers.pending, (state) => {
+      state.membersLoading = true;
+    });
     addCase(getOrganizationMembers.fulfilled, (state, action) => {
       state.members = action.payload;
+      state.membersLoading = false;
+    });
+    addCase(getOrganizationMembers.rejected, (state) => {
+      state.membersLoading = false;
     });
 
     addCase(acceptInvitation.fulfilled, (state) => {
       state.joinOrgInvitations = [];
-      window.location.reload();
+    });
+
+    addCase(leaveOrg.fulfilled, (state) => {
+      state.members = [];
     });
 
     addCase(userActions.logout.fulfilled, () => initialState);
@@ -113,7 +136,9 @@ const usersPermissionsActions = {
   declineInvitation,
   acceptInvitation,
   getOrganizationMembers,
-  updateMembersPermissions,
+  manageMembersPermissions,
+  removeMember,
+  leaveOrg,
 };
 
 export { usersPermissionsActions };

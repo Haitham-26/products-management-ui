@@ -47,7 +47,20 @@ export const SignUpEmail: React.FC = () => {
           render={({ field, fieldState }) => (
             <Input
               title="Name"
-              placeholder="John Doe"
+              placeholder="Haitham"
+              errorMessage={fieldState.error?.message}
+              required
+              {...field}
+            />
+          )}
+        />,
+        <Controller
+          control={control}
+          name="company"
+          render={({ field, fieldState }) => (
+            <Input
+              title="Company name"
+              placeholder="Inventix"
               errorMessage={fieldState.error?.message}
               {...field}
             />
@@ -62,6 +75,7 @@ export const SignUpEmail: React.FC = () => {
               title="Email"
               placeholder="you@example.com"
               errorMessage={fieldState.error?.message}
+              required
               {...field}
             />
           )}
@@ -77,6 +91,7 @@ export const SignUpEmail: React.FC = () => {
               type="password"
               placeholder="••••••••"
               errorMessage={fieldState.error?.message}
+              required
               {...field}
             />
           )}

@@ -19,6 +19,15 @@ import { Button } from "../../../components/Button";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
 import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
+import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
+import type { User } from "../../../model/user/types/User";
+import { Toast } from "../../../utils/Toast";
+import { WarningModal } from "../../../components/WarningModal";
+import isEmpty from "lodash/isEmpty";
+import { UserRoles } from "../../../model/user/types/UserRoles.enum";
+import type { ThemeType } from "../../../theme/theme";
+import { Empty } from "../../../components/Empty";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -27,6 +36,7 @@ const StickyBar = styled.div<{ blur: boolean }>`
   margin-bottom: ${({ theme, blur }) => (!blur ? theme.spacing.md : 0)};
 
   padding-inline-start: ${({ theme, blur }) => (blur ? theme.spacing.md : 0)};
+  padding-block: ${({ theme, blur }) => (blur ? theme.spacing.sm : 0)};
 
   display: flex;
   justify-content: space-between;
@@ -34,7 +44,7 @@ const StickyBar = styled.div<{ blur: boolean }>`
 
   transition:
     background 0.2s ease,
-    padding 0.4s ease;
+    padding 0.3s ease;
   background: ${({ blur }) =>
     blur ? "rgba(255, 255, 255, 0.65)" : "rgba(255, 255, 255, 0)"};
 
@@ -64,20 +74,39 @@ const ExpandIcon = styled(Icon)<{ isActive: boolean }>`
   transform: rotate(${({ isActive }) => (isActive ? "0deg" : "-90deg")});
 `;
 
+const Name = styled(Text)`
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  flex-wrap: wrap;
+`;
+
+const Badge = styled.span<{
+  background: keyof ThemeType["colors"];
+  color: keyof ThemeType["colors"];
+}>`
+  padding: 2px 8px;
+  border-radius: ${({ theme }) => theme.radius.full};
+
+  display: inline-flex;
+  align-items: center;
+
+  font-size: 0.7rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  background-color: ${({ theme, background }) => theme.colors[background]};
+
+  color: ${({ theme, color }) => theme.colors[color]} !important;
+
+  user-select: none;
+`;
+
 const Info = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
-
-  span:first-child {
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.body};
-  }
-
-  span:last-child {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
 `;
 
 const TableWrapper = styled.div`
@@ -118,35 +147,107 @@ const CenterContainer = styled.div`
   justify-content: flex-start;
 `;
 
-export const UserPermissionsMembersTab: React.FC = () => {
+type UserPermissionsMembersTabProps = {
+  setInviteMembersModalVisible: VoidCallback<boolean>;
+};
+
+export const UserPermissionsMembersTab: React.FC<
+  UserPermissionsMembersTabProps
+> = ({ setInviteMembersModalVisible }) => {
   const [shouldBlurStickyHeader, setShouldBlurStickyHeader] = useState(false);
+  useState(false);
+  const [removeMemberLoading, setRemoveMemberLoading] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Partial<User> | null>(
+    null,
+  );
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const members = useAppSelector(
     usersPermissionsSliceSelectors.selectOrganizationMembers,
   );
-  const user = useAppSelector(userSliceSelectors.selectUser);
-  const isOrganization = useAppSelector(
-    userSliceSelectors.selectIsOrganization,
+  const membersLoading = useAppSelector(
+    usersPermissionsSliceSelectors.selectOrganizationMembersLoading,
   );
+  const user = useAppSelector(userSliceSelectors.selectUser);
+  const isOrganization = !useAppSelector(userSliceSelectors.selectIsOrgMember);
 
   const dispatch = useAppDispatch();
 
-  const { control, setValue, handleSubmit } =
-    useForm<UpdateMembersPermissionsDto>({
-      defaultValues: {
-        userId: user._id,
-        members: Object.fromEntries(members.map((m) => [m._id, m.permissions])),
-      },
-    });
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { isDirty },
+  } = useForm<UpdateMembersPermissionsDto>();
 
   const liveMembers = useWatch({
     control,
     name: "members",
   });
 
-  const onSubmit = (data: UpdateMembersPermissionsDto) => {
-    dispatch(usersPermissionsActions.updateMembersPermissions(data));
+  const onManageMembersPermissions = async () => {
+    try {
+      setSaveLoading(true);
+
+      const dto = getValues();
+
+      await dispatch(
+        usersPermissionsActions.manageMembersPermissions(dto),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
+      ).unwrap();
+
+      Toast.success("Members permissions updated successfully");
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setSaveLoading(false);
+    }
   };
+
+  const onRemoveMemebr = async () => {
+    if (!selectedMember) {
+      return;
+    }
+
+    try {
+      setRemoveMemberLoading(true);
+
+      await dispatch(
+        usersPermissionsActions.removeMember({
+          userId: user._id,
+          memberId: selectedMember._id!,
+        }),
+      ).unwrap();
+      await dispatch(
+        usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
+      ).unwrap();
+
+      setSelectedMember(null);
+
+      Toast.success("Member removed successfully");
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setRemoveMemberLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    reset({
+      userId: user._id,
+      members: Object.fromEntries(
+        members
+          .filter((m) => m._id !== user._id)
+          .map((m) => [m._id, m.permissions]),
+      ),
+    });
+  }, [members, user._id, reset]);
 
   useEffect(() => {
     dispatch(
@@ -177,153 +278,207 @@ export const UserPermissionsMembersTab: React.FC = () => {
 
   return (
     <Fragment>
-      {isOrganization ? (
+      {isOrganization && members.length ? (
         <StickyBar blur={shouldBlurStickyHeader}>
           <Text fontWeight="bold">Members Permissions</Text>
 
-          <Button onClick={handleSubmit(onSubmit)}>Save changes</Button>
+          <Button
+            onClick={handleSubmit(onManageMembersPermissions)}
+            loading={saveLoading}
+            disabled={!isDirty}
+          >
+            Save changes
+          </Button>
         </StickyBar>
       ) : null}
 
-      <Collapse
-        expandIconPlacement="end"
-        expandIcon={({ isActive }) =>
-          isOrganization ? (
-            <ExpandIcon icon={faAngleDown} isActive={Boolean(isActive)} />
-          ) : null
-        }
-        collapsible="icon"
-        items={[user, ...members].map((m) => {
-          const permissions = liveMembers[m._id!];
-          const availableActions = Object.values(CRUDPermissions);
-          const entities = Object.keys(m.permissions || {});
+      {!membersLoading && !members.length ? (
+        <Empty description="You have no members yet">
+          <Button
+            icon={faUserPlus}
+            onClick={() => setInviteMembersModalVisible(true)}
+          >
+            Invite members
+          </Button>
+        </Empty>
+      ) : null}
 
-          return {
-            key: m._id,
-            label: (
-              <MemberHeader>
-                <Avatar>
-                  <Text fontWeight="bold">
-                    {m.name?.charAt(0).toUpperCase()}
-                  </Text>
-                </Avatar>
-                <Info>
-                  <Text fontWeight="bold">
-                    {m.name}
-                    {m._id === user._id ? (
-                      <span style={{ fontStyle: "italic" }}> (You)</span>
-                    ) : null}
-                  </Text>
-                  <Text fontSize="small" color="textSecondary">
-                    {m.email}
-                  </Text>
-                </Info>
-              </MemberHeader>
-            ),
-            extra: isOrganization ? (
-              <Dropdown
-                trigger={["click"]}
-                menu={{
-                  items: [
-                    {
-                      key: "remove",
-                      icon: <Icon icon={faPersonCircleXmark} />,
-                      label: "Kick member",
-                      danger: true,
-                    },
-                  ],
-                }}
-              >
-                <Icon icon={faEllipsis} />
-              </Dropdown>
-            ) : null,
-            children: isOrganization ? (
-              <TableWrapper>
-                <PermissionTable>
-                  <thead>
-                    <tr>
-                      <Th>Entity</Th>
-                      {availableActions.map((action) => (
-                        <Th key={action}>{capitalize(action)}</Th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entities.map((entityKey) => {
-                      const typedEntityKey = entityKey as keyof UserPermissions;
+      {!membersLoading ? (
+        <Collapse
+          expandIconPlacement="end"
+          expandIcon={({ isActive }) =>
+            isOrganization ? (
+              <ExpandIcon icon={faAngleDown} isActive={Boolean(isActive)} />
+            ) : null
+          }
+          collapsible="icon"
+          items={members.map((m) => {
+            const permissions = liveMembers?.[m._id!];
+            const availableActions = Object.values(CRUDPermissions);
+            const entities = Object.keys(m.permissions || {});
 
-                      return (
-                        <Tr key={entityKey}>
-                          <Td>
-                            <Text
-                              fontWeight="bold"
-                              fontSize="small"
-                              color="textSecondary"
-                            >
-                              {capitalize(entityKey)}
-                            </Text>
-                          </Td>
+            return {
+              key: m._id,
+              label: (
+                <MemberHeader>
+                  <Avatar>
+                    <Text fontWeight="bold">
+                      {m.name?.charAt(0).toUpperCase()}
+                    </Text>
+                  </Avatar>
+                  <Info>
+                    <Name>
+                      <span>{m.name}</span>
 
-                          {availableActions.map((actionKey) => (
-                            <Td key={actionKey}>
-                              <CenterContainer>
-                                <Controller
-                                  control={control}
-                                  name={
-                                    `members.${m._id}.${typedEntityKey}.${actionKey}` as const
-                                  }
-                                  render={({ field: { onChange, value } }) => {
-                                    const shouldDisable =
-                                      !permissions?.[typedEntityKey]?.READ &&
-                                      actionKey !== CRUDPermissions.READ;
+                      {m._id === user._id ? (
+                        <Badge background="primary" color="onPrimary">
+                          You
+                        </Badge>
+                      ) : null}
 
-                                    return (
-                                      <Tooltip
-                                        title={
-                                          shouldDisable
-                                            ? "Read permissions should be enabled first."
-                                            : undefined
-                                        }
-                                      >
-                                        <Switch
-                                          size="small"
-                                          checked={!!value}
-                                          disabled={shouldDisable}
-                                          onChange={(v) => {
-                                            onChange(v);
-
-                                            if (
-                                              !v &&
-                                              actionKey === CRUDPermissions.READ
-                                            ) {
-                                              setValue(
-                                                `members.${m._id}.${typedEntityKey}`,
-                                                {
-                                                  CREATE: false,
-                                                  READ: false,
-                                                  UPDATE: false,
-                                                  DELETE: false,
-                                                },
-                                              );
-                                            }
-                                          }}
-                                        />
-                                      </Tooltip>
-                                    );
-                                  }}
-                                />
-                              </CenterContainer>
-                            </Td>
+                      {m.roles?.includes(UserRoles.OWNER) ? (
+                        <Badge background="warning" color="background">
+                          Owner
+                        </Badge>
+                      ) : null}
+                    </Name>
+                    <Text fontSize="small" color="textSecondary">
+                      {m.email}
+                    </Text>
+                  </Info>
+                </MemberHeader>
+              ),
+              extra:
+                isOrganization && user._id !== m._id ? (
+                  <Dropdown
+                    trigger={["click"]}
+                    menu={{
+                      items: [
+                        {
+                          key: "remove",
+                          icon: <Icon icon={faPersonCircleXmark} />,
+                          label: "Remove member",
+                          onClick: () => setSelectedMember(m),
+                          danger: true,
+                        },
+                      ],
+                    }}
+                  >
+                    <Icon icon={faEllipsis} />
+                  </Dropdown>
+                ) : null,
+              children:
+                isOrganization && user._id !== m._id ? (
+                  <TableWrapper>
+                    <PermissionTable>
+                      <thead>
+                        <tr>
+                          <Th>Entity</Th>
+                          {availableActions.map((action) => (
+                            <Th key={action}>{capitalize(action)}</Th>
                           ))}
-                        </Tr>
-                      );
-                    })}
-                  </tbody>
-                </PermissionTable>
-              </TableWrapper>
-            ) : null,
-          };
-        })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {entities.map((entityKey) => {
+                          const typedEntityKey =
+                            entityKey as keyof UserPermissions;
+
+                          return (
+                            <Tr key={entityKey}>
+                              <Td>
+                                <Text
+                                  fontWeight="bold"
+                                  fontSize="small"
+                                  color="textSecondary"
+                                >
+                                  {capitalize(entityKey)}
+                                </Text>
+                              </Td>
+
+                              {availableActions.map((actionKey) => (
+                                <Td key={actionKey}>
+                                  <CenterContainer>
+                                    <Controller
+                                      control={control}
+                                      name={
+                                        `members.${m._id}.${typedEntityKey}.${actionKey}` as const
+                                      }
+                                      render={({
+                                        field: { onChange, value },
+                                      }) => {
+                                        const shouldDisable =
+                                          !permissions?.[typedEntityKey]
+                                            ?.READ &&
+                                          actionKey !== CRUDPermissions.READ;
+
+                                        return (
+                                          <Tooltip
+                                            title={
+                                              shouldDisable
+                                                ? "Read permissions should be enabled first."
+                                                : undefined
+                                            }
+                                          >
+                                            <Switch
+                                              size="small"
+                                              checked={Boolean(value)}
+                                              disabled={shouldDisable}
+                                              onChange={(v) => {
+                                                onChange(v);
+
+                                                if (
+                                                  !v &&
+                                                  actionKey ===
+                                                    CRUDPermissions.READ
+                                                ) {
+                                                  setValue(
+                                                    `members.${m._id}.${typedEntityKey}`,
+                                                    {
+                                                      CREATE: false,
+                                                      READ: false,
+                                                      UPDATE: false,
+                                                      DELETE: false,
+                                                    },
+                                                  );
+                                                }
+                                              }}
+                                            />
+                                          </Tooltip>
+                                        );
+                                      }}
+                                    />
+                                  </CenterContainer>
+                                </Td>
+                              ))}
+                            </Tr>
+                          );
+                        })}
+                      </tbody>
+                    </PermissionTable>
+                  </TableWrapper>
+                ) : null,
+              showArrow: user._id !== m._id,
+            };
+          })}
+        />
+      ) : (
+        <SpinnerFullScreen />
+      )}
+
+      <WarningModal
+        title={`Remove ${selectedMember?.name} from your organization?`}
+        description={
+          <Fragment>
+            Are you sure you want to remove
+            <strong> {selectedMember?.name}</strong> from your organization? You
+            can re-invite him later.
+          </Fragment>
+        }
+        open={!isEmpty(selectedMember)}
+        onClose={() => setSelectedMember(null)}
+        confirmLoading={removeMemberLoading}
+        onConfirm={onRemoveMemebr}
       />
     </Fragment>
   );
