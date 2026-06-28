@@ -13,6 +13,7 @@ import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
 import { SettingsSection } from "../components/SettingsSection";
+import { Tooltip } from "antd";
 
 const Alert = styled.div`
   display: flex;
@@ -37,6 +38,7 @@ export const InventorySettings: React.FC = () => {
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
   const dispatch = useAppDispatch();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({
@@ -94,25 +96,36 @@ export const InventorySettings: React.FC = () => {
               },
             }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Input
-                value={value}
-                onChange={(e) => onChange(Number(e.currentTarget.value))}
-                type="number"
-                min={1}
-                title="Default Minimum Stock"
-                placeholder="Ex: 10"
-                required
-                errorMessage={error?.message}
-              />
+              <Tooltip
+                title={
+                  isMember
+                    ? "Only the organization owner can change this."
+                    : undefined
+                }
+              >
+                <Input
+                  value={value}
+                  onChange={(e) => onChange(Number(e.currentTarget.value))}
+                  type="number"
+                  min={1}
+                  title="Default Minimum Stock"
+                  placeholder="Ex: 10"
+                  required
+                  errorMessage={error?.message}
+                  disabled={isMember}
+                />
+              </Tooltip>
             )}
           />
 
-          <StyledButton
-            onClick={handleSubmit(onUpdate)}
-            loading={updateLoading}
-          >
-            Save Changes
-          </StyledButton>
+          {!isMember ? (
+            <StyledButton
+              onClick={handleSubmit(onUpdate)}
+              loading={updateLoading}
+            >
+              Save Changes
+            </StyledButton>
+          ) : null}
         </Fragment>
       }
     />

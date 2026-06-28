@@ -14,11 +14,11 @@ const selectUserPermissions = createSelector(
   userState,
   (state) => state?.user?.permissions || [],
 );
-const selectIsOrgMember = createSelector(
-  userState,
-  (state) =>
+const selectIsOrgMember = createSelector(userState, (state) =>
+  Boolean(
     state?.user?.organizationId?.length &&
     state.user.roles.includes(UserRoles.MEMBER),
+  ),
 );
 
 const userSliceSelectors = {

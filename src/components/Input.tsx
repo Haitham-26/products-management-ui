@@ -59,6 +59,11 @@ const StyledInput = styled.input<{ valid: boolean; originalType?: string }>`
       ${({ theme, valid }) =>
         !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const EyeButton = styled.button`
