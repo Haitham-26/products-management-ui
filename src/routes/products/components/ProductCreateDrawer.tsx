@@ -35,6 +35,8 @@ import { categoryActions } from "../../../redux/category/categories.slice";
 import { debounce } from "lodash";
 import { Text } from "../../../components/Text";
 import { tagActions } from "../../../redux/tag/tags.slice";
+import { checkPermissions } from "../../../utils/checkPermissions";
+import { Info } from "../../../components/Info";
 
 const FormContainer = styled.div`
   display: flex;
@@ -127,6 +129,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
@@ -172,6 +175,25 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       value: discountValue || 0,
     });
   }, [price, discountType, discountValue]);
+
+  const tagsPermissions = checkPermissions(user, "tags");
+  const categoriesPermissions = checkPermissions(user, "categories");
+
+  const taxonomyHint = useMemo(() => {
+    if (!categoriesPermissions.READ && !tagsPermissions.READ) {
+      return "You don't have access to categories or tags.";
+    }
+
+    if (!categoriesPermissions.READ) {
+      return "You don't have access to categories.";
+    }
+
+    if (!tagsPermissions.READ) {
+      return "You don't have access to tags.";
+    }
+
+    return null;
+  }, [categoriesPermissions.READ, tagsPermissions.READ]);
 
   const localOnClose = () => {
     reset();
@@ -424,19 +446,23 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             <Icon icon={faTags} />
             <Text>Taxonomy</Text>
           </SectionLabel>
+
+          {taxonomyHint ? <Info>{taxonomyHint}</Info> : null}
+
           <Controller
             control={control}
             name="categoryId"
             render={({ field: { value, onChange } }) => (
               <SearchSelect
                 title="Select Category"
-                value={value || undefined}
+                value={categoriesPermissions.READ && value ? value : undefined}
                 onChange={onChange}
                 options={categoriesOptions}
                 onSearch={searchCategories}
                 allowClear
                 loading={searchCategoriesLoading}
                 placeholder="Search for a category..."
+                disabled={!categoriesPermissions.READ}
               />
             )}
           />
@@ -448,13 +474,14 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
               <SearchSelect
                 title="Select Tags"
                 mode="multiple"
-                value={tags}
+                value={tagsPermissions.READ && tags ? tags : []}
                 onChange={onChange}
                 options={tagsOptions}
                 onSearch={searchTags}
                 loading={searchTagsLoading}
                 allowClear
                 placeholder="Search for tags..."
+                disabled={!tagsPermissions.READ}
               />
             )}
           />

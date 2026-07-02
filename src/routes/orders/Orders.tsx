@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
@@ -27,6 +33,8 @@ import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
+import { checkPermissions } from "../../utils/checkPermissions";
+import { NoPermissions } from "../../components/NoPermissions";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -72,6 +80,7 @@ export const Orders: React.FC = () => {
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -87,6 +96,8 @@ export const Orders: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const permissions = checkPermissions(user, "orders");
 
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
@@ -156,14 +167,14 @@ export const Orders: React.FC = () => {
     () =>
       createOrdersTableColumns({
         functions: {
-          onEdit,
-          onRead,
-          onManageStatus,
-          onToggleArchive,
+          onEdit: permissions.UPDATE ? onEdit : undefined,
+          onRead: permissions.READ ? onRead : undefined,
+          onManageStatus: permissions.UPDATE ? onManageStatus : undefined,
+          onToggleArchive: permissions.UPDATE ? onToggleArchive : undefined,
         },
         currency: settings.currency,
       }),
-    [settings.currency],
+    [settings.currency, permissions],
   );
 
   useEffect(() => {
@@ -183,76 +194,96 @@ export const Orders: React.FC = () => {
       <PageHeader
         icon={faCartShopping}
         title="Orders"
-        action={{
-          title: "New Order",
-          icon: faPlus,
-          onClick: () => setOrderCreateVisible(true),
-        }}
-        filters={{
-          activeCount: activeFiltersCount,
-          content: (
-            <OrdersFilters
-              activeFiltersCount={activeFiltersCount}
-              filters={filters}
-              applyFilter={applyFilter}
-            />
-          ),
-        }}
-        search={{
-          placeholder: "Search by customer's info ot ID...",
-          onChange: (searchKeyword) =>
-            applyFilter("keyword", searchKeyword, true),
-        }}
+        {...(permissions.CREATE
+          ? {
+              action: {
+                title: "New Order",
+                icon: faPlus,
+                onClick: () => setOrderCreateVisible(true),
+              },
+            }
+          : {})}
+        {...(permissions.READ
+          ? {
+              filters: {
+                activeCount: activeFiltersCount,
+                content: (
+                  <OrdersFilters
+                    activeFiltersCount={activeFiltersCount}
+                    filters={filters}
+                    applyFilter={applyFilter}
+                  />
+                ),
+              },
+              search: {
+                placeholder: "Search by customer's info ot ID...",
+                onChange: (searchKeyword) =>
+                  applyFilter("keyword", searchKeyword, true),
+              },
+            }
+          : {})}
       />
 
-      <Table
-        loading={ordersLoading}
-        columns={tableColumns}
-        dataSource={orders}
-        pagination={{
-          current: ordersMeta?.page || 1,
-          pageSize: ordersMeta?.limit || 10,
-          total: ordersMeta?.total || 0,
-          onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ["10", "20", "50", "100"],
-          position: ["bottomRight"],
-          showTotal: (total) => `Total ${total} orders`,
-        }}
-      />
+      {permissions.READ ? (
+        <Table
+          loading={ordersLoading}
+          columns={tableColumns}
+          dataSource={orders}
+          pagination={{
+            current: ordersMeta?.page || 1,
+            pageSize: ordersMeta?.limit || 10,
+            total: ordersMeta?.total || 0,
+            onChange: handlePageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "50", "100"],
+            position: ["bottomRight"],
+            showTotal: (total) => `Total ${total} orders`,
+          }}
+        />
+      ) : (
+        <NoPermissions />
+      )}
 
-      <OrderCreateDrawer
-        open={orderCreateVisible}
-        onClose={() => setOrderCreateVisible(false)}
-        filters={filters}
-      />
+      {permissions.CREATE ? (
+        <OrderCreateDrawer
+          open={orderCreateVisible}
+          onClose={() => setOrderCreateVisible(false)}
+          filters={filters}
+        />
+      ) : null}
 
-      <OrderUpdateDrawer
-        open={orderEditVisible}
-        onClose={() => setOrderEditVisible(false)}
-        order={currentOrder}
-        filters={filters}
-      />
+      {permissions.READ ? (
+        <OrderReadDrawer
+          open={orderReadVisible}
+          onClose={() => setOrderReadVisible(false)}
+          order={currentOrder}
+        />
+      ) : null}
 
-      <OrderReadDrawer
-        open={orderReadVisible}
-        onClose={() => setOrderReadVisible(false)}
-        order={currentOrder}
-      />
+      {permissions.UPDATE ? (
+        <Fragment>
+          <OrderUpdateDrawer
+            open={orderEditVisible}
+            onClose={() => setOrderEditVisible(false)}
+            order={currentOrder}
+            filters={filters}
+          />
 
-      <OrderManageStatusModal
-        open={orderManageStatusVisible}
-        onClose={() => setOrderManageStatusVisible(false)}
-        order={currentOrder}
-        filters={filters}
-      />
+          <OrderManageStatusModal
+            open={orderManageStatusVisible}
+            onClose={() => setOrderManageStatusVisible(false)}
+            order={currentOrder}
+            filters={filters}
+          />
 
-      <OrderToggleArchiveModal
-        open={orderToggleArchiveVisible}
-        onClose={() => setOrderToggleArchiveVisible(false)}
-        order={currentOrder}
-        filters={filters}
-      />
+          <OrderToggleArchiveModal
+            open={orderToggleArchiveVisible}
+            onClose={() => setOrderToggleArchiveVisible(false)}
+            order={currentOrder}
+            filters={filters}
+          />
+        </Fragment>
+      ) : null}
     </StyledContainer>
   );
 };

@@ -48,6 +48,11 @@ const StyledButton = styled.button<{ variant: Variant }>`
 
   `
       : ""}
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 `;
 
 const SpinnerWrapper = styled.div`

@@ -22,9 +22,9 @@ type FNType = (category: Order) => void;
 type CreateOrdersTableColumnsArgs = {
   functions: {
     onEdit?: FNType;
-    onRead: FNType;
-    onManageStatus: FNType;
-    onToggleArchive: FNType;
+    onRead?: FNType;
+    onManageStatus?: FNType;
+    onToggleArchive?: FNType;
   };
   currency: CurrencyCodeRecord["code"];
 };
@@ -135,7 +135,8 @@ export const createOrdersTableColumns = ({
                 key: "view",
                 icon: <Icon icon={faEye} />,
                 label: "View",
-                onClick: () => onRead(record),
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
@@ -151,8 +152,10 @@ export const createOrdersTableColumns = ({
                 key: "manage-status",
                 icon: <Icon icon={faGear} />,
                 label: "Manage Status",
-                onClick: () => onManageStatus(record),
-                disabled: record.status === OrderStatus.CONFIRMED,
+                onClick: () => onManageStatus?.(record),
+                disabled:
+                  record.status === OrderStatus.CONFIRMED ||
+                  !isFunction(onManageStatus),
               },
               {
                 key: "toggle-archive",
@@ -160,9 +163,10 @@ export const createOrdersTableColumns = ({
                   <Icon icon={record.isArchived ? faBoxOpen : faBoxArchive} />
                 ),
                 label: record.isArchived ? "Unarchive" : "Archive",
-                onClick: () => onToggleArchive(record),
+                onClick: () =>
+                  onToggleArchive?.(record) || !isFunction(onToggleArchive),
               },
-            ].filter((o) => o.disabled !== true),
+            ].filter((item) => item.disabled !== true),
           }}
         >
           <span style={{ cursor: "pointer" }}>

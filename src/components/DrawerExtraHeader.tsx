@@ -12,6 +12,7 @@ type DrawerExtraHeaderProps = {
   onConfirm: VoidFunction;
   onCancel: VoidFunction;
   loading?: boolean;
+  confirmDisabled?: boolean;
 };
 
 export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
@@ -19,6 +20,7 @@ export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
   onConfirm,
   onCancel,
   loading = false,
+  confirmDisabled = false,
 }) => {
   return (
     <Container>
@@ -26,7 +28,7 @@ export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
         Cancel
       </Button>
 
-      <Button onClick={onConfirm} loading={loading}>
+      <Button onClick={onConfirm} loading={loading} disabled={confirmDisabled}>
         {editMode ? "Edit" : "Create"}
       </Button>
     </Container>

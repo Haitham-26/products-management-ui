@@ -32,6 +32,8 @@ import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
 import debounce from "lodash/debounce";
 import { productActions } from "../../../redux/product/products.slice";
 import { SearchSelect } from "../../../components/SearchSelect";
+import { checkPermissions } from "../../../utils/checkPermissions";
+import { Info } from "../../../components/Info";
 
 const FormContainer = styled.div`
   display: flex;
@@ -181,6 +183,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const user = useAppSelector(userSliceSelectors.selectUser);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
@@ -268,6 +271,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     [products, watchedItems],
   );
 
+  const productsPermissions = checkPermissions(user, "products");
+
   const localOnClose = () => {
     reset();
     onClose();
@@ -354,6 +359,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
           onCancel={localOnClose}
+          confirmDisabled={!productsPermissions.CREATE}
         />
       }
     >
@@ -431,6 +437,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             <h4>Order Items</h4>
           </SectionLabel>
 
+          {!productsPermissions.CREATE ? (
+            <Info>You don't have access to products.</Info>
+          ) : null}
+
           {fields.map((field, index) => {
             const currentProductId = watchedItems[index]?.productId;
             const product = products.find((p) => p._id === currentProductId);
@@ -463,8 +473,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           allowClear
                           loading={searchProductsLoading}
                           placeholder="Search for a product..."
-                          errorMessage={error?.message}
                           valid={!error}
+                          disabled={!productsPermissions.READ}
                         />
                       );
                     }}
@@ -505,6 +515,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           );
                         }}
                         valid={!error}
+                        disabled={!productsPermissions.READ}
                       />
                     )}
                   />
@@ -545,7 +556,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             onClick={() => append({ productId: "", quantity: 1 })}
             icon={faPlus}
             variant="secondary"
-            disabled={loading || fields.length === products.length}
+            disabled={
+              loading ||
+              fields.length === products.length ||
+              !productsPermissions.READ
+            }
           >
             Add Another Product
           </AddItemButton>

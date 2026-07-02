@@ -24,6 +24,8 @@ import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto
 import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
 import { CategoriesFilters } from "./components/CategoriesFilters";
 import { PageHeader } from "../../components/PageHeader";
+import { checkPermissions } from "../../utils/checkPermissions";
+import { NoPermissions } from "../../components/NoPermissions";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -44,6 +46,7 @@ export const Categories: React.FC = () => {
   const categoriesLoading = useAppSelector(
     categorySliceSelectors.selectCategoriesLoading,
   );
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categoriesMeta = useAppSelector(
     categorySliceSelectors.selectCategoriesMeta,
@@ -63,6 +66,8 @@ export const Categories: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const permissions = checkPermissions(user, "categories");
 
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
@@ -175,11 +180,11 @@ export const Categories: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createCategoriesTableColumns({
-        onDelete,
-        onEdit,
-        onRead,
+        onDelete: permissions.DELETE ? onDelete : undefined,
+        onEdit: permissions.UPDATE ? onEdit : undefined,
+        onRead: permissions.READ ? onRead : undefined,
       }),
-    [],
+    [permissions],
   );
 
   useEffect(() => {
@@ -198,73 +203,93 @@ export const Categories: React.FC = () => {
       <PageHeader
         icon={faFolder}
         title="Categories"
-        action={{
-          title: "New Category",
-          icon: faPlus,
-          onClick: () => setCategoryCreateVisible(true),
-        }}
-        filters={{
-          activeCount: activeFiltersCount,
-          content: (
-            <CategoriesFilters
-              activeFiltersCount={activeFiltersCount}
-              filters={filters}
-              applyFilter={applyFilter}
-            />
-          ),
-        }}
-        search={{
-          placeholder: "Search by name or description...",
-          onChange: (searchKeyword) =>
-            applyFilter("keyword", searchKeyword, true),
-        }}
+        {...(permissions.CREATE
+          ? {
+              action: {
+                title: "New Category",
+                icon: faPlus,
+                onClick: () => setCategoryCreateVisible(true),
+              },
+            }
+          : {})}
+        {...(permissions.READ
+          ? {
+              filters: {
+                activeCount: activeFiltersCount,
+                content: (
+                  <CategoriesFilters
+                    activeFiltersCount={activeFiltersCount}
+                    filters={filters}
+                    applyFilter={applyFilter}
+                  />
+                ),
+              },
+              search: {
+                placeholder: "Search by name or description...",
+                onChange: (searchKeyword) =>
+                  applyFilter("keyword", searchKeyword, true),
+              },
+            }
+          : {})}
       />
 
-      <Table
-        loading={categoriesLoading}
-        columns={tableColumns}
-        dataSource={categories}
-        pagination={{
-          current: categoriesMeta?.page || 1,
-          pageSize: categoriesMeta?.limit || 10,
-          total: categoriesMeta?.total || 0,
-          onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ["10", "20", "50", "100"],
-          position: ["bottomRight"],
-          showTotal: (total) => `Total ${total} categories`,
-        }}
-      />
+      {permissions.READ ? (
+        <Table
+          loading={categoriesLoading}
+          columns={tableColumns}
+          dataSource={categories}
+          pagination={{
+            current: categoriesMeta?.page || 1,
+            pageSize: categoriesMeta?.limit || 10,
+            total: categoriesMeta?.total || 0,
+            onChange: handlePageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "50", "100"],
+            position: ["bottomRight"],
+            showTotal: (total) => `Total ${total} categories`,
+          }}
+        />
+      ) : (
+        <NoPermissions />
+      )}
 
-      <WarningModal
-        title={`Delete "${currentCategory?.name}" Category?`}
-        description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
-        open={categoryDeleteVisible}
-        onClose={() => setCategoryDeleteVisible(false)}
-        onConfirm={deleteCategory}
-        confirmText="Delete"
-        cancelText="Cancel"
-        confirmLoading={categoryDeleteLoading}
-      />
+      {permissions.DELETE ? (
+        <WarningModal
+          title={`Delete "${currentCategory?.name}" Category?`}
+          description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
+          open={categoryDeleteVisible}
+          onClose={() => setCategoryDeleteVisible(false)}
+          onConfirm={deleteCategory}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmLoading={categoryDeleteLoading}
+        />
+      ) : null}
 
-      <CategoryCreateDrawer
-        open={categoryCreateVisible}
-        onClose={() => setCategoryCreateVisible(false)}
-        filters={filters}
-      />
+      {permissions.READ ? (
+        <CategoryReadDrawer
+          open={categoryReadVisible}
+          onClose={() => setCategoryReadVisible(false)}
+          category={currentCategory}
+        />
+      ) : null}
 
-      <CategoryUpdateDrawer
-        open={categoryEditVisible}
-        onClose={() => setCategoryEditVisible(false)}
-        category={currentCategory}
-        filters={filters}
-      />
+      {permissions.CREATE ? (
+        <CategoryCreateDrawer
+          open={categoryCreateVisible}
+          onClose={() => setCategoryCreateVisible(false)}
+          filters={filters}
+        />
+      ) : null}
 
-      <CategoryReadDrawer
-        open={categoryReadVisible}
-        onClose={() => setCategoryReadVisible(false)}
-        category={currentCategory}
-      />
+      {permissions.UPDATE ? (
+        <CategoryUpdateDrawer
+          open={categoryEditVisible}
+          onClose={() => setCategoryEditVisible(false)}
+          category={currentCategory}
+          filters={filters}
+        />
+      ) : null}
     </StyledContainer>
   );
 };

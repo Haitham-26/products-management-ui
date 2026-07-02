@@ -1,10 +1,15 @@
 import type React from "react";
 import { Header } from "./components/Header";
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import styled from "styled-components";
 import { SideMenu } from "./components/SideMenu";
 import { JoinOrganizationInvitationModal } from "./JoinOrganizationInvitationModal";
+import { useAppDispatch, useAppSelector } from "./redux/store";
+import { userActions } from "./redux/user/user.slice";
+import userSliceSelectors from "./redux/user/user.selector";
+import { UserRoles } from "./model/user/types/UserRoles.enum";
+import { usersPermissionsActions } from "./redux/users-permissions/users-permissions.slice";
 
 const Container = styled.div`
   display: flex;
@@ -17,6 +22,21 @@ const Container = styled.div`
 `;
 
 export const Layout: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
+
+  useEffect(() => {
+    dispatch(userActions.getUserById({ userId: user._id }));
+
+    if (!user.roles.includes(UserRoles.MEMBER)) {
+      dispatch(
+        usersPermissionsActions.getJoinOrgInvitatios({ userId: user._id }),
+      );
+    }
+    // eslint-disable-next-line
+  }, [user._id, dispatch]);
+
   return (
     <Fragment>
       <JoinOrganizationInvitationModal />

@@ -13,6 +13,7 @@ import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
 import capitalize from "lodash/capitalize";
 import isNaN from "lodash/isNaN";
+import isFunction from "lodash/isFunction";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import styled from "styled-components";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
@@ -79,11 +80,11 @@ type FNType = (product: Product) => void;
 
 type CreateProductsTableColumnsArgs = {
   functions: {
-    onEdit: FNType;
-    onDelete: FNType;
-    onRead: FNType;
-    onManageStock: FNType;
-    onToggleStatus: FNType;
+    onEdit?: FNType;
+    onDelete?: FNType;
+    onRead?: FNType;
+    onManageStock?: FNType;
+    onToggleStatus?: FNType;
   };
   currency: CurrencyCodeRecord["code"];
   settings: Settings;
@@ -243,19 +244,22 @@ export const createProductsTableColumns = ({
                 key: "view",
                 icon: <Icon icon={faEye} />,
                 label: "View",
-                onClick: () => onRead(record),
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
                 label: "Edit",
-                onClick: () => onEdit(record),
+                onClick: () => onEdit?.(record),
+                disabled: !isFunction(onEdit),
               },
               {
                 key: "manage-stock",
                 icon: <Icon icon={faBoxesStacked} />,
                 label: "Manage Stock",
-                onClick: () => onManageStock(record),
+                onClick: () => onManageStock?.(record),
+                disabled: !isFunction(onManageStock),
               },
               {
                 key: "toggle-status",
@@ -272,16 +276,18 @@ export const createProductsTableColumns = ({
                   record.status === ProductStatus.DRAFT
                     ? "Publish Product"
                     : "Move to Draft",
-                onClick: () => onToggleStatus(record),
+                onClick: () => onToggleStatus?.(record),
+                disabled: !isFunction(onToggleStatus),
               },
               {
                 key: "delete",
                 icon: <Icon icon={faTrash} />,
                 label: "Delete",
                 danger: true,
-                onClick: () => onDelete(record),
+                onClick: () => onDelete?.(record),
+                disabled: !isFunction(onDelete),
               },
-            ],
+            ].filter((item) => item.disabled !== true),
           }}
         >
           <span style={{ cursor: "pointer" }}>

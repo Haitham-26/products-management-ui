@@ -1,1 +1,1 @@
-export type PermissionEntities = "products" | "categories" | "tags" | "orders";
+export type PermissionEntities = "products" | "orders" | "tags" | "categories";

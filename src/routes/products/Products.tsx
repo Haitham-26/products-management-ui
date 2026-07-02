@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  Fragment,
+} from "react";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import { useSearchParams } from "react-router-dom";
@@ -30,6 +36,8 @@ import { settingsActions } from "../../redux/settings/settings.slice";
 import { ProductStockManageModal } from "./components/ProductStockManageModal";
 import { ProductStatus } from "../../model/product/types/ProductStatus.enum";
 import { Toast } from "../../utils/Toast";
+import { checkPermissions } from "../../utils/checkPermissions";
+import { NoPermissions } from "../../components/NoPermissions";
 
 const toggleStatusModalTexts = {
   [ProductStatus.DRAFT]: {
@@ -70,6 +78,7 @@ export const Products: React.FC = () => {
   const [productToggleStatusLoading, setProductToggleStatusLoading] =
     useState(false);
 
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const productsLoading = useAppSelector(
@@ -85,6 +94,8 @@ export const Products: React.FC = () => {
   );
 
   const dispatch = useAppDispatch();
+
+  const permissions = checkPermissions(user, "products");
 
   const debouncedSetSearchParams = useMemo(
     () =>
@@ -260,11 +271,17 @@ export const Products: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createProductsTableColumns({
-        functions: { onDelete, onEdit, onRead, onManageStock, onToggleStatus },
+        functions: {
+          onDelete: permissions.DELETE ? onDelete : undefined,
+          onEdit: permissions.UPDATE ? onEdit : undefined,
+          onRead: permissions.READ ? onRead : undefined,
+          onManageStock: permissions.UPDATE ? onManageStock : undefined,
+          onToggleStatus: permissions.UPDATE ? onToggleStatus : undefined,
+        },
         currency: settings.currency,
         settings,
       }),
-    [settings],
+    [settings, permissions],
   );
 
   useEffect(() => {
@@ -283,92 +300,117 @@ export const Products: React.FC = () => {
       <PageHeader
         icon={faBox}
         title="Products"
-        action={{
-          title: "New Product",
-          icon: faPlus,
-          onClick: () => setProductCreateVisible(true),
-        }}
-        filters={{
-          activeCount: activeFiltersCount,
-          content: (
-            <ProductsFilters
-              activeFiltersCount={activeFiltersCount}
-              filters={filters}
-              applyFilter={applyFilter}
-            />
-          ),
-        }}
-        search={{
-          placeholder: "Search by name, description or id...",
-          onChange: (searchKeyword) =>
-            applyFilter("keyword", searchKeyword, true),
-        }}
+        {...(permissions.CREATE
+          ? {
+              action: {
+                title: "New Product",
+                icon: faPlus,
+                onClick: () => setProductCreateVisible(true),
+              },
+            }
+          : {})}
+        {...(permissions.READ
+          ? {
+              filters: {
+                activeCount: activeFiltersCount,
+                content: (
+                  <ProductsFilters
+                    activeFiltersCount={activeFiltersCount}
+                    filters={filters}
+                    applyFilter={applyFilter}
+                  />
+                ),
+              },
+              search: {
+                placeholder: "Search by name, description or id...",
+                onChange: (searchKeyword: string) =>
+                  applyFilter("keyword", searchKeyword, true),
+              },
+            }
+          : {})}
       />
 
-      <Table
-        loading={productsLoading}
-        columns={tableColumns}
-        dataSource={products}
-        pagination={{
-          current: productsMeta?.page || 1,
-          pageSize: productsMeta?.limit || 10,
-          total: productsMeta?.total || 0,
-          onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ["10", "20", "50", "100"],
-          position: ["bottomRight"],
-          showTotal: (total) => `Total ${total} products`,
-        }}
-      />
+      {permissions.READ ? (
+        <Table
+          loading={productsLoading}
+          columns={tableColumns}
+          dataSource={products}
+          pagination={{
+            current: productsMeta?.page || 1,
+            pageSize: productsMeta?.limit || 10,
+            total: productsMeta?.total || 0,
+            onChange: handlePageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "50", "100"],
+            position: ["bottomRight"],
+            showTotal: (total) => `Total ${total} products`,
+          }}
+        />
+      ) : (
+        <NoPermissions />
+      )}
 
-      <WarningModal
-        title={`Are you sure you want to delete this product "${currentProduct?.name}"?`}
-        description={`You are about to remove "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this item.`}
-        open={productDeleteVisible}
-        onClose={() => setProductDeleteVisible(false)}
-        onConfirm={deleteProduct}
-        confirmLoading={productDeleteLoading}
-      />
+      {permissions.DELETE ? (
+        <WarningModal
+          title={`Are you sure you want to delete this product "${currentProduct?.name}"?`}
+          description={`You are about to remove "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this item.`}
+          open={productDeleteVisible}
+          onClose={() => setProductDeleteVisible(false)}
+          onConfirm={deleteProduct}
+          confirmLoading={productDeleteLoading}
+        />
+      ) : null}
 
-      <WarningModal
-        title={
-          toggleStatusModalTexts[
-            currentProduct?.status || ProductStatus.PUBLISHED
-          ].title
-        }
-        description={
-          toggleStatusModalTexts[
-            currentProduct?.status || ProductStatus.PUBLISHED
-          ].description
-        }
-        open={productToggleStatusVisible}
-        onClose={() => setProductToggleStatusVisible(false)}
-        confirmLoading={productToggleStatusLoading}
-        onConfirm={toggleProductStatus}
-      />
+      {permissions.CREATE ? (
+        <ProductCreateDrawer
+          open={productCreateVisible}
+          onClose={() => setProductCreateVisible(false)}
+          filters={filters}
+        />
+      ) : null}
 
-      <ProductCreateDrawer
-        open={productCreateVisible}
-        onClose={() => setProductCreateVisible(false)}
-        filters={filters}
-      />
-      <ProductUpdateDrawer
-        open={productEditVisible}
-        onClose={() => setProductEditVisible(false)}
-        product={currentProduct}
-        filters={filters}
-      />
-      <ProductReadDrawer
-        open={productReadVisible}
-        onClose={() => setProductReadVisible(false)}
-        product={currentProduct}
-      />
-      <ProductStockManageModal
-        open={productStockManageVisible}
-        onClose={() => setProductStockManageVisible(false)}
-        product={currentProduct}
-        filters={filters}
-      />
+      {permissions.READ ? (
+        <ProductReadDrawer
+          open={productReadVisible}
+          onClose={() => setProductReadVisible(false)}
+          product={currentProduct}
+        />
+      ) : null}
+
+      {permissions.UPDATE ? (
+        <Fragment>
+          <WarningModal
+            title={
+              toggleStatusModalTexts[
+                currentProduct?.status || ProductStatus.PUBLISHED
+              ].title
+            }
+            description={
+              toggleStatusModalTexts[
+                currentProduct?.status || ProductStatus.PUBLISHED
+              ].description
+            }
+            open={productToggleStatusVisible}
+            onClose={() => setProductToggleStatusVisible(false)}
+            confirmLoading={productToggleStatusLoading}
+            onConfirm={toggleProductStatus}
+          />
+
+          <ProductUpdateDrawer
+            open={productEditVisible}
+            onClose={() => setProductEditVisible(false)}
+            product={currentProduct}
+            filters={filters}
+          />
+
+          <ProductStockManageModal
+            open={productStockManageVisible}
+            onClose={() => setProductStockManageVisible(false)}
+            product={currentProduct}
+            filters={filters}
+          />
+        </Fragment>
+      ) : null}
     </StyledContainer>
   );
 };

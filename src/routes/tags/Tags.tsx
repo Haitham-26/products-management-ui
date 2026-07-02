@@ -24,6 +24,8 @@ import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { TagsFilters } from "./components/TagsFilters";
+import { checkPermissions } from "../../utils/checkPermissions";
+import { NoPermissions } from "../../components/NoPermissions";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -41,6 +43,7 @@ export const Tags: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const tagsLoading = useAppSelector(tagSliceSelectors.selectTagsLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -60,6 +63,8 @@ export const Tags: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const permissions = checkPermissions(user, "tags");
 
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
@@ -172,11 +177,11 @@ export const Tags: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createTagsTableColumns({
-        onDelete,
-        onEdit,
-        onRead,
+        onDelete: permissions.DELETE ? onDelete : undefined,
+        onEdit: permissions.UPDATE ? onEdit : undefined,
+        onRead: permissions.READ ? onRead : undefined,
       }),
-    [],
+    [permissions],
   );
 
   useEffect(() => {
@@ -195,73 +200,93 @@ export const Tags: React.FC = () => {
       <PageHeader
         icon={faTags}
         title="Tags"
-        action={{
-          title: "New Tag",
-          icon: faPlus,
-          onClick: () => setTagCreateVisible(true),
-        }}
-        filters={{
-          activeCount: activeFiltersCount,
-          content: (
-            <TagsFilters
-              filters={filters}
-              activeFiltersCount={activeFiltersCount}
-              applyFilter={applyFilter}
-            />
-          ),
-        }}
-        search={{
-          placeholder: "Search by name or description...",
-          onChange: (searchKeyword) =>
-            applyFilter("keyword", searchKeyword, true),
-        }}
+        {...(permissions.CREATE
+          ? {
+              action: {
+                title: "New Tag",
+                icon: faPlus,
+                onClick: () => setTagCreateVisible(true),
+              },
+            }
+          : {})}
+        {...(permissions.READ
+          ? {
+              filters: {
+                activeCount: activeFiltersCount,
+                content: (
+                  <TagsFilters
+                    filters={filters}
+                    activeFiltersCount={activeFiltersCount}
+                    applyFilter={applyFilter}
+                  />
+                ),
+              },
+              search: {
+                placeholder: "Search by name or description...",
+                onChange: (searchKeyword) =>
+                  applyFilter("keyword", searchKeyword, true),
+              },
+            }
+          : {})}
       />
 
-      <Table
-        loading={tagsLoading}
-        columns={tableColumns}
-        dataSource={tags}
-        pagination={{
-          current: tagsMeta?.page || 1,
-          pageSize: tagsMeta?.limit || 10,
-          total: tagsMeta?.total || 0,
-          onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ["2", "10", "20", "50", "100"],
-          position: ["bottomRight"],
-          showTotal: (total) => `Total ${total} tags`,
-        }}
-      />
+      {permissions.READ ? (
+        <Table
+          loading={tagsLoading}
+          columns={tableColumns}
+          dataSource={tags}
+          pagination={{
+            current: tagsMeta?.page || 1,
+            pageSize: tagsMeta?.limit || 10,
+            total: tagsMeta?.total || 0,
+            onChange: handlePageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ["2", "10", "20", "50", "100"],
+            position: ["bottomRight"],
+            showTotal: (total) => `Total ${total} tags`,
+          }}
+        />
+      ) : (
+        <NoPermissions />
+      )}
 
-      <WarningModal
-        title={`Delete "${currentTag?.name}" tag?`}
-        description={`Are you sure you want to delete "${currentTag?.name}" tag? Once you confirm, you cannot undo it later.`}
-        open={tagDeleteVisible}
-        onClose={() => setTagDeleteVisible(false)}
-        onConfirm={deleteTag}
-        confirmText="Delete"
-        cancelText="Cancel"
-        confirmLoading={tagDeleteLoading}
-      />
+      {permissions.DELETE ? (
+        <WarningModal
+          title={`Delete "${currentTag?.name}" tag?`}
+          description={`Are you sure you want to delete "${currentTag?.name}" tag? Once you confirm, you cannot undo it later.`}
+          open={tagDeleteVisible}
+          onClose={() => setTagDeleteVisible(false)}
+          onConfirm={deleteTag}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmLoading={tagDeleteLoading}
+        />
+      ) : null}
 
-      <TagCreateDrawer
-        open={tagCreateVisible}
-        onClose={() => setTagCreateVisible(false)}
-        filters={filters}
-      />
+      {permissions.CREATE ? (
+        <TagCreateDrawer
+          open={tagCreateVisible}
+          onClose={() => setTagCreateVisible(false)}
+          filters={filters}
+        />
+      ) : null}
 
-      <TagUpdateDrawer
-        open={tagEditVisible}
-        onClose={() => setTagEditVisible(false)}
-        tag={currentTag}
-        filters={filters}
-      />
+      {permissions.UPDATE ? (
+        <TagUpdateDrawer
+          open={tagEditVisible}
+          onClose={() => setTagEditVisible(false)}
+          tag={currentTag}
+          filters={filters}
+        />
+      ) : null}
 
-      <TagReadDrawer
-        open={tagReadVisible}
-        onClose={() => setTagReadVisible(false)}
-        tag={currentTag}
-      />
+      {permissions.READ ? (
+        <TagReadDrawer
+          open={tagReadVisible}
+          onClose={() => setTagReadVisible(false)}
+          tag={currentTag}
+        />
+      ) : null}
     </StyledContainer>
   );
 };

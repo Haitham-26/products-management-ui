@@ -8,13 +8,14 @@ import { Icon } from "../../../components/Icon";
 import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
+import isFunction from "lodash/isFunction";
 
 type FNType = (category: Category) => void;
 
 type CreateCategoriesTableColumnsArgs = {
-  onEdit: FNType;
-  onDelete: FNType;
-  onRead: FNType;
+  onEdit?: FNType;
+  onDelete?: FNType;
+  onRead?: FNType;
 };
 
 export const createCategoriesTableColumns = ({
@@ -70,22 +71,25 @@ export const createCategoriesTableColumns = ({
                 key: "view",
                 icon: <Icon icon={faEye} />,
                 label: "View",
-                onClick: () => onRead(record),
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
                 label: "Edit",
-                onClick: () => onEdit(record),
+                onClick: () => onEdit?.(record),
+                disabled: !isFunction(onEdit),
               },
               {
                 key: "delete",
                 icon: <Icon icon={faTrash} />,
                 label: "Delete",
                 danger: true,
-                onClick: () => onDelete(record),
+                onClick: () => onDelete?.(record),
+                disabled: !isFunction(onDelete),
               },
-            ],
+            ].filter((item) => item.disabled !== true),
           }}
         >
           <span style={{ cursor: "pointer" }}>
