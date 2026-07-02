@@ -1,3 +1,4 @@
+import type { BulkManageProductStatusDto } from "../../model/product/dto/BulkManageProductStatusDto";
 import type { CreateProductDto } from "../../model/product/dto/CreateProductDto";
 import type { DeleteBulkProductsDto } from "../../model/product/dto/DeleteBulkProductsDto";
 import type { DeleteProductDto } from "../../model/product/dto/DeleteProductDto";
@@ -33,6 +34,12 @@ export class ProductAxios {
 
   static updateProduct(dto: UpdateProductDto) {
     return AppAxios.patch<void>(`/products/update`, dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static bulkManageProductStatus(dto: BulkManageProductStatusDto) {
+    return AppAxios.patch<void>(`/products/manage-status/bulk`, dto).then(
       ({ data }) => data,
     );
   }

@@ -35,6 +35,7 @@ import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { Toast } from "../../utils/Toast";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -195,8 +196,11 @@ export const Categories: React.FC = () => {
 
       setCategoryDeleteVisible(false);
       setCurrentCategory(null);
+
+      Toast.success("Category deleted successfully");
     } catch (e) {
       console.log(e);
+      Toast.apiError(e);
     } finally {
       setCategoryDeleteLoading(false);
     }
@@ -246,6 +250,7 @@ export const Categories: React.FC = () => {
       setSelectedRowIds([]);
     } catch (e) {
       console.log(e);
+      Toast.apiError(e);
     } finally {
       setCategoriesBulkDeleteLoading(false);
     }

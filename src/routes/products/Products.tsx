@@ -41,6 +41,8 @@ import { NoPermissions } from "../../components/NoPermissions";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import type { Key } from "antd/es/table/interface";
+import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
+import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
 
 const toggleStatusModalTexts = {
   [ProductStatus.DRAFT]: {
@@ -70,10 +72,14 @@ const StyledContainer = styled(Container)`
 const BulkActionsWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
 
   button {
     height: auto;
+  }
+
+  button:first-child {
+    color: ${({ theme }) => theme.colors.error};
   }
 `;
 
@@ -93,9 +99,18 @@ export const Products: React.FC = () => {
     useState(false);
   const [productToggleStatusLoading, setProductToggleStatusLoading] =
     useState(false);
+
   const [productsBulkDeleteLoading, setProductsBulkDeleteLoading] =
     useState(false);
   const [productsBulkDeleteVisible, setProductsBulkDeleteVisible] =
+    useState(false);
+
+  const [productsBulkMoveToDraftVisible, setProductsBulkMoveToDraftVisible] =
+    useState(false);
+
+  const [productsBulkPublishVisible, setProductsBulkPublishVisible] =
+    useState(false);
+  const [productsBulkManageStatusLoading, setProductsBulkManageStatusLoading] =
     useState(false);
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
@@ -194,12 +209,12 @@ export const Products: React.FC = () => {
     setProductToggleStatusVisible(true);
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (removedItemsCount: number = 0) => {
     try {
       const meta = productsMeta;
       const currentPage = meta?.page || 1;
       const limit = meta?.limit || 10;
-      const total = (meta?.total || 1) - 1;
+      const total = (meta?.total || 1) - removedItemsCount;
 
       const totalPages = Math.ceil(total / limit);
 
@@ -248,7 +263,7 @@ export const Products: React.FC = () => {
         }),
       ).unwrap();
 
-      await fetchProducts();
+      await fetchProducts(1);
 
       setProductToggleStatusVisible(false);
       setCurrentProduct(null);
@@ -274,7 +289,7 @@ export const Products: React.FC = () => {
         productActions.deleteProduct({ productId: currentProduct._id, userId }),
       ).unwrap();
 
-      await fetchProducts();
+      await fetchProducts(1);
 
       setProductDeleteVisible(false);
       setCurrentProduct(null);
@@ -332,8 +347,51 @@ export const Products: React.FC = () => {
       setSelectedRowIds([]);
     } catch (e) {
       console.log(e);
+      Toast.apiError(e);
     } finally {
       setProductsBulkDeleteLoading(false);
+    }
+  };
+
+  const manageBulkProductStatus = async (status: ProductStatus) => {
+    if (!selectedRowIds.length) {
+      return;
+    }
+
+    try {
+      setProductsBulkManageStatusLoading(true);
+
+      await dispatch(
+        productActions.bulkManageProductStatus({
+          status,
+          productIds: selectedRowIds.map((id) => id.toString()),
+          userId,
+        }),
+      ).unwrap();
+
+      const nonDraftCount = selectedRowIds.filter((id) =>
+        products.find((p) => p._id === id && p.status !== ProductStatus.DRAFT),
+      ).length;
+
+      await fetchProducts(status === ProductStatus.DRAFT ? nonDraftCount : 0);
+
+      if (status === ProductStatus.DRAFT) {
+        setProductsBulkMoveToDraftVisible(false);
+      } else {
+        setProductsBulkPublishVisible(false);
+      }
+      setSelectedRowIds([]);
+
+      Toast.success(
+        status === ProductStatus.DRAFT
+          ? "Products moved to draft successfully"
+          : "Products published successfully",
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setProductsBulkManageStatusLoading(false);
     }
   };
 
@@ -409,6 +467,26 @@ export const Products: React.FC = () => {
                   Delete
                 </Button>
               ) : null}
+
+              {permissions.UPDATE ? (
+                <Button
+                  onClick={() => setProductsBulkPublishVisible(true)}
+                  icon={faCloudArrowUp}
+                  variant="secondary"
+                >
+                  Publish
+                </Button>
+              ) : null}
+
+              {permissions.UPDATE ? (
+                <Button
+                  onClick={() => setProductsBulkMoveToDraftVisible(true)}
+                  icon={faCloudArrowDown}
+                  variant="secondary"
+                >
+                  Move to Draft
+                </Button>
+              ) : null}
             </BulkActionsWrapper>
           ) : null
         }
@@ -432,7 +510,7 @@ export const Products: React.FC = () => {
             total: productsMeta?.total || 0,
             onChange: handlePageChange,
             showSizeChanger: true,
-            pageSizeOptions: ["2", "10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
             showTotal: (total) => `Total ${total} products`,
           }}
@@ -510,6 +588,24 @@ export const Products: React.FC = () => {
             onClose={() => setProductStockManageVisible(false)}
             product={currentProduct}
             filters={filters}
+          />
+
+          <WarningModal
+            title={`Move ${selectedRowIds.length} product(s) to draft?`}
+            description={`You are about to move ${selectedRowIds.length} product(s) to draft. They will be hidden from the product list by default unless draft filter is enabled, and they will no longer be available for creating new orders.`}
+            open={productsBulkMoveToDraftVisible}
+            onClose={() => setProductsBulkMoveToDraftVisible(false)}
+            onConfirm={() => manageBulkProductStatus(ProductStatus.DRAFT)}
+            confirmLoading={productsBulkManageStatusLoading}
+          />
+
+          <WarningModal
+            title={`Publish ${selectedRowIds.length} product(s)?`}
+            description={`You are about to publish ${selectedRowIds.length} product(s). They will become available for creating new orders.`}
+            open={productsBulkPublishVisible}
+            onClose={() => setProductsBulkPublishVisible(false)}
+            onConfirm={() => manageBulkProductStatus(ProductStatus.PUBLISHED)}
+            confirmLoading={productsBulkManageStatusLoading}
           />
         </Fragment>
       ) : null}

@@ -35,6 +35,7 @@ import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { Toast } from "../../utils/Toast";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -190,8 +191,11 @@ export const Tags: React.FC = () => {
 
       setTagDeleteVisible(false);
       setCurrentTag(null);
+
+      Toast.success("Tag deleted successfully");
     } catch (e) {
       console.log(e);
+      Toast.apiError(e);
     } finally {
       setTagDeleteLoading(false);
     }
@@ -239,8 +243,11 @@ export const Tags: React.FC = () => {
 
       setTagsBulkDeleteVisible(false);
       setSelectedRowIds([]);
+
+      Toast.success(`${selectedRowIds.length} tag(s) deleted successfully`);
     } catch (e) {
       console.log(e);
+      Toast.apiError(e);
     } finally {
       setTagsBulkDeleteLoading(false);
     }
