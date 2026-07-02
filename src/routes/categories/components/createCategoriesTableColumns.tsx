@@ -9,8 +9,13 @@ import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
 import isFunction from "lodash/isFunction";
+import styled from "styled-components";
 
-type FNType = (category: Category) => void;
+const ActionsIcon = styled(Icon)`
+  margin-inline: auto;
+`;
+
+type FNType = VoidCallback<Category>;
 
 type CreateCategoriesTableColumnsArgs = {
   onEdit?: FNType;
@@ -24,6 +29,46 @@ export const createCategoriesTableColumns = ({
   onRead,
 }: CreateCategoriesTableColumnsArgs): ColumnsType<Category> => {
   return [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      fixed: "left",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <Icon icon={faEye} />,
+                label: "View",
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
+              },
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit?.(record),
+                disabled: !isFunction(onEdit),
+              },
+              {
+                key: "delete",
+                icon: <Icon icon={faTrash} />,
+                label: "Delete",
+                danger: true,
+                onClick: () => onDelete?.(record),
+                disabled: !isFunction(onDelete),
+              },
+            ].filter((item) => item.disabled !== true),
+          }}
+        >
+          <ActionsIcon icon={faEllipsis} />
+        </Dropdown>
+      ),
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -55,48 +100,6 @@ export const createCategoriesTableColumns = ({
       width: 200,
       ellipsis: true,
       sorter: (a, b) => b.childrenCount - a.childrenCount,
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 80,
-      align: "center",
-      fixed: "right",
-      render: (_, record) => (
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "view",
-                icon: <Icon icon={faEye} />,
-                label: "View",
-                onClick: () => onRead?.(record),
-                disabled: !isFunction(onRead),
-              },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
-                onClick: () => onEdit?.(record),
-                disabled: !isFunction(onEdit),
-              },
-              {
-                key: "delete",
-                icon: <Icon icon={faTrash} />,
-                label: "Delete",
-                danger: true,
-                onClick: () => onDelete?.(record),
-                disabled: !isFunction(onDelete),
-              },
-            ].filter((item) => item.disabled !== true),
-          }}
-        >
-          <span style={{ cursor: "pointer" }}>
-            <Icon icon={faEllipsis} />
-          </span>
-        </Dropdown>
-      ),
     },
   ];
 };

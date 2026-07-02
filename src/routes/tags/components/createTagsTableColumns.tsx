@@ -9,8 +9,13 @@ import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Tag } from "../../../model/tag/types/Tag";
 import isFunction from "lodash/isFunction";
+import styled from "styled-components";
 
-type FNType = (tag: Tag) => void;
+const ActionsIcon = styled(Icon)`
+  margin-inline: auto;
+`;
+
+type FNType = VoidCallback<Tag>;
 
 type CreateTagsTableColumnsArgs = {
   onEdit?: FNType;
@@ -24,6 +29,46 @@ export const createTagsTableColumns = ({
   onRead,
 }: CreateTagsTableColumnsArgs): ColumnsType<Tag> => {
   return [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      fixed: "left",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <Icon icon={faEye} />,
+                label: "View",
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
+              },
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit?.(record),
+                disabled: !isFunction(onEdit),
+              },
+              {
+                key: "delete",
+                icon: <Icon icon={faTrash} />,
+                label: "Delete",
+                danger: true,
+                onClick: () => onDelete?.(record),
+                disabled: !isFunction(onDelete),
+              },
+            ].filter((item) => item.disabled !== true),
+          }}
+        >
+          <ActionsIcon icon={faEllipsis} />
+        </Dropdown>
+      ),
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -55,48 +100,6 @@ export const createTagsTableColumns = ({
       render: (value: string) => formatDate(new Date(value), true),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 80,
-      align: "center",
-      fixed: "right",
-      render: (_, record) => (
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "view",
-                icon: <Icon icon={faEye} />,
-                label: "View",
-                onClick: () => onRead?.(record),
-                disabled: !isFunction(onRead),
-              },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
-                onClick: () => onEdit?.(record),
-                disabled: !isFunction(onEdit),
-              },
-              {
-                key: "delete",
-                icon: <Icon icon={faTrash} />,
-                label: "Delete",
-                danger: true,
-                onClick: () => onDelete?.(record),
-                disabled: !isFunction(onDelete),
-              },
-            ].filter((item) => item.disabled !== true),
-          }}
-        >
-          <span style={{ cursor: "pointer" }}>
-            <Icon icon={faEllipsis} />
-          </span>
-        </Dropdown>
-      ),
     },
   ];
 };

@@ -16,8 +16,13 @@ import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import type { CurrencyCodeRecord } from "currency-codes";
+import styled from "styled-components";
 
-type FNType = (category: Order) => void;
+const ActionsIcon = styled(Icon)`
+  margin-inline: auto;
+`;
+
+type FNType = VoidCallback<Order>;
 
 type CreateOrdersTableColumnsArgs = {
   functions: {
@@ -34,6 +39,59 @@ export const createOrdersTableColumns = ({
   currency,
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      fixed: "left",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <Icon icon={faEye} />,
+                label: "View",
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
+              },
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit?.(record),
+                disabled:
+                  record.status !== OrderStatus.PENDING ||
+                  !isFunction(onEdit) ||
+                  record.isArchived,
+              },
+              {
+                key: "manage-status",
+                icon: <Icon icon={faGear} />,
+                label: "Manage Status",
+                onClick: () => onManageStatus?.(record),
+                disabled:
+                  record.status === OrderStatus.CONFIRMED ||
+                  !isFunction(onManageStatus),
+              },
+              {
+                key: "toggle-archive",
+                icon: (
+                  <Icon icon={record.isArchived ? faBoxOpen : faBoxArchive} />
+                ),
+                label: record.isArchived ? "Unarchive" : "Archive",
+                onClick: () =>
+                  onToggleArchive?.(record) || !isFunction(onToggleArchive),
+              },
+            ].filter((item) => item.disabled !== true),
+          }}
+        >
+          <ActionsIcon icon={faEllipsis} />
+        </Dropdown>
+      ),
+    },
     {
       title: "ID",
       dataIndex: "identifier",
@@ -119,61 +177,6 @@ export const createOrdersTableColumns = ({
       render: (value: string) => formatDate(new Date(value), true),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 80,
-      align: "center",
-      fixed: "right",
-      render: (_, record) => (
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "view",
-                icon: <Icon icon={faEye} />,
-                label: "View",
-                onClick: () => onRead?.(record),
-                disabled: !isFunction(onRead),
-              },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
-                onClick: () => onEdit?.(record),
-                disabled:
-                  record.status !== OrderStatus.PENDING ||
-                  !isFunction(onEdit) ||
-                  record.isArchived,
-              },
-              {
-                key: "manage-status",
-                icon: <Icon icon={faGear} />,
-                label: "Manage Status",
-                onClick: () => onManageStatus?.(record),
-                disabled:
-                  record.status === OrderStatus.CONFIRMED ||
-                  !isFunction(onManageStatus),
-              },
-              {
-                key: "toggle-archive",
-                icon: (
-                  <Icon icon={record.isArchived ? faBoxOpen : faBoxArchive} />
-                ),
-                label: record.isArchived ? "Unarchive" : "Archive",
-                onClick: () =>
-                  onToggleArchive?.(record) || !isFunction(onToggleArchive),
-              },
-            ].filter((item) => item.disabled !== true),
-          }}
-        >
-          <span style={{ cursor: "pointer" }}>
-            <Icon icon={faEllipsis} />
-          </span>
-        </Dropdown>
-      ),
     },
   ];
 };

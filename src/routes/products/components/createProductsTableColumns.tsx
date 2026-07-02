@@ -52,6 +52,10 @@ const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   }
 `;
 
+const ActionsIcon = styled(Icon)`
+  margin-inline: auto;
+`;
+
 const StockAlert = styled.div<{ danger?: boolean }>`
   display: inline-flex;
   align-items: center;
@@ -76,7 +80,7 @@ const StockAlert = styled.div<{ danger?: boolean }>`
   font-weight: 700;
 `;
 
-type FNType = (product: Product) => void;
+type FNType = VoidCallback<Product>;
 
 type CreateProductsTableColumnsArgs = {
   functions: {
@@ -96,6 +100,71 @@ export const createProductsTableColumns = ({
   settings,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
   return [
+    {
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      fixed: "left",
+      render: (_, record) => (
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "view",
+                icon: <Icon icon={faEye} />,
+                label: "View",
+                onClick: () => onRead?.(record),
+                disabled: !isFunction(onRead),
+              },
+              {
+                key: "edit",
+                icon: <Icon icon={faPenToSquare} />,
+                label: "Edit",
+                onClick: () => onEdit?.(record),
+                disabled: !isFunction(onEdit),
+              },
+              {
+                key: "manage-stock",
+                icon: <Icon icon={faBoxesStacked} />,
+                label: "Manage Stock",
+                onClick: () => onManageStock?.(record),
+                disabled: !isFunction(onManageStock),
+              },
+              {
+                key: "toggle-status",
+                icon: (
+                  <Icon
+                    icon={
+                      record.status === ProductStatus.DRAFT
+                        ? faCloudArrowUp
+                        : faCloudArrowDown
+                    }
+                  />
+                ),
+                label:
+                  record.status === ProductStatus.DRAFT
+                    ? "Publish Product"
+                    : "Move to Draft",
+                onClick: () => onToggleStatus?.(record),
+                disabled: !isFunction(onToggleStatus),
+              },
+              {
+                key: "delete",
+                icon: <Icon icon={faTrash} />,
+                label: "Delete",
+                danger: true,
+                onClick: () => onDelete?.(record),
+                disabled: !isFunction(onDelete),
+              },
+            ].filter((item) => item.disabled !== true),
+          }}
+        >
+          <ActionsIcon icon={faEllipsis} />
+        </Dropdown>
+      ),
+    },
     {
       title: "ID",
       dataIndex: "identifier",
@@ -228,73 +297,6 @@ export const createProductsTableColumns = ({
       render: (value: string) => formatDate(new Date(value), true),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 80,
-      align: "center",
-      fixed: "right",
-      render: (_, record) => (
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "view",
-                icon: <Icon icon={faEye} />,
-                label: "View",
-                onClick: () => onRead?.(record),
-                disabled: !isFunction(onRead),
-              },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
-                onClick: () => onEdit?.(record),
-                disabled: !isFunction(onEdit),
-              },
-              {
-                key: "manage-stock",
-                icon: <Icon icon={faBoxesStacked} />,
-                label: "Manage Stock",
-                onClick: () => onManageStock?.(record),
-                disabled: !isFunction(onManageStock),
-              },
-              {
-                key: "toggle-status",
-                icon: (
-                  <Icon
-                    icon={
-                      record.status === ProductStatus.DRAFT
-                        ? faCloudArrowUp
-                        : faCloudArrowDown
-                    }
-                  />
-                ),
-                label:
-                  record.status === ProductStatus.DRAFT
-                    ? "Publish Product"
-                    : "Move to Draft",
-                onClick: () => onToggleStatus?.(record),
-                disabled: !isFunction(onToggleStatus),
-              },
-              {
-                key: "delete",
-                icon: <Icon icon={faTrash} />,
-                label: "Delete",
-                danger: true,
-                onClick: () => onDelete?.(record),
-                disabled: !isFunction(onDelete),
-              },
-            ].filter((item) => item.disabled !== true),
-          }}
-        >
-          <span style={{ cursor: "pointer" }}>
-            <Icon icon={faEllipsis} />
-          </span>
-        </Dropdown>
-      ),
     },
   ];
 };

@@ -9,6 +9,7 @@ import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { Category } from "../../model/category/types/Category";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
+import type { DeleteBulkCategoriesDto } from "../../model/category/dto/DeleteBulkCategoriesDto";
 
 interface CategoryState {
   categories?: Category[];
@@ -37,8 +38,13 @@ const getCategories = AppThunk<PaginatedResponse<Category>, GetCategoriesDto>(
 );
 
 const deleteCategory = AppThunk<void, DeleteCategoryDto>(
-  "/categories/:id/delete",
+  "/categories/delete",
   CategoryAxios.deleteCategory,
+);
+
+const deleteBulkCategories = AppThunk<void, DeleteBulkCategoriesDto>(
+  "/categories/delete/bulk",
+  CategoryAxios.deleteBulkCategories,
 );
 
 const updateCategory = AppThunk<void, UpdateCategoryDto>(
@@ -71,6 +77,7 @@ const categoryActions = {
   createCategory,
   getCategories,
   deleteCategory,
+  deleteBulkCategories,
   updateCategory,
 };
 

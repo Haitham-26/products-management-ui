@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
@@ -26,19 +32,38 @@ import { CategoriesFilters } from "./components/CategoriesFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
+import type { Key } from "antd/es/table/interface";
+import { Button } from "../../components/Button";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
 `;
 
+const BulkActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  button {
+    height: auto;
+  }
+`;
+
 export const Categories: React.FC = () => {
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+
+  const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
 
   const [categoryEditVisible, setCategoryEditVisible] = useState(false);
   const [categoryDeleteVisible, setCategoryDeleteVisible] = useState(false);
   const [categoryReadVisible, setCategoryReadVisible] = useState(false);
   const [categoryCreateVisible, setCategoryCreateVisible] = useState(false);
   const [categoryDeleteLoading, setCategoryDeleteLoading] = useState(false);
+  const [categoryBulkDeleteLoading, setCategoryBulkDeleteLoading] =
+    useState(false);
+  const [categoryBulkDeleteVisible, setCategoryBulkDeleteVisible] =
+    useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -177,6 +202,55 @@ export const Categories: React.FC = () => {
     }
   };
 
+  const deleteBulkCategories = async () => {
+    if (!selectedRowIds.length) {
+      return;
+    }
+
+    try {
+      setCategoryBulkDeleteLoading(true);
+
+      const meta = categoriesMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - selectedRowIds.length;
+
+      await dispatch(
+        categoryActions.deleteBulkCategories({
+          categoryIds: selectedRowIds.map((id) => id.toString()),
+          userId,
+        }),
+      ).unwrap();
+
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildCategoriesParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
+
+      setCategoryBulkDeleteVisible(false);
+      setSelectedRowIds([]);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setCategoryBulkDeleteLoading(false);
+    }
+  };
+
   const tableColumns = useMemo(
     () =>
       createCategoriesTableColumns({
@@ -231,6 +305,22 @@ export const Categories: React.FC = () => {
               },
             }
           : {})}
+        bulkActionsContent={
+          selectedRowIds.length ? (
+            <BulkActionsWrapper>
+              {permissions.DELETE ? (
+                <Button
+                  onClick={() => setCategoryBulkDeleteVisible(true)}
+                  icon={faTrash}
+                  variant="secondary"
+                >
+                  Delete
+                </Button>
+              ) : null}
+            </BulkActionsWrapper>
+          ) : null
+        }
+        selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
@@ -238,13 +328,19 @@ export const Categories: React.FC = () => {
           loading={categoriesLoading}
           columns={tableColumns}
           dataSource={categories}
+          rowSelection={{
+            selectedRowKeys: selectedRowIds,
+            onChange(newSelectedRowKeys) {
+              setSelectedRowIds(newSelectedRowKeys);
+            },
+          }}
           pagination={{
             current: categoriesMeta?.page || 1,
             pageSize: categoriesMeta?.limit || 10,
             total: categoriesMeta?.total || 0,
             onChange: handlePageChange,
             showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
+            pageSizeOptions: ["2", "10", "20", "50", "100"],
             position: ["bottomRight"],
             showTotal: (total) => `Total ${total} categories`,
           }}
@@ -254,16 +350,29 @@ export const Categories: React.FC = () => {
       )}
 
       {permissions.DELETE ? (
-        <WarningModal
-          title={`Delete "${currentCategory?.name}" Category?`}
-          description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
-          open={categoryDeleteVisible}
-          onClose={() => setCategoryDeleteVisible(false)}
-          onConfirm={deleteCategory}
-          confirmText="Delete"
-          cancelText="Cancel"
-          confirmLoading={categoryDeleteLoading}
-        />
+        <Fragment>
+          <WarningModal
+            title={`Delete "${currentCategory?.name}" Category?`}
+            description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
+            open={categoryDeleteVisible}
+            onClose={() => setCategoryDeleteVisible(false)}
+            onConfirm={deleteCategory}
+            confirmText="Delete"
+            cancelText="Cancel"
+            confirmLoading={categoryDeleteLoading}
+          />
+
+          <WarningModal
+            title={`Delete ${selectedRowIds.length} categories?`}
+            description={`This will remove the selected categories and unlink all associated products. Products will not be deleted, but they will no longer be assigned to these categories.`}
+            open={categoryBulkDeleteVisible}
+            onClose={() => setCategoryBulkDeleteVisible(false)}
+            onConfirm={deleteBulkCategories}
+            confirmText="Delete"
+            cancelText="Cancel"
+            confirmLoading={categoryBulkDeleteLoading}
+          />
+        </Fragment>
       ) : null}
 
       {permissions.READ ? (

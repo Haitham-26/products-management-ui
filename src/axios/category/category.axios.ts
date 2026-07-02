@@ -1,4 +1,5 @@
 import type { CreateCategoryDto } from "../../model/category/dto/CreateCategoryDto";
+import type { DeleteBulkCategoriesDto } from "../../model/category/dto/DeleteBulkCategoriesDto";
 import type { DeleteCategoryDto } from "../../model/category/dto/DeleteCategoryDto";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
 import type { UpdateCategoryDto } from "../../model/category/dto/UpdateCategoryDto";
@@ -23,6 +24,12 @@ export class CategoryAxios {
   }
   static deleteCategory(dto: DeleteCategoryDto) {
     return AppAxios.delete(`/categories/delete`, { data: dto }).then(
+      ({ data }) => data,
+    );
+  }
+
+  static deleteBulkCategories(dto: DeleteBulkCategoriesDto) {
+    return AppAxios.delete(`/categories/delete/bulk`, { data: dto }).then(
       ({ data }) => data,
     );
   }
