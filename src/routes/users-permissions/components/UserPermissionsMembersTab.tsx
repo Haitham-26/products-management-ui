@@ -282,13 +282,15 @@ export const UserPermissionsMembersTab: React.FC<
         <StickyBar blur={shouldBlurStickyHeader}>
           <Text fontWeight="bold">Members Permissions</Text>
 
-          <Button
-            onClick={handleSubmit(onManageMembersPermissions)}
-            loading={saveLoading}
-            disabled={!isDirty}
-          >
-            Save changes
-          </Button>
+          {members.length > 1 ? (
+            <Button
+              onClick={handleSubmit(onManageMembersPermissions)}
+              loading={saveLoading}
+              disabled={!isDirty}
+            >
+              Save changes
+            </Button>
+          ) : null}
         </StickyBar>
       ) : null}
 

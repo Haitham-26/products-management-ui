@@ -35,6 +35,8 @@ import { SearchSelect } from "../../../components/SearchSelect";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import debounce from "lodash/debounce";
 import { categoryActions } from "../../../redux/category/categories.slice";
+import { checkPermissions } from "../../../utils/checkPermissions";
+import { Info } from "../../../components/Info";
 
 const FormContainer = styled.div`
   display: flex;
@@ -127,6 +129,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
@@ -140,6 +143,9 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     "discount.type",
     "price",
   ]);
+
+  const tagsPermissions = checkPermissions(user, "tags");
+  const categoriesPermissions = checkPermissions(user, "categories");
 
   const categoriesOptions = useMemo(
     () => categories.map((c) => ({ label: c.name, value: c._id })),
@@ -161,6 +167,22 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       value: discountValue || 0,
     });
   }, [price, discountType, discountValue]);
+
+  const taxonomyHint = useMemo(() => {
+    if (!categoriesPermissions.READ && !tagsPermissions.READ) {
+      return "You don't have access to categories or tags.";
+    }
+
+    if (!categoriesPermissions.READ) {
+      return "You don't have access to categories.";
+    }
+
+    if (!tagsPermissions.READ) {
+      return "You don't have access to tags.";
+    }
+
+    return null;
+  }, [categoriesPermissions.READ, tagsPermissions.READ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchCategories = useCallback(
@@ -422,19 +444,23 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
             <Icon icon={faTags} />
             <Text>Taxonomy</Text>
           </SectionLabel>
+
+          {taxonomyHint ? <Info>{taxonomyHint}</Info> : null}
+
           <Controller
             control={control}
             name="categoryId"
             render={({ field: { value, onChange } }) => (
               <SearchSelect
                 title="Select Category"
-                value={value || undefined}
+                value={categoriesPermissions.READ && value ? value : undefined}
                 onChange={onChange}
                 options={categoriesOptions}
                 onSearch={searchCategories}
                 allowClear
                 loading={searchCategoriesLoading}
                 placeholder="Search for a category..."
+                disabled={!categoriesPermissions.READ}
               />
             )}
           />
@@ -446,13 +472,14 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
               <SearchSelect
                 title="Select Tags"
                 mode="multiple"
-                value={tags}
+                value={tagsPermissions.READ && tags ? tags : []}
                 onChange={onChange}
                 options={tagsOptions}
                 onSearch={searchTags}
                 loading={searchTagsLoading}
                 allowClear
                 placeholder="Search for tags..."
+                disabled={!tagsPermissions.READ}
               />
             )}
           />

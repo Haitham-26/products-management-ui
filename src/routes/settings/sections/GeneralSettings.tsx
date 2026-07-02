@@ -12,6 +12,7 @@ import { Toast } from "../../../utils/Toast";
 import { Select } from "../../../components/Select";
 import { CURRENCY_OPTIONS } from "../../../utils/String";
 import { SettingsSection } from "../components/SettingsSection";
+import { Tooltip } from "antd";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -23,6 +24,7 @@ export const GeneralSettings: React.FC = () => {
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
   const dispatch = useAppDispatch();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({
@@ -65,29 +67,40 @@ export const GeneralSettings: React.FC = () => {
               required: "Currency is required.",
             }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Select
-                title="Select Currency"
-                required
-                errorMessage={error?.message}
-                value={value}
-                onChange={onChange}
-                options={CURRENCY_OPTIONS}
-                showSearch={{
-                  filterOption: (input, option) =>
-                    (option?.label as string)
-                      ?.toLowerCase()
-                      .includes(input?.toLowerCase()),
-                }}
-              />
+              <Tooltip
+                title={
+                  isMember
+                    ? "Only the organization owner can change this."
+                    : undefined
+                }
+              >
+                <Select
+                  title="Select Currency"
+                  required
+                  errorMessage={error?.message}
+                  value={value}
+                  onChange={onChange}
+                  options={CURRENCY_OPTIONS}
+                  showSearch={{
+                    filterOption: (input, option) =>
+                      (option?.label as string)
+                        ?.toLowerCase()
+                        .includes(input?.toLowerCase()),
+                  }}
+                  disabled={isMember}
+                />
+              </Tooltip>
             )}
           />
 
-          <StyledButton
-            onClick={handleSubmit(onUpdate)}
-            loading={updateLoading}
-          >
-            Save Changes
-          </StyledButton>
+          {!isMember ? (
+            <StyledButton
+              onClick={handleSubmit(onUpdate)}
+              loading={updateLoading}
+            >
+              Save Changes
+            </StyledButton>
+          ) : null}
         </Fragment>
       }
     />

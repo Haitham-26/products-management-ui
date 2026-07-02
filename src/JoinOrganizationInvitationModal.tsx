@@ -5,13 +5,12 @@ import appSliceSelectors from "./redux/app/app.selector";
 import { appActions } from "./redux/app/app.slice";
 import last from "lodash/last";
 import { Toast } from "./utils/Toast";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import usersPermissionsSliceSelectors from "./redux/users-permissions/users-permissions.selector";
 import { usersPermissionsActions } from "./redux/users-permissions/users-permissions.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
 import { userActions } from "./redux/user/user.slice";
-import { UserRoles } from "./model/user/types/UserRoles.enum";
 import { useNavigate } from "react-router-dom";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
@@ -28,7 +27,6 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
     usersPermissionsSliceSelectors.selectJoinOrgInvitations,
   );
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const user = useAppSelector(userSliceSelectors.selectUser)!;
 
   const lastInvitation = last(invitations);
 
@@ -104,14 +102,6 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       setDeclineLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!user.roles.includes(UserRoles.MEMBER)) {
-      dispatch(
-        usersPermissionsActions.getJoinOrgInvitatios({ userId: user._id }),
-      );
-    }
-  }, [dispatch, user]);
 
   return (
     <WarningModal
