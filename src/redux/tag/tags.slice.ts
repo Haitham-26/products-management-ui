@@ -9,6 +9,7 @@ import { TagAxios } from "../../axios/tag/tag.axios";
 import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import type { GetTagsDto } from "../../model/tag/dto/GetTagsDto";
+import type { DeleteBulkTagsDto } from "../../model/tag/dto/DeleteBulkTagsDto";
 
 interface TagState {
   tags?: Tag[];
@@ -37,12 +38,17 @@ const getTags = AppThunk<PaginatedResponse<Tag>, GetTagsDto>(
 );
 
 const deleteTag = AppThunk<void, DeleteTagDto>(
-  "/tags/:id/delete",
+  "/tags/delete",
   TagAxios.deleteTag,
 );
 
+const deleteBulkTags = AppThunk<void, DeleteBulkTagsDto>(
+  "/tags/delete/bulk",
+  TagAxios.deleteBulkTags,
+);
+
 const updateTag = AppThunk<void, UpdateTagDto>(
-  "/tags/:id/update",
+  "/tags/update",
   TagAxios.updateTag,
 );
 
@@ -71,6 +77,7 @@ const tagActions = {
   createTag,
   getTags,
   deleteTag,
+  deleteBulkTags,
   updateTag,
 };
 

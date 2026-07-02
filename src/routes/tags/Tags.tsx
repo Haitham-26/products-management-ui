@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Container } from "../../components/Container";
 import { Table } from "../../components/Table";
@@ -26,13 +32,28 @@ import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { TagsFilters } from "./components/TagsFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
+import type { Key } from "antd/es/table/interface";
+import { Button } from "../../components/Button";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
 `;
 
+const BulkActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  button {
+    height: auto;
+  }
+`;
+
 export const Tags: React.FC = () => {
   const [currentTag, setCurrentTag] = useState<Tag | null>(null);
+
+  const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
 
   const [tagEditVisible, setTagEditVisible] = useState(false);
   const [tagDeleteVisible, setTagDeleteVisible] = useState(false);
@@ -40,6 +61,8 @@ export const Tags: React.FC = () => {
   const [tagCreateVisible, setTagCreateVisible] = useState(false);
 
   const [tagDeleteLoading, setTagDeleteLoading] = useState(false);
+  const [tagsBulkDeleteLoading, setTagsBulkDeleteLoading] = useState(false);
+  const [tagsBulkDeleteVisible, setTagsBulkDeleteVisible] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -174,6 +197,55 @@ export const Tags: React.FC = () => {
     }
   };
 
+  const deleteBulkTags = async () => {
+    if (!selectedRowIds.length) {
+      return;
+    }
+
+    try {
+      setTagsBulkDeleteLoading(true);
+
+      const meta = tagsMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - selectedRowIds.length;
+
+      await dispatch(
+        tagActions.deleteBulkTags({
+          tagIds: selectedRowIds.map((id) => id.toString()),
+          userId,
+        }),
+      ).unwrap();
+
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildTagsParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
+
+      setTagsBulkDeleteVisible(false);
+      setSelectedRowIds([]);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setTagsBulkDeleteLoading(false);
+    }
+  };
+
   const tableColumns = useMemo(
     () =>
       createTagsTableColumns({
@@ -228,6 +300,22 @@ export const Tags: React.FC = () => {
               },
             }
           : {})}
+        bulkActionsContent={
+          selectedRowIds.length ? (
+            <BulkActionsWrapper>
+              {permissions.DELETE ? (
+                <Button
+                  onClick={() => setTagsBulkDeleteVisible(true)}
+                  icon={faTrash}
+                  variant="secondary"
+                >
+                  Delete
+                </Button>
+              ) : null}
+            </BulkActionsWrapper>
+          ) : null
+        }
+        selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
@@ -241,9 +329,15 @@ export const Tags: React.FC = () => {
             total: tagsMeta?.total || 0,
             onChange: handlePageChange,
             showSizeChanger: true,
-            pageSizeOptions: ["2", "10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
             showTotal: (total) => `Total ${total} tags`,
+          }}
+          rowSelection={{
+            selectedRowKeys: selectedRowIds,
+            onChange(newSelectedRowKeys) {
+              setSelectedRowIds(newSelectedRowKeys);
+            },
           }}
         />
       ) : (
@@ -251,16 +345,29 @@ export const Tags: React.FC = () => {
       )}
 
       {permissions.DELETE ? (
-        <WarningModal
-          title={`Delete "${currentTag?.name}" tag?`}
-          description={`Are you sure you want to delete "${currentTag?.name}" tag? Once you confirm, you cannot undo it later.`}
-          open={tagDeleteVisible}
-          onClose={() => setTagDeleteVisible(false)}
-          onConfirm={deleteTag}
-          confirmText="Delete"
-          cancelText="Cancel"
-          confirmLoading={tagDeleteLoading}
-        />
+        <Fragment>
+          <WarningModal
+            title={`Delete "${currentTag?.name}" tag?`}
+            description={`Are you sure you want to delete "${currentTag?.name}" tag? It will be deleted and will unlink all associated products. This action cannot be undone.`}
+            open={tagDeleteVisible}
+            onClose={() => setTagDeleteVisible(false)}
+            onConfirm={deleteTag}
+            confirmText="Delete"
+            cancelText="Cancel"
+            confirmLoading={tagDeleteLoading}
+          />
+
+          <WarningModal
+            title={`Delete ${selectedRowIds.length} tag(s)?`}
+            description="This will delete the selected tags and remove them from all associated products. The products themselves will not be deleted, but they will no longer be linked to these tags. This action cannot be undone."
+            open={tagsBulkDeleteVisible}
+            onClose={() => setTagsBulkDeleteVisible(false)}
+            onConfirm={deleteBulkTags}
+            confirmText="Delete"
+            cancelText="Cancel"
+            confirmLoading={tagsBulkDeleteLoading}
+          />
+        </Fragment>
       ) : null}
 
       {permissions.CREATE ? (

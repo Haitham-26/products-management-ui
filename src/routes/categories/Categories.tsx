@@ -60,9 +60,9 @@ export const Categories: React.FC = () => {
   const [categoryReadVisible, setCategoryReadVisible] = useState(false);
   const [categoryCreateVisible, setCategoryCreateVisible] = useState(false);
   const [categoryDeleteLoading, setCategoryDeleteLoading] = useState(false);
-  const [categoryBulkDeleteLoading, setCategoryBulkDeleteLoading] =
+  const [categoriesBulkDeleteLoading, setCategoriesBulkDeleteLoading] =
     useState(false);
-  const [categoryBulkDeleteVisible, setCategoryBulkDeleteVisible] =
+  const [categoriesBulkDeleteVisible, setCategoriesBulkDeleteVisible] =
     useState(false);
 
   const dispatch = useAppDispatch();
@@ -208,7 +208,7 @@ export const Categories: React.FC = () => {
     }
 
     try {
-      setCategoryBulkDeleteLoading(true);
+      setCategoriesBulkDeleteLoading(true);
 
       const meta = categoriesMeta;
       const currentPage = meta?.page || 1;
@@ -242,12 +242,12 @@ export const Categories: React.FC = () => {
         },
       );
 
-      setCategoryBulkDeleteVisible(false);
+      setCategoriesBulkDeleteVisible(false);
       setSelectedRowIds([]);
     } catch (e) {
       console.log(e);
     } finally {
-      setCategoryBulkDeleteLoading(false);
+      setCategoriesBulkDeleteLoading(false);
     }
   };
 
@@ -310,7 +310,7 @@ export const Categories: React.FC = () => {
             <BulkActionsWrapper>
               {permissions.DELETE ? (
                 <Button
-                  onClick={() => setCategoryBulkDeleteVisible(true)}
+                  onClick={() => setCategoriesBulkDeleteVisible(true)}
                   icon={faTrash}
                   variant="secondary"
                 >
@@ -340,7 +340,7 @@ export const Categories: React.FC = () => {
             total: categoriesMeta?.total || 0,
             onChange: handlePageChange,
             showSizeChanger: true,
-            pageSizeOptions: ["2", "10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
             showTotal: (total) => `Total ${total} categories`,
           }}
@@ -353,7 +353,7 @@ export const Categories: React.FC = () => {
         <Fragment>
           <WarningModal
             title={`Delete "${currentCategory?.name}" Category?`}
-            description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category.`}
+            description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category. This action cannot be undone.`}
             open={categoryDeleteVisible}
             onClose={() => setCategoryDeleteVisible(false)}
             onConfirm={deleteCategory}
@@ -364,13 +364,13 @@ export const Categories: React.FC = () => {
 
           <WarningModal
             title={`Delete ${selectedRowIds.length} categories?`}
-            description={`This will remove the selected categories and unlink all associated products. Products will not be deleted, but they will no longer be assigned to these categories.`}
-            open={categoryBulkDeleteVisible}
-            onClose={() => setCategoryBulkDeleteVisible(false)}
+            description={`This will delete the selected categories and unlink all associated products. Products will not be deleted, but they will no longer be assigned to these categories. This action cannot be undone.`}
+            open={categoriesBulkDeleteVisible}
+            onClose={() => setCategoriesBulkDeleteVisible(false)}
             onConfirm={deleteBulkCategories}
             confirmText="Delete"
             cancelText="Cancel"
-            confirmLoading={categoryBulkDeleteLoading}
+            confirmLoading={categoriesBulkDeleteLoading}
           />
         </Fragment>
       ) : null}
