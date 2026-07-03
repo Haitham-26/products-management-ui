@@ -9,6 +9,7 @@ import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
 import { OrderAxios } from "../../axios/order/order.axios";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
+import type { BulkManageOrderVisibilityDto } from "../../model/order/dto/BulkManageOrderVisibilityDto";
 
 interface OrderState {
   orders?: Order[];
@@ -37,12 +38,17 @@ const getOrders = AppThunk<PaginatedResponse<Order>, GenericWithUserId>(
 );
 
 const updateOrder = AppThunk<void, UpdateOrderDto>(
-  "/orders/:id/update",
+  "/orders/update",
   OrderAxios.updateOrder,
 );
 
+const bulkManageOrderVisibility = AppThunk<void, BulkManageOrderVisibilityDto>(
+  "/orders/manage-visibility/bulk",
+  OrderAxios.bulkManageOrderVisibility,
+);
+
 const manageOrderStatus = AppThunk<void, ManageOrderStatusDto>(
-  "/orders/:id/manage-status",
+  "/orders/manage-status",
   OrderAxios.manageOrderStatus,
 );
 
@@ -71,6 +77,7 @@ const orderActions = {
   createOrder,
   getOrders,
   updateOrder,
+  bulkManageOrderVisibility,
   manageOrderStatus,
 };
 

@@ -5,8 +5,6 @@ import { Toast } from "../../../utils/Toast";
 import { useAppDispatch } from "../../../redux/store";
 import { useState } from "react";
 import { orderActions } from "../../../redux/order/orders.slice";
-import { buildOrdersParams } from "../utils/orderUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const descriptions = {
@@ -22,15 +20,15 @@ type OrderToggleArchiveModalProps = {
   onClose: VoidFunction;
   order: Order | null;
   filters: Partial<GetOrdersDto>;
+  fetchOrders: (removedItemsCount: number) => Promise<void>;
 };
 
 export const OrderToggleArchiveModal: React.FC<
   OrderToggleArchiveModalProps
-> = ({ open = false, onClose, order, filters }) => {
+> = ({ open = false, onClose, order, fetchOrders, filters }) => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const onConfirm = async () => {
     if (!order) {
@@ -48,9 +46,7 @@ export const OrderToggleArchiveModal: React.FC<
         }),
       ).unwrap();
 
-      setSearchParams(buildOrdersParams(filters, searchParams), {
-        replace: true,
-      });
+      await fetchOrders(!order.isArchived && !filters.showArchived ? 1 : 0);
 
       Toast.success(
         `Order ${order.isArchived ? "unarchived" : "archived"} successfully`,

@@ -373,7 +373,11 @@ export const Products: React.FC = () => {
         products.find((p) => p._id === id && p.status !== ProductStatus.DRAFT),
       ).length;
 
-      await fetchProducts(status === ProductStatus.DRAFT ? nonDraftCount : 0);
+      await fetchProducts(
+        status === ProductStatus.DRAFT && !filters.showDraft
+          ? nonDraftCount
+          : 0,
+      );
 
       if (status === ProductStatus.DRAFT) {
         setProductsBulkMoveToDraftVisible(false);
