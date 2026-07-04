@@ -27,6 +27,10 @@ export const Layout: React.FC = () => {
   const user = useAppSelector(userSliceSelectors.selectUser);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
     dispatch(userActions.getUserById({ userId: user._id }));
 
     if (!user.roles.includes(UserRoles.MEMBER)) {
@@ -35,7 +39,7 @@ export const Layout: React.FC = () => {
       );
     }
     // eslint-disable-next-line
-  }, [user._id, dispatch]);
+  }, [user?._id, dispatch]);
 
   return (
     <Fragment>

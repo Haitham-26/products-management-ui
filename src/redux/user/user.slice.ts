@@ -77,6 +77,7 @@ const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
 
 const logout = AppThunk<void, void>("/logout", async () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("persist:root");
 });
 
 export const userSlice = createSlice({

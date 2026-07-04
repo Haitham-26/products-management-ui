@@ -55,11 +55,11 @@ const getDropdownItems = (
       key: "logout",
       label: "Logout",
       icon: <Icon icon={faPersonWalkingArrowRight} />,
-      onClick: () => {
+      onClick: async () => {
         if (user.signUpMethod === SignUpMethods.GOOGLE) {
           googleLogout();
         }
-        dispatch(userActions.logout());
+        await dispatch(userActions.logout());
         navigate("/login", { replace: true });
       },
       danger: true,
