@@ -473,23 +473,23 @@ export const Products: React.FC = () => {
               ) : null}
 
               {permissions.UPDATE ? (
-                <Button
-                  onClick={() => setProductsBulkPublishVisible(true)}
-                  icon={faCloudArrowUp}
-                  variant="secondary"
-                >
-                  Publish
-                </Button>
-              ) : null}
+                <Fragment>
+                  <Button
+                    onClick={() => setProductsBulkPublishVisible(true)}
+                    icon={faCloudArrowUp}
+                    variant="secondary"
+                  >
+                    Publish
+                  </Button>
 
-              {permissions.UPDATE ? (
-                <Button
-                  onClick={() => setProductsBulkMoveToDraftVisible(true)}
-                  icon={faCloudArrowDown}
-                  variant="secondary"
-                >
-                  Move to Draft
-                </Button>
+                  <Button
+                    onClick={() => setProductsBulkMoveToDraftVisible(true)}
+                    icon={faCloudArrowDown}
+                    variant="secondary"
+                  >
+                    Move to Draft
+                  </Button>
+                </Fragment>
               ) : null}
             </BulkActionsWrapper>
           ) : null

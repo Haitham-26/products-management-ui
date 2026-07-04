@@ -9,10 +9,10 @@ import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 
 const descriptions = {
   archive:
-    "Are you sure you want to archive this order? It will become read-only and hidden from active lists unless you enable archived filters.",
+    "Are you sure you want to archive this order? It will become read-only and hidden from active lists unless you enable archived filters. This will not affect the order's status or its products' stock.",
 
   unarchive:
-    "Are you sure you want to unarchive this order? It will become active again and editable.",
+    "Are you sure you want to unarchive this order? It will become active again and editable. This will not affect the order's status or its products' stock.",
 };
 
 type OrderToggleArchiveModalProps = {

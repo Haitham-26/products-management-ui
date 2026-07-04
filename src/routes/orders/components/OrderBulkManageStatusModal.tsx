@@ -7,7 +7,6 @@ import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import capitalize from "lodash/capitalize";
 import { Button } from "../../../components/Button";
 import styled from "styled-components";
-import type { Order } from "../../../model/order/types/Order";
 import { Toast } from "../../../utils/Toast";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { orderActions } from "../../../redux/order/orders.slice";
@@ -15,6 +14,8 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { buildOrdersParams } from "../utils/orderUtils";
 import { useSearchParams } from "react-router-dom";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
+import type { Key } from "antd/es/table/interface";
+import { Info } from "../../../components/Info";
 
 const Container = styled.div`
   display: flex;
@@ -50,24 +51,26 @@ const Hint = styled(Text)`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const InfoList = styled.ul`
+  margin-inline-start: ${({ theme }) => theme.spacing.md};
+`;
+
 const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-interface OrderManageStatusModalProps {
+interface OrderBulkManageStatusModalProps {
   open: boolean;
   onClose: () => void;
-  order: Order | null;
+  orderIds: Key[];
   filters: Partial<GetOrdersDto>;
+  setSelctedRowIds: React.Dispatch<React.SetStateAction<Key[]>>;
 }
 
-export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
-  open = false,
-  onClose,
-  order,
-  filters,
-}) => {
+export const OrderBulkManageStatusModal: React.FC<
+  OrderBulkManageStatusModalProps
+> = ({ open = false, onClose, orderIds = [], filters, setSelctedRowIds }) => {
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -77,27 +80,10 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
   const statusOptions = useMemo(() => {
-    if (!order) {
-      return [];
-    }
-
     return Object.values(OrderStatus)
-      .filter((s) => {
-        if (s === order.status) {
-          return false;
-        }
 
-        if (
-          order.status === OrderStatus.CANCELLED &&
-          s === OrderStatus.CONFIRMED
-        ) {
-          return false;
-        }
-
-        return true;
-      })
       .map((s) => ({ label: capitalize(s), value: s }));
-  }, [order]);
+  }, []);
 
   const localOnClose = () => {
     setStatus(null);
@@ -105,7 +91,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   };
 
   const onConfirm = async () => {
-    if (!order || !status) {
+    if (!orderIds.length || !status) {
       return;
     }
 
@@ -113,8 +99,8 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
       setLoading(true);
 
       await dispatch(
-        orderActions.manageOrderStatus({
-          orderId: order._id,
+        orderActions.bulkManageOrderStatus({
+          orderIds: orderIds.map((id) => id.toString()),
           status,
           userId,
         }),
@@ -124,7 +110,9 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
         replace: true,
       });
 
-      Toast.success("Status updated successfully");
+      setSelctedRowIds([]);
+
+      Toast.success("Order statuses updated successfully");
       localOnClose();
     } catch (e) {
       console.log(e);
@@ -135,7 +123,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   };
 
   return (
-    <Modal title="Update Order Status" open={open} onCancel={localOnClose}>
+    <Modal title="Manage Order Statuses" open={open} onCancel={localOnClose}>
       <Container>
         <InfoCard>
           <Text fontSize="small" fontWeight={"bold"}>
@@ -168,6 +156,16 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
             </div>
             <Hint>No stock change</Hint>
           </RuleRow>
+
+          <Info>
+            <InfoList>
+              <li>The selected confirmed orders will not be updated.</li>
+              <li>
+                The selected cancelled orders will not be updated if the new
+                status is "Confirmed".
+              </li>
+            </InfoList>
+          </Info>
         </InfoCard>
 
         <Select

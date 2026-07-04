@@ -42,6 +42,8 @@ import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
 import { OrderVisibility } from "../../model/order/types/OrderVisibility.enum";
 import { Toast } from "../../utils/Toast";
+import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
+import { OrderBulkManageStatusModal } from "./components/OrderBulkManageStatusModal";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -93,8 +95,6 @@ export const Orders: React.FC = () => {
     useState(false);
 
   const [ordersBulkManageStatusVisible, setOrdersBulkManageStatusVisible] =
-    useState(false);
-  const [ordersBulkManageStatusLoading, setOrdersBulkManageStatusLoading] =
     useState(false);
 
   const [ordersBulkToggleArchiveLoading, setOrdersBulkToggleArchiveLoading] =
@@ -347,6 +347,14 @@ export const Orders: React.FC = () => {
                   >
                     Unarchive
                   </Button>
+
+                  <Button
+                    onClick={() => setOrdersBulkManageStatusVisible(true)}
+                    icon={faGear}
+                    variant="secondary"
+                  >
+                    Manage Status
+                  </Button>
                 </Fragment>
               ) : null}
             </BulkActionsWrapper>
@@ -372,7 +380,7 @@ export const Orders: React.FC = () => {
             total: ordersMeta?.total || 0,
             onChange: handlePageChange,
             showSizeChanger: true,
-            pageSizeOptions: ["2", "10", "20", "50", "100"],
+            pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
             showTotal: (total) => `Total ${total} orders`,
           }}
@@ -423,7 +431,7 @@ export const Orders: React.FC = () => {
 
           <WarningModal
             title={`Archive ${selectedRowIds.length} orders?`}
-            description="Are you sure you want to archive these orders? They will become read-only and hidden from active lists unless you enable archived filters."
+            description="Are you sure you want to archive these orders? They will become read-only and hidden from active lists unless you enable archived filters. This will not affect the orders' status or their products' stock."
             open={ordersBulkArchiveVisible}
             onClose={() => setOrdersBulkArchiveVisible(false)}
             confirmLoading={ordersBulkToggleArchiveLoading}
@@ -434,11 +442,19 @@ export const Orders: React.FC = () => {
 
           <WarningModal
             title={`Unarchive ${selectedRowIds.length} orders?`}
-            description="Are you sure you want to unarchive these orders? They will become active again and editable."
+            description="Are you sure you want to unarchive these orders? They will become active again and editable. This will not affect the orders' status or their products' stock."
             open={ordersBulkUnarchiveVisible}
             onClose={() => setOrdersBulkUnarchiveVisible(false)}
             confirmLoading={ordersBulkToggleArchiveLoading}
             onConfirm={() => bulkManageOrderVisibility(OrderVisibility.ACTIVE)}
+          />
+
+          <OrderBulkManageStatusModal
+            open={ordersBulkManageStatusVisible}
+            onClose={() => setOrdersBulkManageStatusVisible(false)}
+            orderIds={selectedRowIds}
+            filters={filters}
+            setSelctedRowIds={setSelectedRowIds}
           />
         </Fragment>
       ) : null}
