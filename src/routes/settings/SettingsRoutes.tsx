@@ -4,7 +4,7 @@ import { GeneralSettings } from "./sections/GeneralSettings";
 import { AppPrivateRoute } from "../AppPrivateRoute";
 import { SettingsKeys } from "../../model/settings/types/SettingsKeys.enum";
 import { InventorySettings } from "./sections/InventorySettings";
-import { SecuritySettings } from "./sections/SecuritySettings";
+import { SecuritySettingsRoute } from "./SecuritySettingsRoute";
 
 export const settingsRoutes: RouteObject = {
   path: "/settings",
@@ -24,7 +24,7 @@ export const settingsRoutes: RouteObject = {
     },
     {
       path: SettingsKeys.SECURITY,
-      element: <AppPrivateRoute component={<SecuritySettings />} />,
+      element: <SecuritySettingsRoute />,
     },
   ],
 };

@@ -5,12 +5,18 @@ type AppPrivateRouteProps = {
   component?: React.ReactNode;
   redirect?: string;
   replace?: boolean;
+  guard?: {
+    isAllowed: boolean;
+    redirect: string;
+    replace?: boolean;
+  };
 };
 
 export const AppPrivateRoute: React.FC<AppPrivateRouteProps> = ({
   component,
   redirect,
   replace,
+  guard,
 }) => {
   const token = localStorage.getItem("token");
 
@@ -20,6 +26,10 @@ export const AppPrivateRoute: React.FC<AppPrivateRouteProps> = ({
 
   if (redirect) {
     return <Navigate to={redirect} replace={replace} />;
+  }
+
+  if (guard && !guard.isAllowed) {
+    return <Navigate to={guard.redirect} replace={guard.replace || true} />;
   }
 
   return component;
