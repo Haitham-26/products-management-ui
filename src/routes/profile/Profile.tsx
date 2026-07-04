@@ -15,6 +15,7 @@ import { Toast } from "../../utils/Toast";
 import { Tooltip } from "antd";
 import { Text } from "../../components/Text";
 import { Breakpoints } from "../../theme/Breakpoints";
+import { UserAvatar } from "../../components/UserAvatar";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -50,35 +51,16 @@ const SidebarCard = styled.div`
   height: 100%;
 `;
 
+const StyledAvatar = styled(UserAvatar)`
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
 const FormCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: ${({ theme }) => theme.spacing.lg};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-`;
-
-const AvatarWrapper = styled.div`
-  position: relative;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Avatar = styled.div`
-  width: 8rem;
-  aspect-ratio: 1 / 1;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.primary} 0%,
-    #6366f1 100%
-  );
-  color: ${({ theme }) => theme.colors.surface};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(${({ theme }) => theme.typography.title} * 1.5);
-  font-weight: 700;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
 `;
 
 const UserInfo = styled.div`
@@ -149,9 +131,8 @@ export const Profile: React.FC = () => {
 
       <ProfileGrid>
         <SidebarCard>
-          <AvatarWrapper>
-            <Avatar>{user.name?.charAt(0)?.toUpperCase() || "U"}</Avatar>
-          </AvatarWrapper>
+          <StyledAvatar user={user} width={"8rem"} />
+
           <UserInfo>
             <Text fontWeight={"bold"}>{user.name}</Text>
             {user?.company && !isOrgMember ? (

@@ -28,6 +28,7 @@ import { UserRoles } from "../../../model/user/types/UserRoles.enum";
 import type { ThemeType } from "../../../theme/theme";
 import { Empty } from "../../../components/Empty";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
+import { UserAvatar } from "../../../components/UserAvatar";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -56,17 +57,6 @@ const MemberHeader = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const Avatar = styled.div`
-  width: 44px;
-  height: 44px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const ExpandIcon = styled(Icon)<{ isActive: boolean }>`
@@ -323,11 +313,8 @@ export const UserPermissionsMembersTab: React.FC<
               key: m._id,
               label: (
                 <MemberHeader>
-                  <Avatar>
-                    <Text fontWeight="bold">
-                      {m.name?.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar>
+                  <UserAvatar user={m} borderRadius="md" />
+
                   <Info>
                     <Name>
                       <span>{m.name}</span>

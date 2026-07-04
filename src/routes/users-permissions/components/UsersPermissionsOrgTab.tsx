@@ -9,6 +9,8 @@ import usersPermissionsSliceSelectors from "../../../redux/users-permissions/use
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import { UserAvatar } from "../../../components/UserAvatar";
+import isEmpty from "lodash/isEmpty";
 
 const Container = styled.div`
   display: flex;
@@ -24,18 +26,6 @@ const HeaderSection = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const OrgAvatar = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const InfoGroup = styled.div`
@@ -89,7 +79,7 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
     return <SpinnerFullScreen />;
   }
 
-  if (!isOrgMember) {
+  if (!isOrgMember || isEmpty(orgOwner)) {
     return null;
   }
 
@@ -97,11 +87,8 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
     <Fragment>
       <Container>
         <HeaderSection>
-          <OrgAvatar>
-            <Text fontWeight="bold" fontSize="title">
-              {company?.charAt(0).toUpperCase()}
-            </Text>
-          </OrgAvatar>
+          <UserAvatar user={orgOwner} width={"5rem"} borderRadius="lg" />
+
           <InfoGroup>
             <Text fontWeight="bold" fontSize="subtitle">
               {company}
