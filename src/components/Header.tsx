@@ -24,8 +24,16 @@ import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { NotificationsDrawer } from "./notifications/NotificationsDrawer";
 import { useState } from "react";
 import usersPermissionsSliceSelectors from "../redux/users-permissions/users-permissions.selector";
+import userSliceSelectors from "../redux/user/user.selector";
+import type { User } from "../model/user/types/User";
+import { SignUpMethods } from "../model/user/types/SignUpMethods";
+import { googleLogout } from "@react-oauth/google";
 
-const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
+const getDropdownItems = (
+  navigate: NavigateFunction,
+  dispatch: AppDispatch,
+  user: User,
+) =>
   [
     {
       key: "profile",
@@ -47,8 +55,11 @@ const getDropdownItems = (navigate: NavigateFunction, dispatch: AppDispatch) =>
       key: "logout",
       label: "Logout",
       icon: <Icon icon={faPersonWalkingArrowRight} />,
-      onClick: () => {
-        dispatch(userActions.logout());
+      onClick: async () => {
+        if (user.signUpMethod === SignUpMethods.GOOGLE) {
+          googleLogout();
+        }
+        await dispatch(userActions.logout());
         navigate("/login", { replace: true });
       },
       danger: true,
@@ -122,6 +133,7 @@ export const Header: React.FC = () => {
   const joinOrgInvitations = useAppSelector(
     usersPermissionsSliceSelectors.selectJoinOrgInvitations,
   );
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
 
   return (
     <Wrapper>
@@ -155,7 +167,7 @@ export const Header: React.FC = () => {
 
               <Dropdown
                 trigger={["click"]}
-                menu={{ items: getDropdownItems(navigate, dispatch) }}
+                menu={{ items: getDropdownItems(navigate, dispatch, user) }}
               >
                 <ImagePlaceholder />
               </Dropdown>

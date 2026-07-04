@@ -3,6 +3,7 @@ import type { LoginResponseDto } from "../../model/shared/dto/LoginResponseDto";
 import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
+import type { GoogleLoginDto } from "../../model/user/dto/GoogleLoginDto";
 import type { LoginDto } from "../../model/user/dto/LoginDto";
 import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
@@ -21,22 +22,23 @@ export class UserAxios {
     return AppAxios.patch("/user/update", dto).then(({ data }) => data);
   }
 
+  // For logged in user
   static resetPassword(dto: ResetPasswordDto) {
     return AppAxios.patch<Pick<LoginResponseDto, "token">>(
       "/user/reset-password",
       dto,
-    ).then(({ data }) => {
-      localStorage.setItem("token", data.token);
-      return data;
-    });
+    ).then(({ data }) => data);
   }
 
   static login(dto: LoginDto) {
     return AppAxios.post<LoginResponseDto>("/auth/login", dto).then(
-      ({ data }) => {
-        localStorage.setItem("token", data.token);
-        return data;
-      },
+      ({ data }) => data,
+    );
+  }
+
+  static googleLogin(dto: GoogleLoginDto) {
+    return AppAxios.post<LoginResponseDto>("/auth/google-login", dto).then(
+      ({ data }) => data,
     );
   }
 
@@ -46,10 +48,7 @@ export class UserAxios {
 
   static signUpToken(dto: SignUpTokenDto) {
     return AppAxios.post<LoginResponseDto>("/auth/signup/token", dto).then(
-      ({ data }) => {
-        localStorage.setItem("token", data.token);
-        return data;
-      },
+      ({ data }) => data,
     );
   }
   static signUpResendToken(dto: SignUpResendTokenDto) {

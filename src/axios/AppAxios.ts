@@ -27,7 +27,7 @@ AppAxios.interceptors.response.use(
     if (error.response?.status === 401) {
       console.error("Unauthorized.");
       localStorage.removeItem("token");
-      window.location.href = "/";
+      localStorage.removeItem("persist:root");
     }
     return Promise.reject(error);
   },

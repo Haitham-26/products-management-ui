@@ -9,6 +9,10 @@ import { PageHeader } from "../../../components/PageHeader";
 import { PageSidebar } from "../../../components/PageSidebar";
 import { SettingsKeys } from "../../../model/settings/types/SettingsKeys.enum";
 import { faShield } from "@fortawesome/free-solid-svg-icons/faShield";
+import type { User } from "../../../model/user/types/User";
+import { useAppSelector } from "../../../redux/store";
+import userSliceSelectors from "../../../redux/user/user.selector";
+import { SignUpMethods } from "../../../model/user/types/SignUpMethods";
 
 const Layout = styled.div`
   display: flex;
@@ -19,13 +23,19 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const sections = [
+const getSections = (user: User) => [
   { key: SettingsKeys.GENERAL, label: "General", icon: faSliders },
   { key: SettingsKeys.INVENTORY, label: "Inventory", icon: faBox },
-  { key: SettingsKeys.SECURITY, label: "Security", icon: faShield },
+  ...(user.signUpMethod === SignUpMethods.EMAIL
+    ? [{ key: SettingsKeys.SECURITY, label: "Security", icon: faShield }]
+    : []),
 ];
 
 export const SettingsLayout: React.FC = () => {
+  const user = useAppSelector(userSliceSelectors.selectUser);
+
+  const sections = getSections(user);
+
   return (
     <Container>
       <PageHeader
