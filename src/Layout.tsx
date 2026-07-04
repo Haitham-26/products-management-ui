@@ -24,7 +24,7 @@ const Container = styled.div`
 export const Layout: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const user = useAppSelector(userSliceSelectors.selectUser)!;
+  const user = useAppSelector(userSliceSelectors.selectUser);
 
   useEffect(() => {
     dispatch(userActions.getUserById({ userId: user._id }));

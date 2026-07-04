@@ -13,6 +13,7 @@ import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNe
 import type { SignUpResendTokenDto } from "../../model/user/dto/SignUpResendTokenDto";
 import type { UpdateUserDto } from "../../model/user/dto/UpdateUserDto";
 import type { ResetPasswordDto } from "../../model/user/dto/ResetPasswordDto";
+import type { GoogleLoginDto } from "../../model/user/dto/GoogleLoginDto";
 
 interface UserState {
   user?: User;
@@ -35,6 +36,11 @@ const updateUser = AppThunk<void, UpdateUserDto>(
 const login = AppThunk<LoginResponseDto, LoginDto>(
   "/auth/login",
   UserAxios.login,
+);
+
+const googleLogin = AppThunk<LoginResponseDto, GoogleLoginDto>(
+  "/auth/google-login",
+  UserAxios.googleLogin,
 );
 
 const signUpEmail = AppThunk<void, SignUpEmailDto>(
@@ -69,8 +75,8 @@ const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
   UserAxios.forgotPasswordNew,
 );
 
-const logout = AppThunk<void, void>("/auth/logout", async () => {
-  localStorage.clear();
+const logout = AppThunk<void, void>("/logout", async () => {
+  localStorage.removeItem("token");
 });
 
 export const userSlice = createSlice({
@@ -80,9 +86,20 @@ export const userSlice = createSlice({
   extraReducers: ({ addCase }) => {
     addCase(login.fulfilled, (state, action) => {
       state.user = action.payload.user;
+      localStorage.setItem("token", action.payload.token);
+    });
+    addCase(googleLogin.fulfilled, (state, action) => {
+      state.user = action.payload.user;
+      localStorage.setItem("token", action.payload.token);
     });
     addCase(signUpToken.fulfilled, (state, action) => {
       state.user = action.payload.user;
+      localStorage.setItem("token", action.payload.token);
+    });
+    // The server updates the token and sends it back
+    // so the logged in users tokens becomes invalid
+    addCase(resetPassword.fulfilled, (state, action) => {
+      localStorage.setItem("token", action.payload.token);
     });
     addCase(getUserById.fulfilled, (state, action) => {
       state.user = action.payload;
@@ -96,6 +113,7 @@ const userActions = {
   getUserById,
   updateUser,
   login,
+  googleLogin,
   signUpEmail,
   signUpToken,
   signUpResendToken,

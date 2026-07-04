@@ -14,6 +14,7 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
+  margin-inline: auto;
 
   a {
     color: ${({ theme }) => theme.colors.primary};
