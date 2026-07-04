@@ -35,6 +35,15 @@ import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
+import type { Key } from "antd/es/table/interface";
+import { WarningModal } from "../../components/WarningModal";
+import { Button } from "../../components/Button";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
+import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
+import { OrderVisibility } from "../../model/order/types/OrderVisibility.enum";
+import { Toast } from "../../utils/Toast";
+import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
+import { OrderBulkManageStatusModal } from "./components/OrderBulkManageStatusModal";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -62,8 +71,20 @@ const StyledContainer = styled(Container)`
   }
 `;
 
+const BulkActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  button {
+    height: auto;
+  }
+`;
+
 export const Orders: React.FC = () => {
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
+
+  const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
 
   const [orderEditVisible, setOrderEditVisible] = useState(false);
   const [orderReadVisible, setOrderReadVisible] = useState(false);
@@ -71,6 +92,16 @@ export const Orders: React.FC = () => {
   const [orderManageStatusVisible, setOrderManageStatusVisible] =
     useState(false);
   const [orderToggleArchiveVisible, setOrderToggleArchiveVisible] =
+    useState(false);
+
+  const [ordersBulkManageStatusVisible, setOrdersBulkManageStatusVisible] =
+    useState(false);
+
+  const [ordersBulkToggleArchiveLoading, setOrdersBulkToggleArchiveLoading] =
+    useState(false);
+  const [ordersBulkArchiveVisible, setOrdersBulkArchiveVisible] =
+    useState(false);
+  const [ordersBulkUnarchiveVisible, setOrdersBulkUnarchiveVisible] =
     useState(false);
 
   const dispatch = useAppDispatch();
@@ -177,6 +208,80 @@ export const Orders: React.FC = () => {
     [settings.currency, permissions],
   );
 
+  const fetchOrders = async (removedItemsCount: number = 0) => {
+    try {
+      const meta = ordersMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - removedItemsCount;
+
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildOrdersParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    }
+  };
+
+  const bulkManageOrderVisibility = async (visibility: OrderVisibility) => {
+    try {
+      setOrdersBulkToggleArchiveLoading(true);
+
+      await dispatch(
+        orderActions.bulkManageOrderVisibility({
+          orderIds: selectedRowIds.map((id) => id.toString()),
+          visibility,
+          userId,
+        }),
+      ).unwrap();
+
+      const nonArchivedCount = selectedRowIds.filter((id) =>
+        orders.find((p) => p._id === id && p.isArchived !== true),
+      ).length;
+
+      await fetchOrders(
+        !filters.showArchived && visibility === OrderVisibility.ARCHIVED
+          ? nonArchivedCount
+          : 0,
+      );
+
+      if (visibility === OrderVisibility.ACTIVE) {
+        setOrdersBulkUnarchiveVisible(false);
+      } else {
+        setOrdersBulkArchiveVisible(false);
+      }
+      setSelectedRowIds([]);
+
+      Toast.success(
+        visibility === OrderVisibility.ACTIVE
+          ? "Orders unarchived successfully"
+          : "Orders archived successfully",
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setOrdersBulkToggleArchiveLoading(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(
       orderActions.getOrders({
@@ -222,6 +327,40 @@ export const Orders: React.FC = () => {
               },
             }
           : {})}
+        bulkActionsContent={
+          selectedRowIds.length ? (
+            <BulkActionsWrapper>
+              {permissions.UPDATE ? (
+                <Fragment>
+                  <Button
+                    onClick={() => setOrdersBulkArchiveVisible(true)}
+                    icon={faBoxArchive}
+                    variant="secondary"
+                  >
+                    Archive
+                  </Button>
+
+                  <Button
+                    onClick={() => setOrdersBulkUnarchiveVisible(true)}
+                    icon={faBoxOpen}
+                    variant="secondary"
+                  >
+                    Unarchive
+                  </Button>
+
+                  <Button
+                    onClick={() => setOrdersBulkManageStatusVisible(true)}
+                    icon={faGear}
+                    variant="secondary"
+                  >
+                    Manage Status
+                  </Button>
+                </Fragment>
+              ) : null}
+            </BulkActionsWrapper>
+          ) : null
+        }
+        selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
@@ -229,6 +368,12 @@ export const Orders: React.FC = () => {
           loading={ordersLoading}
           columns={tableColumns}
           dataSource={orders}
+          rowSelection={{
+            selectedRowKeys: selectedRowIds,
+            onChange(newSelectedRowKeys) {
+              setSelectedRowIds(newSelectedRowKeys);
+            },
+          }}
           pagination={{
             current: ordersMeta?.page || 1,
             pageSize: ordersMeta?.limit || 10,
@@ -280,7 +425,36 @@ export const Orders: React.FC = () => {
             open={orderToggleArchiveVisible}
             onClose={() => setOrderToggleArchiveVisible(false)}
             order={currentOrder}
+            fetchOrders={fetchOrders}
             filters={filters}
+          />
+
+          <WarningModal
+            title={`Archive ${selectedRowIds.length} orders?`}
+            description="Are you sure you want to archive these orders? They will become read-only and hidden from active lists unless you enable archived filters. This will not affect the orders' status or their products' stock."
+            open={ordersBulkArchiveVisible}
+            onClose={() => setOrdersBulkArchiveVisible(false)}
+            confirmLoading={ordersBulkToggleArchiveLoading}
+            onConfirm={() =>
+              bulkManageOrderVisibility(OrderVisibility.ARCHIVED)
+            }
+          />
+
+          <WarningModal
+            title={`Unarchive ${selectedRowIds.length} orders?`}
+            description="Are you sure you want to unarchive these orders? They will become active again and editable. This will not affect the orders' status or their products' stock."
+            open={ordersBulkUnarchiveVisible}
+            onClose={() => setOrdersBulkUnarchiveVisible(false)}
+            confirmLoading={ordersBulkToggleArchiveLoading}
+            onConfirm={() => bulkManageOrderVisibility(OrderVisibility.ACTIVE)}
+          />
+
+          <OrderBulkManageStatusModal
+            open={ordersBulkManageStatusVisible}
+            onClose={() => setOrdersBulkManageStatusVisible(false)}
+            orderIds={selectedRowIds}
+            filters={filters}
+            setSelctedRowIds={setSelectedRowIds}
           />
         </Fragment>
       ) : null}

@@ -9,6 +9,8 @@ import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
 import { OrderAxios } from "../../axios/order/order.axios";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
+import type { BulkManageOrderVisibilityDto } from "../../model/order/dto/BulkManageOrderVisibilityDto";
+import type { BulkManageOrderStatusDto } from "../../model/order/dto/BulkManageOrderStatusDto";
 
 interface OrderState {
   orders?: Order[];
@@ -37,13 +39,23 @@ const getOrders = AppThunk<PaginatedResponse<Order>, GenericWithUserId>(
 );
 
 const updateOrder = AppThunk<void, UpdateOrderDto>(
-  "/orders/:id/update",
+  "/orders/update",
   OrderAxios.updateOrder,
 );
 
+const bulkManageOrderVisibility = AppThunk<void, BulkManageOrderVisibilityDto>(
+  "/orders/manage-visibility/bulk",
+  OrderAxios.bulkManageOrderVisibility,
+);
+
 const manageOrderStatus = AppThunk<void, ManageOrderStatusDto>(
-  "/orders/:id/manage-status",
+  "/orders/manage-status",
   OrderAxios.manageOrderStatus,
+);
+
+const bulkManageOrderStatus = AppThunk<void, BulkManageOrderStatusDto>(
+  "/orders/manage-status/bulk",
+  OrderAxios.bulkManageOrderStatus,
 );
 
 export const orderSlice = createSlice({
@@ -71,7 +83,9 @@ const orderActions = {
   createOrder,
   getOrders,
   updateOrder,
+  bulkManageOrderVisibility,
   manageOrderStatus,
+  bulkManageOrderStatus,
 };
 
 export { orderActions };

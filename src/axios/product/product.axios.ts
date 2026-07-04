@@ -1,4 +1,6 @@
+import type { BulkManageProductStatusDto } from "../../model/product/dto/BulkManageProductStatusDto";
 import type { CreateProductDto } from "../../model/product/dto/CreateProductDto";
+import type { DeleteBulkProductsDto } from "../../model/product/dto/DeleteBulkProductsDto";
 import type { DeleteProductDto } from "../../model/product/dto/DeleteProductDto";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import type { ManageProductStockDto } from "../../model/product/dto/ManageProductStockDto";
@@ -19,21 +21,32 @@ export class ProductAxios {
   }
 
   static deleteProduct(dto: DeleteProductDto) {
-    return AppAxios.delete(`/products/${dto.productId}/delete`).then(
+    return AppAxios.delete(`/products/delete`, { data: dto }).then(
+      ({ data }) => data,
+    );
+  }
+
+  static deleteBulkProducts(dto: DeleteBulkProductsDto) {
+    return AppAxios.delete(`/products/delete/bulk`, { data: dto }).then(
       ({ data }) => data,
     );
   }
 
   static updateProduct(dto: UpdateProductDto) {
-    return AppAxios.patch<void>(`/products/${dto.productId}/update`, dto).then(
+    return AppAxios.patch<void>(`/products/update`, dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static bulkManageProductStatus(dto: BulkManageProductStatusDto) {
+    return AppAxios.patch<void>(`/products/manage-status/bulk`, dto).then(
       ({ data }) => data,
     );
   }
 
   static manageProductStock(dto: ManageProductStockDto) {
-    return AppAxios.patch<void>(
-      `/products/${dto.productId}/manage-stock`,
-      dto,
-    ).then(({ data }) => data);
+    return AppAxios.patch<void>(`/products/manage-stock`, dto).then(
+      ({ data }) => data,
+    );
   }
 }

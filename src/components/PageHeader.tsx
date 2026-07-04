@@ -61,6 +61,7 @@ const ContextBar = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
   flex-wrap: wrap;
+  position: relative;
 
   padding: ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.radius.md};
@@ -128,6 +129,21 @@ const ClearFilters = styled.button`
   }
 `;
 
+const FixedContentContainer = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline-start: ${({ theme }) => theme.spacing.md};
+  padding-inline-end: ${({ theme }) => theme.spacing.sm};
+`;
+
 type PageHeaderProps = {
   title: string;
   icon: IconProp;
@@ -151,6 +167,9 @@ type PageHeaderProps = {
     activeCount: number;
     onClear?: VoidFunction;
   };
+
+  bulkActionsContent?: React.ReactNode;
+  selectedTableItemsCount?: number;
 };
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -160,6 +179,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   action,
   search,
   filters,
+  bulkActionsContent,
+  selectedTableItemsCount = 0,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -229,6 +250,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 </ClearFilters>
               ) : null}
             </Fragment>
+          ) : null}
+
+          {bulkActionsContent ? (
+            <FixedContentContainer>
+              <Text color="onPrimary" fontSize="small" fontWeight={"bold"}>
+                {selectedTableItemsCount} selected
+              </Text>
+
+              {bulkActionsContent}
+            </FixedContentContainer>
           ) : null}
         </ContextBar>
       ) : null}

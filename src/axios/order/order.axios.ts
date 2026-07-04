@@ -1,3 +1,5 @@
+import type { BulkManageOrderStatusDto } from "../../model/order/dto/BulkManageOrderStatusDto";
+import type { BulkManageOrderVisibilityDto } from "../../model/order/dto/BulkManageOrderVisibilityDto";
 import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
@@ -18,15 +20,24 @@ export class OrderAxios {
   }
 
   static updateOrder(dto: UpdateOrderDto) {
-    return AppAxios.patch<void>(`/orders/${dto.orderId}/update`, dto).then(
+    return AppAxios.patch<void>(`/orders/update`, dto).then(({ data }) => data);
+  }
+
+  static bulkManageOrderVisibility(dto: BulkManageOrderVisibilityDto) {
+    return AppAxios.patch<void>(`/orders/manage-visibility/bulk`, dto).then(
       ({ data }) => data,
     );
   }
 
   static manageOrderStatus(dto: ManageOrderStatusDto) {
-    return AppAxios.patch<void>(
-      `/orders/${dto.orderId}/manage-status`,
-      dto,
-    ).then(({ data }) => data);
+    return AppAxios.patch<void>(`/orders/manage-status`, dto).then(
+      ({ data }) => data,
+    );
+  }
+
+  static bulkManageOrderStatus(dto: BulkManageOrderStatusDto) {
+    return AppAxios.patch<void>(`/orders/manage-status/bulk`, dto).then(
+      ({ data }) => data,
+    );
   }
 }

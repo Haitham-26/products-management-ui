@@ -10,6 +10,8 @@ import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
 import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import type { ManageProductStockDto } from "../../model/product/dto/ManageProductStockDto";
+import type { DeleteBulkProductsDto } from "../../model/product/dto/DeleteBulkProductsDto";
+import type { BulkManageProductStatusDto } from "../../model/product/dto/BulkManageProductStatusDto";
 
 interface ProductState {
   products?: Product[];
@@ -38,17 +40,27 @@ const getProducts = AppThunk<PaginatedResponse<Product>, GetProductsDto>(
 );
 
 const deleteProduct = AppThunk<void, DeleteProductDto>(
-  "/products/:id/delete",
+  "/products/delete",
   ProductAxios.deleteProduct,
 );
 
+const deleteBulkProducts = AppThunk<void, DeleteBulkProductsDto>(
+  "/products/delete/bulk",
+  ProductAxios.deleteBulkProducts,
+);
+
 const updateProduct = AppThunk<void, UpdateProductDto>(
-  "/products/:id/update",
+  "/products/update",
   ProductAxios.updateProduct,
 );
 
+const bulkManageProductStatus = AppThunk<void, BulkManageProductStatusDto>(
+  "/products/manage-status/bulk",
+  ProductAxios.bulkManageProductStatus,
+);
+
 const manageProductStock = AppThunk<void, ManageProductStockDto>(
-  "/products/:id/manage-stock",
+  "/products/manage-stock",
   ProductAxios.manageProductStock,
 );
 
@@ -77,7 +89,9 @@ const productActions = {
   createProduct,
   getProducts,
   deleteProduct,
+  deleteBulkProducts,
   updateProduct,
+  bulkManageProductStatus,
   manageProductStock,
 };
 

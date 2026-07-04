@@ -38,6 +38,11 @@ import { ProductStatus } from "../../model/product/types/ProductStatus.enum";
 import { Toast } from "../../utils/Toast";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
+import { Button } from "../../components/Button";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import type { Key } from "antd/es/table/interface";
+import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
+import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
 
 const toggleStatusModalTexts = {
   [ProductStatus.DRAFT]: {
@@ -64,8 +69,25 @@ const StyledContainer = styled(Container)`
   }
 `;
 
+const BulkActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  button {
+    height: auto;
+  }
+
+  button:first-child {
+    color: ${({ theme }) => theme.colors.error};
+  }
+`;
+
 export const Products: React.FC = () => {
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+
+  const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
+
   const [productEditVisible, setProductEditVisible] = useState(false);
   const [productDeleteVisible, setProductDeleteVisible] = useState(false);
   const [productReadVisible, setProductReadVisible] = useState(false);
@@ -76,6 +98,19 @@ export const Products: React.FC = () => {
   const [productToggleStatusVisible, setProductToggleStatusVisible] =
     useState(false);
   const [productToggleStatusLoading, setProductToggleStatusLoading] =
+    useState(false);
+
+  const [productsBulkDeleteLoading, setProductsBulkDeleteLoading] =
+    useState(false);
+  const [productsBulkDeleteVisible, setProductsBulkDeleteVisible] =
+    useState(false);
+
+  const [productsBulkMoveToDraftVisible, setProductsBulkMoveToDraftVisible] =
+    useState(false);
+
+  const [productsBulkPublishVisible, setProductsBulkPublishVisible] =
+    useState(false);
+  const [productsBulkManageStatusLoading, setProductsBulkManageStatusLoading] =
     useState(false);
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
@@ -174,12 +209,12 @@ export const Products: React.FC = () => {
     setProductToggleStatusVisible(true);
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (removedItemsCount: number = 0) => {
     try {
       const meta = productsMeta;
       const currentPage = meta?.page || 1;
       const limit = meta?.limit || 10;
-      const total = (meta?.total || 1) - 1;
+      const total = (meta?.total || 1) - removedItemsCount;
 
       const totalPages = Math.ceil(total / limit);
 
@@ -228,7 +263,7 @@ export const Products: React.FC = () => {
         }),
       ).unwrap();
 
-      await fetchProducts();
+      await fetchProducts(1);
 
       setProductToggleStatusVisible(false);
       setCurrentProduct(null);
@@ -254,7 +289,7 @@ export const Products: React.FC = () => {
         productActions.deleteProduct({ productId: currentProduct._id, userId }),
       ).unwrap();
 
-      await fetchProducts();
+      await fetchProducts(1);
 
       setProductDeleteVisible(false);
       setCurrentProduct(null);
@@ -265,6 +300,102 @@ export const Products: React.FC = () => {
       Toast.apiError(e);
     } finally {
       setProductDeleteLoading(false);
+    }
+  };
+
+  const deleteBulkProducts = async () => {
+    if (!selectedRowIds.length) {
+      return;
+    }
+
+    try {
+      setProductsBulkDeleteLoading(true);
+
+      const meta = productsMeta;
+      const currentPage = meta?.page || 1;
+      const limit = meta?.limit || 10;
+      const total = (meta?.total || 1) - selectedRowIds.length;
+
+      await dispatch(
+        productActions.deleteBulkProducts({
+          productIds: selectedRowIds.map((id) => id.toString()),
+          userId,
+        }),
+      ).unwrap();
+
+      const totalPages = Math.ceil(total / limit);
+
+      const newPage = currentPage > totalPages ? totalPages : currentPage;
+
+      setSearchParams(
+        buildProductsParams(
+          {
+            ...filters,
+            meta: {
+              ...(filters?.meta || {}),
+              page: newPage,
+            },
+          },
+          searchParams,
+        ),
+        {
+          replace: true,
+        },
+      );
+
+      setProductsBulkDeleteVisible(false);
+      setSelectedRowIds([]);
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setProductsBulkDeleteLoading(false);
+    }
+  };
+
+  const manageBulkProductStatus = async (status: ProductStatus) => {
+    if (!selectedRowIds.length) {
+      return;
+    }
+
+    try {
+      setProductsBulkManageStatusLoading(true);
+
+      await dispatch(
+        productActions.bulkManageProductStatus({
+          status,
+          productIds: selectedRowIds.map((id) => id.toString()),
+          userId,
+        }),
+      ).unwrap();
+
+      const nonDraftCount = selectedRowIds.filter((id) =>
+        products.find((p) => p._id === id && p.status !== ProductStatus.DRAFT),
+      ).length;
+
+      await fetchProducts(
+        status === ProductStatus.DRAFT && !filters.showDraft
+          ? nonDraftCount
+          : 0,
+      );
+
+      if (status === ProductStatus.DRAFT) {
+        setProductsBulkMoveToDraftVisible(false);
+      } else {
+        setProductsBulkPublishVisible(false);
+      }
+      setSelectedRowIds([]);
+
+      Toast.success(
+        status === ProductStatus.DRAFT
+          ? "Products moved to draft successfully"
+          : "Products published successfully",
+      );
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setProductsBulkManageStatusLoading(false);
     }
   };
 
@@ -328,6 +459,42 @@ export const Products: React.FC = () => {
               },
             }
           : {})}
+        bulkActionsContent={
+          selectedRowIds.length ? (
+            <BulkActionsWrapper>
+              {permissions.DELETE ? (
+                <Button
+                  onClick={() => setProductsBulkDeleteVisible(true)}
+                  icon={faTrash}
+                  variant="secondary"
+                >
+                  Delete
+                </Button>
+              ) : null}
+
+              {permissions.UPDATE ? (
+                <Fragment>
+                  <Button
+                    onClick={() => setProductsBulkPublishVisible(true)}
+                    icon={faCloudArrowUp}
+                    variant="secondary"
+                  >
+                    Publish
+                  </Button>
+
+                  <Button
+                    onClick={() => setProductsBulkMoveToDraftVisible(true)}
+                    icon={faCloudArrowDown}
+                    variant="secondary"
+                  >
+                    Move to Draft
+                  </Button>
+                </Fragment>
+              ) : null}
+            </BulkActionsWrapper>
+          ) : null
+        }
+        selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
@@ -335,6 +502,12 @@ export const Products: React.FC = () => {
           loading={productsLoading}
           columns={tableColumns}
           dataSource={products}
+          rowSelection={{
+            selectedRowKeys: selectedRowIds,
+            onChange(newSelectedRowKeys) {
+              setSelectedRowIds(newSelectedRowKeys);
+            },
+          }}
           pagination={{
             current: productsMeta?.page || 1,
             pageSize: productsMeta?.limit || 10,
@@ -351,14 +524,25 @@ export const Products: React.FC = () => {
       )}
 
       {permissions.DELETE ? (
-        <WarningModal
-          title={`Are you sure you want to delete this product "${currentProduct?.name}"?`}
-          description={`You are about to remove "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this item.`}
-          open={productDeleteVisible}
-          onClose={() => setProductDeleteVisible(false)}
-          onConfirm={deleteProduct}
-          confirmLoading={productDeleteLoading}
-        />
+        <Fragment>
+          <WarningModal
+            title={`Delete "${currentProduct?.name}" product?`}
+            description={`You are about to delete "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this product.`}
+            open={productDeleteVisible}
+            onClose={() => setProductDeleteVisible(false)}
+            onConfirm={deleteProduct}
+            confirmLoading={productDeleteLoading}
+          />
+
+          <WarningModal
+            title={`Delete ${selectedRowIds.length} product(s)?`}
+            description={`You are about to delete ${selectedRowIds.length} product(s) from your inventory. You will lose all pricing, stock, and history for these products.`}
+            open={productsBulkDeleteVisible}
+            onClose={() => setProductsBulkDeleteVisible(false)}
+            onConfirm={deleteBulkProducts}
+            confirmLoading={productsBulkDeleteLoading}
+          />
+        </Fragment>
       ) : null}
 
       {permissions.CREATE ? (
@@ -408,6 +592,24 @@ export const Products: React.FC = () => {
             onClose={() => setProductStockManageVisible(false)}
             product={currentProduct}
             filters={filters}
+          />
+
+          <WarningModal
+            title={`Move ${selectedRowIds.length} product(s) to draft?`}
+            description={`You are about to move ${selectedRowIds.length} product(s) to draft. They will be hidden from the product list by default unless draft filter is enabled, and they will no longer be available for creating new orders.`}
+            open={productsBulkMoveToDraftVisible}
+            onClose={() => setProductsBulkMoveToDraftVisible(false)}
+            onConfirm={() => manageBulkProductStatus(ProductStatus.DRAFT)}
+            confirmLoading={productsBulkManageStatusLoading}
+          />
+
+          <WarningModal
+            title={`Publish ${selectedRowIds.length} product(s)?`}
+            description={`You are about to publish ${selectedRowIds.length} product(s). They will become available for creating new orders.`}
+            open={productsBulkPublishVisible}
+            onClose={() => setProductsBulkPublishVisible(false)}
+            onConfirm={() => manageBulkProductStatus(ProductStatus.PUBLISHED)}
+            confirmLoading={productsBulkManageStatusLoading}
           />
         </Fragment>
       ) : null}
