@@ -29,7 +29,7 @@ export const AppPrivateRoute: React.FC<AppPrivateRouteProps> = ({
   }
 
   if (guard && !guard.isAllowed) {
-    return <Navigate to={guard.redirect} replace={guard.replace || true} />;
+    return <Navigate to={guard.redirect} replace={guard.replace ?? true} />;
   }
 
   return component;

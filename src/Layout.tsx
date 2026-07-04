@@ -27,7 +27,7 @@ export const Layout: React.FC = () => {
   const user = useAppSelector(userSliceSelectors.selectUser);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?._id) {
       return;
     }
 

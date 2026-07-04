@@ -7,13 +7,13 @@ import { SignUpMethods } from "../../model/user/types/SignUpMethods";
 import { SettingsKeys } from "../../model/settings/types/SettingsKeys.enum";
 
 export const SecuritySettingsRoute: React.FC = () => {
-  const user = useAppSelector(userSliceSelectors.selectUser);
+  const user = useAppSelector(userSliceSelectors.selectUser)!;
 
   return (
     <AppPrivateRoute
       component={<SecuritySettings />}
       guard={{
-        isAllowed: user?.signUpMethod === SignUpMethods.EMAIL,
+        isAllowed: user.signUpMethod === SignUpMethods.EMAIL,
         redirect: `/settings/${SettingsKeys.GENERAL}`,
       }}
     />
