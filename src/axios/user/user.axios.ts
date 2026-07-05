@@ -19,7 +19,21 @@ export class UserAxios {
   }
 
   static updateUser(dto: UpdateUserDto) {
-    return AppAxios.patch("/user/update", dto).then(({ data }) => data);
+    const formData = new FormData();
+
+    Object.entries(dto).forEach(([key, value]) => {
+      if (key !== "avatar") {
+        formData.append(key, String(value));
+      } else {
+        formData.append(key, value);
+      }
+    });
+
+    return AppAxios.patch("/user/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({ data }) => data);
   }
 
   // For logged in user

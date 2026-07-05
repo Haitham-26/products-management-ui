@@ -28,6 +28,7 @@ import userSliceSelectors from "../redux/user/user.selector";
 import type { User } from "../model/user/types/User";
 import { SignUpMethods } from "../model/user/types/SignUpMethods";
 import { googleLogout } from "@react-oauth/google";
+import { UserAvatar } from "./UserAvatar";
 
 const getDropdownItems = (
   navigate: NavigateFunction,
@@ -116,13 +117,6 @@ const EndContainer = styled.div`
   gap: ${({ theme: { spacing } }) => spacing.md};
 `;
 
-const ImagePlaceholder = styled.div`
-  width: 3rem;
-  height: 3rem;
-  border-radius: ${({ theme: { radius } }) => radius.full};
-  border: ${({ theme: { colors } }) => `1px solid ${colors.border}`};
-`;
-
 export const Header: React.FC = () => {
   const [notificationsDrawerVisible, setNotificationsDrawerVisible] =
     useState(false);
@@ -169,7 +163,9 @@ export const Header: React.FC = () => {
                 trigger={["click"]}
                 menu={{ items: getDropdownItems(navigate, dispatch, user) }}
               >
-                <ImagePlaceholder />
+                <span>
+                  <UserAvatar user={user} />
+                </span>
               </Dropdown>
             </EndContainer>
           </Column>
