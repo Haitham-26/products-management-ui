@@ -12,10 +12,15 @@ import { userActions } from "../../redux/user/user.slice";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Toast } from "../../utils/Toast";
-import { Tooltip } from "antd";
 import { Text } from "../../components/Text";
 import { Breakpoints } from "../../theme/Breakpoints";
 import { UserAvatar } from "../../components/UserAvatar";
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
+import { ImageUpload } from "../../components/ImageUpload";
+import { isArray } from "lodash";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import type { ThemeType } from "../../theme/theme";
+import { Tooltip } from "antd";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -37,6 +42,49 @@ const ProfileGrid = styled.div`
   }
 `;
 
+const AvatarContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const AvatarActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const AvatarActionButton = styled(Button)<{
+  color?: keyof ThemeType["colors"];
+}>`
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+  border-radius: ${({ theme }) => theme.radius.full} !important;
+  color: ${({ theme, color }) => theme.colors[color || "textPrimary"]};
+`;
+
+const StyledImageUpload = styled(ImageUpload)`
+  .ant-upload-wrapper,
+  .ant-upload-list,
+  .ant-upload {
+    height: fit-content !important;
+    width: fit-content !important;
+    border-radius: ${({ theme }) => theme.radius.full} !important;
+  }
+
+  .ant-upload {
+    background: none !important;
+  }
+
+  .ant-upload:hover {
+    border-color: ${({ theme }) => theme.colors.border} !important;
+  }
+`;
+
 const SidebarCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -49,10 +97,6 @@ const SidebarCard = styled.div`
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
   height: 100%;
-`;
-
-const StyledAvatar = styled(UserAvatar)`
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 const FormCard = styled.div`
@@ -83,7 +127,6 @@ const Form = styled.form`
 `;
 
 const FormSectionTitle = styled(Text)`
-  margin-bottom: ${({ theme }) => theme.spacing.md};
   font-weight: 600;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   padding-bottom: ${({ theme }) => theme.spacing.sm};
@@ -100,6 +143,7 @@ export const Profile: React.FC = () => {
       name: user.name || "",
       userId: user._id,
       company: user?.company || "",
+      avatar: user.avatar || "",
     },
   });
 
@@ -108,6 +152,11 @@ export const Profile: React.FC = () => {
       setLoading(true);
 
       const dto = getValues();
+
+      dto.avatar =
+        isArray(dto.avatar) && dto.avatar?.[0]?.originFileObj
+          ? dto.avatar[0].originFileObj
+          : dto.avatar;
 
       await dispatch(userActions.updateUser(dto)).unwrap();
       await dispatch(userActions.getUserById({ userId: user._id })).unwrap();
@@ -131,7 +180,40 @@ export const Profile: React.FC = () => {
 
       <ProfileGrid>
         <SidebarCard>
-          <StyledAvatar user={user} width={"8rem"} />
+          <Controller
+            control={control}
+            name="avatar"
+            render={({ field: { value, onChange } }) => (
+              <AvatarContainer>
+                <UserAvatar
+                  user={{ ...user, avatar: isArray(value) ? value[0] : value }}
+                  width={"8rem"}
+                />
+
+                <AvatarActionsWrapper>
+                  <Tooltip title="Remove avatar">
+                    <AvatarActionButton
+                      variant="ghost"
+                      icon={faTrash}
+                      onClick={() => onChange(null)}
+                      color="error"
+                      disabled={isArray(value) ? !value.length : !value}
+                    />
+                  </Tooltip>
+
+                  <Tooltip title="Change avatar">
+                    <StyledImageUpload
+                      maxCount={1}
+                      onChange={onChange}
+                      showUploadList={false}
+                    >
+                      <AvatarActionButton variant="ghost" icon={faEdit} />
+                    </StyledImageUpload>
+                  </Tooltip>
+                </AvatarActionsWrapper>
+              </AvatarContainer>
+            )}
+          />
 
           <UserInfo>
             <Text fontWeight={"bold"}>{user.name}</Text>
@@ -144,12 +226,6 @@ export const Profile: React.FC = () => {
               {user.email}
             </Text>
           </UserInfo>
-
-          <Tooltip title="Coming soon...">
-            <Button disabled variant="secondary" style={{ width: "100%" }}>
-              Change Avatar
-            </Button>
-          </Tooltip>
         </SidebarCard>
 
         <FormCard>
