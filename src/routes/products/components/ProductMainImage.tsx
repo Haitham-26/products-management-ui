@@ -43,7 +43,7 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
   width = "1.5rem",
 }) => {
   if (url) {
-    return <StyledImage src={url} width={width} />;
+    return <StyledImage src={url} width={width} loading="lazy" />;
   }
 
   return (

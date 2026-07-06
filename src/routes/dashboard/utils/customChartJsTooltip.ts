@@ -53,6 +53,9 @@ export const customChartJsTooltip = (context: {
   if (image) {
     const img = document.createElement("img");
     img.src = image;
+
+    img.setAttribute("loading", "lazy");
+
     img.style.width = "36px";
     img.style.height = "36px";
     img.style.borderRadius = "6px";

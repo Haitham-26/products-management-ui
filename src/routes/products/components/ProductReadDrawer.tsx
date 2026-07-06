@@ -15,6 +15,8 @@ import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscou
 import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
+import { Image } from "../../../components/Image";
+import { Image as AntdImage } from "antd";
 
 const FormContainer = styled.div`
   display: flex;
@@ -182,6 +184,154 @@ const EmptyStateText = styled.p`
   font-size: 0.875rem !important;
 `;
 
+const ImageSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.glassBackground};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const ImageCountBadge = styled.span`
+  margin-left: auto;
+  background: ${({ theme }) => theme.colors.primary}15;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: ${({ theme }) => theme.radius.full};
+`;
+
+const MainImageWrapper = styled.div`
+  position: relative;
+  width: 10rem;
+  aspect-ratio: 1 / 1;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.background};
+  box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const MainImage = styled(Image)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+
+  ${MainImageWrapper}:hover & {
+    transform: scale(1.03);
+  }
+`;
+
+const MainImageTag = styled.span`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.sm};
+  inset-inline-start: ${({ theme }) => theme.spacing.sm};
+  background: rgba(0, 0, 0, 0.55);
+  color: ${({ theme }) => theme.colors.surface};
+  font-size: calc(${({ theme }) => theme.typography.small} / 1.5);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.radius.full};
+  backdrop-filter: blur(4px);
+  z-index: 1;
+`;
+
+const GalleryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: ${({ theme }) => theme.spacing.sm};
+  border-top: ${({ theme }) => `1px solid ${theme.colors.border}`};
+  padding-top: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+const GalleryImageWrapper = styled.div`
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: ${({ theme }) => theme.radius.md};
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.background};
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  .ant-image {
+    width: 100% !important;
+    height: 100% !important;
+
+    .ant-image-img {
+      border-radius: inherit !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary}60;
+    box-shadow: ${({ theme }) => theme.shadow.sm};
+  }
+`;
+
+const GalleryImage = styled(Image)`
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+
+  ${GalleryImageWrapper}:hover & {
+    transform: scale(1.08);
+  }
+`;
+
+const EmptyImageState = styled.div`
+  height: 14rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px dashed ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  svg {
+    font-size: 1.5rem;
+    opacity: 0.5;
+  }
+
+  span {
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+`;
+
+const EmptyGalleryState = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-style: italic;
+  font-size: 0.85rem;
+  padding: ${({ theme }) => theme.spacing.sm} 0;
+`;
+
 type ProductReadDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -255,6 +405,55 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             )}
           </TitleGroup>
         </GlassHeader>
+
+        <ImageSection>
+          <SectionLabel>
+            <Icon icon={faLayerGroup} />
+            <h4>Product Images</h4>
+            {!!product.galleryImages?.length && (
+              <ImageCountBadge>
+                {product.galleryImages.length + (product.mainImage ? 1 : 0)}{" "}
+                photos
+              </ImageCountBadge>
+            )}
+          </SectionLabel>
+
+          {product.mainImage?.secureUrl ? (
+            <MainImageWrapper>
+              <MainImageTag>Main</MainImageTag>
+              <MainImage
+                src={product.mainImage.secureUrl}
+                alt={product.name}
+                loading="lazy"
+                preview
+              />
+            </MainImageWrapper>
+          ) : (
+            <EmptyImageState>
+              <Icon icon={faBoxOpen} />
+              <span>No main image uploaded</span>
+            </EmptyImageState>
+          )}
+
+          {product.galleryImages?.length ? (
+            <GalleryGrid>
+              <AntdImage.PreviewGroup>
+                {product.galleryImages.map((img, i) => (
+                  <GalleryImageWrapper key={img.publicId || i}>
+                    <GalleryImage
+                      src={img.secureUrl}
+                      alt={`${product.name}-${i}`}
+                      loading="lazy"
+                      preview
+                    />
+                  </GalleryImageWrapper>
+                ))}
+              </AntdImage.PreviewGroup>
+            </GalleryGrid>
+          ) : (
+            <EmptyGalleryState>No gallery images added yet</EmptyGalleryState>
+          )}
+        </ImageSection>
 
         <InfoSection>
           <SectionLabel>
