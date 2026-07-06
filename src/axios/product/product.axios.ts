@@ -1,3 +1,4 @@
+import isString from "lodash/isString";
 import type { BulkManageProductStatusDto } from "../../model/product/dto/BulkManageProductStatusDto";
 import type { CreateProductDto } from "../../model/product/dto/CreateProductDto";
 import type { DeleteBulkProductsDto } from "../../model/product/dto/DeleteBulkProductsDto";
@@ -11,7 +12,27 @@ import AppAxios from "../AppAxios";
 
 export class ProductAxios {
   static createProduct(dto: CreateProductDto) {
-    return AppAxios.post("/products/create", dto).then(({ data }) => data);
+    const formData = new FormData();
+
+    Object.entries(dto).forEach(([key, value]) => {
+      if (key === "mainImage") {
+        formData.append(key, value);
+      } else if (key === "galleryImages") {
+        value.forEach((img: File) => {
+          formData.append("galleryImages", img);
+        });
+      } else if (!isString(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+
+    return AppAxios.post("/products/create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({ data }) => data);
   }
 
   static getProducts(dto: GetProductsDto) {

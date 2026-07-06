@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
-import ImgCrop from "antd-img-crop";
+import ImgCrop, { type ImgCropProps } from "antd-img-crop";
 
 type ImageUploadProps = UploadProps & {
   onChange: VoidCallback<UploadFile[]>;
+  showAspectSlider?: ImgCropProps["aspectSlider"];
 };
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
   onChange,
+  showAspectSlider = false,
   ...props
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -21,7 +23,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   return (
-    <ImgCrop aspect={1}>
+    <ImgCrop aspect={1} aspectSlider={showAspectSlider}>
       <Upload
         listType="picture-card"
         fileList={fileList}

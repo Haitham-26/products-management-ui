@@ -16,6 +16,8 @@ export interface Product {
   category?: Partial<Category>;
   tags?: Partial<Tag>[];
   minStock?: number;
+  mainImage?: string;
+  galleryImages?: string[];
   createdAt: string;
   updatedAt: string;
 }

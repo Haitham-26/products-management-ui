@@ -12,6 +12,8 @@ import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons/faLayerGroup";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { faTicket } from "@fortawesome/free-solid-svg-icons/faTicket";
+import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
+import { faImages } from "@fortawesome/free-solid-svg-icons/faImages";
 import type { CreateProductDto } from "../../../model/product/dto/CreateProductDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { productActions } from "../../../redux/product/products.slice";
@@ -32,11 +34,17 @@ import type { ProductDiscount } from "../../../model/product/types/ProductDiscou
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { SearchSelect } from "../../../components/SearchSelect";
 import { categoryActions } from "../../../redux/category/categories.slice";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
 import { Text } from "../../../components/Text";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import { checkPermissions } from "../../../utils/checkPermissions";
 import { Info } from "../../../components/Info";
+import { ImageUpload } from "../../../components/ImageUpload";
+import { isArray } from "lodash";
+import type { UploadFile } from "antd";
+
+const MAX_GALLERY_IMAGES_COUNT = 5;
 
 const FormContainer = styled.div`
   display: flex;
@@ -110,6 +118,55 @@ const PriceInputsWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
+const ImagesGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ImageUploadCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+`;
+
+const ImageCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ImageCardTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  span {
+    font-weight: bold;
+  }
+`;
+
+const ImageCountBadge = styled.span<{ complete?: boolean }>`
+  font-size: ${({ theme }) => theme.typography.small};
+  font-weight: bold;
+  padding: ${({ theme }) =>
+    `calc(${theme.spacing.sm} / 2) ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.radius.full};
+  white-space: nowrap;
+  color: ${({ theme, complete }) =>
+    complete ? theme.colors.success : theme.colors.textSecondary};
+  background: ${({ theme, complete }) =>
+    complete ? `${theme.colors.success}15` : `${theme.colors.border}80`};
+`;
+
+const ImageHelperText = styled(Text)`
+  line-height: 1.4;
+`;
+
 type ProductCreateDrawerProps = {
   open: boolean;
   onClose: () => void;
@@ -146,14 +203,22 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         categoryId: "",
         tags: [],
         minStock: settings?.inventory?.defaultMinStock || 10,
+        // @ts-expect-error because the ImageUpload component expects an array
+        mainImage: [],
+        galleryImages: [],
       },
     });
 
-  const [discountValue, discountType, price] = watch([
-    "discount.value",
-    "discount.type",
-    "price",
-  ]);
+  const [discountValue, discountType, price, mainImage, watchedGalleryImages] =
+    watch([
+      "discount.value",
+      "discount.type",
+      "price",
+      "mainImage",
+      "galleryImages",
+    ]);
+
+  const galleryImages = watchedGalleryImages || [];
 
   const categoriesOptions = useMemo(
     () => categories.map((c) => ({ label: c.name, value: c._id })),
@@ -242,6 +307,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const handleSubmission = async () => {
     try {
       setLoading(true);
+
       const data = getValues();
 
       const payload = {
@@ -256,6 +322,16 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
           : undefined,
         tags: data.tags || [],
         minStock: Number(data.minStock),
+        ...(isArray(data.mainImage) && data.mainImage?.[0]?.originFileObj
+          ? { mainImage: data.mainImage[0].originFileObj }
+          : {}),
+        ...(isArray(data.galleryImages)
+          ? {
+              galleryImages: data.galleryImages
+                .filter((img) => img.originFileObj)
+                .map((img) => img.originFileObj),
+            }
+          : {}),
       };
 
       await dispatch(
@@ -268,8 +344,11 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
       reset();
       onClose();
+
+      Toast.success("Product created successfully");
     } catch (e) {
       Toast.apiError(e);
+      console.log(e);
     } finally {
       setLoading(false);
     }
@@ -347,6 +426,82 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
           />
         </FormSection>
 
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faImages} />
+            <Text>Images</Text>
+          </SectionLabel>
+
+          <ImagesGrid>
+            <ImageUploadCard>
+              <ImageCardHeader>
+                <ImageCardTitle>
+                  <Icon icon={faImage} size="sm" color={"textSecondary"} />
+                  <span>Cover Image</span>
+                </ImageCardTitle>
+                <ImageCountBadge complete={!isEmpty(mainImage)}>
+                  {!isEmpty(mainImage) ? "Added" : "Recommended"}
+                </ImageCountBadge>
+              </ImageCardHeader>
+
+              <ImageHelperText fontSize="small" color="textSecondary">
+                This is the main photo customers see in listings and search
+                results. A square, well-lit shot works best.
+              </ImageHelperText>
+
+              <Controller
+                control={control}
+                name="mainImage"
+                render={({ field: { value = [], onChange } }) => (
+                  <ImageUpload
+                    maxCount={1}
+                    fileList={value as UploadFile[]}
+                    onChange={onChange}
+                  >
+                    {isEmpty(value) ? "Upload Cover Image" : null}
+                  </ImageUpload>
+                )}
+              />
+            </ImageUploadCard>
+
+            <ImageUploadCard>
+              <ImageCardHeader>
+                <ImageCardTitle>
+                  <Icon icon={faImages} size="sm" color="textSecondary" />
+                  <span>Gallery</span>
+                </ImageCardTitle>
+                <ImageCountBadge
+                  complete={galleryImages.length >= MAX_GALLERY_IMAGES_COUNT}
+                >
+                  {galleryImages.length} / {MAX_GALLERY_IMAGES_COUNT}
+                </ImageCountBadge>
+              </ImageCardHeader>
+
+              <ImageHelperText fontSize="small" color="textSecondary">
+                Add extra angles, packaging, or lifestyle shots to help
+                customers decide.
+              </ImageHelperText>
+
+              <Controller
+                control={control}
+                name="galleryImages"
+                render={({ field: { value = [], onChange } }) => (
+                  <ImageUpload
+                    multiple
+                    maxCount={MAX_GALLERY_IMAGES_COUNT}
+                    onChange={onChange}
+                    fileList={value}
+                    showAspectSlider
+                  >
+                    {value?.length < MAX_GALLERY_IMAGES_COUNT
+                      ? "Upload Gallery Images"
+                      : null}
+                  </ImageUpload>
+                )}
+              />
+            </ImageUploadCard>
+          </ImagesGrid>
+        </FormSection>
         <FormSection>
           <SectionLabel>
             <Icon icon={faCoins} />
