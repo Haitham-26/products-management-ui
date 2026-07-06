@@ -21,5 +21,6 @@ export interface GetDashboardStatsResponseDto {
     _id: string;
     name: string;
     totalSold: number;
+    image?: string;
   }>;
 }
