@@ -25,6 +25,7 @@ import type { Settings } from "../../../model/settings/types/Settings";
 import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
+import { Image } from "../../../components/Image";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -63,21 +64,33 @@ const StockAlert = styled.div<{ danger?: boolean }>`
 
   width: fit-content;
   padding: 4px 8px;
-
   border-radius: ${({ theme }) => theme.radius.full};
-
   background: ${({ theme, danger }) =>
     danger ? `${theme.colors.error}15` : `${theme.colors.warning}15`};
-
   color: ${({ theme, danger }) =>
     danger ? theme.colors.error : theme.colors.warning};
-
   border: 1px solid
     ${({ theme, danger }) =>
       danger ? `${theme.colors.error}35` : `${theme.colors.warning}35`};
-
   font-size: 0.72rem;
   font-weight: 700;
+`;
+
+const NameContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  .ant-image {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .ant-image-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
 `;
 
 type FNType = VoidCallback<Product>;
@@ -178,6 +191,14 @@ export const createProductsTableColumns = ({
       width: 220,
       ellipsis: true,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (name: string, record) => (
+        <NameContainer>
+          {record.mainImage?.secureUrl ? (
+            <Image src={record.mainImage.secureUrl} />
+          ) : null}
+          <span>{name}</span>
+        </NameContainer>
+      ),
     },
 
     {

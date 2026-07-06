@@ -1,4 +1,5 @@
 import type { Category } from "../../category/types/Category";
+import type { CloudinaryImage } from "../../shared/types/CloudinaryImage";
 import type { Tag } from "../../tag/types/Tag";
 import type { ProductDiscount } from "./ProductDiscount";
 import type { ProductStatus } from "./ProductStatus.enum";
@@ -16,8 +17,8 @@ export interface Product {
   category?: Partial<Category>;
   tags?: Partial<Tag>[];
   minStock?: number;
-  mainImage?: string;
-  galleryImages?: string[];
+  mainImage?: CloudinaryImage;
+  galleryImages?: CloudinaryImage[];
   createdAt: string;
   updatedAt: string;
 }
