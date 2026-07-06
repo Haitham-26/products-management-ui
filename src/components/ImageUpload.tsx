@@ -28,6 +28,27 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         listType="picture-card"
         fileList={fileList}
         onChange={localOnChange}
+        customRequest={({ onSuccess }) => {
+          setTimeout(() => onSuccess?.("ok"), 0);
+        }}
+        onPreview={async (file) => {
+          const src = file.url ?? file.thumbUrl;
+
+          if (!src) {
+            return;
+          }
+
+          if (src.startsWith("data:")) {
+            const blob = await fetch(src).then((res) => res.blob());
+            const blobUrl = URL.createObjectURL(blob);
+
+            window.open(blobUrl, "_blank");
+
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+          } else {
+            window.open(src, "_blank");
+          }
+        }}
         {...props}
       />
     </ImgCrop>

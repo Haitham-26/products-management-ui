@@ -14,6 +14,6 @@ export interface UpdateProductDto extends GenericWithUserId {
   categoryId?: string;
   tags?: string[];
   minStock?: Product["minStock"];
-  mainImage?: string | UploadFile;
-  galleryImages?: (string | UploadFile)[];
+  mainImage?: UploadFile;
+  galleryImages?: UploadFile[];
 }

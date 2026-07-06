@@ -502,6 +502,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             </ImageUploadCard>
           </ImagesGrid>
         </FormSection>
+
         <FormSection>
           <SectionLabel>
             <Icon icon={faCoins} />

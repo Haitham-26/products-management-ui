@@ -11,7 +11,7 @@ import type { PaginatedResponse } from "../../model/shared/meta/PaginatedRespons
 import AppAxios from "../AppAxios";
 
 export class ProductAxios {
-  static createProduct(dto: CreateProductDto) {
+  static handleFormData(dto: CreateProductDto | UpdateProductDto) {
     const formData = new FormData();
 
     Object.entries(dto).forEach(([key, value]) => {
@@ -27,6 +27,12 @@ export class ProductAxios {
         formData.append(key, String(value));
       }
     });
+
+    return formData;
+  }
+
+  static createProduct(dto: CreateProductDto) {
+    const formData = this.handleFormData(dto);
 
     return AppAxios.post("/products/create", formData, {
       headers: {
@@ -54,9 +60,13 @@ export class ProductAxios {
   }
 
   static updateProduct(dto: UpdateProductDto) {
-    return AppAxios.patch<void>(`/products/update`, dto).then(
-      ({ data }) => data,
-    );
+    const formData = this.handleFormData(dto);
+
+    return AppAxios.patch<void>(`/products/update`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({ data }) => data);
   }
 
   static bulkManageProductStatus(dto: BulkManageProductStatusDto) {
