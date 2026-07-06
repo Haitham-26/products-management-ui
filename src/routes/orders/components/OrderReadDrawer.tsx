@@ -13,6 +13,7 @@ import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
+import { ProductMainImage } from "../../products/components/ProductMainImage";
 
 const FormContainer = styled.div`
   display: flex;
@@ -81,12 +82,21 @@ const SectionLabel = styled.div`
   }
 `;
 
+const OrderLineItemsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const OrderLineItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: ${({ theme }) => theme.spacing.sm} 0;
+  padding: ${({ theme }) => theme.spacing.md} 0;
   border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
+
+  &:first-child {
+    padding-top: 0;
+  }
 
   &:last-child {
     border-bottom: none;
@@ -99,6 +109,9 @@ const ItemInfo = styled.div`
 `;
 
 const ItemTitle = styled.span`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
   color: ${({ theme }) => theme.colors.textPrimary};
   font-weight: 600;
   margin-bottom: ${({ theme }) => theme.spacing.md};
@@ -230,30 +243,38 @@ export const OrderReadDrawer: React.FC<Props> = ({
             <h4>Purchased Items</h4>
           </SectionLabel>
 
-          {order.items.map((item, index) => (
-            <OrderLineItem key={`${item.productId}-${index}`}>
-              <ItemInfo>
-                <ItemTitle>{item.productName}</ItemTitle>
-                <ValueText>
-                  {item.quantity} ×
-                  {` ${stringWithCurrencyCode(
-                    settings.currency,
-                    item.priceAtPurchase,
-                  )}`}
-                </ValueText>
-                {renderDiscount(item)}
-              </ItemInfo>
+          <OrderLineItemsWrapper>
+            {order.items.map((item, index) => (
+              <OrderLineItem key={`${item.productId}-${index}`}>
+                <ItemInfo>
+                  <ItemTitle>
+                    <ProductMainImage
+                      url={item.productMainImage}
+                      width="2rem"
+                    />
+                    {item.productName}
+                  </ItemTitle>
+                  <ValueText>
+                    {item.quantity} ×
+                    {` ${stringWithCurrencyCode(
+                      settings.currency,
+                      item.priceAtPurchase,
+                    )}`}
+                  </ValueText>
+                  {renderDiscount(item)}
+                </ItemInfo>
 
-              <PriceColumn>
-                <ItemTotal>
-                  {stringWithCurrencyCode(
-                    settings.currency,
-                    item.finalPrice * item.quantity,
-                  )}
-                </ItemTotal>
-              </PriceColumn>
-            </OrderLineItem>
-          ))}
+                <PriceColumn>
+                  <ItemTotal>
+                    {stringWithCurrencyCode(
+                      settings.currency,
+                      item.finalPrice * item.quantity,
+                    )}
+                  </ItemTotal>
+                </PriceColumn>
+              </OrderLineItem>
+            ))}
+          </OrderLineItemsWrapper>
 
           <GrandTotalSection>
             <ItemTitle>Total Amount</ItemTitle>

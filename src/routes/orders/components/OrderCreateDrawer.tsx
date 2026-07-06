@@ -34,6 +34,7 @@ import { productActions } from "../../../redux/product/products.slice";
 import { SearchSelect } from "../../../components/SearchSelect";
 import { checkPermissions } from "../../../utils/checkPermissions";
 import { Info } from "../../../components/Info";
+import { ProductMainImage } from "../../products/components/ProductMainImage";
 
 const FormContainer = styled.div`
   display: flex;
@@ -166,6 +167,12 @@ const Hr = styled.hr`
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
+const ProductNameContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
 type OrderCreateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -246,7 +253,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           return {
             label: (
               <ProductOptionContainer>
-                <span>{product.name}</span>
+                <ProductNameContainer>
+                  <ProductMainImage url={product.mainImage?.secureUrl} />
+
+                  <span>{product.name}</span>
+                </ProductNameContainer>
 
                 {isOutOfStock ? (
                   <StockAlert status={ProductStockStatus.OUT_OF_STOCK}>
