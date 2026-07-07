@@ -15,6 +15,29 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  const onPreviw = async (file: UploadFile) => {
+    try {
+      const src = file.url ?? file.thumbUrl;
+
+      if (!src) {
+        return;
+      }
+
+      if (src.startsWith("data:")) {
+        const blob = await fetch(src).then((res) => res.blob());
+        const blobUrl = URL.createObjectURL(blob);
+
+        window.open(blobUrl, "_blank");
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60 * 1000);
+      } else {
+        window.open(src, "_blank");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const localOnChange: UploadProps["onChange"] = ({
     fileList: newFileList,
   }) => {
@@ -31,24 +54,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         customRequest={({ onSuccess }) => {
           setTimeout(() => onSuccess?.("ok"), 0);
         }}
-        onPreview={async (file) => {
-          const src = file.url ?? file.thumbUrl;
-
-          if (!src) {
-            return;
-          }
-
-          if (src.startsWith("data:")) {
-            const blob = await fetch(src).then((res) => res.blob());
-            const blobUrl = URL.createObjectURL(blob);
-
-            window.open(blobUrl, "_blank");
-
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
-          } else {
-            window.open(src, "_blank");
-          }
-        }}
+        onPreview={onPreviw}
         {...props}
       />
     </ImgCrop>
