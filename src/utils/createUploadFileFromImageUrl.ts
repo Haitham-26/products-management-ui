@@ -1,8 +1,6 @@
 import type { UploadFile } from "antd";
 
-export async function createUploadFileFromImageUrl(
-  url?: string,
-): Promise<UploadFile | null> {
+export default function createUploadFileFromImageUrl(url?: string) {
   if (!url) {
     return null;
   }
@@ -12,5 +10,5 @@ export async function createUploadFileFromImageUrl(
     name: "image.jpg",
     status: "done",
     url,
-  };
+  } as UploadFile;
 }

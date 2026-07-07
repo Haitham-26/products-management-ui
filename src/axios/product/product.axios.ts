@@ -9,6 +9,7 @@ import type { UpdateProductDto } from "../../model/product/dto/UpdateProductDto"
 import type { Product } from "../../model/product/types/Product";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
+import type { UploadFile } from "antd";
 
 export class ProductAxios {
   static handleFormData(dto: CreateProductDto | UpdateProductDto) {
@@ -18,9 +19,13 @@ export class ProductAxios {
       if (key === "mainImage") {
         formData.append(key, value);
       } else if (key === "galleryImages") {
-        value.forEach((img: File) => {
-          formData.append("galleryImages", img);
-        });
+        if ((value as UploadFile[]).length) {
+          value.forEach((img: File) => {
+            formData.append(key, img);
+          });
+        } else {
+          formData.append(key, JSON.stringify([]));
+        }
       } else if (!isString(value)) {
         formData.append(key, JSON.stringify(value));
       } else {
@@ -32,7 +37,7 @@ export class ProductAxios {
   }
 
   static createProduct(dto: CreateProductDto) {
-    const formData = this.handleFormData(dto);
+    const formData = ProductAxios.handleFormData(dto);
 
     return AppAxios.post("/products/create", formData, {
       headers: {
@@ -60,7 +65,7 @@ export class ProductAxios {
   }
 
   static updateProduct(dto: UpdateProductDto) {
-    const formData = this.handleFormData(dto);
+    const formData = ProductAxios.handleFormData(dto);
 
     return AppAxios.patch<void>(`/products/update`, formData, {
       headers: {

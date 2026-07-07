@@ -42,7 +42,7 @@ import { faImages } from "@fortawesome/free-solid-svg-icons/faImages";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import isEmpty from "lodash/isEmpty";
 import type { UploadFile } from "antd";
-import { createUploadFileFromImageUrl } from "../../../utils/createUploadFileFromImageUrl";
+import createUploadFileFromImageUrl from "../../../utils/createUploadFileFromImageUrl";
 import { isArray } from "lodash";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
@@ -293,6 +293,12 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
       const dto = getValues();
 
+      const getUploadImageValue = (image?: UploadFile | UploadFile[]) => {
+        const _image = isArray(image) ? image[0] : image;
+
+        return (_image?.originFileObj ?? _image?.url) || null;
+      };
+
       const payload = {
         ...dto,
         price: Number(dto.price),
@@ -302,6 +308,10 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           : undefined,
         tags: dto.tags || [],
         minStock: dto.minStock ? Number(dto.minStock) : undefined,
+        mainImage: getUploadImageValue(dto.mainImage),
+        galleryImages: dto.galleryImages?.map((img) =>
+          getUploadImageValue(img),
+        ),
       };
 
       await dispatch(
@@ -327,41 +337,35 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       return;
     }
 
-    const initForm = async () => {
-      const mainImage = await createUploadFileFromImageUrl(
-        product?.mainImage?.secureUrl,
-      );
+    const mainImage = createUploadFileFromImageUrl(
+      product?.mainImage?.secureUrl,
+    ) as UploadFile;
 
-      const galleryImages = (
-        product.galleryImages?.length
-          ? await Promise.all(
-              product.galleryImages.map((img) =>
-                createUploadFileFromImageUrl(img.secureUrl),
-              ),
-            )
-          : []
-      ) as UploadFile[];
+    const galleryImages = (
+      product.galleryImages?.length
+        ? product.galleryImages.map((img) =>
+            createUploadFileFromImageUrl(img.secureUrl),
+          )
+        : []
+    ) as UploadFile[];
 
-      reset({
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        productId: product._id,
-        quantity: product.quantity || 0,
-        discount: product.discount || {
-          type: ProductDiscountTypes.PERCENTAGE,
-          value: 0,
-        },
-        categoryId: product.category?._id,
-        tags: product?.tags?.map((t) => t._id) || [],
-        minStock: product?.minStock,
-        mainImage: mainImage || undefined,
-        galleryImages,
-        userId,
-      });
-    };
-
-    initForm();
+    reset({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      productId: product._id,
+      quantity: product.quantity || 0,
+      discount: product.discount || {
+        type: ProductDiscountTypes.PERCENTAGE,
+        value: 0,
+      },
+      categoryId: product.category?._id,
+      tags: product?.tags?.map((t) => t._id) || [],
+      minStock: product?.minStock,
+      mainImage: mainImage || undefined,
+      galleryImages,
+      userId,
+    });
   }, [product, reset, open, userId]);
 
   useEffect(() => {
