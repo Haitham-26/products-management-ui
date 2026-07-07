@@ -1,3 +1,4 @@
+import isString from "lodash/isString";
 import type { BulkManageProductStatusDto } from "../../model/product/dto/BulkManageProductStatusDto";
 import type { CreateProductDto } from "../../model/product/dto/CreateProductDto";
 import type { DeleteBulkProductsDto } from "../../model/product/dto/DeleteBulkProductsDto";
@@ -8,10 +9,41 @@ import type { UpdateProductDto } from "../../model/product/dto/UpdateProductDto"
 import type { Product } from "../../model/product/types/Product";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
+import type { UploadFile } from "antd";
 
 export class ProductAxios {
+  static handleFormData(dto: CreateProductDto | UpdateProductDto) {
+    const formData = new FormData();
+
+    Object.entries(dto).forEach(([key, value]) => {
+      if (key === "mainImage") {
+        formData.append(key, value);
+      } else if (key === "galleryImages") {
+        if ((value as UploadFile[]).length) {
+          value.forEach((img: File) => {
+            formData.append(key, img);
+          });
+        } else {
+          formData.append(key, JSON.stringify([]));
+        }
+      } else if (!isString(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+
+    return formData;
+  }
+
   static createProduct(dto: CreateProductDto) {
-    return AppAxios.post("/products/create", dto).then(({ data }) => data);
+    const formData = ProductAxios.handleFormData(dto);
+
+    return AppAxios.post("/products/create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({ data }) => data);
   }
 
   static getProducts(dto: GetProductsDto) {
@@ -33,9 +65,13 @@ export class ProductAxios {
   }
 
   static updateProduct(dto: UpdateProductDto) {
-    return AppAxios.patch<void>(`/products/update`, dto).then(
-      ({ data }) => data,
-    );
+    const formData = ProductAxios.handleFormData(dto);
+
+    return AppAxios.patch<void>(`/products/update`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }).then(({ data }) => data);
   }
 
   static bulkManageProductStatus(dto: BulkManageProductStatusDto) {

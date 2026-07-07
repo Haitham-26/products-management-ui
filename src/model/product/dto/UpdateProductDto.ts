@@ -1,3 +1,4 @@
+import type { UploadFile } from "antd";
 import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { Product } from "../types/Product";
 import type { ProductDiscount } from "../types/ProductDiscount";
@@ -13,4 +14,6 @@ export interface UpdateProductDto extends GenericWithUserId {
   categoryId?: string;
   tags?: string[];
   minStock?: Product["minStock"];
+  mainImage?: UploadFile;
+  galleryImages?: UploadFile[];
 }

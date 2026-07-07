@@ -37,6 +37,15 @@ import debounce from "lodash/debounce";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import { checkPermissions } from "../../../utils/checkPermissions";
 import { Info } from "../../../components/Info";
+import { ImageUpload } from "../../../components/ImageUpload";
+import { faImages } from "@fortawesome/free-solid-svg-icons/faImages";
+import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
+import isEmpty from "lodash/isEmpty";
+import type { UploadFile } from "antd";
+import createUploadFileFromImageUrl from "../../../utils/createUploadFileFromImageUrl";
+import { isArray } from "lodash";
+
+const MAX_GALLERY_IMAGES_COUNT = 5;
 
 const FormContainer = styled.div`
   display: flex;
@@ -109,6 +118,55 @@ const PriceBadge = styled.div`
   }
 `;
 
+const ImagesGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ImageUploadCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+`;
+
+const ImageCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ImageCardTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  span {
+    font-weight: bold;
+  }
+`;
+
+const ImageCountBadge = styled.span<{ complete?: boolean }>`
+  font-size: ${({ theme }) => theme.typography.small};
+  font-weight: bold;
+  padding: ${({ theme }) =>
+    `calc(${theme.spacing.sm} / 2) ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.radius.full};
+  white-space: nowrap;
+  color: ${({ theme, complete }) =>
+    complete ? theme.colors.success : theme.colors.textSecondary};
+  background: ${({ theme, complete }) =>
+    complete ? `${theme.colors.success}15` : `${theme.colors.border}80`};
+`;
+
+const ImageHelperText = styled(Text)`
+  line-height: 1.4;
+`;
+
 type ProductUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
@@ -138,10 +196,12 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
 
-  const [discountValue, discountType, price] = watch([
+  const [discountValue, discountType, price, mainImage, galleryImages] = watch([
     "discount.value",
     "discount.type",
     "price",
+    "mainImage",
+    "galleryImages",
   ]);
 
   const tagsPermissions = checkPermissions(user, "tags");
@@ -230,7 +290,14 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
     try {
       setLoading(true);
+
       const dto = getValues();
+
+      const getUploadImageValue = (image?: UploadFile | UploadFile[]) => {
+        const _image = isArray(image) ? image[0] : image;
+
+        return (_image?.originFileObj ?? _image?.url) || null;
+      };
 
       const payload = {
         ...dto,
@@ -241,6 +308,10 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           : undefined,
         tags: dto.tags || [],
         minStock: dto.minStock ? Number(dto.minStock) : undefined,
+        mainImage: getUploadImageValue(dto.mainImage),
+        galleryImages: dto.galleryImages?.map((img) =>
+          getUploadImageValue(img),
+        ),
       };
 
       await dispatch(
@@ -252,6 +323,8 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
       });
 
       onClose();
+
+      Toast.success("Product updated successfully");
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -260,23 +333,39 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   };
 
   useEffect(() => {
-    if (product && open) {
-      reset({
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        productId: product._id,
-        quantity: product.quantity || 0,
-        discount: product.discount || {
-          type: ProductDiscountTypes.PERCENTAGE,
-          value: 0,
-        },
-        categoryId: product.category?._id,
-        tags: product?.tags?.map((t) => t._id) || [],
-        minStock: product?.minStock,
-        userId,
-      });
+    if (!product || !open) {
+      return;
     }
+
+    const mainImage = createUploadFileFromImageUrl(
+      product?.mainImage?.secureUrl,
+    ) as UploadFile;
+
+    const galleryImages = (
+      product.galleryImages?.length
+        ? product.galleryImages.map((img) =>
+            createUploadFileFromImageUrl(img.secureUrl),
+          )
+        : []
+    ) as UploadFile[];
+
+    reset({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      productId: product._id,
+      quantity: product.quantity || 0,
+      discount: product.discount || {
+        type: ProductDiscountTypes.PERCENTAGE,
+        value: 0,
+      },
+      categoryId: product.category?._id,
+      tags: product?.tags?.map((t) => t._id) || [],
+      minStock: product?.minStock,
+      mainImage: mainImage || undefined,
+      galleryImages,
+      userId,
+    });
   }, [product, reset, open, userId]);
 
   useEffect(() => {
@@ -344,6 +433,86 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
               <Textarea title="Description" rows={3} {...field} />
             )}
           />
+        </FormSection>
+
+        <FormSection>
+          <SectionLabel>
+            <Icon icon={faImages} />
+            <Text>Images</Text>
+          </SectionLabel>
+
+          <ImagesGrid>
+            <ImageUploadCard>
+              <ImageCardHeader>
+                <ImageCardTitle>
+                  <Icon icon={faImage} size="sm" color={"textSecondary"} />
+                  <span>Cover Image</span>
+                </ImageCardTitle>
+                <ImageCountBadge complete={!isEmpty(mainImage)}>
+                  {!isEmpty(mainImage) ? "Added" : "Recommended"}
+                </ImageCountBadge>
+              </ImageCardHeader>
+
+              <ImageHelperText fontSize="small" color="textSecondary">
+                This is the main photo customers see in listings and search
+                results. A square, well-lit shot works best.
+              </ImageHelperText>
+
+              <Controller
+                control={control}
+                name="mainImage"
+                render={({ field: { value = [], onChange } }) => (
+                  <ImageUpload
+                    maxCount={1}
+                    fileList={!isArray(value) ? [value as UploadFile] : value}
+                    onChange={onChange}
+                  >
+                    {isEmpty(value) ? "Upload Cover Image" : null}
+                  </ImageUpload>
+                )}
+              />
+            </ImageUploadCard>
+
+            <ImageUploadCard>
+              <ImageCardHeader>
+                <ImageCardTitle>
+                  <Icon icon={faImages} size="sm" color="textSecondary" />
+                  <span>Gallery</span>
+                </ImageCardTitle>
+                <ImageCountBadge
+                  complete={Boolean(
+                    galleryImages?.length &&
+                    galleryImages.length >= MAX_GALLERY_IMAGES_COUNT,
+                  )}
+                >
+                  {galleryImages?.length || 0} / {MAX_GALLERY_IMAGES_COUNT}
+                </ImageCountBadge>
+              </ImageCardHeader>
+
+              <ImageHelperText fontSize="small" color="textSecondary">
+                Add extra angles, packaging, or lifestyle shots to help
+                customers decide.
+              </ImageHelperText>
+
+              <Controller
+                control={control}
+                name="galleryImages"
+                render={({ field: { value = [], onChange } }) => (
+                  <ImageUpload
+                    multiple
+                    maxCount={MAX_GALLERY_IMAGES_COUNT}
+                    onChange={onChange}
+                    fileList={value}
+                    showAspectSlider
+                  >
+                    {value?.length < MAX_GALLERY_IMAGES_COUNT
+                      ? "Upload Gallery Images"
+                      : null}
+                  </ImageUpload>
+                )}
+              />
+            </ImageUploadCard>
+          </ImagesGrid>
         </FormSection>
 
         <FormSection>
