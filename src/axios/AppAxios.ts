@@ -1,4 +1,8 @@
-import axios from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+
+type RetriableAxiosRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
 
 const AppAxios = axios.create({
   baseURL: import.meta.env.VITE_BASE_API_URL,
@@ -8,11 +12,28 @@ const AppAxios = axios.create({
   },
 });
 
+const RefreshAxios = axios.create({
+  baseURL: import.meta.env.VITE_BASE_API_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+let refreshRequest: Promise<string> | null = null;
+
+const clearAuthStorage = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("persist:root");
+};
+
 AppAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -23,12 +44,59 @@ AppAxios.interceptors.request.use(
 
 AppAxios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      | RetriableAxiosRequestConfig
+      | undefined;
+
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/auth/refresh-token"
+    ) {
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        console.error("Unauthorized.");
+        clearAuthStorage();
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true;
+
+      try {
+        if (!refreshRequest) {
+          refreshRequest = RefreshAxios.post<{
+            accessToken: string;
+            refreshToken: string;
+          }>("/auth/refresh-token", { refreshToken })
+            .then(({ data }) => {
+              localStorage.setItem("accessToken", data.accessToken);
+              localStorage.setItem("refreshToken", data.refreshToken);
+              return data.accessToken;
+            })
+            .finally(() => {
+              refreshRequest = null;
+            });
+        }
+
+        const token = await refreshRequest;
+
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return AppAxios(originalRequest);
+      } catch (refreshError) {
+        console.error("Unauthorized.");
+        clearAuthStorage();
+        return Promise.reject(refreshError);
+      }
+    }
+
     if (error.response?.status === 401) {
       console.error("Unauthorized.");
-      localStorage.removeItem("token");
-      localStorage.removeItem("persist:root");
+      clearAuthStorage();
     }
+
     return Promise.reject(error);
   },
 );
