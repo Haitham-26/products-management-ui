@@ -12,7 +12,7 @@ export const AppPublicRoute: React.FC<AppPublicRouteProps> = ({
   redirect,
   replace,
 }) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   if (token) {
     return <Navigate to="/dashboard" replace />;

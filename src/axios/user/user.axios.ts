@@ -38,10 +38,9 @@ export class UserAxios {
 
   // For logged in user
   static resetPassword(dto: ResetPasswordDto) {
-    return AppAxios.patch<Pick<LoginResponseDto, "token">>(
-      "/user/reset-password",
-      dto,
-    ).then(({ data }) => data);
+    return AppAxios.patch<
+      Pick<LoginResponseDto, "accessToken" | "refreshToken">
+    >("/user/reset-password", dto).then(({ data }) => data);
   }
 
   static login(dto: LoginDto) {

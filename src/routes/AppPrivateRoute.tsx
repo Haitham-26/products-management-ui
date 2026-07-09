@@ -18,7 +18,7 @@ export const AppPrivateRoute: React.FC<AppPrivateRouteProps> = ({
   replace,
   guard,
 }) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   if (!token) {
     return <Navigate to="/login" replace />;

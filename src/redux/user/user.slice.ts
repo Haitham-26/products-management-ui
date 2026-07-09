@@ -58,7 +58,7 @@ const signUpResendToken = AppThunk<void, SignUpResendTokenDto>(
 );
 
 const resetPassword = AppThunk<
-  Pick<LoginResponseDto, "token">,
+  Pick<LoginResponseDto, "accessToken" | "refreshToken">,
   ResetPasswordDto
 >("/user/reset-password", UserAxios.resetPassword);
 
@@ -76,9 +76,17 @@ const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
 );
 
 const logout = AppThunk<void, void>("/logout", async () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
   localStorage.removeItem("persist:root");
 });
+
+const storeAuthTokens = (
+  tokens: Pick<LoginResponseDto, "accessToken" | "refreshToken">,
+) => {
+  localStorage.setItem("accessToken", tokens.accessToken);
+  localStorage.setItem("refreshToken", tokens.refreshToken);
+};
 
 export const userSlice = createSlice({
   name: "user",
@@ -87,20 +95,20 @@ export const userSlice = createSlice({
   extraReducers: ({ addCase }) => {
     addCase(login.fulfilled, (state, action) => {
       state.user = action.payload.user;
-      localStorage.setItem("token", action.payload.token);
+      storeAuthTokens(action.payload);
     });
     addCase(googleLogin.fulfilled, (state, action) => {
       state.user = action.payload.user;
-      localStorage.setItem("token", action.payload.token);
+      storeAuthTokens(action.payload);
     });
     addCase(signUpToken.fulfilled, (state, action) => {
       state.user = action.payload.user;
-      localStorage.setItem("token", action.payload.token);
+      storeAuthTokens(action.payload);
     });
     // The server updates the token and sends it back
     // so the logged in users tokens becomes invalid
-    addCase(resetPassword.fulfilled, (state, action) => {
-      localStorage.setItem("token", action.payload.token);
+    addCase(resetPassword.fulfilled, (_state, action) => {
+      storeAuthTokens(action.payload);
     });
     addCase(getUserById.fulfilled, (state, action) => {
       state.user = action.payload;
