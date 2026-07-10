@@ -4,6 +4,7 @@ import { Spinner } from "./Spinner";
 import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { Icon } from "./Icon";
 import type { ThemeType } from "../theme/theme";
+import isString from "lodash/isString";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
 
@@ -59,7 +60,7 @@ const SpinnerWrapper = styled.div`
   position: absolute;
   inset: 0;
   z-index: 2;
-  background-color: inherit;
+  background: inherit;
   border-radius: inherit;
   display: flex;
   align-items: center;
@@ -83,11 +84,25 @@ export const Button: React.FC<ButtonProps> = ({
   spinnerColor = "surface",
   ...props
 }) => {
+  const getSpinnerColor: () => keyof ThemeType["colors"] = () => {
+    switch (true) {
+      case Boolean(spinnerColor.length && isString(spinnerColor)):
+        return spinnerColor;
+      case variant === "primary":
+      case variant === "danger":
+        return "onPrimary";
+      case variant === "secondary":
+        return "textPrimary";
+      default:
+        return "primary";
+    }
+  };
+
   return (
     <StyledButton variant={variant} {...props}>
       {loading ? (
         <SpinnerWrapper>
-          <Spinner color={spinnerColor} />
+          <Spinner color={getSpinnerColor()} />
         </SpinnerWrapper>
       ) : null}
       {icon ? <Icon icon={icon} size={iconSize} /> : null}

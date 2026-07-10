@@ -87,7 +87,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
 
         <Actions variantColor={variantColor}>
           <Button
-            variant="ghost"
+            variant="secondary"
             onClick={isFunction(onCancel) ? onCancel : onClose}
             loading={cancelLoading}
           >

@@ -6,8 +6,8 @@ import { appActions } from "./redux/app/app.slice";
 import last from "lodash/last";
 import { Toast } from "./utils/Toast";
 import { Fragment, useState } from "react";
-import usersPermissionsSliceSelectors from "./redux/users-permissions/users-permissions.selector";
-import { usersPermissionsActions } from "./redux/users-permissions/users-permissions.slice";
+import organizationSliceSelectors from "./redux/organization/organization.selector";
+import { organizationActions } from "./redux/organization/organization.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
 import { userActions } from "./redux/user/user.slice";
@@ -24,7 +24,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
     appSliceSelectors.selectLastSeenInvitationId,
   );
   const invitations = useAppSelector(
-    usersPermissionsSliceSelectors.selectJoinOrgInvitations,
+    organizationSliceSelectors.selectJoinOrgInvitations,
   );
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -55,7 +55,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       setAcceptLoading(true);
 
       await dispatch(
-        usersPermissionsActions.acceptInvitation({
+        organizationActions.acceptInvitation({
           invitationId: lastInvitation._id,
           userId,
         }),
@@ -84,14 +84,12 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       setDeclineLoading(true);
 
       await dispatch(
-        usersPermissionsActions.declineInvitation({
+        organizationActions.declineInvitation({
           invitationId: lastInvitation._id,
           userId,
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getJoinOrgInvitatios({ userId }),
-      ).unwrap();
+      await dispatch(organizationActions.getJoinOrgInvitations()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success("Invitation declined successfully");

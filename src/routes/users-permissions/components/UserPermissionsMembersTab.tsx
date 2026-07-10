@@ -17,8 +17,8 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
 import { faPersonCircleXmark } from "@fortawesome/free-solid-svg-icons/faPersonCircleXmark";
 import { Button } from "../../../components/Button";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
-import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
+import { organizationActions } from "../../../redux/organization/organization.slice";
+import organizationSliceSelectors from "../../../redux/organization/organization.selector";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 import type { User } from "../../../model/user/types/User";
 import { Toast } from "../../../utils/Toast";
@@ -153,10 +153,10 @@ export const UserPermissionsMembersTab: React.FC<
   const [saveLoading, setSaveLoading] = useState(false);
 
   const members = useAppSelector(
-    usersPermissionsSliceSelectors.selectOrganizationMembers,
+    organizationSliceSelectors.selectOrganizationMembers,
   );
   const membersLoading = useAppSelector(
-    usersPermissionsSliceSelectors.selectOrganizationMembersLoading,
+    organizationSliceSelectors.selectOrganizationMembersLoading,
   );
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrganization = !useAppSelector(userSliceSelectors.selectIsOrgMember);
@@ -184,11 +184,9 @@ export const UserPermissionsMembersTab: React.FC<
       const dto = getValues();
 
       await dispatch(
-        usersPermissionsActions.manageMembersPermissions(dto),
+        organizationActions.manageMembersPermissions(dto),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
-      ).unwrap();
+      await dispatch(organizationActions.getOrganizationMembers()).unwrap();
 
       Toast.success("Members permissions updated successfully");
     } catch (e) {
@@ -208,14 +206,12 @@ export const UserPermissionsMembersTab: React.FC<
       setRemoveMemberLoading(true);
 
       await dispatch(
-        usersPermissionsActions.removeMember({
+        organizationActions.removeMember({
           userId: user._id,
           memberId: selectedMember._id!,
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
-      ).unwrap();
+      await dispatch(organizationActions.getOrganizationMembers()).unwrap();
 
       setSelectedMember(null);
 
@@ -240,10 +236,8 @@ export const UserPermissionsMembersTab: React.FC<
   }, [members, user._id, reset]);
 
   useEffect(() => {
-    dispatch(
-      usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
-    );
-  }, [dispatch, user._id]);
+    dispatch(organizationActions.getOrganizationMembers());
+  }, [dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {

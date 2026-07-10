@@ -84,7 +84,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         {!isAvatarEmpty ? (
           <Image src={src} />
         ) : (
-          user.name!.charAt(0)?.toUpperCase()
+          user.name?.charAt(0)?.toUpperCase()
         )}
       </Avatar>
     </AvatarWrapper>

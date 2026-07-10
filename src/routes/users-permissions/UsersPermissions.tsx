@@ -15,7 +15,7 @@ import userSliceSelectors from "../../redux/user/user.selector";
 import { useEffect, useState } from "react";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { Toast } from "../../utils/Toast";
-import { usersPermissionsActions } from "../../redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "../../redux/organization/organization.slice";
 import { userActions } from "../../redux/user/user.slice";
 import { WarningModal } from "../../components/WarningModal";
 import { useNavigate } from "react-router-dom";
@@ -33,13 +33,12 @@ export const UsersPermissions: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
-  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
   const leaveOrg = async () => {
     try {
       setLeaveOrgLoading(true);
 
-      await dispatch(usersPermissionsActions.leaveOrg({ userId })).unwrap();
+      await dispatch(organizationActions.leaveOrg()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
       navigate("/dashboard", { replace: true });

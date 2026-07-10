@@ -1,11 +1,11 @@
 import type React from "react";
 import { Drawer } from "../Drawer";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import usersPermissionsSliceSelectors from "../../redux/users-permissions/users-permissions.selector";
+import organizationSliceSelectors from "../../redux/organization/organization.selector";
 import { Text } from "../Text";
 import { JoinOrgInvitationCard } from "./invitations/JoinOrgInvitationCard";
 import { useEffect } from "react";
-import { usersPermissionsActions } from "../../redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "../../redux/organization/organization.slice";
 import userSliceSelectors from "../../redux/user/user.selector";
 
 type NotificationsDrawerProps = {
@@ -20,13 +20,13 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   const dispatch = useAppDispatch();
 
   const invitations = useAppSelector(
-    usersPermissionsSliceSelectors.selectJoinOrgInvitations,
+    organizationSliceSelectors.selectJoinOrgInvitations,
   );
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
   useEffect(() => {
     if (open) {
-      dispatch(usersPermissionsActions.getJoinOrgInvitatios({ userId }));
+      dispatch(organizationActions.getJoinOrgInvitations());
     }
   }, [open, dispatch, userId]);
 

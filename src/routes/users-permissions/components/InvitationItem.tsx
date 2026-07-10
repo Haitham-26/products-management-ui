@@ -1,15 +1,15 @@
 import type React from "react";
 import styled from "styled-components";
-import type { OwnerInvitation } from "../../../model/user/users-permissions/types/OwnerInvitation";
+import type { OwnerInvitation } from "../../../model/user/organization/types/OwnerInvitation";
 import { Text } from "../../../components/Text";
 import { Button } from "../../../components/Button";
 import { formatDate } from "../../../utils/Date";
-import { InvitationStatus } from "../../../model/user/users-permissions/types/InvitationStatus.enum";
+import { InvitationStatus } from "../../../model/user/organization/types/InvitationStatus.enum";
 import { Toast } from "../../../utils/Toast";
 import { useState } from "react";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "../../../redux/organization/organization.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 
 const Card = styled.div`
@@ -167,16 +167,14 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
       setReinviteLoading(true);
 
       await dispatch(
-        usersPermissionsActions.inviteMembers({
+        organizationActions.inviteMembers({
           userId,
           // @ts-expect-error the emails type is { content: string }[] just
           // to get the useFieldArray to work in another file
           emails: [invitation.inviteeEmail],
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getOwnerInvitations({ userId }),
-      ).unwrap();
+      await dispatch(organizationActions.getOwnerInvitations()).unwrap();
 
       Toast.success("Invitation re-sent successfully");
     } catch (e) {
