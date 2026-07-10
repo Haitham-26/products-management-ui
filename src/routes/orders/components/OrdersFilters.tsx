@@ -64,11 +64,6 @@ const PopoverSeparator = styled.hr`
   border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
-// const Row = styled.div`
-//   display: flex;
-//   gap: ${({ theme }) => theme.spacing.xs};
-// `;
-
 const RangeRow = styled.div`
   display: flex;
   align-items: center;

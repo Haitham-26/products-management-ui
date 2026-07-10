@@ -88,7 +88,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
         }
 
         if (
-          order.status === OrderStatus.CANCELLED &&
+          order.status === OrderStatus.CANCELED &&
           s === OrderStatus.CONFIRMED
         ) {
           return false;
@@ -146,14 +146,14 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
             <div>
               <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
               <span> → </span>
-              <StatusLabel type={OrderStatus.CANCELLED}>Cancelled</StatusLabel>
+              <StatusLabel type={OrderStatus.CANCELED}>Canceled</StatusLabel>
             </div>
             <Hint>Stock will be restored (+)</Hint>
           </RuleRow>
 
           <RuleRow>
             <div>
-              <StatusLabel type={OrderStatus.CANCELLED}>Cancelled</StatusLabel>
+              <StatusLabel type={OrderStatus.CANCELED}>Canceled</StatusLabel>
               <span> → </span>
               <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
             </div>
