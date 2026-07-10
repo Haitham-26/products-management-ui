@@ -1,11 +1,10 @@
 import type { UpdateSettingsDto } from "../../model/settings/dto/UpdateSettingsDto";
 import type { Settings } from "../../model/settings/types/Settings";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import AppAxios from "../AppAxios";
 
 export class SettingsAxios {
-  static getSettings(dto: GenericWithUserId) {
-    return AppAxios.post<Settings>("/settings", dto).then(({ data }) => data);
+  static getSettings() {
+    return AppAxios.get<Settings>("/settings").then(({ data }) => data);
   }
 
   static updateSettings(dto: UpdateSettingsDto) {

@@ -289,7 +289,7 @@ export const Orders: React.FC = () => {
         userId,
       }),
     );
-    dispatch(settingsActions.getSettings({ userId }));
+    dispatch(settingsActions.getSettings());
 
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
