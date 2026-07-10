@@ -57,7 +57,7 @@ export class OrganizationAxios {
   }
 
   static getOrganizationMembers() {
-    return AppAxios.get<Partial<User>[]>("/organization/owner/members").then(
+    return AppAxios.get<Partial<User>[]>("/organization/members").then(
       ({ data }) => data,
     );
   }

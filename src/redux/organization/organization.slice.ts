@@ -59,7 +59,7 @@ const acceptInvitation = AppThunk<void, GenericWithInvitationId>(
 );
 
 const getOrganizationMembers = AppThunk<Partial<User>[], void>(
-  "/organization/owner/members",
+  "/organization/members",
   OrganizationAxios.getOrganizationMembers,
 );
 
