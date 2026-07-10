@@ -6,7 +6,6 @@ import { UserAxios } from "../../axios/user/user.axios";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
 import type { User } from "../../model/user/types/User";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
 import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPasswordTokenDto";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
@@ -23,10 +22,7 @@ const initialState: UserState = {
   user: undefined,
 };
 
-const getUserById = AppThunk<User, GenericWithUserId>(
-  "/user",
-  UserAxios.getUserById,
-);
+const getUserById = AppThunk<User, void>("/user", UserAxios.getUserById);
 
 const updateUser = AppThunk<void, UpdateUserDto>(
   "/user/update",

@@ -1,4 +1,3 @@
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { LoginResponseDto } from "../../model/shared/dto/LoginResponseDto";
 import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
@@ -14,8 +13,8 @@ import type { User } from "../../model/user/types/User";
 import AppAxios from "../AppAxios";
 
 export class UserAxios {
-  static getUserById(dto: GenericWithUserId) {
-    return AppAxios.post<User>("/user", dto).then(({ data }) => data);
+  static getUserById() {
+    return AppAxios.get<User>("/user").then(({ data }) => data);
   }
 
   static updateUser(dto: UpdateUserDto) {
