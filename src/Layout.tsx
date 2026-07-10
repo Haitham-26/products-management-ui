@@ -31,7 +31,7 @@ export const Layout: React.FC = () => {
       return;
     }
 
-    dispatch(userActions.getUserById({ userId: user._id }));
+    dispatch(userActions.getUserById());
 
     if (!user.roles.includes(UserRoles.MEMBER)) {
       dispatch(

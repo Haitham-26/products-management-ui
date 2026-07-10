@@ -64,7 +64,7 @@ export const Dashboard: React.FC = () => {
   const { products, orders, lowStockProducts, outOfStockProducts } = stats;
 
   useEffect(() => {
-    dispatch(dashboardActions.getDashboardStats({ userId }));
+    dispatch(dashboardActions.getDashboardStats());
   }, [dispatch, userId]);
 
   return (

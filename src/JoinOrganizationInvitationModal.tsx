@@ -60,7 +60,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
           userId,
         }),
       ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       navigate("/dashboard", { replace: true });
 
@@ -92,7 +92,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       await dispatch(
         usersPermissionsActions.getJoinOrgInvitatios({ userId }),
       ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success("Invitation declined successfully");
     } catch (e) {

@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
 import { userActions } from "../user/user.slice";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { GetDashboardStatsResponseDto } from "../../model/dashboard/dto/GetDashboardStatsResponseDto";
 import { DashboardAxios } from "../../axios/dashboard/dashboard.axios";
 
@@ -35,10 +34,10 @@ const initialState: DashboardState = {
   statsLoading: false,
 };
 
-const getDashboardStats = AppThunk<
-  GetDashboardStatsResponseDto,
-  GenericWithUserId
->("/dashboard", DashboardAxios.getDashboardStats);
+const getDashboardStats = AppThunk<GetDashboardStatsResponseDto, void>(
+  "/dashboard",
+  DashboardAxios.getDashboardStats,
+);
 
 export const dashboardSlice = createSlice({
   name: "dashboard",

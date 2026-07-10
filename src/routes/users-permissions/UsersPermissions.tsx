@@ -40,7 +40,7 @@ export const UsersPermissions: React.FC = () => {
       setLeaveOrgLoading(true);
 
       await dispatch(usersPermissionsActions.leaveOrg({ userId })).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       navigate("/dashboard", { replace: true });
 
@@ -54,8 +54,8 @@ export const UsersPermissions: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(userActions.getUserById({ userId }));
-  }, [dispatch, userId]);
+    dispatch(userActions.getUserById());
+  }, [dispatch]);
 
   return (
     <Container>

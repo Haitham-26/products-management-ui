@@ -55,7 +55,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       await dispatch(
         usersPermissionsActions.getJoinOrgInvitatios({ userId }),
       ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success("Invitation declined successfully");
     } catch (e) {
@@ -76,7 +76,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
           userId,
         }),
       ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success(
         "Invitation accepted successfully! You are now a member of the organization",
