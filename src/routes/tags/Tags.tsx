@@ -28,7 +28,6 @@ import {
 } from "./utils/tagUtils";
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
-import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { TagsFilters } from "./components/TagsFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
@@ -36,6 +35,8 @@ import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { Toast } from "../../utils/Toast";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -66,6 +67,7 @@ export const Tags: React.FC = () => {
   const [tagsBulkDeleteVisible, setTagsBulkDeleteVisible] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
@@ -277,8 +279,8 @@ export const Tags: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faTags}
-        title="Tags"
+        icon={appRoutes.tags.icon}
+        title={t(appRoutes.tags.titleKey)}
         {...(permissions.CREATE
           ? {
               action: {

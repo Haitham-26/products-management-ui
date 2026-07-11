@@ -60,6 +60,30 @@
     "resendIn": "يمكنك طلب رمز جديد خلال",
     "success": "تم إرسال رمز التحقق بنجاح!"
   },
+  "dashboard": {
+    "title": "لوحة التحكم"
+  },
+  "products": {
+    "title": "المنتجات"
+  },
+  "orders": {
+    "title": "الطلبات"
+  },
+  "categories": {
+    "title": "التصنيفات"
+  },
+  "tags": {
+    "title": "الوسوم"
+  },
+  "settings": {
+    "title": "الإعدادات"
+  },
+  "profile": {
+    "title": "الملف الشخصي"
+  },
+  "usersPermissions": {
+    "title": "المستخدمين والصلاحيات"
+  },
   "common": {
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",

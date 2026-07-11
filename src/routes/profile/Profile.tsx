@@ -2,7 +2,6 @@ import type React from "react";
 import { styled } from "styled-components";
 import { Container } from "../../components/Container";
 import { PageHeader } from "../../components/PageHeader";
-import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { Fragment, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Controller, useForm } from "react-hook-form";
@@ -21,6 +20,7 @@ import isArray from "lodash/isArray";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import type { ThemeType } from "../../theme/theme";
 import { Tooltip } from "antd";
+import { appRoutes } from "../../utils/appRoutes";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -176,7 +176,10 @@ export const Profile: React.FC = () => {
 
   return (
     <Container>
-      <PageHeader icon={faUser} title="Profile Settings" />
+      <PageHeader
+        icon={appRoutes.profile.icon}
+        title={appRoutes.profile.title}
+      />
 
       <ProfileGrid>
         <SidebarCard>

@@ -30,7 +30,6 @@ import {
   parseProductsFiltersFromParams,
 } from "./utils/productUtils";
 import { PageHeader } from "../../components/PageHeader";
-import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import { ProductStockManageModal } from "./components/ProductStockManageModal";
@@ -43,6 +42,8 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import type { Key } from "antd/es/table/interface";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const toggleStatusModalTexts = {
   [ProductStatus.DRAFT]: {
@@ -129,6 +130,7 @@ export const Products: React.FC = () => {
   );
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const permissions = checkPermissions(user, "products");
 
@@ -429,8 +431,8 @@ export const Products: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faBox}
-        title="Products"
+        icon={appRoutes.products.icon}
+        title={t(appRoutes.products.titleKey)}
         {...(permissions.CREATE
           ? {
               action: {

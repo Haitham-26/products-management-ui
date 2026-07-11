@@ -60,6 +60,30 @@
     "resendIn": "You can request a new code in",
     "success": "Verification code sent successfully!"
   },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "products": {
+    "title": "Products"
+  },
+  "orders": {
+    "title": "Orders"
+  },
+  "categories": {
+    "title": "Categories"
+  },
+  "tags": {
+    "title": "Tags"
+  },
+  "settings": {
+    "title": "Settings"
+  },
+  "profile": {
+    "title": "Profile"
+  },
+  "usersPermissions": {
+    "title": "Users & Permissions"
+  },
   "common": {
     "email": "Email",
     "password": "Password",

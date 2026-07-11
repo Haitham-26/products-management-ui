@@ -1,7 +1,6 @@
 import type React from "react";
 import styled from "styled-components";
 import { Outlet } from "react-router-dom";
-import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
 import { faSliders } from "@fortawesome/free-solid-svg-icons/faSliders";
 import { Container } from "../../../components/Container";
@@ -13,6 +12,8 @@ import type { User } from "../../../model/user/types/User";
 import { useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { SignUpMethods } from "../../../model/user/types/SignUpMethods";
+import { appRoutes } from "../../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const Layout = styled.div`
   display: flex;
@@ -32,6 +33,8 @@ const getSections = (user: User) => [
 ];
 
 export const SettingsLayout: React.FC = () => {
+  const { t } = useTranslation();
+
   const user = useAppSelector(userSliceSelectors.selectUser);
 
   const sections = getSections(user);
@@ -39,13 +42,15 @@ export const SettingsLayout: React.FC = () => {
   return (
     <Container>
       <PageHeader
-        icon={faGear}
-        title="Settings"
-        subtitle="Manage your system configuration"
+        icon={appRoutes.settings.icon}
+        title={t(appRoutes.settings.titleKey)}
       />
 
       <Layout>
-        <PageSidebar pageRoute="settings" sections={sections} />
+        <PageSidebar
+          pageRoute={appRoutes.settings.path.replace("/", "")}
+          sections={sections}
+        />
 
         <Content>
           <Outlet />

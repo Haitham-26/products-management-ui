@@ -14,6 +14,7 @@ export const AntdConfigProvider: React.FC<AntdConfigProviderProps> = ({
       theme={{
         token: {
           colorPrimary: theme.colors.primary,
+          fontFamily: '"Inter", "IBM Plex Sans Arabic", sans-serif',
         },
         components: {
           Menu: {

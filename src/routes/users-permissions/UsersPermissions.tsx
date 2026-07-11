@@ -1,7 +1,6 @@
 import type React from "react";
 import { Container } from "../../components/Container";
 import { PageHeader } from "../../components/PageHeader";
-import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { Tabs } from "../../components/Tabs";
 import { Icon } from "../../components/Icon";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
@@ -21,6 +20,7 @@ import { WarningModal } from "../../components/WarningModal";
 import { useNavigate } from "react-router-dom";
 import { UsersPermissionsOrgTab } from "./components/UsersPermissionsOrgTab";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
+import { appRoutes } from "../../utils/appRoutes";
 
 export const UsersPermissions: React.FC = () => {
   const [inviteMembersModalVisible, setInviteMembersModalVisible] =
@@ -59,8 +59,8 @@ export const UsersPermissions: React.FC = () => {
   return (
     <Container>
       <PageHeader
-        title="Users & Permissions"
-        icon={faUsersGear}
+        title={appRoutes.usersPermissions.title}
+        icon={appRoutes.usersPermissions.icon}
         action={
           !isMember
             ? {

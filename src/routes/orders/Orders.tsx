@@ -29,7 +29,6 @@ import { OrderCreateDrawer } from "./components/OrderCreateDrawer";
 import { OrderUpdateDrawer } from "./components/OrderUpdateDrawer";
 import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
@@ -44,6 +43,8 @@ import { OrderVisibility } from "../../model/order/types/OrderVisibility.enum";
 import { Toast } from "../../utils/Toast";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { OrderBulkManageStatusModal } from "./components/OrderBulkManageStatusModal";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -105,6 +106,7 @@ export const Orders: React.FC = () => {
     useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const orders = useAppSelector(orderSliceSelectors.selectOrders);
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
@@ -297,8 +299,8 @@ export const Orders: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faCartShopping}
-        title="Orders"
+        icon={appRoutes.orders.icon}
+        title={t(appRoutes.orders.titleKey)}
         {...(permissions.CREATE
           ? {
               action: {

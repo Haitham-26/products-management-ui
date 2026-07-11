@@ -27,7 +27,6 @@ import {
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
-import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
 import { CategoriesFilters } from "./components/CategoriesFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { checkPermissions } from "../../utils/checkPermissions";
@@ -36,6 +35,8 @@ import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { Toast } from "../../utils/Toast";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -67,6 +68,7 @@ export const Categories: React.FC = () => {
     useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const categoriesLoading = useAppSelector(
@@ -280,8 +282,8 @@ export const Categories: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faFolder}
-        title="Categories"
+        icon={appRoutes.categories.icon}
+        title={t(appRoutes.categories.titleKey)}
         {...(permissions.CREATE
           ? {
               action: {
