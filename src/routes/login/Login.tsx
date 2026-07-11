@@ -11,6 +11,7 @@ import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
+import { useTranslation } from "react-i18next";
 
 const PasswordWrapper = styled.div`
   display: flex;
@@ -56,6 +57,7 @@ export const Login: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation(undefined, { keyPrefix: "login" });
   const { control, handleSubmit, getValues } = useForm<LoginDto>({
     defaultValues: {
       email: "",
@@ -80,7 +82,7 @@ export const Login: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Welcome back"
+      title={t("title")}
       description="Sign in to manage your products"
       formItems={[
         <Controller
