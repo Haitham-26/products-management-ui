@@ -1,5 +1,20 @@
 {
   "login": {
-    "title": "Welcome Back"
+    "title": "Welcome Back",
+    "description": "Sign in to manage your products and orders",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account? <0>Create an account</0>",
+    "success": "Logged in successfully!"
+  },
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "or": "or"
+  },
+  "errors": {
+    "general": {
+      "required": "The field is required."
+    }
   }
 }
