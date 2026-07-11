@@ -1,6 +1,6 @@
 import type React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -11,6 +11,7 @@ import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
+import { Trans, useTranslation } from "react-i18next";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "signup-token-last-resend-time";
 
@@ -29,6 +30,7 @@ export const SignUpToken: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { state } = useLocation();
   const { control, handleSubmit, getValues } = useForm<SignUpTokenDto>({
     defaultValues: {
@@ -53,7 +55,7 @@ export const SignUpToken: React.FC = () => {
 
       navigate("/dashboard", { replace: true });
 
-      Toast.success("Account verified successfully");
+      Toast.success(t("signup.token.success"));
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -70,12 +72,13 @@ export const SignUpToken: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Confirm your email"
+      title={t("signup.token.title")}
       description={
-        <Fragment>
-          We sent the verification code to your email
-          <BoldSpan> "{state?.email}"</BoldSpan>, please enter it below.
-        </Fragment>
+        <Trans
+          i18nKey="signup.token.description"
+          components={[<BoldSpan />]}
+          values={{ email: state?.email }}
+        />
       }
       formItems={[
         <TokenInputContainer>
@@ -83,14 +86,14 @@ export const SignUpToken: React.FC = () => {
             control={control}
             name="token"
             rules={{
-              required: "Token is required",
+              required: t("errors.general.required"),
               minLength: {
                 value: 6,
-                message: "Token must be at 6 characters",
+                message: t("errors.token.length"),
               },
               maxLength: {
                 value: 6,
-                message: "Token must be at 6 characters",
+                message: t("errors.token.length"),
               },
             }}
             render={({ field, fieldState }) => (
@@ -106,8 +109,9 @@ export const SignUpToken: React.FC = () => {
             onResend={resendToken}
           />
         </TokenInputContainer>,
+
         <Button loading={loading} onClick={handleSubmit(onSignUp)}>
-          Verify & Continue
+          {t("signup.token.submit")}
         </Button>,
       ]}
     />

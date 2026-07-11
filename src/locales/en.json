@@ -6,6 +6,28 @@
     "noAccount": "Don't have an account? <0>Create an account</0>",
     "success": "Logged in successfully!"
   },
+  "signup": {
+    "email": {
+      "title": "Welcome Back",
+      "description": "Create an account and start managing your products and orders",
+      "name": {
+        "placeholder": "Enter your name"
+      },
+      "company": {
+        "title": "Company Name",
+        "placeholder": "Enter your company name"
+      },
+      "submit": "Create Account",
+      "hasAccount": "Already have an account? <0>Sign in</0>",
+      "success": "We sent the verification code to your email, please check your inbox."
+    },
+    "token": {
+      "title": "Confirm Email",
+      "description": "We sent the verification code to your email <0>\"{{email}}\"</0>, please check your inbox and enter the code below.",
+      "submit": "Verify & Continue",
+      "success": "Account verified successfully!"
+    }
+  },
   "forgotPassword": {
     "email": {
       "title": "Reset Password",
@@ -44,7 +66,8 @@
     "login": "Login",
     "or": "or",
     "continue": "Continue",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "name": "Name"
   },
   "errors": {
     "general": {
