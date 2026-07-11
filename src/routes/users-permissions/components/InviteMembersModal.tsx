@@ -8,10 +8,10 @@ import { Modal } from "../../../components/Modal";
 import { Tooltip } from "antd";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import type { InviteMembersDto } from "../../../model/user/users-permissions/dto/InviteMembersDto";
+import type { InviteMembersDto } from "../../../model/user/organization/dto/InviteMembersDto";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { REGEXES } from "../../../utils/String";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "../../../redux/organization/organization.slice";
 import { last } from "lodash";
 
 const ModalContent = styled.div`
@@ -254,16 +254,14 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
       setLoading(true);
 
       await dispatch(
-        usersPermissionsActions.inviteMembers({
+        organizationActions.inviteMembers({
           userId,
           // @ts-expect-error the emails type is { content: string }[] just
           // to get the useFieldArray to work
           emails: emails.map((e) => e.content),
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getOwnerInvitations({ userId }),
-      ).unwrap();
+      await dispatch(organizationActions.getOwnerInvitations()).unwrap();
 
       localOnClose();
       Toast.success("Invitations sent successfully");

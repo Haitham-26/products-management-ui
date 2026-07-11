@@ -1,35 +1,35 @@
 import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 
-const usersPermissionsState = (state: RootState) => state.usersPermissions;
+const organizationState = (state: RootState) => state.organization;
 
 const selectMembers = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.members || [],
 );
 const selectOwnerInvitations = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.ownerInvitations || [],
 );
 const selectJoinOrgInvitations = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.joinOrgInvitations || [],
 );
 const selectOwnerInvitationsLoading = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.ownerInvitationsLoading,
 );
 
 const selectOrganizationMembers = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.members || [],
 );
 const selectOrganizationMembersLoading = createSelector(
-  usersPermissionsState,
+  organizationState,
   (state) => state?.membersLoading,
 );
 
-const usersPermissionsSliceSelectors = {
+const organizationSliceSelectors = {
   selectMembers,
   selectOwnerInvitations,
   selectOrganizationMembers,
@@ -38,4 +38,4 @@ const usersPermissionsSliceSelectors = {
   selectOrganizationMembersLoading,
 };
 
-export default usersPermissionsSliceSelectors;
+export default organizationSliceSelectors;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Text } from "../../Text";
 import { Button } from "../../Button";
-import type { JoinOrgInvitation } from "../../../model/user/users-permissions/types/JoinOrgInvitation";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import type { JoinOrgInvitation } from "../../../model/user/organization/types/JoinOrgInvitation";
+import { organizationActions } from "../../../redux/organization/organization.slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
@@ -47,15 +47,13 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       setDeclineLoading(true);
 
       await dispatch(
-        usersPermissionsActions.declineInvitation({
+        organizationActions.declineInvitation({
           invitationId: invitation._id,
           userId,
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getJoinOrgInvitatios({ userId }),
-      ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(organizationActions.getJoinOrgInvitations()).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success("Invitation declined successfully");
     } catch (e) {
@@ -71,12 +69,12 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       setAcceptLoading(true);
 
       await dispatch(
-        usersPermissionsActions.acceptInvitation({
+        organizationActions.acceptInvitation({
           invitationId: invitation._id,
           userId,
         }),
       ).unwrap();
-      await dispatch(userActions.getUserById({ userId })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success(
         "Invitation accepted successfully! You are now a member of the organization",

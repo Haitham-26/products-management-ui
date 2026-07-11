@@ -23,7 +23,7 @@ import { Button } from "./Button";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { NotificationsDrawer } from "./notifications/NotificationsDrawer";
 import { useState } from "react";
-import usersPermissionsSliceSelectors from "../redux/users-permissions/users-permissions.selector";
+import organizationSliceSelectors from "../redux/organization/organization.selector";
 import userSliceSelectors from "../redux/user/user.selector";
 import type { User } from "../model/user/types/User";
 import { SignUpMethods } from "../model/user/types/SignUpMethods";
@@ -125,7 +125,7 @@ export const Header: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const joinOrgInvitations = useAppSelector(
-    usersPermissionsSliceSelectors.selectJoinOrgInvitations,
+    organizationSliceSelectors.selectJoinOrgInvitations,
   );
   const user = useAppSelector(userSliceSelectors.selectUser)!;
 

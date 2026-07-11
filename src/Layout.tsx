@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import { userActions } from "./redux/user/user.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { UserRoles } from "./model/user/types/UserRoles.enum";
-import { usersPermissionsActions } from "./redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "./redux/organization/organization.slice";
 
 const Container = styled.div`
   display: flex;
@@ -31,12 +31,10 @@ export const Layout: React.FC = () => {
       return;
     }
 
-    dispatch(userActions.getUserById({ userId: user._id }));
+    dispatch(userActions.getUserById());
 
     if (!user.roles.includes(UserRoles.MEMBER)) {
-      dispatch(
-        usersPermissionsActions.getJoinOrgInvitatios({ userId: user._id }),
-      );
+      dispatch(organizationActions.getJoinOrgInvitations());
     }
     // eslint-disable-next-line
   }, [user?._id, dispatch]);

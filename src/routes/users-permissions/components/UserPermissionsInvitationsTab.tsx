@@ -2,14 +2,14 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
-import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
+import { organizationActions } from "../../../redux/organization/organization.slice";
+import organizationSliceSelectors from "../../../redux/organization/organization.selector";
 import { Empty } from "../../../components/Empty";
 import { Button } from "../../../components/Button";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { Text } from "../../../components/Text";
 import { InvitationItem } from "./InvitationItem";
-import type { OwnerInvitation } from "../../../model/user/users-permissions/types/OwnerInvitation";
+import type { OwnerInvitation } from "../../../model/user/organization/types/OwnerInvitation";
 import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import styled from "styled-components";
@@ -36,10 +36,10 @@ export const UserPermissionsInvitationsTab: React.FC<
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const invitations = useAppSelector(
-    usersPermissionsSliceSelectors.selectOwnerInvitations,
+    organizationSliceSelectors.selectOwnerInvitations,
   );
   const invitationsLoading = useAppSelector(
-    usersPermissionsSliceSelectors.selectOwnerInvitationsLoading,
+    organizationSliceSelectors.selectOwnerInvitationsLoading,
   );
 
   const onCancelInvitation = async () => {
@@ -51,14 +51,12 @@ export const UserPermissionsInvitationsTab: React.FC<
       setCancelInvitationLoading(true);
 
       await dispatch(
-        usersPermissionsActions.cancelInvitation({
+        organizationActions.cancelInvitation({
           invitationId: selectedInvitation._id,
           userId,
         }),
       ).unwrap();
-      await dispatch(
-        usersPermissionsActions.getOwnerInvitations({ userId }),
-      ).unwrap();
+      await dispatch(organizationActions.getOwnerInvitations()).unwrap();
 
       setSelectedInvitation(null);
 
@@ -72,7 +70,7 @@ export const UserPermissionsInvitationsTab: React.FC<
   };
 
   useEffect(() => {
-    dispatch(usersPermissionsActions.getOwnerInvitations({ userId }));
+    dispatch(organizationActions.getOwnerInvitations());
   }, [dispatch, userId]);
 
   if (!invitations.length && !invitationsLoading) {

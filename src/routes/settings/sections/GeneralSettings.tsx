@@ -39,7 +39,7 @@ export const GeneralSettings: React.FC = () => {
       setUpdateLoading(true);
 
       await dispatch(settingsActions.updateSettings(getValues())).unwrap();
-      await dispatch(settingsActions.getSettings({ userId }));
+      await dispatch(settingsActions.getSettings()).unwrap();
 
       Toast.success("Settings updated successfully");
     } catch (e) {
@@ -51,7 +51,7 @@ export const GeneralSettings: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(settingsActions.getSettings({ userId }));
+    dispatch(settingsActions.getSettings());
   }, [dispatch, userId]);
 
   return (

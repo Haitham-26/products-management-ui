@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Text } from "../../../components/Text";
 import { Button } from "../../../components/Button";
-import usersPermissionsSliceSelectors from "../../../redux/users-permissions/users-permissions.selector";
+import organizationSliceSelectors from "../../../redux/organization/organization.selector";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
-import { usersPermissionsActions } from "../../../redux/users-permissions/users-permissions.slice";
+import { organizationActions } from "../../../redux/organization/organization.slice";
 import { UserAvatar } from "../../../components/UserAvatar";
 import isEmpty from "lodash/isEmpty";
 
@@ -59,10 +59,10 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
   const members = useAppSelector(
-    usersPermissionsSliceSelectors.selectOrganizationMembers,
+    organizationSliceSelectors.selectOrganizationMembers,
   );
   const membersLoading = useAppSelector(
-    usersPermissionsSliceSelectors.selectOrganizationMembersLoading,
+    organizationSliceSelectors.selectOrganizationMembersLoading,
   );
 
   const orgOwner = members.find((m) => m._id === user.organizationId);
@@ -70,9 +70,7 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
   const company = orgOwner?.company || orgOwner?.name;
 
   useEffect(() => {
-    dispatch(
-      usersPermissionsActions.getOrganizationMembers({ userId: user._id }),
-    );
+    dispatch(organizationActions.getOrganizationMembers());
   }, [dispatch, user._id]);
 
   if (membersLoading) {

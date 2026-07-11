@@ -17,7 +17,7 @@ import { Breakpoints } from "../../theme/Breakpoints";
 import { UserAvatar } from "../../components/UserAvatar";
 import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
 import { ImageUpload } from "../../components/ImageUpload";
-import { isArray } from "lodash";
+import isArray from "lodash/isArray";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import type { ThemeType } from "../../theme/theme";
 import { Tooltip } from "antd";
@@ -159,7 +159,7 @@ export const Profile: React.FC = () => {
           : dto.avatar;
 
       await dispatch(userActions.updateUser(dto)).unwrap();
-      await dispatch(userActions.getUserById({ userId: user._id })).unwrap();
+      await dispatch(userActions.getUserById()).unwrap();
 
       Toast.success("Your profile updated successfully");
     } catch (e) {
@@ -171,7 +171,7 @@ export const Profile: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(userActions.getUserById({ userId: user._id }));
+    dispatch(userActions.getUserById());
   }, [dispatch, user._id]);
 
   return (
