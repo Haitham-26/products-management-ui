@@ -6,15 +6,52 @@
     "noAccount": "Don't have an account? <0>Create an account</0>",
     "success": "Logged in successfully!"
   },
+  "forgotPassword": {
+    "email": {
+      "title": "Reset Password",
+      "description": "Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step.",
+      "success": "We have sent the verification code to your email, please check your inbox."
+    },
+    "token": {
+      "title": "Reset Password",
+      "description": "We have sent the verification code to your email <0>\"{{email}}\"</0>, please check your inbox and enter the code below.",
+      "submit": "Verify & Continue",
+      "success": "We verified your email, now you can create a new password!"
+    },
+    "new": {
+      "title": "Reset Password",
+      "description": "Enter your new password and confirm it.",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "errors": {
+        "password": {
+          "short": "The password must be at least {{length}} characters long.",
+          "long": "The password must be at most {{length}} characters long.",
+          "mismatch": "The passwords do not match."
+        }
+      },
+      "success": "Your password has been reset, you can now log in with your new password!"
+    }
+  },
+  "resendToken": {
+    "resend": "Resend verification code",
+    "resendIn": "You can request a new code in",
+    "success": "Verification code sent successfully!"
+  },
   "common": {
     "email": "Email",
     "password": "Password",
     "login": "Login",
-    "or": "or"
+    "or": "or",
+    "continue": "Continue",
+    "confirm": "Confirm"
   },
   "errors": {
     "general": {
       "required": "The field is required."
+    },
+    "token": {
+      "length": "The verification code must be 6 characters long."
     }
   }
 }

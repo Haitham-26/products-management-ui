@@ -9,12 +9,14 @@ import { userActions } from "../../redux/user/user.slice";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
+import { useTranslation } from "react-i18next";
 
 export const ForgotPasswordEmailStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { control, getValues, handleSubmit, watch } =
     useForm<ForgotPasswordEmailDto>({
       defaultValues: {
@@ -32,9 +34,7 @@ export const ForgotPasswordEmailStep: React.FC = () => {
 
       await dispatch(userActions.forgotPasswordEmail({ email })).unwrap();
 
-      Toast.success(
-        "We sent the verification code to your email, please check your inbox",
-      );
+      Toast.success(t("forgotPassword.email.success"));
 
       navigate("/forgot-password/token", { state: { email }, replace: true });
     } catch (e) {
@@ -47,16 +47,16 @@ export const ForgotPasswordEmailStep: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Reset password"
-      description="Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step."
+      title={t("forgotPassword.email.title")}
+      description={t("forgotPassword.email.description")}
       formItems={[
         <Controller
           control={control}
           name="email"
-          rules={{ required: "Please enter your email" }}
+          rules={{ required: t("errors.general.required") }}
           render={({ field, fieldState: { error } }) => (
             <Input
-              title="Email"
+              title={t("common.email")}
               placeholder="example@gmail.com"
               type="email"
               required
@@ -71,7 +71,7 @@ export const ForgotPasswordEmailStep: React.FC = () => {
           loading={loading}
           disabled={!email.length}
         >
-          Continue
+          {t("common.continue")}
         </Button>,
       ]}
     />

@@ -21,6 +21,7 @@ const SlotsContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: ${({ theme }) => theme.spacing.sm};
+  direction: ltr;
 `;
 
 const StyledSlot = styled.div<{

@@ -12,12 +12,22 @@ const fontWeights: Record<
   small: 300,
 };
 
+const lineHeights: Record<
+  keyof ThemeType["typography"],
+  React.CSSProperties["lineHeight"]
+> = {
+  title: 2,
+  subtitle: 1.8,
+  body: 1.7,
+  small: 1.7,
+};
+
 const StyledP = styled.p<StyledTextProps>`
   font-size: ${({ theme, fontSize }) => theme.typography[fontSize || "body"]};
   color: ${({ theme, color }) => theme.colors[color || "textPrimary"]};
   font-weight: ${({ fontSize, fontWeight }) =>
     fontWeight || fontWeights[fontSize || "body"]};
-  line-height: 1.5;
+  line-height: ${({ fontSize }) => lineHeights[fontSize || "body"]};
   text-align: ${({ textAlign }) => textAlign};
 `;
 

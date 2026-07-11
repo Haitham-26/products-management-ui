@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
+import { useTranslation } from "react-i18next";
 
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 64;
@@ -18,6 +19,7 @@ export const ForgotPasswordNewStep: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     state: { email, token },
   } = useLocation();
@@ -45,9 +47,7 @@ export const ForgotPasswordNewStep: React.FC = () => {
 
       await dispatch(userActions.forgotPasswordNew(dto)).unwrap();
 
-      Toast.success(
-        "Your password has been reset, you can now log in with your new password!",
-      );
+      Toast.success(t("forgotPassword.new.success"));
 
       navigate("/login", { replace: true });
     } catch (e) {
@@ -66,27 +66,31 @@ export const ForgotPasswordNewStep: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Reset password"
-      description="Enter your new password and confirm it."
+      title={t("forgotPassword.new.title")}
+      description={t("forgotPassword.new.description")}
       formItems={[
         <Controller
           control={control}
           name="newPassword"
           rules={{
-            required: "Please enter a new password",
+            required: t("errors.general.required"),
             minLength: {
               value: MIN_PASSWORD_LENGTH,
-              message: "The new password should be at least 6 characters long",
+              message: t("forgotPassword.new.errors.password.short", {
+                length: MIN_PASSWORD_LENGTH,
+              }),
             },
             maxLength: {
               value: MAX_PASSWORD_LENGTH,
-              message: "The new password should be at most 64 characters long",
+              message: t("forgotPassword.new.errors.password.long", {
+                length: MAX_PASSWORD_LENGTH,
+              }),
             },
           }}
           render={({ field, fieldState: { error } }) => (
             <Input
-              title="New password"
-              placeholder="Enter your new password"
+              title={t("forgotPassword.new.newPassword")}
+              placeholder="••••••••"
               type="password"
               required
               valid={!error}
@@ -101,22 +105,27 @@ export const ForgotPasswordNewStep: React.FC = () => {
           control={control}
           name="newPasswordConfirm"
           rules={{
-            required: "Please confirm your new password",
+            required: t("errors.general.required"),
             minLength: {
               value: MIN_PASSWORD_LENGTH,
-              message: "The password should be at least 6 characters long",
+              message: t("forgotPassword.new.errors.password.short", {
+                length: MIN_PASSWORD_LENGTH,
+              }),
             },
             maxLength: {
               value: MAX_PASSWORD_LENGTH,
-              message: "The password should be at most 64 characters long",
+              message: t("forgotPassword.new.errors.password.long", {
+                length: MAX_PASSWORD_LENGTH,
+              }),
             },
             validate: (value) =>
-              value === newPassword || "The passwords do not match",
+              value === newPassword ||
+              t("forgotPassword.new.errors.password.mismatch"),
           }}
           render={({ field, fieldState: { error } }) => (
             <Input
-              title="New password confirmation"
-              placeholder="Re-enter your new password"
+              title={t("forgotPassword.new.confirmPassword")}
+              placeholder="••••••••"
               type="password"
               required
               valid={!error}
@@ -132,7 +141,7 @@ export const ForgotPasswordNewStep: React.FC = () => {
           loading={loading}
           disabled={!newPassword.length || !newPasswordConfirm.length}
         >
-          Confirm new password
+          {t("common.confirm")}
         </Button>,
       ]}
     />
