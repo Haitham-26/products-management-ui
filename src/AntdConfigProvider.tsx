@@ -1,6 +1,7 @@
 import { ConfigProvider } from "antd";
 import type React from "react";
 import { theme } from "./theme/theme";
+import i18n from "./i18n";
 
 type AntdConfigProviderProps = {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ export const AntdConfigProvider: React.FC<AntdConfigProviderProps> = ({
 }) => {
   return (
     <ConfigProvider
+      direction={i18n.dir(i18n.language)}
       theme={{
         token: {
           colorPrimary: theme.colors.primary,

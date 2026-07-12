@@ -12,14 +12,6 @@ const AppAxios = axios.create({
   },
 });
 
-const RefreshAxios = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 let refreshRequest: Promise<string> | null = null;
 
 const clearAuthStorage = () => {
@@ -67,7 +59,7 @@ AppAxios.interceptors.response.use(
 
       try {
         if (!refreshRequest) {
-          refreshRequest = RefreshAxios.post<{
+          refreshRequest = AppAxios.post<{
             accessToken: string;
             refreshToken: string;
           }>("/auth/refresh-token", { refreshToken })
@@ -81,9 +73,9 @@ AppAxios.interceptors.response.use(
             });
         }
 
-        const token = await refreshRequest;
+        const accessToken = await refreshRequest;
 
-        originalRequest.headers.Authorization = `Bearer ${token}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return AppAxios(originalRequest);
       } catch (refreshError) {
         console.error("Unauthorized.");

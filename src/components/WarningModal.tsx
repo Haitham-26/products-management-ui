@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import isFunction from "lodash/isFunction";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import type { ThemeType } from "../theme/theme";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
   text-align: center;
@@ -61,19 +62,21 @@ type WarningModalProps = ModalProps & {
 
 export const WarningModal: React.FC<WarningModalProps> = ({
   open = false,
-  title = "Are you sure?",
-  description = "Are you sure you want to do this? Once you confirm, you cannot undo it later.",
+  title,
+  description,
   onClose,
   onCancel,
   onConfirm,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText,
+  cancelText,
   confirmLoading = false,
   cancelLoading = false,
   variantColor = "error",
   icon = faTriangleExclamation,
   ...props
 }) => {
+  const { t } = useTranslation(undefined, { keyPrefix: "common" });
+
   return (
     <Modal open={open} onCancel={onClose} footer={null} {...props}>
       <Container>
@@ -81,9 +84,9 @@ export const WarningModal: React.FC<WarningModalProps> = ({
           <Icon icon={icon} size="2x" color={variantColor} />
         </IconWrapper>
 
-        <Title>{title}</Title>
+        <Title>{title || t("warning.title")}</Title>
 
-        <Description>{description}</Description>
+        <Description>{description || t("warning.description")}</Description>
 
         <Actions variantColor={variantColor}>
           <Button
@@ -91,10 +94,10 @@ export const WarningModal: React.FC<WarningModalProps> = ({
             onClick={isFunction(onCancel) ? onCancel : onClose}
             loading={cancelLoading}
           >
-            {cancelText}
+            {cancelText || t("cancel")}
           </Button>
           <Button onClick={onConfirm} loading={confirmLoading}>
-            {confirmText}
+            {confirmText || t("confirm")}
           </Button>
         </Actions>
       </Container>

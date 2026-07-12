@@ -14,6 +14,7 @@ import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import styled from "styled-components";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
+import { Trans, useTranslation } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
@@ -33,6 +34,7 @@ export const UserPermissionsInvitationsTab: React.FC<
   const [cancelInvitationLoading, setCancelInvitationLoading] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const invitations = useAppSelector(
@@ -60,7 +62,7 @@ export const UserPermissionsInvitationsTab: React.FC<
 
       setSelectedInvitation(null);
 
-      Toast.success("Invitation canceled successfully");
+      Toast.success(t("usersPermissions.invitations.cancel.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -75,12 +77,12 @@ export const UserPermissionsInvitationsTab: React.FC<
 
   if (!invitations.length && !invitationsLoading) {
     return (
-      <Empty description="You didn't invite anyone yet">
+      <Empty description={t("usersPermissions.invitations.empty")}>
         <Button
           icon={faUserPlus}
           onClick={() => setInviteMembersModalVisible(true)}
         >
-          Invite Members
+          {t("usersPermissions.actions.inviteMembers")}
         </Button>
       </Empty>
     );
@@ -88,7 +90,9 @@ export const UserPermissionsInvitationsTab: React.FC<
 
   return (
     <Container>
-      <Text fontWeight="bold">Invitations</Text>
+      <Text fontWeight="bold">
+        {t("usersPermissions.invitations.subtitle")}
+      </Text>
 
       {!invitationsLoading ? (
         invitations.map((inv) => (
@@ -103,13 +107,13 @@ export const UserPermissionsInvitationsTab: React.FC<
       )}
 
       <WarningModal
-        title={"Cancel Invitation"}
+        title={t("usersPermissions.invitations.cancel.title")}
         description={
-          <span>
-            Are you sure you want to cancel the pending invitation for
-            <strong> {selectedInvitation?.inviteeEmail}</strong>? The invitation
-            link will be permanently invalidated.
-          </span>
+          <Trans
+            i18nKey="usersPermissions.invitations.cancel.description"
+            values={{ email: selectedInvitation?.inviteeEmail }}
+            components={[<strong />]}
+          />
         }
         open={Boolean(selectedInvitation)}
         onClose={() => setSelectedInvitation(null)}

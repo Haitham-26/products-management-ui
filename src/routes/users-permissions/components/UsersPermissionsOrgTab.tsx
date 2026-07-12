@@ -11,6 +11,7 @@ import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import { UserAvatar } from "../../../components/UserAvatar";
 import isEmpty from "lodash/isEmpty";
+import { Trans, useTranslation } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +48,10 @@ const LeaveButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
+const BoldSpan = styled.span`
+  font-weight: bold;
+`;
+
 type UsersPermissionsOrgTabProps = {
   setLeaveOrgModalVisible: VoidCallback<boolean>;
 };
@@ -55,6 +60,7 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
   setLeaveOrgModalVisible,
 }) => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
@@ -92,18 +98,21 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
               {company}
             </Text>
             <Text color="textSecondary" fontSize="small">
-              Organization Owner: {orgOwner?.name}
+              <Trans
+                i18nKey="usersPermissions.org.subtitle"
+                values={{ owner: orgOwner.name }}
+                components={[<BoldSpan />]}
+              />
             </Text>
           </InfoGroup>
         </HeaderSection>
 
         <ActionSection>
           <Text fontWeight="bold" color="textPrimary">
-            Danger Zone
+            {t("usersPermissions.org.leaveSection.title")}
           </Text>
           <Text color="textSecondary" fontSize="small">
-            Leaving this organization will immediately revoke your access to all
-            shared resources.
+            {t("usersPermissions.org.leaveSection.description")}
           </Text>
 
           <LeaveButton
@@ -111,7 +120,7 @@ export const UsersPermissionsOrgTab: React.FC<UsersPermissionsOrgTabProps> = ({
             icon={faPersonWalkingArrowRight}
             onClick={() => setLeaveOrgModalVisible(true)}
           >
-            Leave organization
+            {t("usersPermissions.actions.leaveOrg")}
           </LeaveButton>
         </ActionSection>
       </Container>

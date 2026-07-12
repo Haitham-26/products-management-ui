@@ -42,9 +42,9 @@ export const UsersPermissions: React.FC = () => {
       await dispatch(organizationActions.leaveOrg()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      navigate("/dashboard", { replace: true });
+      navigate(appRoutes.dashboard.path, { replace: true });
 
-      Toast.success("You left the organization successfully");
+      Toast.success(t("usersPermissions.org.leave.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -66,12 +66,12 @@ export const UsersPermissions: React.FC = () => {
           !isMember
             ? {
                 icon: faUserPlus,
-                title: "Invite members",
+                title: t("usersPermissions.actions.inviteMembers"),
                 onClick: () => setInviteMembersModalVisible(true),
               }
             : {
                 icon: faPersonWalkingArrowRight,
-                title: "Leave organization",
+                title: t("usersPermissions.actions.leaveOrg"),
                 onClick: () => setLeaveOrgModalVisible(true),
                 variant: "danger",
               }
@@ -84,7 +84,7 @@ export const UsersPermissions: React.FC = () => {
             ? [
                 {
                   key: "Organization",
-                  label: "Organization",
+                  label: t("usersPermissions.org.title"),
                   icon: <Icon icon={faBuilding} />,
                   children: (
                     <UsersPermissionsOrgTab
@@ -96,7 +96,7 @@ export const UsersPermissions: React.FC = () => {
             : []),
           {
             key: "members",
-            label: "Members",
+            label: t("usersPermissions.members.title"),
             icon: <Icon icon={faUsers} />,
             children: (
               <UserPermissionsMembersTab
@@ -108,7 +108,7 @@ export const UsersPermissions: React.FC = () => {
             ? [
                 {
                   key: "invitations",
-                  label: "Invitations",
+                  label: t("usersPermissions.invitations.title"),
                   icon: <Icon icon={faEnvelope} />,
                   children: (
                     <UserPermissionsInvitationsTab
@@ -132,10 +132,10 @@ export const UsersPermissions: React.FC = () => {
 
       {isMember ? (
         <WarningModal
-          title="Leave organization"
-          description="Are you sure you want to leave the organization? You’ll need a new invitation from the owner to rejoin."
+          title={t("usersPermissions.org.leave.title")}
+          description={t("usersPermissions.org.leave.description")}
           onConfirm={leaveOrg}
-          confirmText="Leave"
+          confirmText={t("usersPermissions.org.leave.actions.leave")}
           confirmLoading={leaveOrgLoading}
           open={leaveOrgModalVisible}
           onClose={() => setLeaveOrgModalVisible(false)}

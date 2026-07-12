@@ -123,7 +123,86 @@
     "updateSuccess": "Profile updated successfully!"
   },
   "usersPermissions": {
-    "title": "Users & Permissions"
+    "title": "Users & Permissions",
+    "actions": {
+      "inviteMembers": "Invite Members",
+      "leaveOrg": "Leave Organization"
+    },
+    "members": {
+      "title": "Members",
+      "subtitle": "Manage members permissions",
+      "empty": "You have no members yet.",
+      "removeMember": {
+        "title": "Remove \"{{member}}\" from your organization?",
+        "description": "Are you sure you want to remove <0>{{member}}</0> from your organization? You can re-invite him later.",
+        "success": "Member removed successfully!"
+      },
+      "disabledCheckBoxTooltip": "Read permission should be enabled first.",
+      "updatePermissions": {
+        "success": "Members permissions updated successfully!"
+      }
+    },
+    "org": {
+      "title": "Organization",
+      "subtitle": "Organization Owner: <0>{{owner}}</0>",
+      "leaveSection": {
+        "title": "Danger Zone",
+        "description": "Leaving this organization will immediately revoke your access to its resources."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Are you sure you want to leave the organization? You will no longer have access to its resources and you’ll need a new invitation from the owner to rejoin.",
+        "actions": {
+          "leave": "Leave"
+        },
+        "success": "You left the organization successfully!"
+      }
+    },
+    "invitations": {
+      "title": "Invitations",
+      "subtitle": "Sent Invitations",
+      "empty": "You didn't invite anyone yet.",
+      "sentOn": "Sent on",
+      "validUntil": "Valid until",
+      "cancel": {
+        "title": "Cancel Invitation",
+        "description": "Are you sure you want to cancel the invitation for <0>{{email}}</0>?",
+        "success": "Invitation canceled successfully!"
+      },
+      "resend": {
+        "success": "Invitation resent successfully!"
+      },
+      "invite": {
+        "title": "Invite Members",
+        "infos": [
+          "Only individuals who are non-invited by you and not associated with another organization can be invited.",
+          "Upon opening the app (and creating an account if new), invitees will immediately see their pending invitation and be able to accept or decline it.",
+          "You can check delivery progress anytime under the <0>Invitations Tab</0>.",
+          "Who accepts the invitation will have read-only access to products, tags, categories and orders by default, and you can manage their permissions under the <0>Members Tab</0>."
+        ],
+        "emails": {
+          "title": "Recipients",
+          "placeholder": "Enter emails separated by commas or press Enter",
+          "errors": {
+            "required": "Please enter a valid email.",
+            "duplicate": "This email has already been added to the list.",
+            "limit": "You can invite up to {{limit}} users at a time."
+          },
+          "edit": {
+            "tooltip": "Double click to edit"
+          },
+          "tip": "Double-click any email in the list to pull it back into the input for modifications."
+        },
+        "submit": "Send Invitations",
+        "success": "Invitations sent successfully!"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "canceled": "Canceled",
+        "declined": "Declined"
+      }
+    }
   },
   "common": {
     "email": "Email",
@@ -138,7 +217,25 @@
     "lastWeek": "Last Week",
     "lastMonth": "Last Month",
     "company": "Company",
-    "save": "Save"
+    "save": "Save",
+    "you": "You",
+    "owner": "Owner",
+    "remove": "Remove",
+    "warning": {
+      "title": "Are you sure?",
+      "description": "Are you sure you want to do this? Once you confirm, you cannot undo it later."
+    },
+    "cancel": "Cancel",
+    "entity": "Entity",
+    "create": "Create",
+    "read": "Read",
+    "update": "Update",
+    "delete": "Delete",
+    "products": "Products",
+    "orders": "Orders",
+    "categories": "Categories",
+    "tags": "Tags",
+    "resend": "Resend"
   },
   "errors": {
     "general": {
