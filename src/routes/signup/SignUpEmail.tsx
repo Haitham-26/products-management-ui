@@ -92,7 +92,7 @@ export const SignUpEmail: React.FC = () => {
           name="company"
           render={({ field, fieldState }) => (
             <Input
-              title={t("signup.email.company.title")}
+              title={t("common.company")}
               placeholder={t("signup.email.company.placeholder")}
               errorMessage={fieldState.error?.message}
               {...field}

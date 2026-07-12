@@ -14,7 +14,6 @@
         "placeholder": "Enter your name"
       },
       "company": {
-        "title": "Company Name",
         "placeholder": "Enter your company name"
       },
       "submit": "Create Account",
@@ -110,7 +109,18 @@
     "title": "Settings"
   },
   "profile": {
-    "title": "Profile"
+    "title": "Profile",
+    "avatar": {
+      "remove": "Remove Avatar",
+      "edit": "Change Avatar"
+    },
+    "personalInfo": {
+      "title": "Personal Information"
+    },
+    "orgInfo": {
+      "title": "Organization Information"
+    },
+    "updateSuccess": "Profile updated successfully!"
   },
   "usersPermissions": {
     "title": "Users & Permissions"
@@ -126,11 +136,15 @@
     "logout": "Logout",
     "today": "Today",
     "lastWeek": "Last Week",
-    "lastMonth": "Last Month"
+    "lastMonth": "Last Month",
+    "company": "Company",
+    "save": "Save"
   },
   "errors": {
     "general": {
-      "required": "The field is required."
+      "required": "The field is required.",
+      "short": "This field must be at least {{length}} characters long.",
+      "long": "This field must be at most {{length}} characters long."
     },
     "token": {
       "length": "The verification code must be 6 characters long."

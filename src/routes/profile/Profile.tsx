@@ -23,6 +23,10 @@ import { Tooltip } from "antd";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 
+const NAME_MIN_LENGTH = 3;
+const NAME_MAX_LENGTH = 30;
+const COMPANY_MAX_LENGTH = 50;
+
 const StyledButton = styled(Button)`
   width: fit-content;
   margin-inline-start: auto;
@@ -163,7 +167,7 @@ export const Profile: React.FC = () => {
       await dispatch(userActions.updateUser(dto)).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      Toast.success("Your profile updated successfully");
+      Toast.success(t("profile.updateSuccess"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -196,7 +200,7 @@ export const Profile: React.FC = () => {
                 />
 
                 <AvatarActionsWrapper>
-                  <Tooltip title="Remove avatar">
+                  <Tooltip title={t("profile.avatar.remove")}>
                     <AvatarActionButton
                       variant="ghost"
                       icon={faTrash}
@@ -206,7 +210,7 @@ export const Profile: React.FC = () => {
                     />
                   </Tooltip>
 
-                  <Tooltip title="Change avatar">
+                  <Tooltip title={t("profile.avatar.edit")}>
                     <StyledImageUpload
                       maxCount={1}
                       onChange={onChange}
@@ -235,26 +239,31 @@ export const Profile: React.FC = () => {
 
         <FormCard>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            <FormSectionTitle>Personal Information</FormSectionTitle>
+            <FormSectionTitle>
+              {t("profile.personalInfo.title")}
+            </FormSectionTitle>
 
             <Controller
               control={control}
               name="name"
               rules={{
-                required: "Full name is required",
+                required: t("errors.general.required"),
                 minLength: {
-                  value: 3,
-                  message: "Full name must be at least 3 characters",
+                  value: NAME_MIN_LENGTH,
+                  message: t("errors.general.short", {
+                    length: NAME_MIN_LENGTH,
+                  }),
                 },
                 maxLength: {
-                  value: 30,
-                  message: "Full name must be at most 30 characters",
+                  value: NAME_MAX_LENGTH,
+                  message: t("errors.general.long", {
+                    length: NAME_MAX_LENGTH,
+                  }),
                 },
               }}
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  title="Full Name"
-                  placeholder="Enter your name"
+                  title={t("common.name")}
                   {...field}
                   valid={!error}
                   errorMessage={error?.message}
@@ -262,25 +271,33 @@ export const Profile: React.FC = () => {
               )}
             />
 
-            <StyledInput title="Email Address" value={user.email} readOnly />
+            <StyledInput
+              title={t("common.email")}
+              value={user.email}
+              type="email"
+              readOnly
+            />
 
             {!isOrgMember ? (
               <Fragment>
-                <FormSectionTitle>Organization Information</FormSectionTitle>
+                <FormSectionTitle>
+                  {t("profile.orgInfo.title")}
+                </FormSectionTitle>
 
                 <Controller
                   control={control}
                   name="company"
                   rules={{
                     maxLength: {
-                      value: 50,
-                      message: "Company name must be at most 50 characters",
+                      value: COMPANY_MAX_LENGTH,
+                      message: t("errors.general.long", {
+                        length: COMPANY_MAX_LENGTH,
+                      }),
                     },
                   }}
                   render={({ field, fieldState: { error } }) => (
                     <Input
-                      title="Company Name"
-                      placeholder="Enter your organization or company name"
+                      title={t("common.company")}
                       {...field}
                       valid={!error}
                       errorMessage={error?.message}
@@ -291,7 +308,7 @@ export const Profile: React.FC = () => {
             ) : null}
 
             <StyledButton onClick={handleSubmit(onSubmit)} loading={loading}>
-              Save Changes
+              {t("common.save")}
             </StyledButton>
           </Form>
         </FormCard>
