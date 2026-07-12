@@ -77,7 +77,22 @@
     }
   },
   "dashboard": {
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "totalProducts": {
+      "title": "Total Products"
+    },
+    "totalOrders": {
+      "title": "Total Orders"
+    },
+    "lowStockProducts": {
+      "title": "Low Stock Products"
+    },
+    "outOfStockProducts": {
+      "title": "Out of Stock Products"
+    },
+    "mostSoldProducts": {
+      "title": "Most Sold Products"
+    }
   },
   "products": {
     "title": "Products"
@@ -108,7 +123,10 @@
     "continue": "Continue",
     "confirm": "Confirm",
     "name": "Name",
-    "logout": "Logout"
+    "logout": "Logout",
+    "today": "Today",
+    "lastWeek": "Last Week",
+    "lastMonth": "Last Month"
   },
   "errors": {
     "general": {

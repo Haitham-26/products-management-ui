@@ -17,6 +17,7 @@ import { useAppSelector } from "../../../redux/store";
 import type { ThemeType } from "../../../theme/theme";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 import { customChartJsTooltip } from "../utils/customChartJsTooltip";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -104,6 +105,7 @@ const getOptions = (theme: ThemeType): ChartOptions<"bar"> => ({
 
 export const DashboardTopProductsCard: React.FC = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const rawProducts = useAppSelector(
     dashboardSliceSelectors.selectDashboardStats,
@@ -131,7 +133,7 @@ export const DashboardTopProductsCard: React.FC = () => {
     <Container>
       <Header>
         <Text fontWeight="bold" fontSize="subtitle">
-          Most Sold Products
+          {t("dashboard.mostSoldProducts.title")}
         </Text>
       </Header>
 

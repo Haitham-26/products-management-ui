@@ -9,6 +9,7 @@ import { Icon } from "../../../components/Icon";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
+import { useTranslation } from "react-i18next";
 
 type Variants = "MAIN" | "WARNING" | "DANGER" | "DEFAULT";
 
@@ -35,7 +36,6 @@ const Container = styled.div<{ variant: Variants }>`
   position: relative;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid ${({ theme }) => theme.colors.border}20;
 
   ${({ variant, theme }) => {
     switch (variant) {
@@ -47,12 +47,12 @@ const Container = styled.div<{ variant: Variants }>`
       case "WARNING":
         return `
           background: ${theme.colors.warning}08;
-          border-left: 4px solid ${theme.colors.warning};
+          border-inline-start: 4px solid ${theme.colors.warning};
         `;
       case "DANGER":
         return `
           background: ${theme.colors.error}08;
-          border-left: 4px solid ${theme.colors.error};
+          border-inline-start: 4px solid ${theme.colors.error};
         `;
       default:
         return `
@@ -107,14 +107,31 @@ const StyledLink = styled(Link)<{ variant: Variants }>`
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
 
+  svg {
+    html[dir="rtl"] & {
+      transform: rotate(180deg);
+    }
+  }
+
+  html[dir="ltr"] &:hover {
+    transform: translateX(3px);
+  }
+
+  html[dir="rtl"] &:hover {
+    transform: translateX(-3px);
+  }
+
   ${({ variant, theme }) => {
     if (variant === "MAIN") {
       return `
         background: rgba(255, 255, 255, 0.2);
-        svg { color: ${theme.colors.onPrimary}; }
+
+        svg {
+          color: ${theme.colors.onPrimary};
+        }
+
         &:hover {
           background: rgba(255, 255, 255, 0.3);
-          transform: translateX(3px);
         }
       `;
     }
@@ -129,11 +146,17 @@ const StyledLink = styled(Link)<{ variant: Variants }>`
     return `
       background: ${theme.colors.surface};
       border: 1px solid ${theme.colors.border};
-      svg { color: ${theme.colors.textSecondary}; }
+
+      svg {
+        color: ${theme.colors.textSecondary};
+      }
+
       &:hover {
         border-color: ${accentColor};
-        svg { color: ${accentColor}; }
-        transform: translateX(3px);
+
+        svg {
+          color: ${accentColor};
+        }
       }
     `;
   }}
@@ -201,6 +224,8 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
   variant = "DEFAULT",
   trends,
 }) => {
+  const { t } = useTranslation();
+
   const getTextColor = () => {
     switch (variant) {
       case "MAIN":
@@ -243,21 +268,27 @@ export const DashboardTopCard: React.FC<DashboardTopCardProps> = ({
 
           <FooterGrid>
             <StatGroup>
-              <TimeframeLabel variant={variant}>Today</TimeframeLabel>
+              <TimeframeLabel variant={variant}>
+                {t("common.today")}
+              </TimeframeLabel>
               <Text fontWeight="bold" fontSize="body" color={textColor}>
                 {trends.today.toLocaleString()}
               </Text>
             </StatGroup>
 
             <StatGroup>
-              <TimeframeLabel variant={variant}>Last Week</TimeframeLabel>
+              <TimeframeLabel variant={variant}>
+                {t("common.lastWeek")}
+              </TimeframeLabel>
               <Text fontWeight="bold" fontSize="body" color={textColor}>
                 {trends.lastWeek.toLocaleString()}
               </Text>
             </StatGroup>
 
             <StatGroup>
-              <TimeframeLabel variant={variant}>Last Month</TimeframeLabel>
+              <TimeframeLabel variant={variant}>
+                {t("common.lastMonth")}
+              </TimeframeLabel>
               <Text fontWeight="bold" fontSize="body" color={textColor}>
                 {trends.lastMonth.toLocaleString()}
               </Text>

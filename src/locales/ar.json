@@ -77,7 +77,22 @@
     }
   },
   "dashboard": {
-    "title": "لوحة التحكم"
+    "title": "لوحة التحكم",
+    "totalProducts": {
+      "title": "عدد المنتجات الكلي"
+    },
+    "totalOrders": {
+      "title": "عدد الطلبات الكلي"
+    },
+    "lowStockProducts": {
+      "title": "منتجات على وشك النفاد"
+    },
+    "outOfStockProducts": {
+      "title": "منتجات نفدت من المخزون"
+    },
+    "mostSoldProducts": {
+      "title": "المنتجات الأكثر مبيعاً"
+    }
   },
   "products": {
     "title": "المنتجات"
@@ -108,7 +123,10 @@
     "continue": "متابعة",
     "confirm": "تأكيد",
     "name": "الاسم",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "today": "اليوم",
+    "lastWeek": "الأسبوع الماضي",
+    "lastMonth": "الشهر الماضي"
   },
   "errors": {
     "general": {

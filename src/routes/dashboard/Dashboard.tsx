@@ -79,8 +79,8 @@ export const Dashboard: React.FC = () => {
         <DashboardGrid>
           <AreaWrapper area="total-products">
             <DashboardTopCard
-              title="Total Products"
-              link="/products"
+              title={t("dashboard.totalProducts.title")}
+              link={appRoutes.products.path}
               totalCount={products?.totalCount || 0}
               trends={{
                 today: products?.todayCount || 0,
@@ -93,8 +93,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="total-orders">
             <DashboardTopCard
-              title="Total Orders"
-              link="/orders"
+              title={t("dashboard.totalOrders.title")}
+              link={appRoutes.orders.path}
               totalCount={orders?.totalCount || 0}
               trends={{
                 today: orders?.todayCount || 0,
@@ -106,8 +106,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="low-stock">
             <DashboardTopCard
-              title="Low Stock Products"
-              link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
+              title={t("dashboard.lowStockProducts.title")}
+              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.LOW_STOCK}`}
               totalCount={lowStockProducts?.totalCount}
               variant="WARNING"
             />
@@ -115,8 +115,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="out-of-stock">
             <DashboardTopCard
-              title="Out of Stock Products"
-              link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
+              title={t("dashboard.outOfStockProducts.title")}
+              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
               totalCount={outOfStockProducts?.totalCount}
               variant="DANGER"
             />
