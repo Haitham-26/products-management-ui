@@ -7,6 +7,7 @@ import { JoinOrgInvitationCard } from "./invitations/JoinOrgInvitationCard";
 import { useEffect } from "react";
 import { organizationActions } from "../../redux/organization/organization.slice";
 import userSliceSelectors from "../../redux/user/user.selector";
+import { useTranslation } from "react-i18next";
 
 type NotificationsDrawerProps = {
   open: boolean;
@@ -18,6 +19,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   onClose,
 }) => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation(undefined, { keyPrefix: "notifications" });
 
   const invitations = useAppSelector(
     organizationSliceSelectors.selectJoinOrgInvitations,
@@ -31,10 +33,10 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
   }, [open, dispatch, userId]);
 
   return (
-    <Drawer title="Notifications" open={open} onClose={onClose}>
+    <Drawer title={t("title")} open={open} onClose={onClose}>
       {!invitations.length ? (
         <Text color="textSecondary" fontSize="small" textAlign="center">
-          No notifications
+          {t("empty")}
         </Text>
       ) : null}
 

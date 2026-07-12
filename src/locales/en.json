@@ -60,6 +60,22 @@
     "resendIn": "You can request a new code in",
     "success": "Verification code sent successfully!"
   },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet."
+  },
+  "joinOrgModal": {
+    "title": "{{company}} has invited you to join their organization",
+    "description": "You have been invited to join <0>{{company}}'s</0> organization. Please note that your personal account data will be hidden while you are a member, and will become visible again if you choose to leave the organization.",
+    "accept": {
+      "title": "Accept",
+      "success": "Invitation accepted successfully, you became a member of the organization!"
+    },
+    "decline": {
+      "title": "Decline",
+      "success": "Invitation declined successfully!"
+    }
+  },
   "dashboard": {
     "title": "Dashboard"
   },
@@ -91,7 +107,8 @@
     "or": "or",
     "continue": "Continue",
     "confirm": "Confirm",
-    "name": "Name"
+    "name": "Name",
+    "logout": "Logout"
   },
   "errors": {
     "general": {

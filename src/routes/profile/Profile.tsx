@@ -21,6 +21,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import type { ThemeType } from "../../theme/theme";
 import { Tooltip } from "antd";
 import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -136,8 +137,9 @@ export const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
-  const dispatch = useAppDispatch();
 
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateUserDto>({
     defaultValues: {
       name: user.name || "",
@@ -178,7 +180,7 @@ export const Profile: React.FC = () => {
     <Container>
       <PageHeader
         icon={appRoutes.profile.icon}
-        title={appRoutes.profile.title}
+        title={t(appRoutes.profile.titleKey)}
       />
 
       <ProfileGrid>

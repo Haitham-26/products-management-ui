@@ -2,7 +2,7 @@ import type React from "react";
 import { Row } from "./Row";
 import { Column } from "./Column";
 import { Container } from "./Container";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 import { Icon } from "./Icon";
 import { Dropdown } from "./Dropdown";
@@ -55,8 +55,11 @@ const getDropdownItems = (
     },
     {
       key: "logout",
-      label: "Logout",
-      icon: <Icon icon={faPersonWalkingArrowRight} />,
+      label: (
+        <LogoutButton icon={faPersonWalkingArrowRight} variant="danger">
+          {t("common.logout")}
+        </LogoutButton>
+      ),
       onClick: async () => {
         if (user.signUpMethod === SignUpMethods.GOOGLE) {
           googleLogout();
@@ -64,9 +67,19 @@ const getDropdownItems = (
         await dispatch(userActions.logout());
         navigate("/login", { replace: true });
       },
-      danger: true,
+      className: "logout",
     },
   ] as MenuItemType[];
+
+const GlobalStyle = createGlobalStyle`
+    .logout {
+      padding: 0 !important;
+    }
+`;
+
+const LogoutButton = styled(Button)`
+  width: 100%;
+`;
 
 const Wrapper = styled.div`
   position: sticky;
@@ -178,6 +191,8 @@ export const Header: React.FC = () => {
         open={notificationsDrawerVisible}
         onClose={() => setNotificationsDrawerVisible(false)}
       />
+
+      <GlobalStyle />
     </Wrapper>
   );
 };

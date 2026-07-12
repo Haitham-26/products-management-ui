@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { UsersPermissionsOrgTab } from "./components/UsersPermissionsOrgTab";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 export const UsersPermissions: React.FC = () => {
   const [inviteMembersModalVisible, setInviteMembersModalVisible] =
@@ -29,8 +30,8 @@ export const UsersPermissions: React.FC = () => {
   const [leaveOrgLoading, setLeaveOrgLoading] = useState(false);
 
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
@@ -59,7 +60,7 @@ export const UsersPermissions: React.FC = () => {
   return (
     <Container>
       <PageHeader
-        title={appRoutes.usersPermissions.title}
+        title={t(appRoutes.usersPermissions.titleKey)}
         icon={appRoutes.usersPermissions.icon}
         action={
           !isMember
