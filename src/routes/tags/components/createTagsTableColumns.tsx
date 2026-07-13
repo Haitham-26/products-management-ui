@@ -10,6 +10,7 @@ import { formatDate } from "../../../utils/Date";
 import type { Tag } from "../../../model/tag/types/Tag";
 import isFunction from "lodash/isFunction";
 import styled from "styled-components";
+import type { TFunction } from "i18next";
 
 const ActionsIcon = styled(Icon)`
   margin-inline: auto;
@@ -21,16 +22,18 @@ type CreateTagsTableColumnsArgs = {
   onEdit?: FNType;
   onDelete?: FNType;
   onRead?: FNType;
+  t: TFunction;
 };
 
 export const createTagsTableColumns = ({
   onEdit,
   onDelete,
   onRead,
+  t,
 }: CreateTagsTableColumnsArgs): ColumnsType<Tag> => {
   return [
     {
-      title: "Actions",
+      title: t("common.actions"),
       key: "actions",
       width: 80,
       align: "center",
@@ -43,21 +46,21 @@ export const createTagsTableColumns = ({
               {
                 key: "view",
                 icon: <Icon icon={faEye} />,
-                label: "View",
+                label: t("common.view"),
                 onClick: () => onRead?.(record),
                 disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
+                label: t("common.edit"),
                 onClick: () => onEdit?.(record),
                 disabled: !isFunction(onEdit),
               },
               {
                 key: "delete",
                 icon: <Icon icon={faTrash} />,
-                label: "Delete",
+                label: t("common.delete"),
                 danger: true,
                 onClick: () => onDelete?.(record),
                 disabled: !isFunction(onDelete),
@@ -70,7 +73,7 @@ export const createTagsTableColumns = ({
       ),
     },
     {
-      title: "Name",
+      title: t("common.name"),
       dataIndex: "name",
       key: "name",
       width: 220,
@@ -78,14 +81,14 @@ export const createTagsTableColumns = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Description",
+      title: t("common.description"),
       dataIndex: "description",
       key: "description",
       width: 360,
       ellipsis: true,
     },
     {
-      title: "Usage Count",
+      title: t("tags.fields.usageCount"),
       dataIndex: "usageCount",
       key: "usageCount",
       width: 200,
@@ -93,7 +96,7 @@ export const createTagsTableColumns = ({
       sorter: (a, b) => b.usageCount - a.usageCount,
     },
     {
-      title: "Created At",
+      title: t("common.filters.creationDate.title"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

@@ -231,7 +231,27 @@
     "title": "التصنيفات"
   },
   "tags": {
-    "title": "الوسوم"
+    "title": "الوسوم",
+    "subheader": {
+      "action": "إنشاء وسم جديد",
+      "inputPlaceholder": "ابحث بالاسم أو الوصف..."
+    },
+    "fields": {
+      "usageCount": "عدد الاستخدامات"
+    },
+    "create": {
+      "title": "إنشاء وسم جديد",
+      "success": "تم انشاء الوسم بنجاح!"
+    },
+    "edit": {
+      "title": "تحديث الوسم",
+      "success": "تم تحديث الوسم بنجاح!"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "التعريف"
+      }
+    }
   },
   "settings": {
     "title": "الإعدادات"

@@ -7,7 +7,6 @@ import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faHashtag } from "@fortawesome/free-solid-svg-icons/faHashtag";
 import type { CreateTagDto } from "../../../model/tag/dto/CreateTagDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -17,43 +16,14 @@ import { buildTagsParams } from "../utils/tagUtils";
 import { useSearchParams } from "react-router-dom";
 import { Toast } from "../../../utils/Toast";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
+import { Text } from "../../../components/Text";
+import { useTranslation } from "react-i18next";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const MainTitle = styled.h2`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.title};
-`;
-
-const Subtitle = styled.span`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.small};
 `;
 
 const FormSection = styled.section`
@@ -76,12 +46,12 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
+    font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
   }
 `;
 
@@ -102,6 +72,7 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues } = useForm<CreateTagDto>({
     defaultValues: {
       name: "",
@@ -130,7 +101,8 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
       });
 
       localOnClose();
-      Toast.success("Tag created successfully");
+
+      Toast.success(t("tags.create.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -142,7 +114,7 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title="Create Tag"
+      title={t("tags.create.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -153,30 +125,19 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faTag} />
-          </IconWrapper>
-          <TitleGroup>
-            <MainTitle>New Metadata Tag</MainTitle>
-            <Subtitle>Create labels to categorize your inventory</Subtitle>
-          </TitleGroup>
-        </GlassHeader>
-
         <FormSection>
           <SectionLabel>
             <Icon icon={faHashtag} />
-            <h4>Tag Identity</h4>
+            <Text>{t("tags.create-edit.identification.title")}</Text>
           </SectionLabel>
 
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Tag name is required" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState }) => (
               <Input
-                title="Tag Name"
-                placeholder="e.g. Premium, Bestseller"
+                title={t("common.name")}
                 errorMessage={fieldState.error?.message}
                 required
                 {...field}
@@ -188,12 +149,7 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
             control={control}
             name="description"
             render={({ field }) => (
-              <Textarea
-                title="Description"
-                placeholder="What is this tag used for?"
-                rows={5}
-                {...field}
-              />
+              <Textarea title={t("common.description")} rows={5} {...field} />
             )}
           />
         </FormSection>

@@ -231,7 +231,27 @@
     "title": "Categories"
   },
   "tags": {
-    "title": "Tags"
+    "title": "Tags",
+    "fields": {
+      "usageCount": "Usage Count"
+    },
+    "subheader": {
+      "action": "Create New Tag",
+      "inputPlaceholder": "Search by name or description..."
+    },
+    "create": {
+      "title": "Create New Tag",
+      "success": "Tag created successfully!"
+    },
+    "edit": {
+      "title": "Edit Tag",
+      "success": "Tag updated successfully!"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "Identification"
+      }
+    }
   },
   "settings": {
     "title": "Settings"

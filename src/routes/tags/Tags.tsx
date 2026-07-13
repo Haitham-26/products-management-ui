@@ -261,8 +261,9 @@ export const Tags: React.FC = () => {
         onDelete: permissions.DELETE ? onDelete : undefined,
         onEdit: permissions.UPDATE ? onEdit : undefined,
         onRead: permissions.READ ? onRead : undefined,
+        t,
       }),
-    [permissions],
+    [permissions, t],
   );
 
   useEffect(() => {
@@ -284,7 +285,7 @@ export const Tags: React.FC = () => {
         {...(permissions.CREATE
           ? {
               action: {
-                title: "New Tag",
+                title: t("tags.subheader.action"),
                 icon: faPlus,
                 onClick: () => setTagCreateVisible(true),
               },
@@ -303,7 +304,7 @@ export const Tags: React.FC = () => {
                 ),
               },
               search: {
-                placeholder: "Search by name or description...",
+                placeholder: t("tags.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
                   applyFilter("keyword", searchKeyword, true),
               },
@@ -318,7 +319,7 @@ export const Tags: React.FC = () => {
                   icon={faTrash}
                   variant="secondary"
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               ) : null}
             </BulkActionsWrapper>
@@ -340,7 +341,6 @@ export const Tags: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
-            showTotal: (total) => `Total ${total} tags`,
           }}
           rowSelection={{
             selectedRowKeys: selectedRowIds,
