@@ -6,6 +6,6 @@ export interface GetCategoriesDto extends GenericWithUserId {
   meta?: PaginationMeta;
   keyword?: string;
   creationDate?: CreationDateFilters;
-  minChildrenCount?: number;
-  maxChildrenCount?: number;
+  minUsageCount?: number;
+  maxUsageCount?: number;
 }

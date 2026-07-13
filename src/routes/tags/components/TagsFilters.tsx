@@ -177,7 +177,7 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
           <PopoverSeparator />
           <PopoverFooter>
             <Button icon={faRotateLeft} onClick={resetFilters}>
-              Clear all
+              {t("common.clearAll")}
             </Button>
           </PopoverFooter>
         </FiltersClearContainer>

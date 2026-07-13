@@ -8,18 +8,20 @@ import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { Select } from "../../../components/Select";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
-const creationDateOptions = [
+const getCreationDateOptions = (t: TFunction) => [
   {
-    label: "Default",
+    label: t("common.default"),
     value: null,
   },
   {
-    label: "Newest First",
+    label: t("common.filters.creationDate.newest"),
     value: CreationDateFilters.NEWEST,
   },
   {
-    label: "Oldest First",
+    label: t("common.filters.creationDate.oldest"),
     value: CreationDateFilters.OLDEST,
   },
 ];
@@ -104,8 +106,9 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
   activeFiltersCount,
   applyFilter,
 }) => {
-  const [childrenCountRange, setChildrenCountRange] = useState<Range>(null);
+  const [usageCountRange, setUsageCountRange] = useState<Range>(null);
 
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const resetFilters = useCallback(() => {
@@ -116,31 +119,31 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>Creation date</PopoverLabel>
+          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
           <Select
-            placeholder="Default"
+            placeholder={t("common.default")}
             value={filters.creationDate}
             onChange={(val) => applyFilter("creationDate", val)}
-            options={creationDateOptions}
+            options={getCreationDateOptions(t)}
           />
         </PopoverSection>
 
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>Children count</PopoverLabel>
+          <PopoverLabel>{t("categories.fields.usageCount")}</PopoverLabel>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
-              value={childrenCountRange?.min || ""}
+              placeholder={t("common.min")}
+              value={usageCountRange?.min || ""}
               onChange={(e) => {
-                setChildrenCountRange((prev) => ({
+                setUsageCountRange((prev) => ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
                 applyFilter(
-                  "minChildrenCount",
+                  "minUsageCount",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -150,15 +153,15 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
-              value={childrenCountRange?.max || ""}
+              placeholder={t("common.max")}
+              value={usageCountRange?.max || ""}
               onChange={(e) => {
-                setChildrenCountRange((prev) => ({
+                setUsageCountRange((prev) => ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
                 applyFilter(
-                  "maxChildrenCount",
+                  "maxUsageCount",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -174,7 +177,7 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
           <PopoverSeparator />
           <PopoverFooter>
             <Button icon={faRotateLeft} onClick={resetFilters}>
-              Clear all
+              {t("common.clearAll")}
             </Button>
           </PopoverFooter>
         </FiltersClearContainer>

@@ -10,6 +10,7 @@ import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
 import isFunction from "lodash/isFunction";
 import styled from "styled-components";
+import type { TFunction } from "i18next";
 
 const ActionsIcon = styled(Icon)`
   margin-inline: auto;
@@ -21,16 +22,18 @@ type CreateCategoriesTableColumnsArgs = {
   onEdit?: FNType;
   onDelete?: FNType;
   onRead?: FNType;
+  t: TFunction;
 };
 
 export const createCategoriesTableColumns = ({
   onEdit,
   onDelete,
   onRead,
+  t,
 }: CreateCategoriesTableColumnsArgs): ColumnsType<Category> => {
   return [
     {
-      title: "Actions",
+      title: t("common.actions"),
       key: "actions",
       width: 80,
       align: "center",
@@ -43,21 +46,21 @@ export const createCategoriesTableColumns = ({
               {
                 key: "view",
                 icon: <Icon icon={faEye} />,
-                label: "View",
+                label: t("common.view"),
                 onClick: () => onRead?.(record),
                 disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
+                label: t("common.edit"),
                 onClick: () => onEdit?.(record),
                 disabled: !isFunction(onEdit),
               },
               {
                 key: "delete",
                 icon: <Icon icon={faTrash} />,
-                label: "Delete",
+                label: t("common.delete"),
                 danger: true,
                 onClick: () => onDelete?.(record),
                 disabled: !isFunction(onDelete),
@@ -70,7 +73,7 @@ export const createCategoriesTableColumns = ({
       ),
     },
     {
-      title: "Name",
+      title: t("common.name"),
       dataIndex: "name",
       key: "name",
       width: 220,
@@ -78,28 +81,28 @@ export const createCategoriesTableColumns = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Description",
+      title: t("common.description"),
       dataIndex: "description",
       key: "description",
       width: 360,
       ellipsis: true,
     },
     {
-      title: "Created At",
+      title: t("categories.fields.usageCount"),
+      dataIndex: "usageCount",
+      key: "usageCount",
+      width: 200,
+      ellipsis: true,
+      sorter: (a, b) => b.usageCount - a.usageCount,
+    },
+    {
+      title: t("common.filters.creationDate.title"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
       render: (value: string) => formatDate(new Date(value), true),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    },
-    {
-      title: "Children Products",
-      dataIndex: "childrenCount",
-      key: "childrenCount",
-      width: 200,
-      ellipsis: true,
-      sorter: (a, b) => b.childrenCount - a.childrenCount,
     },
   ];
 };

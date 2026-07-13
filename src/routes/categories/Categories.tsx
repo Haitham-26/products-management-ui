@@ -199,7 +199,7 @@ export const Categories: React.FC = () => {
       setCategoryDeleteVisible(false);
       setCurrentCategory(null);
 
-      Toast.success("Category deleted successfully");
+      Toast.success(t("categories.delete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -250,6 +250,8 @@ export const Categories: React.FC = () => {
 
       setCategoriesBulkDeleteVisible(false);
       setSelectedRowIds([]);
+
+      Toast.success(t("categories.bulkDelete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -264,8 +266,9 @@ export const Categories: React.FC = () => {
         onDelete: permissions.DELETE ? onDelete : undefined,
         onEdit: permissions.UPDATE ? onEdit : undefined,
         onRead: permissions.READ ? onRead : undefined,
+        t,
       }),
-    [permissions],
+    [permissions, t],
   );
 
   useEffect(() => {
@@ -287,7 +290,7 @@ export const Categories: React.FC = () => {
         {...(permissions.CREATE
           ? {
               action: {
-                title: "New Category",
+                title: t("categories.subheader.action"),
                 icon: faPlus,
                 onClick: () => setCategoryCreateVisible(true),
               },
@@ -306,7 +309,7 @@ export const Categories: React.FC = () => {
                 ),
               },
               search: {
-                placeholder: "Search by name or description...",
+                placeholder: t("categories.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
                   applyFilter("keyword", searchKeyword, true),
               },
@@ -321,7 +324,7 @@ export const Categories: React.FC = () => {
                   icon={faTrash}
                   variant="secondary"
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               ) : null}
             </BulkActionsWrapper>
@@ -349,7 +352,6 @@ export const Categories: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
-            showTotal: (total) => `Total ${total} categories`,
           }}
         />
       ) : (
@@ -359,24 +361,26 @@ export const Categories: React.FC = () => {
       {permissions.DELETE ? (
         <Fragment>
           <WarningModal
-            title={`Delete "${currentCategory?.name}" Category?`}
-            description={`This will remove the category and unlink all associated products. Products will not be deleted, but they will no longer be assigned to this category. This action cannot be undone.`}
+            title={t("categories.delete.title", {
+              name: currentCategory?.name,
+            })}
+            description={t("categories.delete.description")}
             open={categoryDeleteVisible}
             onClose={() => setCategoryDeleteVisible(false)}
             onConfirm={deleteCategory}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={categoryDeleteLoading}
           />
 
           <WarningModal
-            title={`Delete ${selectedRowIds.length} categories?`}
-            description={`This will delete the selected categories and unlink all associated products. Products will not be deleted, but they will no longer be assigned to these categories. This action cannot be undone.`}
+            title={t("categories.bulkDelete.title", {
+              count: selectedRowIds.length,
+            })}
+            description={t("categories.bulkDelete.description")}
             open={categoriesBulkDeleteVisible}
             onClose={() => setCategoriesBulkDeleteVisible(false)}
             onConfirm={deleteBulkCategories}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={categoriesBulkDeleteLoading}
           />
         </Fragment>
