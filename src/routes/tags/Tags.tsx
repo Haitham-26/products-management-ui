@@ -194,7 +194,7 @@ export const Tags: React.FC = () => {
       setTagDeleteVisible(false);
       setCurrentTag(null);
 
-      Toast.success("Tag deleted successfully");
+      Toast.success(t("tags.delete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -246,7 +246,7 @@ export const Tags: React.FC = () => {
       setTagsBulkDeleteVisible(false);
       setSelectedRowIds([]);
 
-      Toast.success(`${selectedRowIds.length} tag(s) deleted successfully`);
+      Toast.success(t("tags.bulkDelete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -356,24 +356,22 @@ export const Tags: React.FC = () => {
       {permissions.DELETE ? (
         <Fragment>
           <WarningModal
-            title={`Delete "${currentTag?.name}" tag?`}
-            description={`Are you sure you want to delete "${currentTag?.name}" tag? It will be deleted and will unlink all associated products. This action cannot be undone.`}
+            title={t("tags.delete.title", { name: currentTag?.name })}
+            description={t("tags.delete.description")}
             open={tagDeleteVisible}
             onClose={() => setTagDeleteVisible(false)}
             onConfirm={deleteTag}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={tagDeleteLoading}
           />
 
           <WarningModal
-            title={`Delete ${selectedRowIds.length} tag(s)?`}
-            description="This will delete the selected tags and remove them from all associated products. The products themselves will not be deleted, but they will no longer be linked to these tags. This action cannot be undone."
+            title={t("tags.bulkDelete.title", { count: selectedRowIds.length })}
+            description={t("tags.bulkDelete.description")}
             open={tagsBulkDeleteVisible}
             onClose={() => setTagsBulkDeleteVisible(false)}
             onConfirm={deleteBulkTags}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={tagsBulkDeleteLoading}
           />
         </Fragment>
