@@ -118,6 +118,11 @@
       "title": "Edit Product",
       "success": "Product updated successfully!"
     },
+    "manageStock": {
+      "title": "Manage Stock",
+      "empty": "Enter quantity above to view the change.",
+      "success": "Stock updated successfully!"
+    },
     "read": {
       "title": "Product Details",
       "lowStock": "Low Stock • {{count}} remaining",
@@ -367,7 +372,10 @@
     "creationDate": "Creation Date",
     "none": "None",
     "uploadImage": "Upload Image",
-    "uncategorized": "Uncategorized"
+    "uncategorized": "Uncategorized",
+    "product": "Product",
+    "increase": "Increase",
+    "decrease": "Decrease"
   },
   "errors": {
     "general": {
