@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
 import ImgCrop, { type ImgCropProps } from "antd-img-crop";
+import { useTranslation } from "react-i18next";
 
 type ImageUploadProps = UploadProps & {
   onChange: VoidCallback<UploadFile[]>;
@@ -14,6 +15,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   ...props
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const { t } = useTranslation();
 
   const onPreviw = async (file: UploadFile) => {
     try {
@@ -46,7 +49,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   return (
-    <ImgCrop aspect={1} aspectSlider={showAspectSlider}>
+    <ImgCrop
+      aspect={1}
+      aspectSlider={showAspectSlider}
+      modalTitle={t("cropImageModal.title")}
+      modalCancel={t("common.cancel")}
+      modalOk={t("common.save")}
+    >
       <Upload
         listType="picture-card"
         fileList={fileList}

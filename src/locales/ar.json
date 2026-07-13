@@ -94,7 +94,99 @@
     }
   },
   "products": {
-    "title": "المنتجات"
+    "actions": {
+      "manageStock": "إدارة المخزون",
+      "moveToDraft": "نقل الى المسودة",
+      "publish": "نشر"
+    },
+    "stockStatus": {
+      "title": "حالة المخزون",
+      "inStock": "مخزون متوفر",
+      "lowStock": "مخزون منخفض",
+      "outOfStock": "نفد المخزون"
+    },
+    "subheader": {
+      "action": "إنشاء منتج جديد",
+      "inputPlaceholder": "ابحث بالاسم أو الوصف أو الرمز التعريفي..."
+    },
+    "title": "المنتجات",
+    "create": {
+      "title": "إنشاء منتج جديد",
+      "success": "تم إنشاء المنتج بنجاح!"
+    },
+    "edit": {
+      "title": "تعديل المنتج",
+      "success": "تم تحديث المنتج بنجاح!"
+    },
+    "read": {
+      "title": "تفاصيل المنتج",
+      "lowStock": "مخزون منخفض • متبقي {{count}}",
+      "gallery": "معرض الصور",
+      "noDescription": "لم يتم إضافة وصف.",
+      "noTags": "لم يتم إضافة وسوم.",
+      "availableStock": "المخزون المتوفر"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "التعريف"
+      },
+      "images": {
+        "title": "الصور",
+        "main": {
+          "title": "الصورة الرئيسية",
+          "description": "هذه هي الصورة الرئيسية التي تظهر في القوائم والجداول. يجب أن تكون مربعة.",
+          "addedTag": "تمت الإضافة"
+        },
+        "gallery": {
+          "title": "معرض الصور",
+          "description": "أضف صوراً من زوايا إضافية، أو صوراً للتغليف."
+        }
+      },
+      "stock": {
+        "title": "المخزون",
+        "minStock": {
+          "title": "تنبيه انخفاض المخزون عند",
+          "info": "سيتم تنبيهك عندما تصل كمية المخزون إلى هذه القيمة (بجانب الكمية في جدول المنتجات، وفي لوحة التحكم، وأثناء إنشاء الطلبات)."
+        }
+      },
+      "price": {
+        "title": "التسعير",
+        "basePrice": "السعر الأساسي",
+        "discount": {
+          "type": {
+            "title": "نوع التخفيض"
+          },
+          "types": {
+            "percentage": "نسبة مئوية (%)",
+            "fixed": "قيمة ثابتة ({{currency}})"
+          },
+          "value": "قيمة التخفيض"
+        },
+        "finalPrice": "السعر النهائي للمنتج الواحد: "
+      },
+      "taxonomy": {
+        "title": "التصنيف والوسوم",
+        "restrictions": {
+          "tags": "ليست لديك صلاحية الوصول للوسوم.",
+          "categories": "ليست لديك صلاحية الوصول للتصنيفات.",
+          "tagsAndCategories": "ليست لديك صلاحية الوصول للوسوم والتصنيفات."
+        },
+        "category": {
+          "placeholder": "ابحث عن تصنيف..."
+        },
+        "tags": {
+          "placeholder": "ابحث عن وسوم..."
+        }
+      }
+    },
+    "fields": {
+      "basePrice": "السعر الأساسي",
+      "finalPrice": "السعر النهائي",
+      "discount": "التخفيض"
+    },
+    "filters": {
+      "showDraft": "إظهار المسودات"
+    }
   },
   "orders": {
     "title": "الطلبات"
@@ -204,6 +296,17 @@
       }
     }
   },
+  "cropImageModal": {
+    "title": "تعديل الصورة"
+  },
+  "table": {
+    "triggerAsc": "انقر للترتيب تصاعديًا",
+    "triggerDesc": "انقر للترتيب تنازليًا",
+    "cancelSort": "انقر لإلغاء الترتيب",
+    "emptyText": "لا يوجد بيانات",
+    "itemsPerPage": "لكل صفحة",
+    "total": "إجمالي العناصر: {{total}}"
+  },
   "common": {
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
@@ -235,7 +338,36 @@
     "orders": "الطلبات",
     "categories": "التصنيفات",
     "tags": "الوسوم",
-    "resend": "إعادة الإرسال"
+    "resend": "إعادة الإرسال",
+    "edit": "تعديل",
+    "description": "الوصف",
+    "recommended": "موصى به",
+    "uploadImage": "رفع صورة",
+    "quantity": "الكمية",
+    "category": "التصنيف",
+    "search": "بحث",
+    "noResultsFound": "لم يتم العثور على نتائج",
+    "filters": {
+      "title": "الفلاتر",
+      "clear": "إلغاء الفلاتر",
+      "creationDate": {
+        "title": "تاريخ الإنشاء",
+        "newest": "الأحدث أولا",
+        "oldest": "الأقدم أولا"
+      }
+    },
+    "all": "الكل",
+    "default": "الافتراضي",
+    "clearAll": "مسح الكل",
+    "min": "الأدنى",
+    "max": "الأقصى",
+    "actions": "الإجراءات",
+    "view": "عرض",
+    "id": "الرمز التعريفي",
+    "status": "الحالة",
+    "creationDate": "تاريخ الإنشاء",
+    "none": "لا شيء",
+    "uncategorized": "غير مصنف"
   },
   "errors": {
     "general": {

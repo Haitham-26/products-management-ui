@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 0.875rem;
+  font-size: ${({ theme }) => theme.typography.small};
   color: ${({ theme }) => theme.colors.textSecondary};
 
   span {

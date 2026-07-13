@@ -94,7 +94,99 @@
     }
   },
   "products": {
-    "title": "Products"
+    "actions": {
+      "manageStock": "Manage Stock",
+      "moveToDraft": "Move to Draft",
+      "publish": "Publish"
+    },
+    "stockStatus": {
+      "title": "Stock Status",
+      "inStock": "In Stock",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock"
+    },
+    "subheader": {
+      "action": "Create New Product",
+      "inputPlaceholder": "Search by name, description, or ID..."
+    },
+    "title": "Products",
+    "create": {
+      "title": "Create New Product",
+      "success": "Product created successfully!"
+    },
+    "edit": {
+      "title": "Edit Product",
+      "success": "Product updated successfully!"
+    },
+    "read": {
+      "title": "Product Details",
+      "lowStock": "Low Stock • {{count}} remaining",
+      "gallery": "Gallery",
+      "noDescription": "No description added.",
+      "noTags": "No tags added.",
+      "availableStock": "Available Stock"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "Identification"
+      },
+      "images": {
+        "title": "Images",
+        "main": {
+          "title": "Main Image",
+          "description": "This is the primary image shown in lists and tables. It should be square.",
+          "addedTag": "Added"
+        },
+        "gallery": {
+          "title": "Image Gallery",
+          "description": "Add images from additional angles, or packaging shots."
+        }
+      },
+      "stock": {
+        "title": "Stock",
+        "minStock": {
+          "title": "Low Stock Alert At",
+          "info": "You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, in the dashboard, and during creating orders)."
+        }
+      },
+      "price": {
+        "title": "Pricing",
+        "basePrice": "Base Price",
+        "discount": {
+          "type": {
+            "title": "Discount Type"
+          },
+          "types": {
+            "percentage": "Percentage (%)",
+            "fixed": "Fixed Amount ({{currency}})"
+          },
+          "value": "Discount Value"
+        },
+        "finalPrice": "Final price per unit: "
+      },
+      "taxonomy": {
+        "title": "Category & Tags",
+        "restrictions": {
+          "tags": "You do not have permission to access tags.",
+          "categories": "You do not have permission to access categories.",
+          "tagsAndCategories": "You do not have permission to access tags and categories."
+        },
+        "category": {
+          "placeholder": "Search for a category..."
+        },
+        "tags": {
+          "placeholder": "Search for tags..."
+        }
+      }
+    },
+    "fields": {
+      "basePrice": "Base Price",
+      "finalPrice": "Final Price",
+      "discount": "Discount"
+    },
+    "filters": {
+      "showDraft": "Show Drafts"
+    }
   },
   "orders": {
     "title": "Orders"
@@ -204,6 +296,17 @@
       }
     }
   },
+  "cropImageModal": {
+    "title": "Edit Image"
+  },
+  "table": {
+    "triggerAsc": "Click to sort ascending",
+    "triggerDesc": "Click to sort descending",
+    "cancelSort": "Click to cancel sort",
+    "emptyText": "No data",
+    "itemsPerPage": "per page",
+    "total": "Total items: {{total}}"
+  },
   "common": {
     "email": "Email",
     "password": "Password",
@@ -235,7 +338,36 @@
     "orders": "Orders",
     "categories": "Categories",
     "tags": "Tags",
-    "resend": "Resend"
+    "resend": "Resend",
+    "edit": "Edit",
+    "description": "Description",
+    "recommended": "Recommended",
+    "quantity": "Quantity",
+    "category": "Category",
+    "search": "Search",
+    "noResultsFound": "No results found",
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear Filters",
+      "creationDate": {
+        "title": "Creation Date",
+        "newest": "Newest First",
+        "oldest": "Oldest First"
+      }
+    },
+    "all": "All",
+    "default": "Default",
+    "clearAll": "Clear All",
+    "min": "Min",
+    "max": "Max",
+    "actions": "Actions",
+    "view": "View",
+    "id": "ID",
+    "status": "Status",
+    "creationDate": "Creation Date",
+    "none": "None",
+    "uploadImage": "Upload Image",
+    "uncategorized": "Uncategorized"
   },
   "errors": {
     "general": {

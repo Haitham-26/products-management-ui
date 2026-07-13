@@ -1,6 +1,7 @@
 import type React from "react";
 import styled from "styled-components";
 import { Button } from "./Button";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
@@ -22,14 +23,16 @@ export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
   loading = false,
   confirmDisabled = false,
 }) => {
+  const { t } = useTranslation(undefined, { keyPrefix: "common" });
+
   return (
     <Container>
       <Button variant="ghost" onClick={onCancel}>
-        Cancel
+        {t("cancel")}
       </Button>
 
       <Button onClick={onConfirm} loading={loading} disabled={confirmDisabled}>
-        {editMode ? "Edit" : "Create"}
+        {t(editMode ? "edit" : "create")}
       </Button>
     </Container>
   );

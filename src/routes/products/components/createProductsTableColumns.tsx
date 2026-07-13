@@ -26,6 +26,7 @@ import { ProductStatus } from "../../../model/product/types/ProductStatus.enum";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrowDown";
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
 import { ProductMainImage } from "./ProductMainImage";
+import type { TFunction } from "i18next";
 
 const QuantityContainer = styled.div<{ stockStatus: ProductStockStatus }>`
   display: flex;
@@ -91,19 +92,20 @@ type CreateProductsTableColumnsArgs = {
     onRead?: FNType;
     onManageStock?: FNType;
     onToggleStatus?: FNType;
+    t: TFunction;
   };
   currency: CurrencyCodeRecord["code"];
   settings: Settings;
 };
 
 export const createProductsTableColumns = ({
-  functions: { onEdit, onDelete, onRead, onManageStock, onToggleStatus },
+  functions: { onEdit, onDelete, onRead, onManageStock, onToggleStatus, t },
   currency,
   settings,
 }: CreateProductsTableColumnsArgs): ColumnsType<Product> => {
   return [
     {
-      title: "Actions",
+      title: t("common.actions"),
       key: "actions",
       width: 80,
       align: "center",
@@ -116,21 +118,21 @@ export const createProductsTableColumns = ({
               {
                 key: "view",
                 icon: <Icon icon={faEye} />,
-                label: "View",
+                label: t("common.view"),
                 onClick: () => onRead?.(record),
                 disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
+                label: t("common.edit"),
                 onClick: () => onEdit?.(record),
                 disabled: !isFunction(onEdit),
               },
               {
                 key: "manage-stock",
                 icon: <Icon icon={faBoxesStacked} />,
-                label: "Manage Stock",
+                label: t("products.actions.manageStock"),
                 onClick: () => onManageStock?.(record),
                 disabled: !isFunction(onManageStock),
               },
@@ -147,15 +149,15 @@ export const createProductsTableColumns = ({
                 ),
                 label:
                   record.status === ProductStatus.DRAFT
-                    ? "Publish Product"
-                    : "Move to Draft",
+                    ? t("products.actions.publish")
+                    : t("products.actions.moveToDraft"),
                 onClick: () => onToggleStatus?.(record),
                 disabled: !isFunction(onToggleStatus),
               },
               {
                 key: "delete",
                 icon: <Icon icon={faTrash} />,
-                label: "Delete",
+                label: t("common.delete"),
                 danger: true,
                 onClick: () => onDelete?.(record),
                 disabled: !isFunction(onDelete),
@@ -168,13 +170,13 @@ export const createProductsTableColumns = ({
       ),
     },
     {
-      title: "ID",
+      title: t("common.id"),
       dataIndex: "identifier",
       key: "identifier",
       width: 220,
     },
     {
-      title: "Name",
+      title: t("common.name"),
       dataIndex: "name",
       key: "name",
       width: 220,
@@ -188,9 +190,8 @@ export const createProductsTableColumns = ({
         </NameContainer>
       ),
     },
-
     {
-      title: "Status",
+      title: t("common.status"),
       dataIndex: "status",
       key: "status",
       width: 100,
@@ -201,7 +202,7 @@ export const createProductsTableColumns = ({
       }),
     },
     {
-      title: "Base Price",
+      title: t("products.fields.basePrice"),
       dataIndex: "price",
       key: "base-price",
       width: 140,
@@ -209,7 +210,7 @@ export const createProductsTableColumns = ({
       sorter: (a, b) => (b?.price || 0) - (a?.price || 0),
     },
     {
-      title: "Quantity",
+      title: t("common.quantity"),
       dataIndex: "quantity",
       key: "quantity",
       width: 180,
@@ -232,12 +233,12 @@ export const createProductsTableColumns = ({
             {isOutOfStock ? (
               <StockAlert danger>
                 <Icon icon={faTriangleExclamation} />
-                <span>Out of Stock</span>
+                <span>{t("products.stockStatus.outOfStock")}</span>
               </StockAlert>
             ) : isLowStock ? (
               <StockAlert>
                 <Icon icon={faTriangleExclamation} />
-                <span>Low Stock</span>
+                <span>{t("products.stockStatus.lowStock")}</span>
               </StockAlert>
             ) : null}
           </QuantityContainer>
@@ -246,7 +247,7 @@ export const createProductsTableColumns = ({
       sorter: (a, b) => b.quantity - a.quantity,
     },
     {
-      title: "Discount",
+      title: t("products.fields.discount"),
       dataIndex: "discount",
       key: "discount",
       width: 140,
@@ -263,7 +264,7 @@ export const createProductsTableColumns = ({
       },
     },
     {
-      title: "Final Price",
+      title: t("products.fields.finalPrice"),
       key: "priceAfterDiscount",
       width: 180,
       render: (_: unknown, record: Product) => {
@@ -276,7 +277,7 @@ export const createProductsTableColumns = ({
       },
     },
     {
-      title: "Category",
+      title: t("common.category"),
       dataIndex: "category",
       key: "category",
       width: 200,
@@ -284,7 +285,7 @@ export const createProductsTableColumns = ({
       ellipsis: true,
     },
     {
-      title: "Tags",
+      title: t("common.tags"),
       dataIndex: "tags",
       key: "tags",
       width: 200,
@@ -292,14 +293,14 @@ export const createProductsTableColumns = ({
       ellipsis: true,
     },
     {
-      title: "Description",
+      title: t("common.description"),
       dataIndex: "description",
       key: "description",
       width: 360,
       ellipsis: true,
     },
     {
-      title: "Created At",
+      title: t("common.creationDate"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

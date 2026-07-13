@@ -410,6 +410,7 @@ export const Products: React.FC = () => {
           onRead: permissions.READ ? onRead : undefined,
           onManageStock: permissions.UPDATE ? onManageStock : undefined,
           onToggleStatus: permissions.UPDATE ? onToggleStatus : undefined,
+          t,
         },
         currency: settings.currency,
         settings,
@@ -436,7 +437,7 @@ export const Products: React.FC = () => {
         {...(permissions.CREATE
           ? {
               action: {
-                title: "New Product",
+                title: t("products.subheader.action"),
                 icon: faPlus,
                 onClick: () => setProductCreateVisible(true),
               },
@@ -455,7 +456,7 @@ export const Products: React.FC = () => {
                 ),
               },
               search: {
-                placeholder: "Search by name, description or id...",
+                placeholder: t("products.subheader.inputPlaceholder"),
                 onChange: (searchKeyword: string) =>
                   applyFilter("keyword", searchKeyword, true),
               },
@@ -470,7 +471,7 @@ export const Products: React.FC = () => {
                   icon={faTrash}
                   variant="secondary"
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               ) : null}
 
@@ -518,7 +519,6 @@ export const Products: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
-            showTotal: (total) => `Total ${total} products`,
           }}
         />
       ) : (

@@ -7,11 +7,9 @@ import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons/faLayerGroup";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
-import { faTicket } from "@fortawesome/free-solid-svg-icons/faTicket";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import { faImages } from "@fortawesome/free-solid-svg-icons/faImages";
 import type { CreateProductDto } from "../../../model/product/dto/CreateProductDto";
@@ -43,6 +41,7 @@ import { Info } from "../../../components/Info";
 import { ImageUpload } from "../../../components/ImageUpload";
 import { isArray } from "lodash";
 import type { UploadFile } from "antd";
+import { useTranslation } from "react-i18next";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -51,21 +50,6 @@ const FormContainer = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px border ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
 `;
 
 const FormSection = styled.section`
@@ -112,9 +96,10 @@ const PriceBadge = styled.div`
   }
 `;
 
-const PriceInputsWrapper = styled.div`
+const TwoInputsWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
@@ -191,6 +176,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues, reset, watch, setValue } =
     useForm<CreateProductDto>({
       defaultValues: {
@@ -244,17 +230,19 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const tagsPermissions = checkPermissions(user, "tags");
   const categoriesPermissions = checkPermissions(user, "categories");
 
-  const taxonomyHint = useMemo(() => {
+  const taxonomyHintTransKey = useMemo(() => {
+    let transKeyPrefix = "products.create-edit.taxonomy.restrictions.";
+
     if (!categoriesPermissions.READ && !tagsPermissions.READ) {
-      return "You don't have access to categories or tags.";
+      return (transKeyPrefix += "tagsAndCategories");
     }
 
     if (!categoriesPermissions.READ) {
-      return "You don't have access to categories.";
+      return (transKeyPrefix += "categories");
     }
 
     if (!tagsPermissions.READ) {
-      return "You don't have access to tags.";
+      return (transKeyPrefix += "tags");
     }
 
     return null;
@@ -345,7 +333,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       reset();
       onClose();
 
-      Toast.success("Product created successfully");
+      Toast.success(t("products.create.success"));
     } catch (e) {
       Toast.apiError(e);
       console.log(e);
@@ -369,7 +357,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title={"Create Product"}
+      title={t("products.create.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -380,32 +368,18 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <Icon icon={faBoxOpen} color="primary" size="2xl" />
-
-          <TitleGroup>
-            <Text fontWeight="bold" fontSize="subtitle">
-              New Product
-            </Text>
-            <Text fontSize="small" color="textSecondary">
-              Fill in the details to list your item
-            </Text>
-          </TitleGroup>
-        </GlassHeader>
-
         <FormSection>
           <SectionLabel>
             <Icon icon={faLayerGroup} />
-            <Text>Identification</Text>
+            <Text>{t("products.create-edit.identification.title")}</Text>
           </SectionLabel>
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Required" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState }) => (
               <Input
-                title="Product Title"
-                placeholder="Ex: Wireless Headphones"
+                title={t("common.name")}
                 errorMessage={fieldState.error?.message}
                 required
                 {...field}
@@ -416,12 +390,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             control={control}
             name="description"
             render={({ field }) => (
-              <Textarea
-                title="Description"
-                placeholder="Explain the features..."
-                rows={3}
-                {...field}
-              />
+              <Textarea title={t("common.description")} rows={3} {...field} />
             )}
           />
         </FormSection>
@@ -429,7 +398,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faImages} />
-            <Text>Images</Text>
+            <Text>{t("products.create-edit.images.title")}</Text>
           </SectionLabel>
 
           <ImagesGrid>
@@ -437,16 +406,19 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
               <ImageCardHeader>
                 <ImageCardTitle>
                   <Icon icon={faImage} size="sm" color={"textSecondary"} />
-                  <span>Cover Image</span>
+                  <span>{t("products.create-edit.images.main.title")}</span>
                 </ImageCardTitle>
                 <ImageCountBadge complete={!isEmpty(mainImage)}>
-                  {!isEmpty(mainImage) ? "Added" : "Recommended"}
+                  {t(
+                    !isEmpty(mainImage)
+                      ? "products.create-edit.images.main.addedTag"
+                      : "common.recommended",
+                  )}
                 </ImageCountBadge>
               </ImageCardHeader>
 
               <ImageHelperText fontSize="small" color="textSecondary">
-                This is the main photo customers see in listings and search
-                results. A square, well-lit shot works best.
+                {t("products.create-edit.images.main.description")}
               </ImageHelperText>
 
               <Controller
@@ -458,7 +430,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                     fileList={value as UploadFile[]}
                     onChange={onChange}
                   >
-                    {isEmpty(value) ? "Upload Cover Image" : null}
+                    {isEmpty(value) ? t("common.uploadImage") : null}
                   </ImageUpload>
                 )}
               />
@@ -468,7 +440,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
               <ImageCardHeader>
                 <ImageCardTitle>
                   <Icon icon={faImages} size="sm" color="textSecondary" />
-                  <span>Gallery</span>
+                  <span>{t("products.create-edit.images.gallery.title")}</span>
                 </ImageCardTitle>
                 <ImageCountBadge
                   complete={galleryImages.length >= MAX_GALLERY_IMAGES_COUNT}
@@ -478,8 +450,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
               </ImageCardHeader>
 
               <ImageHelperText fontSize="small" color="textSecondary">
-                Add extra angles, packaging, or lifestyle shots to help
-                customers decide.
+                {t("products.create-edit.images.gallery.description")}
               </ImageHelperText>
 
               <Controller
@@ -494,7 +465,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                     showAspectSlider
                   >
                     {value?.length < MAX_GALLERY_IMAGES_COUNT
-                      ? "Upload Gallery Images"
+                      ? t("common.uploadImage")
                       : null}
                   </ImageUpload>
                 )}
@@ -505,33 +476,18 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
         <FormSection>
           <SectionLabel>
-            <Icon icon={faCoins} />
-            <Text>Economics</Text>
+            <Icon icon={faLayerGroup} />
+            <Text>{t("products.create-edit.stock.title")}</Text>
           </SectionLabel>
 
-          <PriceInputsWrapper>
-            <Controller
-              control={control}
-              name="price"
-              rules={{ required: "Required" }}
-              render={({ field, fieldState: { error } }) => (
-                <Input
-                  title="Base Price"
-                  required
-                  errorMessage={error?.message}
-                  type="number"
-                  min={0}
-                  {...field}
-                />
-              )}
-            />
+          <TwoInputsWrapper>
             <Controller
               control={control}
               name="quantity"
-              rules={{ required: "Required" }}
+              rules={{ required: t("errors.general.required") }}
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  title="Stock"
+                  title={t("common.quantity")}
                   required
                   errorMessage={error?.message}
                   type="number"
@@ -546,53 +502,85 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
               name="minStock"
               render={({ field, fieldState: { error } }) => (
                 <Input
-                  title="Minimum Stock Alert"
+                  title={t("products.create-edit.stock.minStock.title")}
                   type="number"
-                  info="You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, and during creating orders)."
+                  info={t("products.create-edit.stock.minStock.info")}
                   errorMessage={error?.message}
                   min={0}
                   {...field}
                 />
               )}
             />
-          </PriceInputsWrapper>
+          </TwoInputsWrapper>
         </FormSection>
 
         <FormSection>
           <SectionLabel>
-            <Icon icon={faTicket} />
-            <Text>Promotions</Text>
+            <Icon icon={faCoins} />
+            <Text>{t("products.create-edit.price.title")}</Text>
           </SectionLabel>
+
           <Controller
             control={control}
-            name="discount.type"
-            render={({ field: { value, onChange } }) => (
-              <Select
-                title="Strategy"
-                value={value}
-                onChange={onChange}
-                options={[
-                  {
-                    value: ProductDiscountTypes.PERCENTAGE,
-                    label: "Percent Off (%)",
-                  },
-                  {
-                    value: ProductDiscountTypes.FIXED,
-                    label: `Fixed Amount (${settings.currency})`,
-                  },
-                ]}
+            name="price"
+            rules={{ required: t("errors.general.required") }}
+            render={({ field, fieldState: { error } }) => (
+              <Input
+                title={t("products.create-edit.price.basePrice")}
+                required
+                errorMessage={error?.message}
+                type="number"
+                min={0}
+                {...field}
               />
             )}
           />
-          <Controller
-            control={control}
-            name="discount.value"
-            render={({ field }) => (
-              <Input title="Value" type="number" min={0} {...field} />
-            )}
-          />
+
+          <TwoInputsWrapper>
+            <Controller
+              control={control}
+              name="discount.type"
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  title={t("products.create-edit.price.discount.type.title")}
+                  value={value}
+                  onChange={onChange}
+                  options={[
+                    {
+                      value: ProductDiscountTypes.PERCENTAGE,
+                      label: t(
+                        "products.create-edit.price.discount.types.percentage",
+                      ),
+                    },
+                    {
+                      value: ProductDiscountTypes.FIXED,
+                      label: t(
+                        "products.create-edit.price.discount.types.fixed",
+                        {
+                          currency: settings.currency,
+                        },
+                      ),
+                    },
+                  ]}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="discount.value"
+              render={({ field }) => (
+                <Input
+                  title={t("products.create-edit.price.discount.value")}
+                  type="number"
+                  min={0}
+                  {...field}
+                />
+              )}
+            />
+          </TwoInputsWrapper>
+
           <PriceBadge>
-            <span>Projected Revenue per Unit:</span>
+            <span>{t("products.create-edit.price.finalPrice")}</span>
             <b>{stringWithCurrencyCode(settings.currency, finalPrice)}</b>
           </PriceBadge>
         </FormSection>
@@ -600,24 +588,26 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faTags} />
-            <Text>Taxonomy</Text>
+            <Text>{t("products.create-edit.taxonomy.title")}</Text>
           </SectionLabel>
 
-          {taxonomyHint ? <Info>{taxonomyHint}</Info> : null}
+          {taxonomyHintTransKey ? <Info>{t(taxonomyHintTransKey)}</Info> : null}
 
           <Controller
             control={control}
             name="categoryId"
             render={({ field: { value, onChange } }) => (
               <SearchSelect
-                title="Select Category"
+                title={t("common.category")}
                 value={categoriesPermissions.READ && value ? value : undefined}
                 onChange={onChange}
                 options={categoriesOptions}
                 onSearch={searchCategories}
                 allowClear
                 loading={searchCategoriesLoading}
-                placeholder="Search for a category..."
+                placeholder={t(
+                  "products.create-edit.taxonomy.category.placeholder",
+                )}
                 disabled={!categoriesPermissions.READ}
               />
             )}
@@ -628,7 +618,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
             name="tags"
             render={({ field: { value: tags, onChange } }) => (
               <SearchSelect
-                title="Select Tags"
+                title={t("common.tags")}
                 mode="multiple"
                 value={tagsPermissions.READ && tags ? tags : []}
                 onChange={onChange}
@@ -636,7 +626,9 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
                 onSearch={searchTags}
                 loading={searchTagsLoading}
                 allowClear
-                placeholder="Search for tags..."
+                placeholder={t(
+                  "products.create-edit.taxonomy.tags.placeholder",
+                )}
                 disabled={!tagsPermissions.READ}
               />
             )}

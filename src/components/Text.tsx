@@ -29,6 +29,7 @@ const StyledP = styled.p<StyledTextProps>`
     fontWeight || fontWeights[fontSize || "body"]};
   line-height: ${({ fontSize }) => lineHeights[fontSize || "body"]};
   text-align: ${({ textAlign }) => textAlign};
+  font-style: ${({ fontStyle }) => fontStyle};
 `;
 
 type StyledTextProps = {
@@ -36,6 +37,7 @@ type StyledTextProps = {
   fontWeight?: TextProps["fontWeight"];
   color?: TextProps["color"];
   textAlign?: TextProps["textAlign"];
+  fontStyle?: React.CSSProperties["fontStyle"];
 };
 
 type TextProps = {
@@ -45,6 +47,7 @@ type TextProps = {
   color?: keyof ThemeType["colors"];
   as?: React.ElementType;
   textAlign?: React.CSSProperties["textAlign"];
+  fontStyle?: React.CSSProperties["fontStyle"];
 };
 
 export const Text: React.FC<TextProps> = ({ children, ...props }) => {
