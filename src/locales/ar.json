@@ -247,6 +247,14 @@
       "title": "تحديث الوسم",
       "success": "تم تحديث الوسم بنجاح!"
     },
+    "read": {
+      "title": "تفاصيل الوسم",
+      "noDescription": "لم يتم إضافة وصف.",
+      "usageCount": {
+        "title": "الاستخدامات النشطة",
+        "value": "{{count}} منتجـ/ات"
+      }
+    },
     "create-edit": {
       "identification": {
         "title": "التعريف"

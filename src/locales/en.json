@@ -247,6 +247,14 @@
       "title": "Edit Tag",
       "success": "Tag updated successfully!"
     },
+    "read": {
+      "title": "Tag Details",
+      "noDescription": "No description provided.",
+      "usageCount": {
+        "title": "Active Assignments",
+        "value": "{{count}} Product(s)"
+      }
+    },
     "create-edit": {
       "identification": {
         "title": "Identification"
