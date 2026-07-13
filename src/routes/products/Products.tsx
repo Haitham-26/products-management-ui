@@ -44,18 +44,18 @@ import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons/faCloudArrow
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
-const toggleStatusModalTexts = {
+const getToggleStatusModalTexts = (t: TFunction) => ({
   [ProductStatus.DRAFT]: {
-    title: "Publish product",
-    description: "This product will become available for creating new orders.",
+    title: t("products.publish.title"),
+    description: t("products.publish.description"),
   },
   [ProductStatus.PUBLISHED]: {
-    title: "Move product to draft",
-    description:
-      "This product will be hidden from the product list by default unless draft filter is enabled, and it will no longer be available for creating new orders.",
+    title: t("products.moveToDraft.title"),
+    description: t("products.moveToDraft.description"),
   },
-};
+});
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -188,6 +188,8 @@ export const Products: React.FC = () => {
 
   const activeFiltersCount = countProductsActiveFilters(filters);
 
+  const toggleStatusModalTexts = getToggleStatusModalTexts(t);
+
   const onDelete = (product: Product) => {
     setCurrentProduct(product);
     setProductDeleteVisible(true);
@@ -270,7 +272,7 @@ export const Products: React.FC = () => {
       setProductToggleStatusVisible(false);
       setCurrentProduct(null);
 
-      Toast.success("Product status updated successfully");
+      Toast.success(t("products.statusUpdateSuccess"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -296,7 +298,7 @@ export const Products: React.FC = () => {
       setProductDeleteVisible(false);
       setCurrentProduct(null);
 
-      Toast.success("Product deleted successfully");
+      Toast.success(t("products.delete.success"));
     } catch (e) {
       console.error("Delete failed:", e);
       Toast.apiError(e);
@@ -347,6 +349,8 @@ export const Products: React.FC = () => {
 
       setProductsBulkDeleteVisible(false);
       setSelectedRowIds([]);
+
+      Toast.success(t("products.bulkDelete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -389,9 +393,11 @@ export const Products: React.FC = () => {
       setSelectedRowIds([]);
 
       Toast.success(
-        status === ProductStatus.DRAFT
-          ? "Products moved to draft successfully"
-          : "Products published successfully",
+        t(
+          status === ProductStatus.DRAFT
+            ? "products.bulkMoveToDraft.success"
+            : "products.bulkPublish.success",
+        ),
       );
     } catch (e) {
       console.log(e);
@@ -415,7 +421,7 @@ export const Products: React.FC = () => {
         currency: settings.currency,
         settings,
       }),
-    [settings, permissions],
+    [settings, permissions, t],
   );
 
   useEffect(() => {
@@ -482,7 +488,7 @@ export const Products: React.FC = () => {
                     icon={faCloudArrowUp}
                     variant="secondary"
                   >
-                    Publish
+                    {t("products.actions.publish")}
                   </Button>
 
                   <Button
@@ -490,7 +496,7 @@ export const Products: React.FC = () => {
                     icon={faCloudArrowDown}
                     variant="secondary"
                   >
-                    Move to Draft
+                    {t("products.actions.moveToDraft")}
                   </Button>
                 </Fragment>
               ) : null}
@@ -528,8 +534,7 @@ export const Products: React.FC = () => {
       {permissions.DELETE ? (
         <Fragment>
           <WarningModal
-            title={`Delete "${currentProduct?.name}" product?`}
-            description={`You are about to delete "${currentProduct?.name}" from your inventory. You will lose all pricing, stock, and history for this product.`}
+            title={t("products.delete.title", { name: currentProduct?.name })}
             open={productDeleteVisible}
             onClose={() => setProductDeleteVisible(false)}
             onConfirm={deleteProduct}
@@ -537,8 +542,9 @@ export const Products: React.FC = () => {
           />
 
           <WarningModal
-            title={`Delete ${selectedRowIds.length} product(s)?`}
-            description={`You are about to delete ${selectedRowIds.length} product(s) from your inventory. You will lose all pricing, stock, and history for these products.`}
+            title={t("products.bulkDelete.title", {
+              count: selectedRowIds.length,
+            })}
             open={productsBulkDeleteVisible}
             onClose={() => setProductsBulkDeleteVisible(false)}
             onConfirm={deleteBulkProducts}
@@ -597,8 +603,10 @@ export const Products: React.FC = () => {
           />
 
           <WarningModal
-            title={`Move ${selectedRowIds.length} product(s) to draft?`}
-            description={`You are about to move ${selectedRowIds.length} product(s) to draft. They will be hidden from the product list by default unless draft filter is enabled, and they will no longer be available for creating new orders.`}
+            title={t("products.bulkMoveToDraft.title", {
+              count: selectedRowIds.length,
+            })}
+            description={t("products.bulkMoveToDraft.description")}
             open={productsBulkMoveToDraftVisible}
             onClose={() => setProductsBulkMoveToDraftVisible(false)}
             onConfirm={() => manageBulkProductStatus(ProductStatus.DRAFT)}
@@ -606,8 +614,10 @@ export const Products: React.FC = () => {
           />
 
           <WarningModal
-            title={`Publish ${selectedRowIds.length} product(s)?`}
-            description={`You are about to publish ${selectedRowIds.length} product(s). They will become available for creating new orders.`}
+            title={t("products.bulkPublish.title", {
+              count: selectedRowIds.length,
+            })}
+            description={t("products.bulkPublish.description")}
             open={productsBulkPublishVisible}
             onClose={() => setProductsBulkPublishVisible(false)}
             onConfirm={() => manageBulkProductStatus(ProductStatus.PUBLISHED)}

@@ -11,7 +11,6 @@ import { formatDate } from "../../../utils/Date";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
-import capitalize from "lodash/capitalize";
 import isNaN from "lodash/isNaN";
 import isFunction from "lodash/isFunction";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
@@ -196,7 +195,7 @@ export const createProductsTableColumns = ({
       key: "status",
       width: 100,
       render: (value: ProductStatus) =>
-        capitalize(value || ProductStatus.PUBLISHED),
+        t(`products.status.${value.toLowerCase()}`),
       onCell: (record) => ({
         className: `${(record.status || ProductStatus.PUBLISHED).toLowerCase()}-product`,
       }),

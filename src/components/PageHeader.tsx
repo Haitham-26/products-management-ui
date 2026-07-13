@@ -130,6 +130,10 @@ const FixedContentContainer = styled.div`
   justify-content: space-between;
   padding-inline-start: ${({ theme }) => theme.spacing.md};
   padding-inline-end: ${({ theme }) => theme.spacing.sm};
+
+  button {
+    height: 2rem !important;
+  }
 `;
 
 type PageHeaderProps = {
@@ -236,7 +240,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           {bulkActionsContent ? (
             <FixedContentContainer>
               <Text color="onPrimary" fontSize="small" fontWeight={"bold"}>
-                {selectedTableItemsCount} {t("common.selected")}
+                {selectedTableItemsCount} {t("common.selected").toLowerCase()}
               </Text>
 
               {bulkActionsContent}

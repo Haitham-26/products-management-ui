@@ -105,6 +105,37 @@
       "lowStock": "Low Stock",
       "outOfStock": "Out of Stock"
     },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "delete": {
+      "title": "Delete Product \"{{name}}\"",
+      "success": "Product deleted successfully!"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} Products",
+      "success": "Products deleted successfully!"
+    },
+    "publish": {
+      "title": "Publish Product",
+      "description": "This product will become available for creating orders."
+    },
+    "bulkPublish": {
+      "title": "Publish {{count}} Products",
+      "description": "These products will become available for creating orders.",
+      "success": "Products published successfully!"
+    },
+    "moveToDraft": {
+      "title": "Move Product to Draft",
+      "description": "This product will be hidden from the products list by default unless the 'Show Drafts' filter is enabled, and it will no longer be available for creating new orders."
+    },
+    "bulkMoveToDraft": {
+      "title": "Move {{count}} Products to Draft",
+      "description": "These products will be hidden from the products list by default unless the 'Show Drafts' filter is enabled, and they will no longer be available for creating new orders.",
+      "success": "Products moved to draft successfully!"
+    },
+    "statusUpdateSuccess": "Product status updated successfully!",
     "subheader": {
       "action": "Create New Product",
       "inputPlaceholder": "Search by name, description, or ID..."
@@ -375,7 +406,8 @@
     "uncategorized": "Uncategorized",
     "product": "Product",
     "increase": "Increase",
-    "decrease": "Decrease"
+    "decrease": "Decrease",
+    "selected": "Selected"
   },
   "errors": {
     "general": {
