@@ -65,7 +65,6 @@ AppAxios.interceptors.response.use(
           }>("/auth/refresh-token", { refreshToken })
             .then(({ data }) => {
               localStorage.setItem("accessToken", data.accessToken);
-              localStorage.setItem("refreshToken", data.refreshToken);
               return data.accessToken;
             })
             .finally(() => {
