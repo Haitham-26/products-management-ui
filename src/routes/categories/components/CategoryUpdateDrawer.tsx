@@ -15,10 +15,10 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import type { Category } from "../../../model/category/types/Category";
 import { buildCategoriesParams } from "../utils/categoryUtils";
 import { useSearchParams } from "react-router-dom";
-import { Toast } from "../../../utils/Toast";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const FormContainer = styled.div`
   display: flex;
@@ -75,6 +75,7 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const Toast = useAppToast();
   const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues } =
     useForm<UpdateCategoryDto>();

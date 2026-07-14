@@ -1,6 +1,5 @@
 import React, { type KeyboardEvent, type FocusEvent, useState } from "react";
 import styled from "styled-components";
-import { Toast } from "../../../utils/Toast";
 import { Button } from "../../../components/Button";
 import { Text } from "../../../components/Text";
 import { Input } from "../../../components/Input";
@@ -14,6 +13,7 @@ import { REGEXES } from "../../../utils/String";
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import { last } from "lodash";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const MAX_EMAILS = 10;
 
@@ -147,6 +147,8 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const {

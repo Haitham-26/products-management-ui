@@ -14,10 +14,10 @@ import { tagActions } from "../../../redux/tag/tags.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { buildTagsParams } from "../utils/tagUtils";
 import { useSearchParams } from "react-router-dom";
-import { Toast } from "../../../utils/Toast";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 import { Text } from "../../../components/Text";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const FormContainer = styled.div`
   display: flex;
@@ -67,6 +67,8 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
   filters,
 }) => {
   const [loading, setLoading] = useState(false);
+
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 

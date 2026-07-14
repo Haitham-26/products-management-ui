@@ -10,7 +10,6 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import type { Product } from "../../../model/product/types/Product";
 import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
-import { Toast } from "../../../utils/Toast";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { productActions } from "../../../redux/product/products.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
@@ -18,6 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import { buildProductsParams } from "../utils/productUtils";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const Container = styled.div`
   display: flex;
@@ -171,6 +171,7 @@ export const ProductStockManageModal: React.FC<
   const [quantity, setQuantity] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();

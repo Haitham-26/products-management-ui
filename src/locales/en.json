@@ -675,7 +675,10 @@
     "decrease": "Decrease",
     "selected": "Selected",
     "note": "Note",
-    "phone": "Phone"
+    "phone": "Phone",
+    "success": "Success",
+    "error": "Error",
+    "apiError": "Server Error"
   },
   "errors": {
     "general": {

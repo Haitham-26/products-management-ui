@@ -16,7 +16,6 @@ import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
-import { Toast } from "../../../utils/Toast";
 import { Input } from "../../../components/Input";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { PhoneInput } from "../../../components/PhoneInput";
@@ -25,6 +24,7 @@ import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const FormContainer = styled.div`
   display: flex;
@@ -100,6 +100,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
+  const Toast = useAppToast();
   const { t } = useTranslation();
   const { control, handleSubmit, reset } = useForm<UpdateOrderDto>();
 

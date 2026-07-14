@@ -675,7 +675,10 @@
     "decrease": "تقليل",
     "selected": "محدد",
     "note": "ملاحظة",
-    "phone": "رقم الهاتف"
+    "phone": "رقم الهاتف",
+    "success": "نجاح",
+    "error": "خطأ",
+    "apiError": "خطأ في الخادم"
   },
   "errors": {
     "general": {

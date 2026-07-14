@@ -19,7 +19,6 @@ import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
-import { Toast } from "../../../utils/Toast";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { PhoneInput } from "../../../components/PhoneInput";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
@@ -35,6 +34,7 @@ import { checkPermissions } from "../../../utils/checkPermissions";
 import { Info } from "../../../components/Info";
 import { ProductMainImage } from "../../products/components/ProductMainImage";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const FormContainer = styled.div`
   display: flex;
@@ -156,6 +156,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const [loading, setLoading] = useState(false);
   const [searchProductsLoading, setSearchProductsLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 

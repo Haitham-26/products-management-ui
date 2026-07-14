@@ -13,11 +13,11 @@ import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { buildCategoriesParams } from "../utils/categoryUtils";
 import { useSearchParams } from "react-router-dom";
-import { Toast } from "../../../utils/Toast";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const FormContainer = styled.div`
   display: flex;
@@ -68,6 +68,8 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
+
+  const Toast = useAppToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;

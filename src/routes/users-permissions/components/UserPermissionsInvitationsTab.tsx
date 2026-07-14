@@ -10,11 +10,11 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { Text } from "../../../components/Text";
 import { InvitationItem } from "./InvitationItem";
 import type { OwnerInvitation } from "../../../model/user/organization/types/OwnerInvitation";
-import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import styled from "styled-components";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const Container = styled.div`
   display: flex;
@@ -33,6 +33,7 @@ export const UserPermissionsInvitationsTab: React.FC<
     useState<OwnerInvitation | null>(null);
   const [cancelInvitationLoading, setCancelInvitationLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 

@@ -7,11 +7,11 @@ import type { LoginDto } from "../../model/user/dto/LoginDto";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
-import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const PasswordWrapper = styled.div`
   display: flex;
@@ -55,6 +55,7 @@ const OAuthSectionTitle = styled.div`
 export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();

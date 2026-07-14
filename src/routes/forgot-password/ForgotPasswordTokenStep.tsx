@@ -3,7 +3,6 @@ import { AuthContainer } from "../../components/AuthContainer";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
-import { Toast } from "../../utils/Toast";
 import { userActions } from "../../redux/user/user.slice";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
@@ -12,6 +11,7 @@ import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "forgot-password-token-last-resend-time";
 
@@ -28,6 +28,7 @@ const BoldSpan = styled.span`
 export const ForgotPasswordTokenStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();

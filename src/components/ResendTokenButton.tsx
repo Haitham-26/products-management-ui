@@ -4,8 +4,8 @@ import { Spinner } from "./Spinner";
 import Countdown from "antd/es/statistic/Countdown";
 import styled from "styled-components";
 import { Text } from "./Text";
-import { Toast } from "../utils/Toast";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "./toast/useAppToast";
 
 const RESEND_DELAY = 2 * 60 * 1000;
 
@@ -61,6 +61,7 @@ export const ResendVerificationButton: React.FC<
   const [deadline, setDeadline] = useState<number | null>(null);
 
   const { t } = useTranslation(undefined, { keyPrefix: "resendToken" });
+  const Toast = useAppToast();
 
   const handleResend = async () => {
     try {

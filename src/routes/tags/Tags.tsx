@@ -34,9 +34,9 @@ import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
-import { Toast } from "../../utils/Toast";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -66,6 +66,7 @@ export const Tags: React.FC = () => {
   const [tagsBulkDeleteLoading, setTagsBulkDeleteLoading] = useState(false);
   const [tagsBulkDeleteVisible, setTagsBulkDeleteVisible] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 

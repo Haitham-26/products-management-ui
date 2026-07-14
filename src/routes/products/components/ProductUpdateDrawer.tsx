@@ -18,7 +18,6 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { Toast } from "../../../utils/Toast";
 import { useSearchParams } from "react-router-dom";
 import {
   buildProductsParams,
@@ -43,6 +42,7 @@ import type { UploadFile } from "antd";
 import createUploadFileFromImageUrl from "../../../utils/createUploadFileFromImageUrl";
 import { isArray } from "lodash";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -169,15 +169,15 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const [searchCategoriesLoading, setSearchCategoriesLoading] = useState(false);
   const [searchTagsLoading, setSearchTagsLoading] = useState(false);
 
-  const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const categories = useAppSelector(categorySliceSelectors.selectCategories)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
+  const Toast = useAppToast();
+  const dispatch = useAppDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
@@ -312,7 +312,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
       onClose();
 
-      Toast.success(t("products.update.success"));
+      Toast.success(t("products.edit.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {

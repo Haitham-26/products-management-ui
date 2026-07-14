@@ -5,9 +5,9 @@ import { persistor, store } from "./redux/store";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./theme/theme";
 import { AntdConfigProvider } from "./AntdConfigProvider";
-import { Toaster } from "sonner";
 import { PersistGate } from "redux-persist/integration/react";
 import "react-phone-number-input/style.css";
+import { ToastProvider } from "./components/toast/ToastProvider";
 
 export default function App() {
   return (
@@ -15,9 +15,9 @@ export default function App() {
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
           <AntdConfigProvider>
-            <Toaster />
-
-            <RouterProvider router={router} />
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
           </AntdConfigProvider>
         </ThemeProvider>
       </PersistGate>

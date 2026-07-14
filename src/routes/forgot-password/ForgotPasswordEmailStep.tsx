@@ -4,16 +4,17 @@ import { Controller, useForm } from "react-hook-form";
 import type { ForgotPasswordEmailDto } from "../../model/user/dto/ForgotPasswordEmailDto";
 import { useState } from "react";
 import { useAppDispatch } from "../../redux/store";
-import { Toast } from "../../utils/Toast";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 export const ForgotPasswordEmailStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();

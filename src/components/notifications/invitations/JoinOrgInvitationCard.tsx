@@ -5,10 +5,10 @@ import type { JoinOrgInvitation } from "../../../model/user/organization/types/J
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { Toast } from "../../../utils/Toast";
 import styled from "styled-components";
 import { userActions } from "../../../redux/user/user.slice";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../toast/useAppToast";
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
@@ -43,6 +43,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
 
   const dispatch = useAppDispatch();
   const { t } = useTranslation(undefined, { keyPrefix: "joinOrgModal" });
+  const Toast = useAppToast();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 

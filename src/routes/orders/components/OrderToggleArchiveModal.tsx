@@ -1,12 +1,12 @@
 import type React from "react";
 import type { Order } from "../../../model/order/types/Order";
 import { WarningModal } from "../../../components/WarningModal";
-import { Toast } from "../../../utils/Toast";
 import { useAppDispatch } from "../../../redux/store";
 import { useState } from "react";
 import { orderActions } from "../../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 type OrderToggleArchiveModalProps = {
   open: boolean;
@@ -21,6 +21,7 @@ export const OrderToggleArchiveModal: React.FC<
 > = ({ open = false, onClose, order, fetchOrders, filters }) => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 

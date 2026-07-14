@@ -10,7 +10,6 @@ import userSliceSelectors from "../../redux/user/user.selector";
 import { userActions } from "../../redux/user/user.slice";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import { Toast } from "../../utils/Toast";
 import { Text } from "../../components/Text";
 import { Breakpoints } from "../../theme/Breakpoints";
 import { UserAvatar } from "../../components/UserAvatar";
@@ -22,6 +21,7 @@ import type { ThemeType } from "../../theme/theme";
 import { Tooltip } from "antd";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const NAME_MIN_LENGTH = 3;
 const NAME_MAX_LENGTH = 30;
@@ -142,6 +142,7 @@ export const Profile: React.FC = () => {
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateUserDto>({
