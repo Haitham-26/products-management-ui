@@ -26,8 +26,14 @@ const Wrapper = styled.div<{ valid: boolean }>`
         !valid ? theme.colors.error : theme.colors.border} !important;
 
     border-radius: ${({ theme }) => theme.radius.md};
-    border-end-start-radius: 0;
-    border-start-start-radius: 0;
+    html[dir="ltr"] & {
+      border-end-start-radius: 0;
+      border-start-start-radius: 0;
+    }
+    html[dir="rtl"] & {
+      border-end-end-radius: 0;
+      border-start-end-radius: 0;
+    }
     font-size: 0.875rem;
     outline: none;
     transition: all 0.2s ease;

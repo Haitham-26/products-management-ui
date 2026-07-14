@@ -4,7 +4,6 @@ import { Text } from "../../../components/Text";
 import { Select } from "../../../components/Select";
 import { useMemo, useState } from "react";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
-import capitalize from "lodash/capitalize";
 import { Button } from "../../../components/Button";
 import styled from "styled-components";
 import { Toast } from "../../../utils/Toast";
@@ -16,6 +15,24 @@ import { useSearchParams } from "react-router-dom";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import type { Key } from "antd/es/table/interface";
 import { Info } from "../../../components/Info";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import i18n from "../../../i18n";
+
+const getRules = (t: TFunction) => [
+  {
+    status: [OrderStatus.PENDING, OrderStatus.CANCELED],
+    hint: t("orders.manageStatus.rules.pending-canceled"),
+  },
+  {
+    status: [OrderStatus.CANCELED, OrderStatus.PENDING],
+    hint: t("orders.manageStatus.rules.canceled-pending"),
+  },
+  {
+    status: [OrderStatus.PENDING, OrderStatus.CONFIRMED],
+    hint: t("orders.manageStatus.rules.pending-confirmed"),
+  },
+];
 
 const Container = styled.div`
   display: flex;
@@ -31,6 +48,10 @@ const InfoCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  p:first-child {
+    margin-bottom: ${({ theme }) => theme.spacing.sm};
+  }
 `;
 
 const StatusLabel = styled.span<{ type: OrderStatus }>`
@@ -44,6 +65,12 @@ const RuleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 `;
 
 const Hint = styled(Text)`
@@ -74,6 +101,7 @@ export const OrderBulkManageStatusModal: React.FC<
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -82,8 +110,8 @@ export const OrderBulkManageStatusModal: React.FC<
   const statusOptions = useMemo(() => {
     return Object.values(OrderStatus)
 
-      .map((s) => ({ label: capitalize(s), value: s }));
-  }, []);
+      .map((s) => ({ label: t(`orders.status.${s.toLowerCase()}`), value: s }));
+  }, [t]);
 
   const localOnClose = () => {
     setStatus(null);
@@ -112,7 +140,7 @@ export const OrderBulkManageStatusModal: React.FC<
 
       setSelctedRowIds([]);
 
-      Toast.success("Order statuses updated successfully");
+      Toast.success(t("orders.bulkManageStatus.success"));
       localOnClose();
     } catch (e) {
       console.log(e);
@@ -123,54 +151,44 @@ export const OrderBulkManageStatusModal: React.FC<
   };
 
   return (
-    <Modal title="Manage Order Statuses" open={open} onCancel={localOnClose}>
+    <Modal
+      title={t("orders.bulkManageStatus.title", { count: orderIds.length })}
+      open={open}
+      onCancel={localOnClose}
+    >
       <Container>
         <InfoCard>
           <Text fontSize="small" fontWeight={"bold"}>
-            Inventory Update Rules:
+            {t("orders.manageStatus.subtitle")}
           </Text>
 
-          <RuleRow>
-            <div>
-              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
-              <span> → </span>
-              <StatusLabel type={OrderStatus.CANCELED}>Canceled</StatusLabel>
-            </div>
-            <Hint>Stock will be restored (+)</Hint>
-          </RuleRow>
-
-          <RuleRow>
-            <div>
-              <StatusLabel type={OrderStatus.CANCELED}>Canceled</StatusLabel>
-              <span> → </span>
-              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
-            </div>
-            <Hint>Stock will be deducted (-)</Hint>
-          </RuleRow>
-
-          <RuleRow>
-            <div>
-              <StatusLabel type={OrderStatus.PENDING}>Pending</StatusLabel>
-              <span> → </span>
-              <StatusLabel type={OrderStatus.CONFIRMED}>Confirmed</StatusLabel>
-            </div>
-            <Hint>No stock change</Hint>
-          </RuleRow>
+          {getRules(t).map((rule) => (
+            <RuleRow>
+              <div>
+                <StatusLabel type={rule.status[0]}>
+                  {t(`orders.status.${rule.status[0].toLowerCase()}`)}
+                </StatusLabel>
+                <span>{i18n.dir(i18n.language) === "rtl" ? "←" : "→"}</span>
+                <StatusLabel type={rule.status[1]}>
+                  {t(`orders.status.${rule.status[1].toLowerCase()}`)}
+                </StatusLabel>
+              </div>
+              <Hint>{rule.hint}</Hint>
+            </RuleRow>
+          ))}
 
           <Info>
             <InfoList>
-              <li>The selected confirmed orders will not be updated.</li>
-              <li>
-                The selected cancelled orders will not be updated if the new
-                status is "Confirmed".
-              </li>
+              {Array.from({ length: 2 }, (_, i) => (
+                <li key={i}>{t(`orders.bulkManageStatus.infos.${i}`)}</li>
+              ))}
             </InfoList>
           </Info>
         </InfoCard>
 
         <Select
-          title="New Status"
-          placeholder="Select a new status"
+          title={t("orders.manageStatus.status.title")}
+          placeholder={t("orders.manageStatus.status.placeholder")}
           value={statusOptions?.find((s) => s.value === status)}
           onChange={(v) => setStatus(v as OrderStatus)}
           options={statusOptions}
@@ -178,7 +196,7 @@ export const OrderBulkManageStatusModal: React.FC<
 
         <Footer>
           <Button loading={loading} disabled={!status} onClick={onConfirm}>
-            Update Status
+            {t("common.update")}
           </Button>
         </Footer>
       </Container>

@@ -107,6 +107,7 @@ export const Orders: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const orders = useAppSelector(orderSliceSelectors.selectOrders);
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
@@ -114,8 +115,6 @@ export const Orders: React.FC = () => {
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
   const user = useAppSelector(userSliceSelectors.selectUser)!;
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
@@ -204,10 +203,11 @@ export const Orders: React.FC = () => {
           onRead: permissions.READ ? onRead : undefined,
           onManageStatus: permissions.UPDATE ? onManageStatus : undefined,
           onToggleArchive: permissions.UPDATE ? onToggleArchive : undefined,
+          t,
         },
         currency: settings.currency,
       }),
-    [settings.currency, permissions],
+    [settings.currency, permissions, t],
   );
 
   const fetchOrders = async (removedItemsCount: number = 0) => {
@@ -272,9 +272,9 @@ export const Orders: React.FC = () => {
       setSelectedRowIds([]);
 
       Toast.success(
-        visibility === OrderVisibility.ACTIVE
-          ? "Orders unarchived successfully"
-          : "Orders archived successfully",
+        t(
+          `orders.${visibility === OrderVisibility.ACTIVE ? "bulkUnarchive" : "bulkArchive"}.success`,
+        ),
       );
     } catch (e) {
       console.log(e);
@@ -304,7 +304,7 @@ export const Orders: React.FC = () => {
         {...(permissions.CREATE
           ? {
               action: {
-                title: "New Order",
+                title: t("orders.subheader.action"),
                 icon: faPlus,
                 onClick: () => setOrderCreateVisible(true),
               },
@@ -323,7 +323,7 @@ export const Orders: React.FC = () => {
                 ),
               },
               search: {
-                placeholder: "Search by customer's info ot ID...",
+                placeholder: t("orders.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
                   applyFilter("keyword", searchKeyword, true),
               },
@@ -339,7 +339,7 @@ export const Orders: React.FC = () => {
                     icon={faBoxArchive}
                     variant="secondary"
                   >
-                    Archive
+                    {t("orders.actions.archive")}
                   </Button>
 
                   <Button
@@ -347,7 +347,7 @@ export const Orders: React.FC = () => {
                     icon={faBoxOpen}
                     variant="secondary"
                   >
-                    Unarchive
+                    {t("orders.actions.unarchive")}
                   </Button>
 
                   <Button
@@ -355,7 +355,7 @@ export const Orders: React.FC = () => {
                     icon={faGear}
                     variant="secondary"
                   >
-                    Manage Status
+                    {t("orders.actions.manageStatus")}
                   </Button>
                 </Fragment>
               ) : null}
@@ -384,7 +384,6 @@ export const Orders: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
-            showTotal: (total) => `Total ${total} orders`,
           }}
         />
       ) : (
@@ -432,8 +431,10 @@ export const Orders: React.FC = () => {
           />
 
           <WarningModal
-            title={`Archive ${selectedRowIds.length} orders?`}
-            description="Are you sure you want to archive these orders? They will become read-only and hidden from active lists unless you enable archived filters. This will not affect the orders' status or their products' stock."
+            title={t("orders.bulkArchive.title", {
+              count: selectedRowIds.length,
+            })}
+            description={t("orders.bulkArchive.description")}
             open={ordersBulkArchiveVisible}
             onClose={() => setOrdersBulkArchiveVisible(false)}
             confirmLoading={ordersBulkToggleArchiveLoading}
@@ -443,8 +444,10 @@ export const Orders: React.FC = () => {
           />
 
           <WarningModal
-            title={`Unarchive ${selectedRowIds.length} orders?`}
-            description="Are you sure you want to unarchive these orders? They will become active again and editable. This will not affect the orders' status or their products' stock."
+            title={t("orders.bulkUnarchive.title", {
+              count: selectedRowIds.length,
+            })}
+            description={t("orders.bulkUnarchive.description")}
             open={ordersBulkUnarchiveVisible}
             onClose={() => setOrdersBulkUnarchiveVisible(false)}
             confirmLoading={ordersBulkToggleArchiveLoading}

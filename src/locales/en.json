@@ -225,7 +225,138 @@
     }
   },
   "orders": {
-    "title": "Orders"
+    "title": "Orders",
+    "subheader": {
+      "action": "Create New Order",
+      "inputPlaceholder": "Search by customer information or ID..."
+    },
+    "actions": {
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "manageStatus": "Manage Status"
+    },
+    "fields": {
+      "customerName": "Customer Name",
+      "customerPhone": "Customer Phone",
+      "customerEmail": "Customer Email",
+      "isArchived": {
+        "title": "Archive Status",
+        "archived": "Archived",
+        "unarchived": "Not Archived"
+      },
+      "totalAmount": "Total Amount"
+    },
+    "filters": {
+      "showArchived": "Show Archived"
+    },
+    "status": {
+      "pending": "Pending",
+      "canceled": "Canceled",
+      "confirmed": "Confirmed"
+    },
+    "read": {
+      "title": "Order Items",
+      "items": {
+        "discount": "{{discount}} OFF"
+      }
+    },
+    "create": {
+      "title": "Create New Order",
+      "items": {
+        "restriction": "You do not have permission to access products.",
+        "action": "Add Another Product",
+        "success": "Order created successfully!",
+        "dropdown": {
+          "placeholder": "Search for a product...",
+          "itemStockStatus": {
+            "low": "Only {{count}} left",
+            "out": "Out of stock",
+            "in": "{{count}} available"
+          }
+        }
+      },
+      "edit": {
+        "title": "Update Order",
+        "success": "Order updated successfully!"
+      },
+      "errors": {
+        "items": {
+          "required": "Please select a product",
+          "requiredOrRemove": "Please select a product or remove this row",
+          "quantity": {
+            "min": "Quantity must be at least {{min}}.",
+            "max": "Quantity cannot exceed available stock ({{max}})"
+          }
+        }
+      }
+    },
+    "archive": {
+      "title": "Archive Order {{id}}",
+      "description": "Are you sure you want to archive this order? It will become read-only and hidden from orders list unless you enable the 'Show Archived' filter. This will not affect the order's status or its products' stock.",
+      "success": "Order archived successfully!"
+    },
+    "bulkArchive": {
+      "title": "Archive {{count}} Orders",
+      "description": "Are you sure you want to archive these orders? They will become read-only and hidden from orders list unless you enable the 'Show Archived' filter. This will not affect the orders' status or their products' stock.",
+      "success": "Orders archived successfully!"
+    },
+    "unarchive": {
+      "title": "Unarchive Order {{id}}",
+      "description": "Are you sure you want to unarchive this order? It will become editable again. This will not affect the order's status or its products' stock.",
+      "success": "Order unarchived successfully!"
+    },
+    "bulkUnarchive": {
+      "title": "Unarchive {{count}} Orders",
+      "description": "Are you sure you want to unarchive these orders? They will become editable again. This will not affect the orders' status or their products' stock.",
+      "success": "Orders unarchived successfully!"
+    },
+    "manageStatus": {
+      "title": "Update Order Status",
+      "subtitle": "Status Change Rules",
+      "rules": {
+        "pending-canceled": "Stock will be restored (+)",
+        "canceled-pending": "Stock will be deducted (-)",
+        "pending-confirmed": "No stock changes"
+      },
+      "status": {
+        "title": "New Status",
+        "placeholder": "Select new status"
+      },
+      "success": "Order status updated successfully!"
+    },
+    "bulkManageStatus": {
+      "title": "Update Status for {{count}} Orders",
+      "infos": [
+        "Selected confirmed orders will not be updated or affected in any way.",
+        "Selected canceled orders will not be updated if the new status is 'Confirmed'."
+      ],
+      "success": "Orders status updated successfully!"
+    },
+    "general": {
+      "customerInfo": {
+        "title": "Customer Information"
+      },
+      "items": {
+        "title": "Order Items",
+        "totalAmount": "Orders Total Amount: {{totalAmount}}"
+      },
+      "note": {
+        "title": "Additional Notes"
+      }
+    },
+    "edit": {
+      "title": "Edit Order",
+      "success": "Order updated successfully!"
+    },
+    "create-edit": {
+      "errors": {
+        "customerInfo": {
+          "name": {
+            "long": "Customer name must be at most {{length}} characters."
+          }
+        }
+      }
+    }
   },
   "categories": {
     "title": "Categories",
@@ -483,7 +614,9 @@
     "product": "Product",
     "increase": "Increase",
     "decrease": "Decrease",
-    "selected": "Selected"
+    "selected": "Selected",
+    "note": "Note",
+    "phone": "Phone"
   },
   "errors": {
     "general": {

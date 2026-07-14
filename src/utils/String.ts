@@ -11,7 +11,7 @@ export const CURRENCY_OPTIONS = currencyCodes.data.map((currency) => ({
 
 export const stringWithCurrencyCode = (
   code: CurrencyCodeRecord["code"],
-  value: number,
+  value: number = 0,
 ) => {
   const defaultCurrency = "USD";
 

@@ -6,14 +6,7 @@ import { useAppDispatch } from "../../../redux/store";
 import { useState } from "react";
 import { orderActions } from "../../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
-
-const descriptions = {
-  archive:
-    "Are you sure you want to archive this order? It will become read-only and hidden from active lists unless you enable archived filters. This will not affect the order's status or its products' stock.",
-
-  unarchive:
-    "Are you sure you want to unarchive this order? It will become active again and editable. This will not affect the order's status or its products' stock.",
-};
+import { useTranslation } from "react-i18next";
 
 type OrderToggleArchiveModalProps = {
   open: boolean;
@@ -29,6 +22,7 @@ export const OrderToggleArchiveModal: React.FC<
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const onConfirm = async () => {
     if (!order) {
@@ -49,8 +43,9 @@ export const OrderToggleArchiveModal: React.FC<
       await fetchOrders(!order.isArchived && !filters.showArchived ? 1 : 0);
 
       Toast.success(
-        `Order ${order.isArchived ? "unarchived" : "archived"} successfully`,
+        t(`orders.${order.isArchived ? "unarchive" : "archive"}.success`),
       );
+
       onClose();
     } catch (e) {
       console.log(e);
@@ -60,10 +55,18 @@ export const OrderToggleArchiveModal: React.FC<
     }
   };
 
+  if (!order) {
+    return null;
+  }
+
   return (
     <WarningModal
-      title={order?.isArchived ? "Unarchive Order" : "Archive Order"}
-      description={descriptions[order?.isArchived ? "unarchive" : "archive"]}
+      title={t(`orders.${order.isArchived ? "unarchive" : "archive"}.title`, {
+        id: order.identifier,
+      })}
+      description={t(
+        `orders.${order.isArchived ? "unarchive" : "archive"}.description`,
+      )}
       open={open}
       confirmLoading={loading}
       onClose={onClose}

@@ -7,7 +7,6 @@ import { Icon } from "../../../components/Icon";
 import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Order } from "../../../model/order/types/Order";
-import capitalize from "lodash/capitalize";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
@@ -17,6 +16,7 @@ import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import type { CurrencyCodeRecord } from "currency-codes";
 import styled from "styled-components";
+import type { TFunction } from "i18next";
 
 const ActionsIcon = styled(Icon)`
   margin-inline: auto;
@@ -30,17 +30,18 @@ type CreateOrdersTableColumnsArgs = {
     onRead?: FNType;
     onManageStatus?: FNType;
     onToggleArchive?: FNType;
+    t: TFunction;
   };
   currency: CurrencyCodeRecord["code"];
 };
 
 export const createOrdersTableColumns = ({
-  functions: { onEdit, onRead, onManageStatus, onToggleArchive },
+  functions: { onEdit, onRead, onManageStatus, onToggleArchive, t },
   currency,
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
-      title: "Actions",
+      title: t("common.actions"),
       key: "actions",
       width: 80,
       align: "center",
@@ -53,14 +54,14 @@ export const createOrdersTableColumns = ({
               {
                 key: "view",
                 icon: <Icon icon={faEye} />,
-                label: "View",
+                label: t("common.view"),
                 onClick: () => onRead?.(record),
                 disabled: !isFunction(onRead),
               },
               {
                 key: "edit",
                 icon: <Icon icon={faPenToSquare} />,
-                label: "Edit",
+                label: t("common.edit"),
                 onClick: () => onEdit?.(record),
                 disabled:
                   record.status !== OrderStatus.PENDING ||
@@ -70,7 +71,7 @@ export const createOrdersTableColumns = ({
               {
                 key: "manage-status",
                 icon: <Icon icon={faGear} />,
-                label: "Manage Status",
+                label: t("orders.actions.manageStatus"),
                 onClick: () => onManageStatus?.(record),
                 disabled:
                   record.status === OrderStatus.CONFIRMED ||
@@ -81,7 +82,9 @@ export const createOrdersTableColumns = ({
                 icon: (
                   <Icon icon={record.isArchived ? faBoxOpen : faBoxArchive} />
                 ),
-                label: record.isArchived ? "Unarchive" : "Archive",
+                label: t(
+                  `orders.actions.${record.isArchived ? "unarchive" : "archive"}`,
+                ),
                 onClick: () =>
                   onToggleArchive?.(record) || !isFunction(onToggleArchive),
               },
@@ -93,14 +96,14 @@ export const createOrdersTableColumns = ({
       ),
     },
     {
-      title: "ID",
+      title: t("common.id"),
       dataIndex: "identifier",
       key: "identifier",
       width: 150,
       ellipsis: true,
     },
     {
-      title: "Customer Name",
+      title: t("orders.fields.customerName"),
       dataIndex: "customerName",
       key: "customerName",
       width: 180,
@@ -108,53 +111,53 @@ export const createOrdersTableColumns = ({
       sorter: (a, b) => a.customerName.localeCompare(b.customerName),
     },
     {
-      title: "Customer Email",
+      title: t("orders.fields.customerEmail"),
       dataIndex: "customerEmail",
       key: "customerEmail",
       width: 220,
       ellipsis: true,
     },
     {
-      title: "Customer Phone",
+      title: t("orders.fields.customerPhone"),
       dataIndex: "customerPhone",
       key: "customerPhone",
       width: 170,
       ellipsis: true,
     },
     {
-      title: "Status",
+      title: t("common.status"),
       dataIndex: "status",
       key: "status",
       width: 90,
       ellipsis: true,
-      render: (value: string) => capitalize(value),
+      render: (value: string) => t(`orders.status.${value.toLowerCase()}`),
       onCell: (record) => ({
         className: `${record.status.toLowerCase()}-status`,
       }),
     },
     {
-      title: "Visibility",
+      title: t("orders.fields.isArchived.title"),
       dataIndex: "isArchived",
       key: "isArchived",
       width: 90,
       ellipsis: true,
-      render: (isArchived: boolean) => (isArchived ? "Archived" : "Active"),
+      render: (isArchived: boolean) =>
+        t(`orders.fields.isArchived.${isArchived ? "archived" : "unarchived"}`),
       onCell: (record) => ({
         className: record.isArchived ? "archived" : "visible",
       }),
     },
     {
-      title: "Total Price",
-      dataIndex: "totalPriceAtPurchase",
-      key: "totalPriceAtPurchase",
+      title: t("orders.fields.totalAmount"),
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       width: 120,
       ellipsis: true,
       render: (value: number) => stringWithCurrencyCode(currency, value),
-      sorter: (a, b) =>
-        (a?.totalPriceAtPurchase || 0) - (b?.totalPriceAtPurchase || 0),
+      sorter: (a, b) => (a?.totalAmount || 0) - (b?.totalAmount || 0),
     },
     {
-      title: "Products",
+      title: t("common.products"),
       dataIndex: "items",
       key: "items",
       width: 220,
@@ -163,14 +166,14 @@ export const createOrdersTableColumns = ({
         items.map((i) => i.productName).join(", "),
     },
     {
-      title: "Note",
+      title: t("common.note"),
       dataIndex: "note",
       key: "note",
       width: 360,
       ellipsis: true,
     },
     {
-      title: "Created At",
+      title: t("common.filters.creationDate.title"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

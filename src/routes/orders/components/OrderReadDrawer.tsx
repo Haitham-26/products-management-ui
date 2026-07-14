@@ -1,19 +1,15 @@
 import type React from "react";
 import styled from "styled-components";
 import { Drawer } from "../../../components/Drawer";
-import { Icon } from "../../../components/Icon";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
-import { faAlignLeft } from "@fortawesome/free-solid-svg-icons/faAlignLeft";
-import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
+import { Text } from "../../../components/Text";
 import type { Order } from "../../../model/order/types/Order";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
-import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
-import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
 import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
 import { ProductMainImage } from "../../products/components/ProductMainImage";
+import { useTranslation } from "react-i18next";
+import type { ThemeType } from "../../../theme/theme";
 
 const FormContainer = styled.div`
   display: flex;
@@ -22,64 +18,55 @@ const FormContainer = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
+const OrderTitleContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
+  gap: 4px;
 
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h2 {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.title};
-  }
-
-  span {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
+  p:first-child {
+    direction: ltr;
   }
 `;
 
-const InfoSection = styled.section`
+const StatusBadge = styled.span<{ status: Order["status"] }>`
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background: ${({ theme, status }) =>
+    theme.colors[status.toLowerCase() as keyof ThemeType["colors"]]};
+  color: ${({ theme }) => theme.colors.surface};
+  width: fit-content;
+`;
+
+const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.glassBackground};
-  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
+  padding-top: ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+
+  &:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
 `;
 
-const SectionLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.primary}20;
-  padding-bottom: ${({ theme }) => theme.spacing.xs};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+const DataGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
 
-  h4 {
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: ${({ theme }) => theme.typography.small};
-    color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
+`;
+
+const DataItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const OrderLineItemsWrapper = styled.div`
@@ -92,7 +79,7 @@ const OrderLineItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.md} 0;
-  border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border}40;
 
   &:first-child {
     padding-top: 0;
@@ -106,33 +93,26 @@ const OrderLineItem = styled.div`
 const ItemInfo = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 4px;
 `;
 
-const ItemTitle = styled.span`
+const ItemTitle = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
   color: ${({ theme }) => theme.colors.textPrimary};
   font-weight: 600;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const ValueText = styled.span`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const PriceColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 4px;
 `;
 
 const ItemTotal = styled.span`
-  font-weight: 700;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
@@ -143,7 +123,7 @@ const DiscountBadge = styled.span`
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
-  margin-top: 2px;
+  width: fit-content;
 `;
 
 const GrandTotalSection = styled.div`
@@ -151,21 +131,14 @@ const GrandTotalSection = styled.div`
   justify-content: space-between;
   align-items: baseline;
   margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  border-top: 2px solid ${({ theme }) => theme.colors.border};
+  padding-top: ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const TotalAmount = styled.span`
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.primary};
-`;
-
-const NoteText = styled.p`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.5;
-  font-style: italic;
 `;
 
 type Props = {
@@ -179,6 +152,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
   onClose,
   order,
 }) => {
+  const { t } = useTranslation();
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   if (!order) {
@@ -186,62 +160,71 @@ export const OrderReadDrawer: React.FC<Props> = ({
   }
 
   const renderDiscount = (item: Order["items"][0]) => {
-    if (!item.discountAtPurchase) return null;
+    if (!item.discountAtPurchase || !item.discountAtPurchase.value) {
+      return null;
+    }
 
     const { type, value } = item.discountAtPurchase;
-    const label =
-      type === ProductDiscountTypes.PERCENTAGE
-        ? `${value}% OFF`
-        : `$${value} OFF`;
+
+    const label = t("orders.read.items.discount", {
+      discount:
+        type === ProductDiscountTypes.PERCENTAGE
+          ? `${value}%`
+          : stringWithCurrencyCode(settings.currency, value),
+    });
 
     return <DiscountBadge>{label}</DiscountBadge>;
   };
 
   return (
-    <Drawer open={open} onClose={onClose} title="Order Overview" size="large">
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={t("orders.read.title")}
+      size="large"
+    >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faCartShopping} />
-          </IconWrapper>
-          <TitleGroup>
-            <h2>Order #{order.identifier}</h2>
-            <span>
-              Status: <strong>{order.status}</strong>
-            </span>
-          </TitleGroup>
-        </GlassHeader>
+        <OrderTitleContainer>
+          <Text fontWeight="bold" fontSize="subtitle">
+            #{order.identifier}
+          </Text>
+          <StatusBadge status={order.status}>
+            {t(`orders.status.${order.status.toLowerCase()}`)}
+          </StatusBadge>
+        </OrderTitleContainer>
 
-        <InfoSection>
-          <SectionLabel>
-            <Icon icon={faUser} />
-            <h4>Customer Info</h4>
-          </SectionLabel>
+        <Section>
+          <Text fontWeight="bold">
+            {t("orders.general.customerInfo.title")}
+          </Text>
+          <DataGrid>
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("orders.fields.customerName", "Name")}
+              </Text>
+              <Text>{order.customerName}</Text>
+            </DataItem>
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("orders.fields.customerEmail", "Email")}
+              </Text>
+              <Text fontStyle={!order.customerEmail ? "italic" : undefined}>
+                {order.customerEmail || "_"}
+              </Text>
+            </DataItem>
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("orders.fields.customerPhone", "Phone")}
+              </Text>
+              <Text fontStyle={!order.customerPhone ? "italic" : undefined}>
+                {order.customerPhone || "_"}
+              </Text>
+            </DataItem>
+          </DataGrid>
+        </Section>
 
-          <ItemInfo>
-            <ItemTitle>{order.customerName}</ItemTitle>
-
-            {order?.customerEmail ? (
-              <ValueText>
-                <Icon icon={faEnvelope} />
-                {order.customerEmail || "No email provided"}
-              </ValueText>
-            ) : null}
-
-            {order?.customerPhone ? (
-              <ValueText>
-                <Icon icon={faPhone} />
-                {order.customerPhone || "No phone provided"}
-              </ValueText>
-            ) : null}
-          </ItemInfo>
-        </InfoSection>
-
-        <InfoSection>
-          <SectionLabel>
-            <Icon icon={faBoxOpen} />
-            <h4>Purchased Items</h4>
-          </SectionLabel>
+        <Section>
+          <Text fontWeight="bold">{t("orders.general.items.title")}</Text>
 
           <OrderLineItemsWrapper>
             {order.items.map((item, index) => (
@@ -252,16 +235,14 @@ export const OrderReadDrawer: React.FC<Props> = ({
                       url={item.productMainImage}
                       width="2rem"
                     />
-                    {item.productName}
+                    <Text fontWeight="600">{item.productName}</Text>
                   </ItemTitle>
-                  <ValueText>
-                    {item.quantity} ×
-                    {` ${stringWithCurrencyCode(
+                  <Text fontSize="small" color="textSecondary">
+                    {`${item.quantity} × ${stringWithCurrencyCode(
                       settings.currency,
                       item.priceAtPurchase,
                     )}`}
-                  </ValueText>
-                  {renderDiscount(item)}
+                  </Text>
                 </ItemInfo>
 
                 <PriceColumn>
@@ -271,31 +252,30 @@ export const OrderReadDrawer: React.FC<Props> = ({
                       item.finalPrice * item.quantity,
                     )}
                   </ItemTotal>
+                  {renderDiscount(item)}
                 </PriceColumn>
               </OrderLineItem>
             ))}
           </OrderLineItemsWrapper>
 
           <GrandTotalSection>
-            <ItemTitle>Total Amount</ItemTitle>
+            <Text fontWeight="600">{t("orders.fields.totalAmount")}</Text>
             <TotalAmount>
-              {stringWithCurrencyCode(
-                settings.currency,
-                order.totalPriceAtPurchase,
-              )}
+              {stringWithCurrencyCode(settings.currency, order.totalAmount)}
             </TotalAmount>
           </GrandTotalSection>
-        </InfoSection>
+        </Section>
 
-        <InfoSection>
-          <SectionLabel>
-            <Icon icon={faAlignLeft} />
-            <h4>Order Note</h4>
-          </SectionLabel>
-          <NoteText>
-            {order.note || "No additional notes provided for this transaction."}
-          </NoteText>
-        </InfoSection>
+        <Section>
+          <DataItem>
+            <Text fontSize="small" color="textSecondary" fontWeight="bold">
+              {t("common.note")}
+            </Text>
+            <Text fontStyle={!order.note?.length ? "italic" : undefined}>
+              {order.note || "_"}
+            </Text>
+          </DataItem>
+        </Section>
       </FormContainer>
     </Drawer>
   );
