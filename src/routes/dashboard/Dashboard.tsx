@@ -1,7 +1,6 @@
 import type React from "react";
 import { Container } from "../../components/Container";
 import styled from "styled-components";
-import { faChartBar } from "@fortawesome/free-solid-svg-icons/faChartBar";
 import { PageHeader } from "../../components/PageHeader";
 import { DashboardTopCard } from "./components/DashboardTopCard";
 import { DashboardTopProductsCard } from "./components/DashboardTopProductsCard";
@@ -12,6 +11,8 @@ import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
 import userSliceSelectors from "../../redux/user/user.selector";
 import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
 import { SpinnerFullScreen } from "../../components/SpinnerFullScreen";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
@@ -54,12 +55,15 @@ const AreaWrapper = styled.div<{ area: string }>`
 
 export const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const stats = useAppSelector(dashboardSliceSelectors.selectDashboardStats);
   const loading = useAppSelector(
     dashboardSliceSelectors.selectDashboardStatsLoading,
   );
+
+  const { dashboard } = appRoutes;
 
   const { products, orders, lowStockProducts, outOfStockProducts } = stats;
 
@@ -69,14 +73,14 @@ export const Dashboard: React.FC = () => {
 
   return (
     <StyledContainer>
-      <PageHeader icon={faChartBar} title="Dashboard" />
+      <PageHeader icon={dashboard.icon} title={t(dashboard.titleKey)} />
 
       {!loading ? (
         <DashboardGrid>
           <AreaWrapper area="total-products">
             <DashboardTopCard
-              title="Total Products"
-              link="/products"
+              title={t("dashboard.totalProducts.title")}
+              link={appRoutes.products.path}
               totalCount={products?.totalCount || 0}
               trends={{
                 today: products?.todayCount || 0,
@@ -89,8 +93,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="total-orders">
             <DashboardTopCard
-              title="Total Orders"
-              link="/orders"
+              title={t("dashboard.totalOrders.title")}
+              link={appRoutes.orders.path}
               totalCount={orders?.totalCount || 0}
               trends={{
                 today: orders?.todayCount || 0,
@@ -102,8 +106,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="low-stock">
             <DashboardTopCard
-              title="Low Stock Products"
-              link={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
+              title={t("dashboard.lowStockProducts.title")}
+              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.LOW_STOCK}`}
               totalCount={lowStockProducts?.totalCount}
               variant="WARNING"
             />
@@ -111,8 +115,8 @@ export const Dashboard: React.FC = () => {
 
           <AreaWrapper area="out-of-stock">
             <DashboardTopCard
-              title="Out of Stock Products"
-              link={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
+              title={t("dashboard.outOfStockProducts.title")}
+              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
               totalCount={outOfStockProducts?.totalCount}
               variant="DANGER"
             />

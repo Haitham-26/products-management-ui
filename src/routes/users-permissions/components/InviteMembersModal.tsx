@@ -13,6 +13,9 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { REGEXES } from "../../../utils/String";
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import { last } from "lodash";
+import { Trans, useTranslation } from "react-i18next";
+
+const MAX_EMAILS = 10;
 
 const ModalContent = styled.div`
   display: flex;
@@ -143,11 +146,9 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const maxEmails = 10;
-
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const dispatch = useAppDispatch();
-
+  const { t } = useTranslation();
   const {
     control,
     handleSubmit,
@@ -245,7 +246,7 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
         if (
           isValidPendingInput &&
           !emails.map((e) => e.content).includes(pendingInput) &&
-          emails.length < maxEmails
+          emails.length < MAX_EMAILS
         ) {
           append({ content: pendingInput });
         }
@@ -264,7 +265,7 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
       await dispatch(organizationActions.getOwnerInvitations()).unwrap();
 
       localOnClose();
-      Toast.success("Invitations sent successfully");
+      Toast.success(t("usersPermissions.invitations.invite.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -274,41 +275,43 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
   };
 
   return (
-    <Modal title="Invite Team Members" open={open} onCancel={localOnClose}>
+    <Modal
+      title={t("usersPermissions.invitations.invite.title")}
+      open={open}
+      onCancel={localOnClose}
+    >
       <ModalContent>
         <InfoBox>
-          <Text as={"li"}>
-            Only individuals who are non-invited and not associated with another
-            organization can be invited.
-          </Text>
-          <Text as={"li"}>
-            Upon opening the app (and creating an account if new), recipients
-            will immediately see their pending invitation and be able to accept
-            or decline it.
-          </Text>
-          <Text as={"li"}>
-            You can check delivery progress anytime under the
-            <strong> Invitations Tab</strong>.
-          </Text>
-          <Text as={"li"}>
-            Who accepts the invitation will have read-only access to products,
-            tags, categories and orders.
-          </Text>
+          {Array.from({ length: 4 }, (_, index) => (
+            <Text as={"li"} key={index}>
+              <Trans
+                i18nKey={`usersPermissions.invitations.invite.infos.${index}`}
+                components={[<strong />]}
+              />
+            </Text>
+          ))}
         </InfoBox>
 
         <FormField>
           <LabelRow>
-            <Label>Email Recipients</Label>
-            <Counter isMax={currentEmails.length >= maxEmails}>
-              {currentEmails.length} / {maxEmails} max
+            <Label>
+              {t("usersPermissions.invitations.invite.emails.title")}
+            </Label>
+            <Counter isMax={currentEmails.length >= MAX_EMAILS}>
+              {currentEmails.length} / {MAX_EMAILS}
             </Counter>
           </LabelRow>
 
-          <InputContainer hasError={!!errors.inputValue}>
+          <InputContainer hasError={Boolean(errors.inputValue)}>
             {fields.map((field, index) => {
               const emailValue = currentEmails[index];
               return (
-                <Tooltip title="Double click to edit" key={field.id}>
+                <Tooltip
+                  title={t(
+                    "usersPermissions.invitations.invite.emails.edit.tooltip",
+                  )}
+                  key={field.id}
+                >
                   <EmailTag onDoubleClick={() => editEmail(index)}>
                     {emailValue.content}
                     <RemoveButton onClick={() => remove(index)}>
@@ -327,21 +330,31 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
                   pattern: (v) =>
                     !v.trim() ||
                     REGEXES.email.test(v.trim()) ||
-                    "Please enter a valid email address",
+                    t(
+                      "usersPermissions.invitations.invite.emails.errors.required",
+                    ),
                   duplicate: (v) =>
                     !currentEmails
                       .map((e) => e.content)
                       .includes(v.trim().toLowerCase()) ||
-                    "This email has already been added to the list",
+                    t(
+                      "usersPermissions.invitations.invite.emails.errors.duplicate",
+                    ),
                   maxLimit: (v) =>
                     !v.trim() ||
-                    currentEmails.length < maxEmails ||
-                    `You can only invite up to ${maxEmails} members at once`,
+                    currentEmails.length < MAX_EMAILS ||
+                    t(
+                      "usersPermissions.invitations.invite.emails.errors.limit",
+                      {
+                        limit: MAX_EMAILS,
+                      },
+                    ),
                 },
               }}
               render={({ field: { onBlur, value, onChange } }) => (
                 <StyledInput
                   id="email-input"
+                  type={value ? "email" : "text"}
                   value={value}
                   onChange={(e) =>
                     onChange(e.currentTarget.value.toLowerCase())
@@ -353,10 +366,12 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
                   }}
                   placeholder={
                     currentEmails.length === 0
-                      ? "Enter email addresses separated by comma or Enter"
+                      ? t(
+                          "usersPermissions.invitations.invite.emails.placeholder",
+                        )
                       : ""
                   }
-                  disabled={currentEmails.length >= maxEmails}
+                  disabled={currentEmails.length >= MAX_EMAILS}
                 />
               )}
             />
@@ -366,8 +381,7 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
             <ErrorText>{errors.inputValue.message}</ErrorText>
           ) : (
             <HelpText>
-              Double-click any tag to pull it back into the input for
-              modifications.
+              {t("usersPermissions.invitations.invite.emails.tip")}
             </HelpText>
           )}
         </FormField>
@@ -380,7 +394,7 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
           onClick={handleSubmit(onSubmit)}
           loading={loading}
         >
-          Send Invitations
+          {t("usersPermissions.invitations.invite.submit")}
         </Button>
       </ModalContent>
     </Modal>

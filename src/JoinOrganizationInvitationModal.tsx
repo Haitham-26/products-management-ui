@@ -5,13 +5,14 @@ import appSliceSelectors from "./redux/app/app.selector";
 import { appActions } from "./redux/app/app.slice";
 import last from "lodash/last";
 import { Toast } from "./utils/Toast";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import organizationSliceSelectors from "./redux/organization/organization.selector";
 import { organizationActions } from "./redux/organization/organization.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelopeOpenText";
 import { userActions } from "./redux/user/user.slice";
 import { useNavigate } from "react-router-dom";
+import { Trans, useTranslation } from "react-i18next";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
   const [acceptLoading, setAcceptLoading] = useState(false);
@@ -19,6 +20,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation(undefined, { keyPrefix: "joinOrgModal" });
 
   const lastSeenInvitationId = useAppSelector(
     appSliceSelectors.selectLastSeenInvitationId,
@@ -64,9 +66,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
 
       navigate("/dashboard", { replace: true });
 
-      Toast.success(
-        "Invitation accepted successfully! You are now a member of the organization",
-      );
+      Toast.success(t("accept.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -92,7 +92,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
       await dispatch(organizationActions.getJoinOrgInvitations()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      Toast.success("Invitation declined successfully");
+      Toast.success(t("decline.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -103,22 +103,20 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
 
   return (
     <WarningModal
-      title="Join Organization Invitation"
+      title={t("title", { company })}
       icon={faEnvelopeOpenText}
       variantColor="primary"
       description={
-        <Fragment>
-          You have been invited to join
-          <strong> {company}'s </strong>
-          organization. Please note that your personal account data will be
-          hidden while you are a member, and will become visible again if you
-          choose to leave the organization.
-        </Fragment>
+        <Trans
+          i18nKey="joinOrgModal.description"
+          values={{ company }}
+          components={[<strong />]}
+        />
       }
       open={open}
       onClose={onClose}
-      confirmText="Accept"
-      cancelText="Decline"
+      confirmText={t("accept.title")}
+      cancelText={t("decline.title")}
       onConfirm={onAccept}
       onCancel={onDecline}
       confirmLoading={acceptLoading}

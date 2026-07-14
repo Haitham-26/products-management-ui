@@ -3,6 +3,7 @@ import { Spin } from "antd";
 import styled from "styled-components";
 import { Text } from "./Text";
 import { Select, type SelectProps } from "./Select";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
@@ -23,6 +24,8 @@ export const SearchSelect: React.FC<SearchSelectProps> = ({
   notFoundText,
   ...props
 }) => {
+  const { t } = useTranslation(undefined, { keyPrefix: "common" });
+
   return (
     <Container>
       {title ? (
@@ -40,11 +43,11 @@ export const SearchSelect: React.FC<SearchSelectProps> = ({
           loading ? (
             <Spin size="small" />
           ) : (
-            <span>{notFoundText || "No results found"}</span>
+            <span>{notFoundText || t("noResultsFound")}</span>
           )
         }
         options={options}
-        placeholder="Search..."
+        placeholder={t("search")}
         {...props}
       />
     </Container>

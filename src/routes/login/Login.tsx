@@ -11,6 +11,7 @@ import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
+import { Trans, useTranslation } from "react-i18next";
 
 const PasswordWrapper = styled.div`
   display: flex;
@@ -56,6 +57,7 @@ export const Login: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<LoginDto>({
     defaultValues: {
       email: "",
@@ -70,6 +72,8 @@ export const Login: React.FC = () => {
       await dispatch(userActions.login(getValues())).unwrap();
 
       navigate("/", { replace: true });
+
+      Toast.success(t("login.success"));
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -80,18 +84,19 @@ export const Login: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Welcome back"
-      description="Sign in to manage your products"
+      title={t("login.title")}
+      description={t("login.description")}
       formItems={[
         <Controller
           control={control}
           name="email"
-          rules={{ required: "Email is required" }}
+          rules={{ required: t("errors.general.required") }}
           render={({ field, fieldState }) => (
             <Input
-              title="Email"
+              title={t("common.email")}
               placeholder="you@example.com"
               errorMessage={fieldState.error?.message}
+              type="email"
               {...field}
             />
           )}
@@ -101,10 +106,10 @@ export const Login: React.FC = () => {
           <Controller
             control={control}
             name="password"
-            rules={{ required: "Password is required" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState }) => (
               <Input
-                title="Password"
+                title={t("common.password")}
                 type="password"
                 placeholder="••••••••"
                 errorMessage={fieldState.error?.message}
@@ -114,23 +119,26 @@ export const Login: React.FC = () => {
           />
 
           <ForgotPasswordLink to="/forgot-password">
-            Forgot password?
+            {t("login.forgotPassword")}
           </ForgotPasswordLink>
         </PasswordWrapper>,
 
         <Button loading={loading} onClick={handleSubmit(onLogin)}>
-          Login
+          {t("common.login")}
         </Button>,
       ]}
       footerContent={
         <Footer>
           <span>
-            Don’t have an account? <Link to="/signup">Create one</Link>
+            <Trans
+              i18nKey="login.noAccount"
+              components={[<Link to="/signup" />]}
+            />
           </span>
 
           <OAuthSectionTitle>
             <hr />
-            <span>OR</span>
+            <span>{t("common.or").toUpperCase()}</span>
             <hr />
           </OAuthSectionTitle>
 

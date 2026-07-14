@@ -11,6 +11,7 @@ import type { ForgotPasswordTokenDto } from "../../model/user/dto/ForgotPassword
 import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
+import { Trans, useTranslation } from "react-i18next";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "forgot-password-token-last-resend-time";
 
@@ -20,11 +21,16 @@ const TokenInputContainer = styled.div`
   gap: calc(${({ theme }) => theme.spacing.md} / 2);
 `;
 
+const BoldSpan = styled.span`
+  font-weight: bold;
+`;
+
 export const ForgotPasswordTokenStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     state: { email },
   } = useLocation();
@@ -52,9 +58,7 @@ export const ForgotPasswordTokenStep: React.FC = () => {
 
       await dispatch(userActions.forgotPasswordToken(dto)).unwrap();
 
-      Toast.success(
-        "We verified your email, now you can create a new password!",
-      );
+      Toast.success(t("forgotPassword.token.success"));
 
       localStorage.removeItem(LAST_RESEND_LOCAL_STORAGE_KEY);
 
@@ -75,22 +79,28 @@ export const ForgotPasswordTokenStep: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Reset password"
-      description="Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step."
+      title={t("forgotPassword.token.title")}
+      description={
+        <Trans
+          i18nKey="forgotPassword.token.description"
+          values={{ email }}
+          components={[<BoldSpan />]}
+        />
+      }
       formItems={[
         <TokenInputContainer>
           <Controller
             control={control}
             name="token"
             rules={{
-              required: "Token is required",
+              required: t("errors.general.required"),
               minLength: {
                 value: 6,
-                message: "Token must be at 6 characters",
+                message: t("errors.token.length"),
               },
               maxLength: {
                 value: 6,
-                message: "Token must be at 6 characters",
+                message: t("errors.token.length"),
               },
             }}
             render={({ field, fieldState }) => (
@@ -111,7 +121,7 @@ export const ForgotPasswordTokenStep: React.FC = () => {
           loading={loading}
           disabled={!token.length || token.length < 6}
         >
-          Verify & Continue
+          {t("forgotPassword.token.submit")}
         </Button>,
       ]}
     />

@@ -11,6 +11,7 @@ import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
+import { Trans, useTranslation } from "react-i18next";
 
 const Footer = styled.div`
   display: flex;
@@ -45,6 +46,7 @@ export const SignUpEmail: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<SignUpEmailDto>();
 
   const onSignUp = async () => {
@@ -54,9 +56,10 @@ export const SignUpEmail: React.FC = () => {
       const dto = getValues();
 
       await dispatch(userActions.signUpEmail(dto)).unwrap();
+
       navigate("/signup/email-verification", { state: { email: dto.email } });
 
-      Toast.success("We sent you an email to verify your account");
+      Toast.success(t("signup.email.success"));
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -67,17 +70,17 @@ export const SignUpEmail: React.FC = () => {
 
   return (
     <AuthContainer
-      title="Welcome back"
-      description="Create an account"
+      title={t("signup.email.title")}
+      description={t("signup.email.description")}
       formItems={[
         <Controller
           control={control}
           name="name"
-          rules={{ required: "Name is required" }}
+          rules={{ required: t("errors.general.required") }}
           render={({ field, fieldState }) => (
             <Input
-              title="Name"
-              placeholder="Haitham"
+              title={t("common.name")}
+              placeholder={t("signup.email.name.placeholder")}
               errorMessage={fieldState.error?.message}
               required
               {...field}
@@ -89,8 +92,8 @@ export const SignUpEmail: React.FC = () => {
           name="company"
           render={({ field, fieldState }) => (
             <Input
-              title="Company name"
-              placeholder="Inventix"
+              title={t("common.company")}
+              placeholder={t("signup.email.company.placeholder")}
               errorMessage={fieldState.error?.message}
               {...field}
             />
@@ -99,11 +102,12 @@ export const SignUpEmail: React.FC = () => {
         <Controller
           control={control}
           name="email"
-          rules={{ required: "Email is required" }}
+          rules={{ required: t("errors.general.required") }}
           render={({ field, fieldState }) => (
             <Input
-              title="Email"
+              title={t("common.email")}
               placeholder="you@example.com"
+              type="email"
               errorMessage={fieldState.error?.message}
               required
               {...field}
@@ -114,10 +118,10 @@ export const SignUpEmail: React.FC = () => {
         <Controller
           control={control}
           name="password"
-          rules={{ required: "Password is required" }}
+          rules={{ required: t("errors.general.required") }}
           render={({ field, fieldState }) => (
             <Input
-              title="Password"
+              title={t("common.password")}
               type="password"
               placeholder="••••••••"
               errorMessage={fieldState.error?.message}
@@ -127,18 +131,21 @@ export const SignUpEmail: React.FC = () => {
           )}
         />,
         <Button loading={loading} onClick={handleSubmit(onSignUp)}>
-          Create account
+          {t("signup.email.submit")}
         </Button>,
       ]}
       footerContent={
         <Footer>
           <span>
-            Already have an account? <Link to="/login">Login</Link>
+            <Trans
+              i18nKey="signup.email.hasAccount"
+              components={[<Link to="/login" />]}
+            />
           </span>
 
           <OAuthSectionTitle>
             <hr />
-            <span>OR</span>
+            <span>{t("common.or").toUpperCase()}</span>
             <hr />
           </OAuthSectionTitle>
 

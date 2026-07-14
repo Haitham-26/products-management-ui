@@ -3,6 +3,14 @@ import { Images } from "../assets";
 import { Image } from "./Image";
 import styled from "styled-components";
 import { Text } from "./Text";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
 
 const Card = styled.div`
   width: 100%;
@@ -65,23 +73,27 @@ export const AuthContainer: React.FC<AuthContainerProps> = ({
   footerContent,
 }) => {
   return (
-    <Card>
-      <Header>
-        <Brand>
-          <Image src={Images.Logo} alt="Inventix" />
-        </Brand>
+    <Container>
+      <LanguageSwitcher />
 
-        <Text fontWeight="bold" fontSize="title">
-          {title}
-        </Text>
-        <Text color="textSecondary" fontSize="small">
-          {description}
-        </Text>
-      </Header>
+      <Card>
+        <Header>
+          <Brand>
+            <Image src={Images.Logo} alt="Inventix" />
+          </Brand>
 
-      <Form>{formItems.map((item) => item)}</Form>
+          <Text fontWeight="bold" fontSize="title">
+            {title}
+          </Text>
+          <Text color="textSecondary" fontSize="small">
+            {description}
+          </Text>
+        </Header>
 
-      {footerContent ? <Footer>{footerContent}</Footer> : null}
-    </Card>
+        <Form>{formItems.map((item) => item)}</Form>
+
+        {footerContent ? <Footer>{footerContent}</Footer> : null}
+      </Card>
+    </Container>
   );
 };

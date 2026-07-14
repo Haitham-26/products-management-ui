@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 0.875rem;
+  font-size: ${({ theme }) => theme.typography.small};
   color: ${({ theme }) => theme.colors.textSecondary};
 
   span {
@@ -60,6 +60,10 @@ const StyledInput = styled.input<{ valid: boolean; originalType?: string }>`
         !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
   }
 
+  html[dir="rtl"] &:dir(ltr)::placeholder {
+    text-align: right;
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -101,9 +105,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     { title, errorMessage, type, id, required, info, valid = true, ...props },
     ref,
   ) => {
-    const [show, setShow] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const isPassword = type === "password";
+
+    const getInputDir = () => {
+      const ltrInputTypes: React.InputHTMLAttributes<HTMLInputElement>["type"][] =
+        ["email", "number", "password", "tel", "url"];
+
+      return ltrInputTypes.includes(type) ? "ltr" : props.dir || "auto";
+    };
 
     return (
       <Wrapper>
@@ -122,19 +133,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <StyledInput
             id={id}
             ref={ref}
-            type={isPassword && show ? "text" : type}
+            type={isPassword && showPassword ? "text" : type}
             valid={valid}
             originalType={type}
+            dir={getInputDir()}
             {...props}
           />
 
           {isPassword ? (
             <EyeButton
               type="button"
-              onClick={() => setShow((v) => !v)}
+              onClick={() => setShowPassword((v) => !v)}
               aria-label="Toggle password visibility"
             >
-              <Icon icon={show ? faEyeSlash : faEye} />
+              <Icon icon={showPassword ? faEyeSlash : faEye} />
             </EyeButton>
           ) : null}
         </InputWrapper>

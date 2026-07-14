@@ -1,0 +1,693 @@
+{
+  "login": {
+    "title": "Welcome Back",
+    "description": "Sign in to manage your products and orders",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account? <0>Create an account</0>",
+    "success": "Logged in successfully!"
+  },
+  "signup": {
+    "email": {
+      "title": "Welcome Back",
+      "description": "Create an account and start managing your products and orders",
+      "name": {
+        "placeholder": "Enter your name"
+      },
+      "company": {
+        "placeholder": "Enter your company name"
+      },
+      "submit": "Create Account",
+      "hasAccount": "Already have an account? <0>Sign in</0>",
+      "success": "We sent the verification code to your email, please check your inbox."
+    },
+    "token": {
+      "title": "Confirm Email",
+      "description": "We sent the verification code to your email <0>\"{{email}}\"</0>, please check your inbox and enter the code below.",
+      "submit": "Verify & Continue",
+      "success": "Account verified successfully!"
+    }
+  },
+  "forgotPassword": {
+    "email": {
+      "title": "Reset Password",
+      "description": "Enter your email to reset your password. We will send you an email with a verification code to verify your email in the next step.",
+      "success": "We have sent the verification code to your email, please check your inbox."
+    },
+    "token": {
+      "title": "Reset Password",
+      "description": "We have sent the verification code to your email <0>\"{{email}}\"</0>, please check your inbox and enter the code below.",
+      "submit": "Verify & Continue",
+      "success": "We verified your email, now you can create a new password!"
+    },
+    "new": {
+      "title": "Reset Password",
+      "description": "Enter your new password and confirm it.",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "errors": {
+        "password": {
+          "short": "The password must be at least {{length}} characters long.",
+          "long": "The password must be at most {{length}} characters long.",
+          "mismatch": "The passwords do not match."
+        }
+      },
+      "success": "Your password has been reset, you can now log in with your new password!"
+    }
+  },
+  "resendToken": {
+    "resend": "Resend verification code",
+    "resendIn": "You can request a new code in",
+    "success": "Verification code sent successfully!"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet."
+  },
+  "joinOrgModal": {
+    "title": "{{company}} has invited you to join their organization",
+    "description": "You have been invited to join <0>{{company}}'s</0> organization. Please note that your personal account data will be hidden while you are a member, and will become visible again if you choose to leave the organization.",
+    "accept": {
+      "title": "Accept",
+      "success": "Invitation accepted successfully, you became a member of the organization!"
+    },
+    "decline": {
+      "title": "Decline",
+      "success": "Invitation declined successfully!"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalProducts": {
+      "title": "Total Products"
+    },
+    "totalOrders": {
+      "title": "Total Orders"
+    },
+    "lowStockProducts": {
+      "title": "Low Stock Products"
+    },
+    "outOfStockProducts": {
+      "title": "Out of Stock Products"
+    },
+    "mostSoldProducts": {
+      "title": "Most Sold Products"
+    }
+  },
+  "products": {
+    "actions": {
+      "manageStock": "Manage Stock",
+      "moveToDraft": "Move to Draft",
+      "publish": "Publish"
+    },
+    "stockStatus": {
+      "title": "Stock Status",
+      "inStock": "In Stock",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "delete": {
+      "title": "Delete Product \"{{name}}\"",
+      "success": "Product deleted successfully!"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} Products",
+      "success": "Products deleted successfully!"
+    },
+    "publish": {
+      "title": "Publish Product",
+      "description": "This product will become available for creating orders."
+    },
+    "bulkPublish": {
+      "title": "Publish {{count}} Products",
+      "description": "These products will become available for creating orders.",
+      "success": "Products published successfully!"
+    },
+    "moveToDraft": {
+      "title": "Move Product to Draft",
+      "description": "This product will be hidden from the products list by default unless the 'Show Drafts' filter is enabled, and it will no longer be available for creating new orders."
+    },
+    "bulkMoveToDraft": {
+      "title": "Move {{count}} Products to Draft",
+      "description": "These products will be hidden from the products list by default unless the 'Show Drafts' filter is enabled, and they will no longer be available for creating new orders.",
+      "success": "Products moved to draft successfully!"
+    },
+    "statusUpdateSuccess": "Product status updated successfully!",
+    "subheader": {
+      "action": "Create New Product",
+      "inputPlaceholder": "Search by name, description, or ID..."
+    },
+    "title": "Products",
+    "create": {
+      "title": "Create New Product",
+      "success": "Product created successfully!"
+    },
+    "edit": {
+      "title": "Edit Product",
+      "success": "Product updated successfully!"
+    },
+    "manageStock": {
+      "title": "Manage Stock",
+      "empty": "Enter quantity above to view the change.",
+      "success": "Stock updated successfully!"
+    },
+    "read": {
+      "title": "Product Details",
+      "lowStock": "Low Stock • {{count}} remaining",
+      "gallery": "Gallery",
+      "noDescription": "No description added.",
+      "noTags": "No tags added.",
+      "availableStock": "Available Stock"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "Identification"
+      },
+      "images": {
+        "title": "Images",
+        "main": {
+          "title": "Main Image",
+          "description": "This is the primary image shown in lists and tables. It should be square.",
+          "addedTag": "Added"
+        },
+        "gallery": {
+          "title": "Image Gallery",
+          "description": "Add images from additional angles, or packaging shots."
+        }
+      },
+      "stock": {
+        "title": "Stock",
+        "minStock": {
+          "title": "Low Stock Alert At",
+          "info": "You'll be warned when the stock quantity reaches this value (Next to the quantity in the products table, in the dashboard, and during creating orders)."
+        }
+      },
+      "price": {
+        "title": "Pricing",
+        "basePrice": "Base Price",
+        "discount": {
+          "type": {
+            "title": "Discount Type"
+          },
+          "types": {
+            "percentage": "Percentage (%)",
+            "fixed": "Fixed Amount ({{currency}})"
+          },
+          "value": "Discount Value"
+        },
+        "finalPrice": "Final price per unit: "
+      },
+      "taxonomy": {
+        "title": "Category & Tags",
+        "restrictions": {
+          "tags": "You do not have permission to access tags.",
+          "categories": "You do not have permission to access categories.",
+          "tagsAndCategories": "You do not have permission to access tags and categories."
+        },
+        "category": {
+          "placeholder": "Search for a category..."
+        },
+        "tags": {
+          "placeholder": "Search for tags..."
+        }
+      }
+    },
+    "fields": {
+      "basePrice": "Base Price",
+      "finalPrice": "Final Price",
+      "discount": "Discount"
+    },
+    "filters": {
+      "showDraft": "Show Drafts"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "subheader": {
+      "action": "Create New Order",
+      "inputPlaceholder": "Search by customer information or ID..."
+    },
+    "actions": {
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "manageStatus": "Manage Status"
+    },
+    "fields": {
+      "customerName": "Customer Name",
+      "customerPhone": "Customer Phone",
+      "customerEmail": "Customer Email",
+      "isArchived": {
+        "title": "Archive Status",
+        "archived": "Archived",
+        "unarchived": "Not Archived"
+      },
+      "totalAmount": "Total Amount"
+    },
+    "filters": {
+      "showArchived": "Show Archived"
+    },
+    "status": {
+      "pending": "Pending",
+      "canceled": "Canceled",
+      "confirmed": "Confirmed"
+    },
+    "read": {
+      "title": "Order Items",
+      "items": {
+        "discount": "{{discount}} OFF"
+      }
+    },
+    "create": {
+      "title": "Create New Order",
+      "items": {
+        "restriction": "You do not have permission to access products.",
+        "action": "Add Another Product",
+        "success": "Order created successfully!",
+        "dropdown": {
+          "placeholder": "Search for a product...",
+          "itemStockStatus": {
+            "low": "Only {{count}} left",
+            "out": "Out of stock",
+            "in": "{{count}} available"
+          }
+        }
+      },
+      "edit": {
+        "title": "Update Order",
+        "success": "Order updated successfully!"
+      },
+      "errors": {
+        "items": {
+          "required": "Please select a product",
+          "requiredOrRemove": "Please select a product or remove this row",
+          "quantity": {
+            "min": "Quantity must be at least {{min}}.",
+            "max": "Quantity cannot exceed available stock ({{max}})"
+          }
+        }
+      }
+    },
+    "archive": {
+      "title": "Archive Order {{id}}",
+      "description": "Are you sure you want to archive this order? It will become read-only and hidden from orders list unless you enable the 'Show Archived' filter. This will not affect the order's status or its products' stock.",
+      "success": "Order archived successfully!"
+    },
+    "bulkArchive": {
+      "title": "Archive {{count}} Orders",
+      "description": "Are you sure you want to archive these orders? They will become read-only and hidden from orders list unless you enable the 'Show Archived' filter. This will not affect the orders' status or their products' stock.",
+      "success": "Orders archived successfully!"
+    },
+    "unarchive": {
+      "title": "Unarchive Order {{id}}",
+      "description": "Are you sure you want to unarchive this order? It will become editable again. This will not affect the order's status or its products' stock.",
+      "success": "Order unarchived successfully!"
+    },
+    "bulkUnarchive": {
+      "title": "Unarchive {{count}} Orders",
+      "description": "Are you sure you want to unarchive these orders? They will become editable again. This will not affect the orders' status or their products' stock.",
+      "success": "Orders unarchived successfully!"
+    },
+    "manageStatus": {
+      "title": "Update Order Status",
+      "subtitle": "Status Change Rules",
+      "rules": {
+        "pending-canceled": "Stock will be restored (+)",
+        "canceled-pending": "Stock will be deducted (-)",
+        "pending-confirmed": "No stock changes"
+      },
+      "status": {
+        "title": "New Status",
+        "placeholder": "Select new status"
+      },
+      "success": "Order status updated successfully!"
+    },
+    "bulkManageStatus": {
+      "title": "Update Status for {{count}} Orders",
+      "infos": [
+        "Selected confirmed orders will not be updated or affected in any way.",
+        "Selected canceled orders will not be updated if the new status is 'Confirmed'."
+      ],
+      "success": "Orders status updated successfully!"
+    },
+    "general": {
+      "customerInfo": {
+        "title": "Customer Information"
+      },
+      "items": {
+        "title": "Order Items",
+        "totalAmount": "Orders Total Amount: {{totalAmount}}"
+      },
+      "note": {
+        "title": "Additional Notes"
+      }
+    },
+    "edit": {
+      "title": "Edit Order",
+      "success": "Order updated successfully!"
+    },
+    "create-edit": {
+      "errors": {
+        "customerInfo": {
+          "name": {
+            "long": "Customer name must be at most {{length}} characters."
+          }
+        }
+      }
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "fields": {
+      "usageCount": "Usage Count"
+    },
+    "subheader": {
+      "action": "Create New Category",
+      "inputPlaceholder": "Search by name or description..."
+    },
+    "create": {
+      "title": "Create New Category",
+      "success": "Category created successfully!"
+    },
+    "edit": {
+      "title": "Edit Category",
+      "success": "Category updated successfully!"
+    },
+    "read": {
+      "title": "Category Details",
+      "noDescription": "No description provided.",
+      "usageCount": {
+        "title": "Active Assignments",
+        "value": "{{count}} Product(s)"
+      }
+    },
+    "delete": {
+      "title": "Delete category \"{{name}}\"?",
+      "description": "Are you sure you want to delete this category? It will be deleted and unlinked from all associated products. This action cannot be undone later.",
+      "success": "Category deleted successfully!"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} categories?",
+      "description": "Are you sure you want to delete the selected categories? They will be deleted and unlinked from all associated products. This action cannot be undone later.",
+      "success": "Category deleted successfully!"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "Identification"
+      }
+    }
+  },
+  "tags": {
+    "title": "Tags",
+    "fields": {
+      "usageCount": "Usage Count"
+    },
+    "subheader": {
+      "action": "Create New Tag",
+      "inputPlaceholder": "Search by name or description..."
+    },
+    "create": {
+      "title": "Create New Tag",
+      "success": "Tag created successfully!"
+    },
+    "edit": {
+      "title": "Edit Tag",
+      "success": "Tag updated successfully!"
+    },
+    "read": {
+      "title": "Tag Details",
+      "noDescription": "No description provided.",
+      "usageCount": {
+        "title": "Active Assignments",
+        "value": "{{count}} Product(s)"
+      }
+    },
+    "delete": {
+      "title": "Delete tag \"{{name}}\"?",
+      "description": "Are you sure you want to delete this tag? It will be deleted and unlinked from all associated products. This action cannot be undone later.",
+      "success": "Tag deleted successfully!"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} tags?",
+      "description": "Are you sure you want to delete the selected tags? They will be deleted and unlinked from all associated products. This action cannot be undone later.",
+      "success": "Tags deleted successfully!"
+    },
+    "create-edit": {
+      "identification": {
+        "title": "Identification"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "pages": {
+      "general": {
+        "title": "General Settings",
+        "currency": {
+          "title": "Currency",
+          "description": "Select the currency that will be used to display prices and financial values. This currency will be applied to all prices and values across the application.",
+          "selectTitle": "Select Currency"
+        },
+        "language": {
+          "title": "Language",
+          "description": "Select the language that will be used in the application and the emails we send you.",
+          "selectTitle": "Select Language"
+        }
+      },
+      "inventory": {
+        "title": "Inventory",
+        "threshold": {
+          "title": "Stock Thresholds",
+          "description": "Configure the default minimum stock level to trigger low stock alerts (alerts appear in: the quantity cell in the products table, during product selection when creating a new order, and in the dashboard).",
+          "inputTitle": "Default Minimum Stock Level",
+          "info": "Products without a custom minimum stock value will use this value automatically.",
+          "errors": {
+            "minStock": {
+              "min": "The minimum stock level must be at least {{min}}."
+            }
+          }
+        }
+      },
+      "security": {
+        "title": "Security",
+        "password": {
+          "title": "Change Password",
+          "description": "Your password must be between 6 and 64 characters long. For better security, we recommend using a mix of letters, numbers, and symbols.",
+          "current": {
+            "title": "Current Password",
+            "placeholder": "Enter your current password"
+          },
+          "new": {
+            "title": "New Password",
+            "placeholder": "Enter your new password"
+          },
+          "confirm": {
+            "title": "Confirm Password",
+            "placeholder": "Enter your new password again"
+          },
+          "errors": {
+            "short": "Password must be at least {{length}} characters long.",
+            "long": "Password cannot exceed {{length}} characters.",
+            "mismatch": "Passwords do not match."
+          }
+        }
+      }
+    },
+    "shared": {
+      "orgOnlyTooltip": "This setting can only be changed by the organization owner."
+    },
+    "update": {
+      "success": "Settings updated successfully!"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "avatar": {
+      "remove": "Remove Avatar",
+      "edit": "Change Avatar"
+    },
+    "personalInfo": {
+      "title": "Personal Information"
+    },
+    "orgInfo": {
+      "title": "Organization Information"
+    },
+    "updateSuccess": "Profile updated successfully!"
+  },
+  "usersPermissions": {
+    "title": "Users & Permissions",
+    "actions": {
+      "inviteMembers": "Invite Members",
+      "leaveOrg": "Leave Organization"
+    },
+    "members": {
+      "title": "Members",
+      "subtitle": "Manage members permissions",
+      "empty": "You have no members yet.",
+      "removeMember": {
+        "title": "Remove \"{{member}}\" from your organization?",
+        "description": "Are you sure you want to remove <0>{{member}}</0> from your organization? You can re-invite him later.",
+        "success": "Member removed successfully!"
+      },
+      "disabledCheckBoxTooltip": "Read permission should be enabled first.",
+      "updatePermissions": {
+        "success": "Members permissions updated successfully!"
+      }
+    },
+    "org": {
+      "title": "Organization",
+      "subtitle": "Organization Owner: <0>{{owner}}</0>",
+      "leaveSection": {
+        "title": "Danger Zone",
+        "description": "Leaving this organization will immediately revoke your access to its resources."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Are you sure you want to leave the organization? You will no longer have access to its resources and you’ll need a new invitation from the owner to rejoin.",
+        "actions": {
+          "leave": "Leave"
+        },
+        "success": "You left the organization successfully!"
+      }
+    },
+    "invitations": {
+      "title": "Invitations",
+      "subtitle": "Sent Invitations",
+      "empty": "You didn't invite anyone yet.",
+      "sentOn": "Sent on",
+      "validUntil": "Valid until",
+      "cancel": {
+        "title": "Cancel Invitation",
+        "description": "Are you sure you want to cancel the invitation for <0>{{email}}</0>?",
+        "success": "Invitation canceled successfully!"
+      },
+      "resend": {
+        "success": "Invitation resent successfully!"
+      },
+      "invite": {
+        "title": "Invite Members",
+        "infos": [
+          "Only individuals who are non-invited by you and not associated with another organization can be invited.",
+          "Upon opening the app (and creating an account if new), invitees will immediately see their pending invitation and be able to accept or decline it.",
+          "You can check delivery progress anytime under the <0>Invitations Tab</0>.",
+          "Who accepts the invitation will have read-only access to products, tags, categories and orders by default, and you can manage their permissions under the <0>Members Tab</0>."
+        ],
+        "emails": {
+          "title": "Recipients",
+          "placeholder": "Enter emails separated by commas or press Enter",
+          "errors": {
+            "required": "Please enter a valid email.",
+            "duplicate": "This email has already been added to the list.",
+            "limit": "You can invite up to {{limit}} users at a time."
+          },
+          "edit": {
+            "tooltip": "Double click to edit"
+          },
+          "tip": "Double-click any email in the list to pull it back into the input for modifications."
+        },
+        "submit": "Send Invitations",
+        "success": "Invitations sent successfully!"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "canceled": "Canceled",
+        "declined": "Declined"
+      }
+    }
+  },
+  "cropImageModal": {
+    "title": "Edit Image"
+  },
+  "table": {
+    "triggerAsc": "Click to sort ascending",
+    "triggerDesc": "Click to sort descending",
+    "cancelSort": "Click to cancel sort",
+    "emptyText": "No data",
+    "itemsPerPage": "per page",
+    "total": "Total items: {{total}}"
+  },
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "or": "or",
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "name": "Name",
+    "logout": "Logout",
+    "today": "Today",
+    "lastWeek": "Last Week",
+    "lastMonth": "Last Month",
+    "company": "Company",
+    "save": "Save",
+    "you": "You",
+    "owner": "Owner",
+    "remove": "Remove",
+    "warning": {
+      "title": "Are you sure?",
+      "description": "Are you sure you want to do this? Once you confirm, you cannot undo it later."
+    },
+    "cancel": "Cancel",
+    "entity": "Entity",
+    "create": "Create",
+    "read": "Read",
+    "update": "Update",
+    "delete": "Delete",
+    "products": "Products",
+    "orders": "Orders",
+    "categories": "Categories",
+    "tags": "Tags",
+    "resend": "Resend",
+    "edit": "Edit",
+    "description": "Description",
+    "recommended": "Recommended",
+    "quantity": "Quantity",
+    "category": "Category",
+    "search": "Search",
+    "noResultsFound": "No results found",
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear Filters",
+      "creationDate": {
+        "title": "Creation Date",
+        "newest": "Newest First",
+        "oldest": "Oldest First"
+      }
+    },
+    "all": "All",
+    "default": "Default",
+    "clearAll": "Clear All",
+    "min": "Min",
+    "max": "Max",
+    "actions": "Actions",
+    "view": "View",
+    "id": "ID",
+    "status": "Status",
+    "creationDate": "Creation Date",
+    "none": "None",
+    "uploadImage": "Upload Image",
+    "uncategorized": "Uncategorized",
+    "product": "Product",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "selected": "Selected",
+    "note": "Note",
+    "phone": "Phone"
+  },
+  "errors": {
+    "general": {
+      "required": "The field is required.",
+      "short": "This field must be at least {{length}} characters long.",
+      "long": "This field must be at most {{length}} characters long."
+    },
+    "phone": {
+      "invalid": "Please enter a valid phone number."
+    },
+    "token": {
+      "length": "The verification code must be 6 characters long."
+    }
+  }
+}

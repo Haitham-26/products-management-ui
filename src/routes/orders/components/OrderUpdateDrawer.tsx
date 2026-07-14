@@ -6,10 +6,8 @@ import { Drawer } from "../../../components/Drawer";
 import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faNoteSticky } from "@fortawesome/free-solid-svg-icons/faNoteSticky";
-import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
@@ -25,43 +23,14 @@ import { PhoneInput } from "../../../components/PhoneInput";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
+import { useTranslation } from "react-i18next";
+import { Text } from "../../../components/Text";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h2 {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.title};
-  }
-
-  span {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
 `;
 
 const InfoSection = styled.section`
@@ -84,12 +53,12 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
+    font-weight: bold;
   }
 `;
 
@@ -98,10 +67,6 @@ const ReadOnlyItem = styled.div`
   justify-content: space-between;
   padding: ${({ theme }) => theme.spacing.xs} 0;
   border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
-
-  &:last-child {
-    border-bottom: none;
-  }
 `;
 
 const ItemName = styled.span`
@@ -112,12 +77,6 @@ const ItemName = styled.span`
 const ItemQty = styled.span`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-family: monospace;
-`;
-
-const PriceText = styled.div`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary};
 `;
 
 type OrderUpdateDrawerProps = {
@@ -141,6 +100,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
+  const { t } = useTranslation();
   const { control, handleSubmit, reset } = useForm<UpdateOrderDto>();
 
   const localOnClose = () => {
@@ -159,7 +119,8 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       });
 
       localOnClose();
-      Toast.success("Order updated successfully");
+
+      Toast.success(t("orders.edit.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -188,7 +149,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title="Update Order"
+      title={t("orders.edit.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -200,28 +161,18 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faCartShopping} />
-          </IconWrapper>
-          <TitleGroup>
-            <h2>Order #{order.identifier}</h2>
-            <span>Transaction Management</span>
-          </TitleGroup>
-        </GlassHeader>
-
         <InfoSection>
           <SectionLabel>
             <Icon icon={faUser} />
-            <h4>Customer Information</h4>
+            <Text>{t("orders.general.customerInfo.title")}</Text>
           </SectionLabel>
           <Controller
             control={control}
             name="customerName"
-            rules={{ required: "Customer cannot be empty" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Name"
+                title={t("common.name")}
                 required
                 errorMessage={error?.message}
                 {...field}
@@ -234,7 +185,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             name="customerEmail"
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Email"
+                title={t("common.email")}
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}
@@ -247,7 +198,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             name="customerPhone"
             render={({ field, fieldState: { error } }) => (
               <PhoneInput
-                title="Phone"
+                title={t("common.phone")}
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}
@@ -259,47 +210,48 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
         <InfoSection>
           <SectionLabel>
             <Icon icon={faTag} />
-            <h4>Order Contents</h4>
+            <Text>{t("orders.general.items.title")}</Text>
           </SectionLabel>
           {order.items.map((item, index) => {
             const product = products.find((p) => p._id === item.productId);
+
+            if (!product) {
+              return null;
+            }
+
             return (
               <ReadOnlyItem key={index}>
-                <ItemName>{product?.name || "Unknown Product"}</ItemName>
-                <ItemQty>× {item.quantity}</ItemQty>
+                <ItemName>{product.name}</ItemName>
+                <ItemQty>
+                  {`${item.quantity} × ${stringWithCurrencyCode(
+                    settings.currency,
+                    item?.priceAtPurchase || 0,
+                  )}`}
+                </ItemQty>
               </ReadOnlyItem>
             );
           })}
-        </InfoSection>
 
-        <InfoSection>
-          <SectionLabel>
-            <Icon icon={faReceipt} />
-            <h4>Financial Summary</h4>
-          </SectionLabel>
-          <PriceText>
-            {stringWithCurrencyCode(
-              settings.currency,
-              order.totalPriceAtPurchase,
-            )}
-          </PriceText>
+          <Text color="textSecondary" fontSize="small" fontWeight="bold">
+            {t("orders.general.items.totalAmount", {
+              totalAmount: stringWithCurrencyCode(
+                settings.currency,
+                order.totalAmount,
+              ),
+            })}
+          </Text>
         </InfoSection>
 
         <InfoSection>
           <SectionLabel>
             <Icon icon={faNoteSticky} />
-            <h4>Editorial Remarks</h4>
+            <Text>{t("orders.general.note.title")}</Text>
           </SectionLabel>
           <Controller
             control={control}
             name="note"
             render={({ field }) => (
-              <Textarea
-                title="Internal Note"
-                placeholder="Add specific details or changes..."
-                rows={5}
-                {...field}
-              />
+              <Textarea title={t("common.note")} rows={5} {...field} />
             )}
           />
         </InfoSection>

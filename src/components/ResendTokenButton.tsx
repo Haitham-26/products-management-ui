@@ -5,6 +5,7 @@ import Countdown from "antd/es/statistic/Countdown";
 import styled from "styled-components";
 import { Text } from "./Text";
 import { Toast } from "../utils/Toast";
+import { useTranslation } from "react-i18next";
 
 const RESEND_DELAY = 2 * 60 * 1000;
 
@@ -59,6 +60,8 @@ export const ResendVerificationButton: React.FC<
   const [loading, setLoading] = useState(false);
   const [deadline, setDeadline] = useState<number | null>(null);
 
+  const { t } = useTranslation(undefined, { keyPrefix: "resendToken" });
+
   const handleResend = async () => {
     try {
       setLoading(true);
@@ -72,7 +75,7 @@ export const ResendVerificationButton: React.FC<
 
       setDeadline(expiresAt);
 
-      Toast.success("Verification code sent successfully");
+      Toast.success(t("success"));
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -102,7 +105,7 @@ export const ResendVerificationButton: React.FC<
       {deadline ? (
         <CountdownWrapper>
           <Text color="textSecondary" fontSize="small">
-            You can request a new code in
+            {t("resendIn")}
           </Text>
 
           <Countdown
@@ -114,7 +117,7 @@ export const ResendVerificationButton: React.FC<
       ) : (
         <ActionContainer>
           <StyledButton onClick={handleResend} disabled={loading}>
-            Resend verification code
+            {t("resend")}
           </StyledButton>
 
           {loading ? <StyledSpinner /> : null}

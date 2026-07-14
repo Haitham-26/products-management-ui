@@ -11,6 +11,7 @@ import { Breakpoints } from "../../../theme/Breakpoints";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
+import { useTranslation } from "react-i18next";
 
 const Card = styled.div`
   position: relative;
@@ -96,7 +97,7 @@ const StatusBadge = styled.span<{ status: InvitationStatus }>`
           color: ${theme.colors.warning};
         `;
       case InvitationStatus.DECLINED:
-      case InvitationStatus.CANCELLED:
+      case InvitationStatus.CANCELED:
       default:
         return `
           background-color: ${theme.colors.error}10;
@@ -159,6 +160,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
   const [reinviteLoading, setReinviteLoading] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -176,7 +178,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
       ).unwrap();
       await dispatch(organizationActions.getOwnerInvitations()).unwrap();
 
-      Toast.success("Invitation re-sent successfully");
+      Toast.success(t("usersPermissions.invitations.resend.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -185,11 +187,12 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
     }
   };
 
-  const getExpirationDate = (sentAt: Date) => {
-    const sentDate = new Date(sentAt);
-    sentDate.setDate(sentDate.getDate() + 30);
+  const getExpirationDate = (sentAt: Date | string) => {
+    const expirationDate = new Date(sentAt);
 
-    return formatDate(sentDate.toISOString(), true);
+    expirationDate.setMonth(expirationDate.getMonth() + 1);
+
+    return formatDate(expirationDate, true);
   };
 
   return (
@@ -198,13 +201,15 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
         <HeaderGroup>
           <EmailText fontWeight="bold">{invitation.inviteeEmail}</EmailText>
           <StatusBadge status={invitation.status}>
-            {invitation.status.toLowerCase()}
+            {t(
+              `usersPermissions.invitations.status.${invitation.status.toLowerCase()}`,
+            )}
           </StatusBadge>
         </HeaderGroup>
 
         <MetaGrid>
           <MetaItem>
-            <MetaLabel>Sent On</MetaLabel>
+            <MetaLabel>{t("usersPermissions.invitations.sentOn")}</MetaLabel>
             <Text color="textSecondary" fontSize="small">
               {formatDate(invitation.sentAt, true)}
             </Text>
@@ -212,9 +217,11 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
 
           {invitation.status === InvitationStatus.PENDING ? (
             <MetaItem>
-              <MetaLabel>Valid Until</MetaLabel>
+              <MetaLabel>
+                {t("usersPermissions.invitations.validUntil")}
+              </MetaLabel>
               <Text color="textSecondary" fontSize="small">
-                {getExpirationDate(invitation.createdAt)}
+                {getExpirationDate(invitation.sentAt)}
               </Text>
             </MetaItem>
           ) : null}
@@ -223,17 +230,17 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
 
       {invitation.status !== InvitationStatus.ACCEPTED ? (
         <ActionsSection>
-          {[InvitationStatus.DECLINED, InvitationStatus.CANCELLED].includes(
+          {[InvitationStatus.DECLINED, InvitationStatus.CANCELED].includes(
             invitation.status,
           ) ? (
             <Button onClick={onReinvite} loading={reinviteLoading}>
-              Re-invite
+              {t("common.resend")}
             </Button>
           ) : null}
 
           {invitation.status === InvitationStatus.PENDING ? (
             <Button variant="danger" onClick={onCancel}>
-              Cancel Invitation
+              {t("common.cancel")}
             </Button>
           ) : null}
         </ActionsSection>

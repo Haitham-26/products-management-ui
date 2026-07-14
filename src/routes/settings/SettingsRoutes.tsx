@@ -5,9 +5,10 @@ import { AppPrivateRoute } from "../AppPrivateRoute";
 import { SettingsKeys } from "../../model/settings/types/SettingsKeys.enum";
 import { InventorySettings } from "./sections/InventorySettings";
 import { SecuritySettingsRoute } from "./SecuritySettingsRoute";
+import { appRoutes } from "../../utils/appRoutes";
 
 export const settingsRoutes: RouteObject = {
-  path: "/settings",
+  path: appRoutes.settings.path,
   element: <SettingsLayout />,
   children: [
     {

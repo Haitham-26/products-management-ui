@@ -8,7 +8,6 @@ import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
 import { Button } from "../../../components/Button";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
@@ -35,43 +34,13 @@ import { SearchSelect } from "../../../components/SearchSelect";
 import { checkPermissions } from "../../../utils/checkPermissions";
 import { Info } from "../../../components/Info";
 import { ProductMainImage } from "../../products/components/ProductMainImage";
+import { useTranslation } from "react-i18next";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h2 {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.title};
-  }
-
-  span {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
 `;
 
 const FormSection = styled.section`
@@ -94,12 +63,12 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
+    font-weight: bold;
   }
 `;
 
@@ -213,6 +182,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     },
   });
 
+  const { t } = useTranslation();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -261,15 +231,23 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
 
                 {isOutOfStock ? (
                   <StockAlert status={ProductStockStatus.OUT_OF_STOCK}>
-                    Out of stock
+                    ({t("orders.create.items.dropdown.itemStockStatus.out")})
                   </StockAlert>
                 ) : isLowStock ? (
                   <StockAlert status={ProductStockStatus.LOW_STOCK}>
-                    Only {product.quantity} left
+                    (
+                    {t("orders.create.items.dropdown.itemStockStatus.low", {
+                      count: product.quantity,
+                    })}
+                    )
                   </StockAlert>
                 ) : (
                   <StockAlert status={ProductStockStatus.IN_STOCK}>
-                    {product.quantity} left
+                    (
+                    {t("orders.create.items.dropdown.itemStockStatus.in", {
+                      count: product.quantity,
+                    })}
+                    )
                   </StockAlert>
                 )}
               </ProductOptionContainer>
@@ -279,7 +257,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           };
         });
     },
-    [products, watchedItems],
+    [products, watchedItems, t],
   );
 
   const productsPermissions = checkPermissions(user, "products");
@@ -351,7 +329,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         replace: true,
       });
       localOnClose();
-      Toast.success("Order created successfully");
+
+      Toast.success(t("orders.create.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -363,7 +342,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title="Create Order"
+      title={t("orders.create.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -375,20 +354,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faCartShopping} />
-          </IconWrapper>
-          <TitleGroup>
-            <h2>New Purchase Order</h2>
-            <span>Select products and set stock quantities</span>
-          </TitleGroup>
-        </GlassHeader>
-
         <FormSection>
           <SectionLabel>
             <Icon icon={faUser} />
-            <h4>Customer Information</h4>
+            <Text>{t("orders.general.customerInfo.title")}</Text>
           </SectionLabel>
           <Controller
             control={control}
@@ -396,16 +365,18 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             rules={{
               required: {
                 value: true,
-                message: "Customer name is required.",
+                message: t("errors.general.required"),
               },
               maxLength: {
                 value: 30,
-                message: "Customer name must be 30 at most.",
+                message: t("orders.create-edit.errors.customerInfo.name.long", {
+                  length: 30,
+                }),
               },
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Name"
+                title={t("common.name")}
                 required
                 errorMessage={error?.message}
                 valid={!error}
@@ -419,7 +390,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             name="customerEmail"
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Email"
+                title={t("common.email")}
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}
@@ -432,7 +403,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             name="customerPhone"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <PhoneInput
-                title="Phone"
+                title={t("common.phone")}
                 errorMessage={error?.message}
                 value={value}
                 onChange={onChange}
@@ -445,11 +416,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faTag} />
-            <h4>Order Items</h4>
+            <Text>{t("orders.general.items.title")}</Text>
           </SectionLabel>
 
           {!productsPermissions.CREATE ? (
-            <Info>You don't have access to products.</Info>
+            <Info>{t("orders.create.items.restriction")}</Info>
           ) : null}
 
           {fields.map((field, index) => {
@@ -466,15 +437,15 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                     rules={{
                       required:
                         index === 0
-                          ? "Please select a product"
-                          : "Please select a product or remove this row",
+                          ? t("orders.create.items.required")
+                          : t("orders.create.items.requiredOrRemove"),
                     }}
                     render={({ field: { value }, fieldState: { error } }) => {
                       const options = getProductsOptions(value);
 
                       return (
                         <SearchSelect
-                          title="Select Product"
+                          title={t("common.product")}
                           value={
                             options?.find((p) => p.value === value) || undefined
                           }
@@ -483,7 +454,9 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           onSearch={searchProducts}
                           allowClear
                           loading={searchProductsLoading}
-                          placeholder="Search for a product..."
+                          placeholder={t(
+                            "orders.create.items.dropdown.placeholder",
+                          )}
                           valid={!error}
                           disabled={!productsPermissions.READ}
                         />
@@ -495,13 +468,21 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                     control={control}
                     name={`items.${index}.quantity`}
                     rules={{
-                      required: "Required",
-                      min: { value: 1, message: "Quantity must be at least 1" },
+                      required: t("errors.general.required"),
+                      min: {
+                        value: 1,
+                        message: t("orders.create.errors.items.quantity.min", {
+                          min: 1,
+                        }),
+                      },
                       ...(field.productId
                         ? {
                             max: {
                               value: maxAvailableQty,
-                              message: `Quantity must be at most ${maxAvailableQty}, current stock of this product is ${maxAvailableQty}`,
+                              message: t(
+                                "orders.create.errors.items.quantity.max",
+                                { max: maxAvailableQty },
+                              ),
                             },
                           }
                         : {}),
@@ -511,7 +492,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                       fieldState: { error },
                     }) => (
                       <Input
-                        title="Qty"
+                        title={t("common.quantity")}
                         type="number"
                         min={1}
                         max={maxAvailableQty}
@@ -558,8 +539,12 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             <Hr />
 
             <Text color="textSecondary" fontSize="small" fontWeight="bold">
-              Total order's amount:{" "}
-              {stringWithCurrencyCode(settings.currency, totalAmount)}
+              {t("orders.general.items.totalAmount", {
+                totalAmount: stringWithCurrencyCode(
+                  settings.currency,
+                  totalAmount,
+                ),
+              })}
             </Text>
           </div>
 
@@ -573,25 +558,20 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
               !productsPermissions.READ
             }
           >
-            Add Another Product
+            {t("orders.create.items.action")}
           </AddItemButton>
         </FormSection>
 
         <FormSection>
           <SectionLabel>
             <Icon icon={faNoteSticky} />
-            <h4>Additional Remarks</h4>
+            <Text>{t("orders.general.note.title")}</Text>
           </SectionLabel>
           <Controller
             control={control}
             name="note"
             render={({ field }) => (
-              <Textarea
-                title="Internal Note"
-                placeholder="Shipping instructions, customer notes, etc."
-                rows={4}
-                {...field}
-              />
+              <Textarea title={t("common.note")} rows={4} {...field} />
             )}
           />
         </FormSection>

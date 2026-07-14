@@ -42,8 +42,17 @@ const GlobalStyle = createGlobalStyle`
     font-display: swap;
   }
 
+
+  @font-face {
+    font-family: "IBM Plex Sans Arabic";
+    src: url('/fonts/ibm-plex-sans-arabic-regular.ttf') format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
   body {
-    font-family: "Inter", sans-serif;
+    font-family: "Inter", "IBM Plex Sans Arabic", sans-serif;
   }
 
   a {

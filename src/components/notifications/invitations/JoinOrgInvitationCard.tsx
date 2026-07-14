@@ -8,6 +8,7 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
 import styled from "styled-components";
 import { userActions } from "../../../redux/user/user.slice";
+import { Trans, useTranslation } from "react-i18next";
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
@@ -26,6 +27,10 @@ const ActionsWrapper = styled.div`
   margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
+const BoldSpan = styled.span`
+  font-weight: bold;
+`;
+
 type JoinOrgInvitationCardProps = {
   invitation: JoinOrgInvitation;
 };
@@ -37,6 +42,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
   const [acceptLoading, setAcceptLoading] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation(undefined, { keyPrefix: "joinOrgModal" });
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -55,7 +61,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       await dispatch(organizationActions.getJoinOrgInvitations()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      Toast.success("Invitation declined successfully");
+      Toast.success(t("decline.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -76,9 +82,7 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
       ).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      Toast.success(
-        "Invitation accepted successfully! You are now a member of the organization",
-      );
+      Toast.success(t("accept.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -89,15 +93,14 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
 
   return (
     <Container>
-      <Text fontWeight={600}>
-        {company} invited you to join their organization
-      </Text>
+      <Text fontWeight={600}>{t("title", { company })}</Text>
 
       <Text color="textSecondary" fontSize="small">
-        You have been invited to join
-        <strong> {company}'s</strong> organization. Please note that your
-        personal account data will be hidden while you are a member, and will
-        become visible again if you choose to leave the organization.
+        <Trans
+          i18nKey="joinOrgModal.description"
+          values={{ company }}
+          components={[<BoldSpan />]}
+        />
       </Text>
 
       <ActionsWrapper>
@@ -107,11 +110,11 @@ export const JoinOrgInvitationCard: React.FC<JoinOrgInvitationCardProps> = ({
           loading={declineLoading}
           spinnerColor="textPrimary"
         >
-          Decline
+          {t("decline.title")}
         </Button>
 
         <Button variant="primary" onClick={onAccept} loading={acceptLoading}>
-          Accept
+          {t("accept.title")}
         </Button>
       </ActionsWrapper>
     </Container>

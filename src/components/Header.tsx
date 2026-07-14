@@ -2,13 +2,11 @@ import type React from "react";
 import { Row } from "./Row";
 import { Column } from "./Column";
 import { Container } from "./Container";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 import { Icon } from "./Icon";
-import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { Dropdown } from "./Dropdown";
 import type { MenuItemType } from "antd/es/menu/interface";
-import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
 import { userActions } from "../redux/user/user.slice";
 import {
@@ -18,7 +16,6 @@ import {
 } from "../redux/store";
 import { Image } from "./Image";
 import { Images } from "../assets";
-import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { Button } from "./Button";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { NotificationsDrawer } from "./notifications/NotificationsDrawer";
@@ -29,24 +26,28 @@ import type { User } from "../model/user/types/User";
 import { SignUpMethods } from "../model/user/types/SignUpMethods";
 import { googleLogout } from "@react-oauth/google";
 import { UserAvatar } from "./UserAvatar";
+import { appRoutes } from "../utils/appRoutes";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const getDropdownItems = (
   navigate: NavigateFunction,
   dispatch: AppDispatch,
   user: User,
+  t: TFunction,
 ) =>
   [
     {
-      key: "profile",
-      label: "Profile",
-      icon: <Icon icon={faUser} />,
-      onClick: () => navigate("/profile"),
+      key: appRoutes.profile.path,
+      label: t(appRoutes.profile.titleKey),
+      icon: <Icon icon={appRoutes.profile.icon} />,
+      onClick: () => navigate(appRoutes.profile.path),
     },
     {
-      key: "users-permissions",
-      label: "Users & Permissions",
-      icon: <Icon icon={faUsersGear} />,
-      onClick: () => navigate("/users-permissions"),
+      key: appRoutes.usersPermissions.path,
+      label: t(appRoutes.usersPermissions.titleKey),
+      icon: <Icon icon={appRoutes.usersPermissions.icon} />,
+      onClick: () => navigate(appRoutes.usersPermissions.path),
     },
     {
       key: "hr-1",
@@ -54,8 +55,11 @@ const getDropdownItems = (
     },
     {
       key: "logout",
-      label: "Logout",
-      icon: <Icon icon={faPersonWalkingArrowRight} />,
+      label: (
+        <LogoutButton icon={faPersonWalkingArrowRight} variant="danger">
+          {t("common.logout")}
+        </LogoutButton>
+      ),
       onClick: async () => {
         if (user.signUpMethod === SignUpMethods.GOOGLE) {
           googleLogout();
@@ -63,9 +67,19 @@ const getDropdownItems = (
         await dispatch(userActions.logout());
         navigate("/login", { replace: true });
       },
-      danger: true,
+      className: "logout",
     },
   ] as MenuItemType[];
+
+const GlobalStyle = createGlobalStyle`
+    .logout {
+      padding: 0 !important;
+    }
+`;
+
+const LogoutButton = styled(Button)`
+  width: 100%;
+`;
 
 const Wrapper = styled.div`
   position: sticky;
@@ -123,6 +137,7 @@ export const Header: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const joinOrgInvitations = useAppSelector(
     organizationSliceSelectors.selectJoinOrgInvitations,
@@ -141,8 +156,8 @@ export const Header: React.FC = () => {
 
           <Column>
             <EndContainer>
-              <Link to={"/settings"}>
-                <Icon icon={faGear} size="xl" />
+              <Link to={appRoutes.settings.path}>
+                <Icon icon={appRoutes.settings.icon} size="xl" />
               </Link>
 
               <NotificationsButtonWrapper>
@@ -161,7 +176,7 @@ export const Header: React.FC = () => {
 
               <Dropdown
                 trigger={["click"]}
-                menu={{ items: getDropdownItems(navigate, dispatch, user) }}
+                menu={{ items: getDropdownItems(navigate, dispatch, user, t) }}
               >
                 <span>
                   <UserAvatar user={user} />
@@ -176,6 +191,8 @@ export const Header: React.FC = () => {
         open={notificationsDrawerVisible}
         onClose={() => setNotificationsDrawerVisible(false)}
       />
+
+      <GlobalStyle />
     </Wrapper>
   );
 };

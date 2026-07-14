@@ -7,7 +7,6 @@ import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faHashtag } from "@fortawesome/free-solid-svg-icons/faHashtag";
 import type { Tag } from "../../../model/tag/types/Tag";
 import type { UpdateTagDto } from "../../../model/tag/dto/UpdateTagDto";
@@ -18,43 +17,14 @@ import { buildTagsParams } from "../utils/tagUtils";
 import { useSearchParams } from "react-router-dom";
 import { Toast } from "../../../utils/Toast";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
+import { Text } from "../../../components/Text";
+import { useTranslation } from "react-i18next";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const MainTitle = styled.h2`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.title};
-`;
-
-const Subtitle = styled.span`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.small};
 `;
 
 const FormSection = styled.section`
@@ -77,12 +47,12 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
+    font-weight: bold;
   }
 `;
 
@@ -105,6 +75,7 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues } = useForm<UpdateTagDto>();
 
   useEffect(() => {
@@ -137,7 +108,7 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
       });
 
       onClose();
-      Toast.success("Tag updated successfully");
+      Toast.success(t("tags.edit.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -149,7 +120,7 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={onClose}
-      title="Edit Tag"
+      title={t("tags.edit.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -161,30 +132,19 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faTag} />
-          </IconWrapper>
-          <TitleGroup>
-            <MainTitle>Update Tag</MainTitle>
-            <Subtitle>Modify label and metadata details</Subtitle>
-          </TitleGroup>
-        </GlassHeader>
-
         <FormSection>
           <SectionLabel>
             <Icon icon={faHashtag} />
-            <h4>Tag Identity</h4>
+            <Text>{t("tags.create-edit.identification.title")}</Text>
           </SectionLabel>
 
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Tag name is required" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState }) => (
               <Input
-                title="Tag Name"
-                placeholder="e.g. Premium, Bestseller"
+                title={t("common.name")}
                 errorMessage={fieldState.error?.message}
                 required
                 {...field}
@@ -196,12 +156,7 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
             control={control}
             name="description"
             render={({ field }) => (
-              <Textarea
-                title="Description"
-                placeholder="What is this tag used for?"
-                rows={5}
-                {...field}
-              />
+              <Textarea title={t("common.description")} rows={5} {...field} />
             )}
           />
         </FormSection>

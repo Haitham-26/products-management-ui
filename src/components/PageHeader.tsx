@@ -1,5 +1,5 @@
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
@@ -8,7 +8,7 @@ import { Popover } from "antd";
 import { Input } from "./Input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
-import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { useTranslation } from "react-i18next";
 
 const Wrapper = styled.div`
   display: flex;
@@ -117,18 +117,6 @@ const FilterChip = styled.button<{ active?: boolean }>`
   }
 `;
 
-const ClearFilters = styled.button`
-  border: none;
-  background: none;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.error};
-  }
-`;
-
 const FixedContentContainer = styled.div`
   position: absolute;
   inset: 0;
@@ -142,6 +130,10 @@ const FixedContentContainer = styled.div`
   justify-content: space-between;
   padding-inline-start: ${({ theme }) => theme.spacing.md};
   padding-inline-end: ${({ theme }) => theme.spacing.sm};
+
+  button {
+    height: 2rem !important;
+  }
 `;
 
 type PageHeaderProps = {
@@ -165,7 +157,6 @@ type PageHeaderProps = {
   filters?: {
     content: React.ReactNode;
     activeCount: number;
-    onClear?: VoidFunction;
   };
 
   bulkActionsContent?: React.ReactNode;
@@ -184,6 +175,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   return (
     <Wrapper>
@@ -216,7 +209,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <Search>
               <Icon icon={faMagnifyingGlass} />
               <Input
-                placeholder={search.placeholder || "Search..."}
+                placeholder={search.placeholder || `${t("common.search")}...`}
                 value={searchValue}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -229,33 +222,25 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           ) : null}
 
           {filters ? (
-            <Fragment>
-              <Popover
-                content={filters.content}
-                trigger="click"
-                open={open}
-                onOpenChange={setOpen}
-                arrow={false}
-              >
-                <FilterChip active={filters.activeCount > 0}>
-                  <Icon icon={faFilter} />
-                  Filters
-                  {filters.activeCount ? ` (${filters.activeCount})` : ""}
-                </FilterChip>
-              </Popover>
-
-              {filters.activeCount && filters.onClear ? (
-                <ClearFilters onClick={filters.onClear}>
-                  <Icon icon={faXmark} /> Clear
-                </ClearFilters>
-              ) : null}
-            </Fragment>
+            <Popover
+              content={filters.content}
+              trigger="click"
+              open={open}
+              onOpenChange={setOpen}
+              arrow={false}
+            >
+              <FilterChip active={filters.activeCount > 0}>
+                <Icon icon={faFilter} />
+                {t("common.filters.title")}
+                {filters.activeCount ? ` (${filters.activeCount})` : ""}
+              </FilterChip>
+            </Popover>
           ) : null}
 
           {bulkActionsContent ? (
             <FixedContentContainer>
               <Text color="onPrimary" fontSize="small" fontWeight={"bold"}>
-                {selectedTableItemsCount} selected
+                {selectedTableItemsCount} {t("common.selected").toLowerCase()}
               </Text>
 
               {bulkActionsContent}

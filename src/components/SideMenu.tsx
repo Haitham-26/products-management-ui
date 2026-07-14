@@ -5,11 +5,8 @@ import type { MenuProps } from "antd";
 import { NavLink, useLocation } from "react-router-dom";
 import { Container } from "./Container";
 import { Icon } from "./Icon";
-import { faChartBar } from "@fortawesome/free-solid-svg-icons/faChartBar";
-import { faBox } from "@fortawesome/free-solid-svg-icons/faBox";
-import { faFolder } from "@fortawesome/free-solid-svg-icons/faFolder";
-import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons/faCartShopping";
+import { appRoutes } from "../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   width: 250px;
@@ -38,38 +35,24 @@ const StyledMenu = styled(Menu)`
 
 export const SideMenu: React.FC = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const items: MenuProps["items"] = [
-    {
-      label: "Dashboard",
-      path: "/",
-      icon: <Icon icon={faChartBar} />,
-    },
-    {
-      label: "Products",
-      path: "/products",
-      icon: <Icon icon={faBox} />,
-    },
-    {
-      label: "Categories",
-      path: "/categories",
-      icon: <Icon icon={faFolder} />,
-    },
-    {
-      label: "Tags",
-      path: "/tags",
-      icon: <Icon icon={faTags} />,
-    },
-    {
-      label: "Orders",
-      path: "/orders",
-      icon: <Icon icon={faCartShopping} />,
-    },
-  ].map((item) => ({
-    key: item.path,
-    icon: item.icon,
-    label: <NavLink to={item.path}>{item.label}</NavLink>,
-  }));
+    "dashboard",
+    "products",
+    "orders",
+    "categories",
+    "tags",
+  ].map((key) => {
+    const route = appRoutes[key as keyof typeof appRoutes];
+
+    return {
+      key: route.path,
+      ...route,
+      icon: <Icon icon={route.icon} />,
+      label: <NavLink to={route.path}>{t(route.titleKey)}</NavLink>,
+    };
+  });
 
   return (
     <StyledContainer>

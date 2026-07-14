@@ -8,7 +8,6 @@ import { Collapse } from "../../../components/Collapse";
 import styled from "styled-components";
 import { Text } from "../../../components/Text";
 import { CRUDPermissions } from "../../../model/user/types/CRUDPermissions.enum";
-import capitalize from "lodash/capitalize";
 import type { UserPermissions } from "../../../model/user/types/UserPermissions";
 import { Switch, Tooltip } from "antd";
 import { Dropdown } from "../../../components/Dropdown";
@@ -29,6 +28,7 @@ import type { ThemeType } from "../../../theme/theme";
 import { Empty } from "../../../components/Empty";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { UserAvatar } from "../../../components/UserAvatar";
+import { Trans, useTranslation } from "react-i18next";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -36,7 +36,7 @@ const StickyBar = styled.div<{ blur: boolean }>`
   z-index: 100;
   margin-bottom: ${({ theme, blur }) => (!blur ? theme.spacing.md : 0)};
 
-  padding-inline-start: ${({ theme, blur }) => (blur ? theme.spacing.md : 0)};
+  padding-inline: ${({ theme, blur }) => (blur ? theme.spacing.md : 0)};
   padding-block: ${({ theme, blur }) => (blur ? theme.spacing.sm : 0)};
 
   display: flex;
@@ -107,10 +107,11 @@ const TableWrapper = styled.div`
 const PermissionTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: start;
 `;
 
 const Th = styled.th`
+  text-align: start;
   padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textSecondary};
@@ -152,17 +153,8 @@ export const UserPermissionsMembersTab: React.FC<
   );
   const [saveLoading, setSaveLoading] = useState(false);
 
-  const members = useAppSelector(
-    organizationSliceSelectors.selectOrganizationMembers,
-  );
-  const membersLoading = useAppSelector(
-    organizationSliceSelectors.selectOrganizationMembersLoading,
-  );
-  const user = useAppSelector(userSliceSelectors.selectUser);
-  const isOrganization = !useAppSelector(userSliceSelectors.selectIsOrgMember);
-
   const dispatch = useAppDispatch();
-
+  const { t } = useTranslation();
   const {
     control,
     setValue,
@@ -177,6 +169,15 @@ export const UserPermissionsMembersTab: React.FC<
     name: "members",
   });
 
+  const members = useAppSelector(
+    organizationSliceSelectors.selectOrganizationMembers,
+  );
+  const membersLoading = useAppSelector(
+    organizationSliceSelectors.selectOrganizationMembersLoading,
+  );
+  const user = useAppSelector(userSliceSelectors.selectUser);
+  const isOrganization = !useAppSelector(userSliceSelectors.selectIsOrgMember);
+
   const onManageMembersPermissions = async () => {
     try {
       setSaveLoading(true);
@@ -188,7 +189,7 @@ export const UserPermissionsMembersTab: React.FC<
       ).unwrap();
       await dispatch(organizationActions.getOrganizationMembers()).unwrap();
 
-      Toast.success("Members permissions updated successfully");
+      Toast.success(t("usersPermissions.members.updatePermissions.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -215,7 +216,7 @@ export const UserPermissionsMembersTab: React.FC<
 
       setSelectedMember(null);
 
-      Toast.success("Member removed successfully");
+      Toast.success(t("usersPermissions.members.removeMember.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -264,7 +265,9 @@ export const UserPermissionsMembersTab: React.FC<
     <Fragment>
       {isOrganization && members.length ? (
         <StickyBar blur={shouldBlurStickyHeader}>
-          <Text fontWeight="bold">Members Permissions</Text>
+          <Text fontWeight="bold">
+            {t("usersPermissions.members.subtitle")}
+          </Text>
 
           {members.length > 1 ? (
             <Button
@@ -272,19 +275,19 @@ export const UserPermissionsMembersTab: React.FC<
               loading={saveLoading}
               disabled={!isDirty}
             >
-              Save changes
+              {t("common.save")}
             </Button>
           ) : null}
         </StickyBar>
       ) : null}
 
       {!membersLoading && !members.length ? (
-        <Empty description="You have no members yet">
+        <Empty description={t("usersPermissions.members.empty")}>
           <Button
             icon={faUserPlus}
             onClick={() => setInviteMembersModalVisible(true)}
           >
-            Invite members
+            {t("usersPermissions.actions.inviteMembers")}
           </Button>
         </Empty>
       ) : null}
@@ -315,13 +318,13 @@ export const UserPermissionsMembersTab: React.FC<
 
                       {m._id === user._id ? (
                         <Badge background="primary" color="onPrimary">
-                          You
+                          {t("common.you")}
                         </Badge>
                       ) : null}
 
                       {m.roles?.includes(UserRoles.OWNER) ? (
                         <Badge background="warning" color="background">
-                          Owner
+                          {t("common.owner")}
                         </Badge>
                       ) : null}
                     </Name>
@@ -340,7 +343,7 @@ export const UserPermissionsMembersTab: React.FC<
                         {
                           key: "remove",
                           icon: <Icon icon={faPersonCircleXmark} />,
-                          label: "Remove member",
+                          label: t("common.remove"),
                           onClick: () => setSelectedMember(m),
                           danger: true,
                         },
@@ -356,9 +359,11 @@ export const UserPermissionsMembersTab: React.FC<
                     <PermissionTable>
                       <thead>
                         <tr>
-                          <Th>Entity</Th>
+                          <Th>{t("common.entity")}</Th>
                           {availableActions.map((action) => (
-                            <Th key={action}>{capitalize(action)}</Th>
+                            <Th key={action}>
+                              {t(`common.${action.toLowerCase()}`)}
+                            </Th>
                           ))}
                         </tr>
                       </thead>
@@ -375,7 +380,7 @@ export const UserPermissionsMembersTab: React.FC<
                                   fontSize="small"
                                   color="textSecondary"
                                 >
-                                  {capitalize(entityKey)}
+                                  {t(`common.${typedEntityKey.toLowerCase()}`)}
                                 </Text>
                               </Td>
 
@@ -399,7 +404,9 @@ export const UserPermissionsMembersTab: React.FC<
                                           <Tooltip
                                             title={
                                               shouldDisable
-                                                ? "Read permissions should be enabled first."
+                                                ? t(
+                                                    "usersPermissions.members.disabledCheckBoxTooltip",
+                                                  )
                                                 : undefined
                                             }
                                           >
@@ -450,13 +457,15 @@ export const UserPermissionsMembersTab: React.FC<
       )}
 
       <WarningModal
-        title={`Remove ${selectedMember?.name} from your organization?`}
+        title={t("usersPermissions.members.removeMember.title", {
+          member: selectedMember?.name,
+        })}
         description={
-          <Fragment>
-            Are you sure you want to remove
-            <strong> {selectedMember?.name}</strong> from your organization? You
-            can re-invite him later.
-          </Fragment>
+          <Trans
+            i18nKey="usersPermissions.members.removeMember.description"
+            values={{ member: selectedMember?.name }}
+            components={[<strong />]}
+          />
         }
         open={!isEmpty(selectedMember)}
         onClose={() => setSelectedMember(null)}

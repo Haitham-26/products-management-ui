@@ -1,7 +1,6 @@
 import type React from "react";
 import { Container } from "../../components/Container";
 import { PageHeader } from "../../components/PageHeader";
-import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { Tabs } from "../../components/Tabs";
 import { Icon } from "../../components/Icon";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
@@ -21,6 +20,8 @@ import { WarningModal } from "../../components/WarningModal";
 import { useNavigate } from "react-router-dom";
 import { UsersPermissionsOrgTab } from "./components/UsersPermissionsOrgTab";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 export const UsersPermissions: React.FC = () => {
   const [inviteMembersModalVisible, setInviteMembersModalVisible] =
@@ -29,8 +30,8 @@ export const UsersPermissions: React.FC = () => {
   const [leaveOrgLoading, setLeaveOrgLoading] = useState(false);
 
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
@@ -41,9 +42,9 @@ export const UsersPermissions: React.FC = () => {
       await dispatch(organizationActions.leaveOrg()).unwrap();
       await dispatch(userActions.getUserById()).unwrap();
 
-      navigate("/dashboard", { replace: true });
+      navigate(appRoutes.dashboard.path, { replace: true });
 
-      Toast.success("You left the organization successfully");
+      Toast.success(t("usersPermissions.org.leave.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -59,18 +60,18 @@ export const UsersPermissions: React.FC = () => {
   return (
     <Container>
       <PageHeader
-        title="Users & Permissions"
-        icon={faUsersGear}
+        title={t(appRoutes.usersPermissions.titleKey)}
+        icon={appRoutes.usersPermissions.icon}
         action={
           !isMember
             ? {
                 icon: faUserPlus,
-                title: "Invite members",
+                title: t("usersPermissions.actions.inviteMembers"),
                 onClick: () => setInviteMembersModalVisible(true),
               }
             : {
                 icon: faPersonWalkingArrowRight,
-                title: "Leave organization",
+                title: t("usersPermissions.actions.leaveOrg"),
                 onClick: () => setLeaveOrgModalVisible(true),
                 variant: "danger",
               }
@@ -83,7 +84,7 @@ export const UsersPermissions: React.FC = () => {
             ? [
                 {
                   key: "Organization",
-                  label: "Organization",
+                  label: t("usersPermissions.org.title"),
                   icon: <Icon icon={faBuilding} />,
                   children: (
                     <UsersPermissionsOrgTab
@@ -95,7 +96,7 @@ export const UsersPermissions: React.FC = () => {
             : []),
           {
             key: "members",
-            label: "Members",
+            label: t("usersPermissions.members.title"),
             icon: <Icon icon={faUsers} />,
             children: (
               <UserPermissionsMembersTab
@@ -107,7 +108,7 @@ export const UsersPermissions: React.FC = () => {
             ? [
                 {
                   key: "invitations",
-                  label: "Invitations",
+                  label: t("usersPermissions.invitations.title"),
                   icon: <Icon icon={faEnvelope} />,
                   children: (
                     <UserPermissionsInvitationsTab
@@ -131,10 +132,10 @@ export const UsersPermissions: React.FC = () => {
 
       {isMember ? (
         <WarningModal
-          title="Leave organization"
-          description="Are you sure you want to leave the organization? You’ll need a new invitation from the owner to rejoin."
+          title={t("usersPermissions.org.leave.title")}
+          description={t("usersPermissions.org.leave.description")}
           onConfirm={leaveOrg}
-          confirmText="Leave"
+          confirmText={t("usersPermissions.org.leave.actions.leave")}
           confirmLoading={leaveOrgLoading}
           open={leaveOrgModalVisible}
           onClose={() => setLeaveOrgModalVisible(false)}

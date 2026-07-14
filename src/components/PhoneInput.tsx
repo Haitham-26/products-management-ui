@@ -1,4 +1,5 @@
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import PhoneInputLib, { isValidPhoneNumber } from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 import styled from "styled-components";
@@ -26,8 +27,14 @@ const Wrapper = styled.div<{ valid: boolean }>`
         !valid ? theme.colors.error : theme.colors.border} !important;
 
     border-radius: ${({ theme }) => theme.radius.md};
-    border-end-start-radius: 0;
-    border-start-start-radius: 0;
+    html[dir="ltr"] & {
+      border-end-start-radius: 0;
+      border-start-start-radius: 0;
+    }
+    html[dir="rtl"] & {
+      border-end-end-radius: 0;
+      border-start-end-radius: 0;
+    }
     font-size: 0.875rem;
     outline: none;
     transition: all 0.2s ease;
@@ -53,6 +60,9 @@ const Wrapper = styled.div<{ valid: boolean }>`
     height: 2rem;
     transition: all 0.2s ease;
     margin-right: 0;
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.sm};
 
     &:focus-within {
       border-color: ${({ theme }) => theme.colors.primary};
@@ -91,6 +101,8 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   valid = true,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   const localValid =
     valid && (props.value ? isValidPhoneNumber(props.value) : true);
 
@@ -114,7 +126,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
       />
 
       {errorMessage?.length || !localValid ? (
-        <Error>{errorMessage || "Invalid phone number"}</Error>
+        <Error>{errorMessage || t("errors.phone.invalid")}</Error>
       ) : null}
     </Wrapper>
   );

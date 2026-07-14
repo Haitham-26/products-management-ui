@@ -12,7 +12,6 @@ import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
-import capitalize from "lodash/capitalize";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 import { Checkbox } from "antd";
@@ -21,29 +20,32 @@ import { categoryActions } from "../../../redux/category/categories.slice";
 import debounce from "lodash/debounce";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { tagActions } from "../../../redux/tag/tags.slice";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import camelCase from "lodash/camelCase";
 
-const creationDateOptions = [
+const getCreationDateOptions = (t: TFunction) => [
   {
-    label: "Default",
+    label: t("common.default"),
     value: null,
   },
   {
-    label: "Newest First",
+    label: t("common.filters.creationDate.newest"),
     value: CreationDateFilters.NEWEST,
   },
   {
-    label: "Oldest First",
+    label: t("common.filters.creationDate.oldest"),
     value: CreationDateFilters.OLDEST,
   },
 ];
 
-const stockStatusOptions = [
+const stockStatusOptions = (t: TFunction) => [
   {
-    label: "All",
+    label: t("common.all"),
     value: null,
   },
   ...Object.values(ProductStockStatus).map((s) => ({
-    label: capitalize(s.replaceAll("_", " ")),
+    label: t(`products.stockStatus.${camelCase(s)}`),
     value: s,
   })),
 ];
@@ -140,6 +142,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,12 +217,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>Creation date</PopoverLabel>
+          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
           <Select
-            placeholder="Default"
+            placeholder={t("common.default")}
             value={filters.creationDate}
             onChange={(val) => applyFilter("creationDate", val)}
-            options={creationDateOptions}
+            options={getCreationDateOptions(t)}
           />
         </PopoverSection>
 
@@ -230,18 +233,20 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             checked={filters.showDraft}
             onChange={(e) => applyFilter("showDraft", e.target.checked)}
           >
-            <PopoverLabel>Show draft</PopoverLabel>
+            <PopoverLabel>{t("products.filters.showDraft")}</PopoverLabel>
           </Checkbox>
         </PopoverSection>
 
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>Base Price ({settings.currency})</PopoverLabel>
+          <PopoverLabel>
+            {t("products.fields.basePrice")} ({settings.currency})
+          </PopoverLabel>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t("common.min")}
               value={basePriceRange?.min || ""}
               onChange={(e) => {
                 setBasePriceRange((prev) => ({
@@ -259,7 +264,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t("common.max")}
               value={basePriceRange?.max || ""}
               onChange={(e) => {
                 setBasePriceRange((prev) => ({
@@ -278,11 +283,13 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
         </PopoverSection>
 
         <PopoverSection>
-          <PopoverLabel>Final Price ({settings.currency})</PopoverLabel>
+          <PopoverLabel>
+            {t("products.fields.finalPrice")} ({settings.currency})
+          </PopoverLabel>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t("common.min")}
               value={finalPriceRange?.min || ""}
               onChange={(e) => {
                 setFinalPriceRange((prev) => ({
@@ -300,7 +307,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t("common.max")}
               value={finalPriceRange?.max || ""}
               onChange={(e) => {
                 setFinalPriceRange((prev) => ({
@@ -319,24 +326,31 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
         </PopoverSection>
 
         <PopoverSection>
-          <PopoverLabel>Offer Type</PopoverLabel>
+          <PopoverLabel>
+            {t("products.create-edit.price.discount.type.title")}
+          </PopoverLabel>
           <Select
-            placeholder="Any"
+            placeholder={t("common.all")}
             value={filters.discountType}
             onChange={(val) => applyFilter("discountType", val)}
             allowClear
             options={[
               {
-                label: "Any",
+                label: t("common.all"),
                 value: null,
               },
               {
-                label: "Fixed Value",
-                value: ProductDiscountTypes.FIXED,
-              },
-              {
-                label: "Percentage",
+                label: t(
+                  "products.create-edit.price.discount.types.percentage",
+                ),
                 value: ProductDiscountTypes.PERCENTAGE,
+              },
+
+              {
+                label: t("products.create-edit.price.discount.types.fixed", {
+                  currency: settings.currency,
+                }),
+                value: ProductDiscountTypes.FIXED,
               },
             ]}
           />
@@ -345,7 +359,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>Category</PopoverLabel>
+          <PopoverLabel>{t("common.category")}</PopoverLabel>
           <SearchSelect
             value={filters.categoryId || undefined}
             onChange={(val) => applyFilter("categoryId", val)}
@@ -353,12 +367,14 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             onSearch={searchCategories}
             allowClear
             loading={searchCategoriesLoading}
-            placeholder="Search for a category..."
+            placeholder={t(
+              "products.create-edit.taxonomy.category.placeholder",
+            )}
           />
         </PopoverSection>
 
         <PopoverSection>
-          <PopoverLabel>Tags</PopoverLabel>
+          <PopoverLabel>{t("common.tags")}</PopoverLabel>
           <SearchSelect
             mode="multiple"
             value={filters.tagIds || undefined}
@@ -367,29 +383,29 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             onSearch={searchTags}
             loading={searchTagsLoading}
             allowClear
-            placeholder="Search for tags..."
+            placeholder={t("products.create-edit.taxonomy.tags.placeholder")}
           />
         </PopoverSection>
 
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>Stock Status</PopoverLabel>
+          <PopoverLabel>{t("products.stockStatus.title")}</PopoverLabel>
           <Select
-            placeholder="All"
+            placeholder={t("common.all")}
             value={filters.stockStatus}
             onChange={(val) => applyFilter("stockStatus", val)}
             allowClear
-            options={stockStatusOptions}
+            options={stockStatusOptions(t)}
           />
         </PopoverSection>
 
         <PopoverSection>
-          <PopoverLabel>Quantity</PopoverLabel>
+          <PopoverLabel>{t("common.quantity")}</PopoverLabel>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t("common.min")}
               value={quantityRange?.min || ""}
               onChange={(e) => {
                 setQuantityRange((prev) => ({
@@ -407,7 +423,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t("common.max")}
               value={quantityRange?.max || ""}
               onChange={(e) => {
                 setQuantityRange((prev) => ({
@@ -431,7 +447,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
           <PopoverSeparator />
           <PopoverFooter>
             <Button icon={faRotateLeft} onClick={resetFilters}>
-              Clear all
+              {t("common.clearAll")}
             </Button>
           </PopoverFooter>
         </FiltersClearContainer>

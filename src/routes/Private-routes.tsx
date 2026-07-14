@@ -9,37 +9,38 @@ import { Orders } from "./orders/Orders";
 import { settingsRoutes } from "./settings/SettingsRoutes";
 import { UsersPermissions } from "./users-permissions/UsersPermissions";
 import { Profile } from "./profile/Profile";
+import { appRoutes } from "../utils/appRoutes";
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
   children: [
     {
-      path: "/",
+      path: appRoutes.dashboard.path,
       element: <AppPrivateRoute component={<Dashboard />} />,
     },
     {
-      path: "/products",
+      path: appRoutes.products.path,
       element: <AppPrivateRoute component={<Products />} />,
     },
     {
-      path: "/categories",
+      path: appRoutes.categories.path,
       element: <AppPrivateRoute component={<Categories />} />,
     },
     {
-      path: "/tags",
+      path: appRoutes.tags.path,
       element: <AppPrivateRoute component={<Tags />} />,
     },
     {
-      path: "/orders",
+      path: appRoutes.orders.path,
       element: <AppPrivateRoute component={<Orders />} />,
     },
     settingsRoutes,
     {
-      path: "/profile",
+      path: appRoutes.profile.path,
       element: <AppPrivateRoute component={<Profile />} />,
     },
     {
-      path: "/users-permissions",
+      path: appRoutes.usersPermissions.path,
       element: <AppPrivateRoute component={<UsersPermissions />} />,
     },
     {

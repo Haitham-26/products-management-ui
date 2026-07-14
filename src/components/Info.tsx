@@ -19,6 +19,7 @@ const Container = styled.div<{ color: NonNullable<InfoProps["color"]> }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.typography.small};
 `;
 
 export const Info: React.FC<InfoProps> = ({

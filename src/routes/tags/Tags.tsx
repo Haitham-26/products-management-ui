@@ -28,7 +28,6 @@ import {
 } from "./utils/tagUtils";
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
-import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { TagsFilters } from "./components/TagsFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
@@ -36,6 +35,8 @@ import type { Key } from "antd/es/table/interface";
 import { Button } from "../../components/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { Toast } from "../../utils/Toast";
+import { appRoutes } from "../../utils/appRoutes";
+import { useTranslation } from "react-i18next";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -66,6 +67,7 @@ export const Tags: React.FC = () => {
   const [tagsBulkDeleteVisible, setTagsBulkDeleteVisible] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
@@ -192,7 +194,7 @@ export const Tags: React.FC = () => {
       setTagDeleteVisible(false);
       setCurrentTag(null);
 
-      Toast.success("Tag deleted successfully");
+      Toast.success(t("tags.delete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -244,7 +246,7 @@ export const Tags: React.FC = () => {
       setTagsBulkDeleteVisible(false);
       setSelectedRowIds([]);
 
-      Toast.success(`${selectedRowIds.length} tag(s) deleted successfully`);
+      Toast.success(t("tags.bulkDelete.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -259,8 +261,9 @@ export const Tags: React.FC = () => {
         onDelete: permissions.DELETE ? onDelete : undefined,
         onEdit: permissions.UPDATE ? onEdit : undefined,
         onRead: permissions.READ ? onRead : undefined,
+        t,
       }),
-    [permissions],
+    [permissions, t],
   );
 
   useEffect(() => {
@@ -277,12 +280,12 @@ export const Tags: React.FC = () => {
   return (
     <StyledContainer>
       <PageHeader
-        icon={faTags}
-        title="Tags"
+        icon={appRoutes.tags.icon}
+        title={t(appRoutes.tags.titleKey)}
         {...(permissions.CREATE
           ? {
               action: {
-                title: "New Tag",
+                title: t("tags.subheader.action"),
                 icon: faPlus,
                 onClick: () => setTagCreateVisible(true),
               },
@@ -301,7 +304,7 @@ export const Tags: React.FC = () => {
                 ),
               },
               search: {
-                placeholder: "Search by name or description...",
+                placeholder: t("tags.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
                   applyFilter("keyword", searchKeyword, true),
               },
@@ -316,7 +319,7 @@ export const Tags: React.FC = () => {
                   icon={faTrash}
                   variant="secondary"
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               ) : null}
             </BulkActionsWrapper>
@@ -338,7 +341,6 @@ export const Tags: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
             position: ["bottomRight"],
-            showTotal: (total) => `Total ${total} tags`,
           }}
           rowSelection={{
             selectedRowKeys: selectedRowIds,
@@ -354,24 +356,22 @@ export const Tags: React.FC = () => {
       {permissions.DELETE ? (
         <Fragment>
           <WarningModal
-            title={`Delete "${currentTag?.name}" tag?`}
-            description={`Are you sure you want to delete "${currentTag?.name}" tag? It will be deleted and will unlink all associated products. This action cannot be undone.`}
+            title={t("tags.delete.title", { name: currentTag?.name })}
+            description={t("tags.delete.description")}
             open={tagDeleteVisible}
             onClose={() => setTagDeleteVisible(false)}
             onConfirm={deleteTag}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={tagDeleteLoading}
           />
 
           <WarningModal
-            title={`Delete ${selectedRowIds.length} tag(s)?`}
-            description="This will delete the selected tags and remove them from all associated products. The products themselves will not be deleted, but they will no longer be linked to these tags. This action cannot be undone."
+            title={t("tags.bulkDelete.title", { count: selectedRowIds.length })}
+            description={t("tags.bulkDelete.description")}
             open={tagsBulkDeleteVisible}
             onClose={() => setTagsBulkDeleteVisible(false)}
             onConfirm={deleteBulkTags}
-            confirmText="Delete"
-            cancelText="Cancel"
+            confirmText={t("common.delete")}
             confirmLoading={tagsBulkDeleteLoading}
           />
         </Fragment>

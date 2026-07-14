@@ -8,18 +8,20 @@ import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 import { Select } from "../../../components/Select";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
-const creationDateOptions = [
+const getCreationDateOptions = (t: TFunction) => [
   {
-    label: "Default",
+    label: t("common.default"),
     value: null,
   },
   {
-    label: "Newest First",
+    label: t("common.filters.creationDate.newest"),
     value: CreationDateFilters.NEWEST,
   },
   {
-    label: "Oldest First",
+    label: t("common.filters.creationDate.oldest"),
     value: CreationDateFilters.OLDEST,
   },
 ];
@@ -107,6 +109,7 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
   const [usageCountRange, setUsageCountRange] = useState<Range>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -116,23 +119,23 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>Creation date</PopoverLabel>
+          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
           <Select
-            placeholder="Default"
+            placeholder={t("common.default")}
             value={filters.creationDate}
             onChange={(val) => applyFilter("creationDate", val)}
-            options={creationDateOptions}
+            options={getCreationDateOptions(t)}
           />
         </PopoverSection>
 
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>Usage count</PopoverLabel>
+          <PopoverLabel>{t("tags.fields.usageCount")}</PopoverLabel>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t("common.min")}
               value={usageCountRange?.min || ""}
               onChange={(e) => {
                 setUsageCountRange((prev) => ({
@@ -150,7 +153,7 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t("common.max")}
               value={usageCountRange?.max || ""}
               onChange={(e) => {
                 setUsageCountRange((prev) => ({
@@ -174,7 +177,7 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
           <PopoverSeparator />
           <PopoverFooter>
             <Button icon={faRotateLeft} onClick={resetFilters}>
-              Clear all
+              {t("common.clearAll")}
             </Button>
           </PopoverFooter>
         </FiltersClearContainer>

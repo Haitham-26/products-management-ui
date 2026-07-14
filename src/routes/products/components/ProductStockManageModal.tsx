@@ -1,12 +1,12 @@
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import styled from "styled-components";
 import { Modal } from "../../../components/Modal";
 import { Icon } from "../../../components/Icon";
 import { Text } from "../../../components/Text";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
-import { faBoxesStacked } from "@fortawesome/free-solid-svg-icons/faBoxesStacked";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import type { Product } from "../../../model/product/types/Product";
 import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
@@ -17,147 +17,144 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
 import { buildProductsParams } from "../utils/productUtils";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.sm} 0;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: 4px 0 0 0;
 `;
 
-const InfoBanner = styled.div`
+const ProductHeader = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  align-items: flex-start;
+  padding-bottom: ${({ theme }) => theme.spacing.md};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border}80;
 `;
 
-const ProductDetails = styled.div`
+const ProductMeta = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 4px;
 `;
 
-const StockBadge = styled.div`
+const StockMetric = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
-  border-radius: ${({ theme }) => theme.radius.md};
-  min-width: 80px;
+  align-items: flex-end;
+  gap: 2px;
 `;
 
-const ModeSelector = styled.div`
+const SegmentedControl = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.border}40;
+  padding: 3px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ theme }) => theme.colors.border}60;
 `;
 
-const ModeButton = styled(Button)<{
-  variant: "add" | "remove";
-  active?: boolean;
-}>`
-  border: 1px solid
-    ${({ theme, active, variant }) =>
-      active
-        ? variant === "add"
-          ? theme.colors.success
-          : theme.colors.error
-        : theme.colors.border};
-
-  background: ${({ theme, active, variant }) =>
-    active
-      ? variant === "add"
-        ? `${theme.colors.success}15`
-        : `${theme.colors.error}15`
-      : theme.colors.surface};
-
-  color: ${({ theme, active, variant }) =>
-    active
-      ? variant === "add"
-        ? theme.colors.success
-        : theme.colors.error
-      : theme.colors.textSecondary};
+const SegmentButton = styled(Button)<{ $active: boolean }>`
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.surface : "transparent"};
+  font-weight: 500;
+  color: ${({ $active, theme }) =>
+    $active ? theme.colors.textPrimary : theme.colors.textSecondary};
+  box-shadow: ${({ $active }) =>
+    $active
+      ? "0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 1px rgba(0, 0, 0, 0.025)"
+      : "none"};
 
   &:hover {
-    border-color: ${({ theme, variant }) =>
-      variant === "add" ? theme.colors.success : theme.colors.error};
+    color: ${({ theme }) => theme.colors.textPrimary};
   }
 `;
 
-const InputWrapper = styled.div`
+const ControlSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.md} 0;
 `;
 
-const NumericControl = styled.div`
+const NumericSelector = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
-  overflow: hidden;
   background: ${({ theme }) => theme.colors.surface};
-  height: 48px;
+  width: 100%;
+  max-width: 16rem;
+  height: 40px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:focus-within {
     border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary}15;
   }
 `;
 
 const AdjustButton = styled(Button)`
   width: 3rem;
+  padding: 0;
   height: 100%;
-  border: none;
   background: transparent;
   color: ${({ theme }) => theme.colors.textSecondary};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.border}50;
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
 `;
 
 const StockInput = styled(Input)`
-  flex: 1;
-  height: 100%;
-  border-color: transparent !important;
+  border: none !important;
   text-align: center;
-  font-size: 1.15rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
-  outline: none;
   box-shadow: none !important;
+  padding: 0;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
+
+  -moz-appearance: textfield;
+  appearance: textfield;
 `;
 
-const PreviewSummary = styled.div`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.border}20;
-  border-radius: ${({ theme }) => theme.radius.md};
+const LivePreviewRow = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  height: 1.5rem;
+  margin-top: 4px;
+
+  svg {
+    opacity: 0.4;
+  }
+`;
+
+const PreviewState = styled.span`
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  &.empty-state {
+    opacity: 0.6;
+  }
+`;
+
+const PreviewResult = styled.span<{ $mode: "add" | "remove" }>`
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: ${({ theme, $mode }) =>
+    $mode === "add" ? theme.colors.success : theme.colors.error};
 `;
 
 type ProductStockManageModalProps = {
@@ -176,6 +173,7 @@ export const ProductStockManageModal: React.FC<
 
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -239,6 +237,8 @@ export const ProductStockManageModal: React.FC<
       });
 
       onClose();
+
+      Toast.success(t("products.manageStock.success"));
     } catch (e) {
       console.error(e);
       Toast.apiError(e);
@@ -265,59 +265,57 @@ export const ProductStockManageModal: React.FC<
   }
 
   return (
-    <Modal title="Manage Stock Levels" open={open} onCancel={onClose}>
+    <Modal
+      title={t("products.manageStock.title")}
+      open={open}
+      onCancel={onClose}
+    >
       <Container>
-        <InfoBanner>
-          <ProductDetails>
-            <Text fontWeight="600">{product.name}</Text>
+        <ProductHeader>
+          <ProductMeta>
             <Text fontSize="small" color="textSecondary">
-              SKU / Base Reference Context
+              {t("common.product")}
             </Text>
-          </ProductDetails>
-          <StockBadge>
+            <Text fontWeight="600" color="textPrimary">
+              {product.name}
+            </Text>
+          </ProductMeta>
+
+          <StockMetric>
             <Text fontSize="small" color="textSecondary">
-              Current
+              {t("products.read.availableStock")}
             </Text>
-            <Text fontSize="title" fontWeight="700">
+            <Text fontSize="title" fontWeight="600">
               {currentStock}
             </Text>
-          </StockBadge>
-        </InfoBanner>
+          </StockMetric>
+        </ProductHeader>
 
-        <ModeSelector>
-          <ModeButton
-            type="button"
-            active={mode === "add"}
-            variant="add"
+        <SegmentedControl>
+          <SegmentButton
+            $active={mode === "add"}
             onClick={() => onSetMode("add")}
+            icon={faPlus}
           >
-            <Icon icon={faPlus} />
-            Increase Stock
-          </ModeButton>
-          <ModeButton
-            type="button"
-            active={mode === "remove"}
-            variant="remove"
+            {t("common.increase")}
+          </SegmentButton>
+          <SegmentButton
+            $active={mode === "remove"}
             onClick={() => onSetMode("remove")}
+            icon={faMinus}
           >
-            <Icon icon={faMinus} />
-            Decrease Stock
-          </ModeButton>
-        </ModeSelector>
+            {t("common.decrease")}
+          </SegmentButton>
+        </SegmentedControl>
 
-        <InputWrapper>
-          <Text fontSize="small" color="textSecondary" fontWeight="600">
-            Quantity to {mode === "add" ? "add to" : "deduct from"} inventory
-          </Text>
-
-          <NumericControl>
+        <ControlSection>
+          <NumericSelector>
             <AdjustButton
               type="button"
               onClick={handleDecrement}
               disabled={quantity <= 0}
-            >
-              <Icon icon={faMinus} />
-            </AdjustButton>
+              icon={faMinus}
+            />
 
             <StockInput
               type="number"
@@ -332,25 +330,27 @@ export const ProductStockManageModal: React.FC<
               type="button"
               onClick={handleIncrement}
               disabled={mode === "remove" && quantity >= currentStock}
-            >
-              <Icon icon={faPlus} />
-            </AdjustButton>
-          </NumericControl>
-        </InputWrapper>
+              icon={faPlus}
+            />
+          </NumericSelector>
 
-        {quantity ? (
-          <PreviewSummary>
-            <Text fontSize="small" color="textSecondary">
-              <Icon icon={faBoxesStacked} /> New inventory estimation:
-            </Text>
-            <Text fontWeight="700" color={mode === "add" ? "success" : "error"}>
-              {currentStock} → {previewStock} units
-            </Text>
-          </PreviewSummary>
-        ) : null}
+          <LivePreviewRow>
+            {quantity > 0 ? (
+              <Fragment>
+                <PreviewState>{currentStock}</PreviewState>
+                <Icon icon={faArrowRight} />
+                <PreviewResult $mode={mode}>{previewStock}</PreviewResult>
+              </Fragment>
+            ) : (
+              <PreviewState className="empty-state">
+                {t("products.manageStock.empty")}
+              </PreviewState>
+            )}
+          </LivePreviewRow>
+        </ControlSection>
 
-        <Button onClick={handleSubmit} loading={loading}>
-          Apply Changes
+        <Button onClick={handleSubmit} loading={loading} disabled={!quantity}>
+          {t("common.update")}
         </Button>
       </Container>
     </Modal>

@@ -11,7 +11,7 @@ export interface Order {
   items: OrderItem[];
   note?: string;
   status: OrderStatus;
-  totalPriceAtPurchase: number;
+  totalAmount: number;
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;

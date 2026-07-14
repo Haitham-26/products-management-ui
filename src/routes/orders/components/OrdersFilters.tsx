@@ -1,6 +1,6 @@
 import type React from "react";
 import styled from "styled-components";
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
@@ -8,29 +8,31 @@ import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { Select } from "../../../components/Select";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
-import capitalize from "lodash/capitalize";
 import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
 import { Checkbox } from "antd";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import camelCase from "lodash/camelCase";
 
-const statusOptions = [
-  { label: "All", value: null },
+const getStatusOptions = (t: TFunction) => [
+  { label: t("common.all"), value: null },
   ...Object.values(OrderStatus).map((s) => ({
-    label: capitalize(s),
+    label: t(`orders.status.${camelCase(s)}`),
     value: s,
   })),
 ];
 
-const creationDateOptions = [
+const getCreationDateOptions = (t: TFunction) => [
   {
-    label: "Default",
+    label: t("common.default"),
     value: null,
   },
   {
-    label: "Newest First",
+    label: t("common.filters.creationDate.newest"),
     value: CreationDateFilters.NEWEST,
   },
   {
-    label: "Oldest First",
+    label: t("common.filters.creationDate.oldest"),
     value: CreationDateFilters.OLDEST,
   },
 ];
@@ -62,6 +64,7 @@ const Label = styled.label`
 const PopoverSeparator = styled.hr`
   height: 1px;
   border-color: ${({ theme }) => theme.colors.border}50;
+  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const RangeRow = styled.div`
@@ -109,6 +112,7 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
 }) => {
   const [totalPriceRange, setTotalPriceRange] = useState<Range>(null);
 
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const resetFilters = useCallback(() => {
@@ -119,12 +123,12 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <Section>
-          <Label>Creation date</Label>
+          <Label>{t("common.filters.creationDate.title")}</Label>
           <Select
-            placeholder="Default"
+            placeholder={t("common.default")}
             value={filters.creationDate}
             onChange={(val) => applyFilter("creationDate", val)}
-            options={creationDateOptions}
+            options={getCreationDateOptions(t)}
           />
         </Section>
 
@@ -132,19 +136,19 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
 
         <Section>
           <Select
-            title="Status"
-            options={statusOptions}
+            title={t("common.status")}
+            options={getStatusOptions(t)}
             value={filters.status}
             onChange={(value) => applyFilter("status", value)}
           />
         </Section>
 
         <Section>
-          <Label>Total price</Label>
+          <Label>{t("orders.fields.totalAmount")}</Label>
           <RangeRow>
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t("common.min")}
               value={totalPriceRange?.min || ""}
               onChange={(e) => {
                 setTotalPriceRange((prev) => ({
@@ -162,7 +166,7 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
             <RangeDash>–</RangeDash>
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t("common.max")}
               value={totalPriceRange?.max || ""}
               onChange={(e) => {
                 setTotalPriceRange((prev) => ({
@@ -185,17 +189,21 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
             checked={filters.showArchived}
             onChange={(e) => applyFilter("showArchived", e.target.checked)}
           >
-            <Label>Show archived</Label>
+            <Label>{t("orders.filters.showArchived")}</Label>
           </Checkbox>
         </Section>
       </PopoverContent>
 
       {activeFiltersCount ? (
-        <Footer>
-          <Button icon={faRotateLeft} onClick={resetFilters}>
-            Clear all
-          </Button>
-        </Footer>
+        <Fragment>
+          <PopoverSeparator />
+
+          <Footer>
+            <Button icon={faRotateLeft} onClick={resetFilters}>
+              {t("common.clearAll")}
+            </Button>
+          </Footer>
+        </Fragment>
       ) : null}
     </PopoverBody>
   );

@@ -7,7 +7,6 @@ import { DrawerExtraHeader } from "../../../components/DrawerExtraHeader";
 import { Input } from "../../../components/Input";
 import { Textarea } from "../../../components/Textarea";
 import { Icon } from "../../../components/Icon";
-import { faFolderOpen } from "@fortawesome/free-solid-svg-icons/faFolderOpen";
 import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import type { UpdateCategoryDto } from "../../../model/category/dto/UpdateCategoryDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -18,43 +17,14 @@ import { buildCategoriesParams } from "../utils/categoryUtils";
 import { useSearchParams } from "react-router-dom";
 import { Toast } from "../../../utils/Toast";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
+import { useTranslation } from "react-i18next";
+import { Text } from "../../../components/Text";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
   padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const GlassHeader = styled.header`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.primary}0D;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const IconWrapper = styled.div`
-  font-size: 2rem;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const TitleGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h2 {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.typography.title};
-  }
-
-  span {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: ${({ theme }) => theme.typography.small};
-  }
 `;
 
 const FormSection = styled.section`
@@ -77,12 +47,12 @@ const SectionLabel = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  h4 {
+  p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
-    margin: 0;
+    font-weight: bold;
   }
 `;
 
@@ -105,6 +75,7 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
+  const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues } =
     useForm<UpdateCategoryDto>();
 
@@ -134,6 +105,8 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
       });
 
       localOnClose();
+
+      Toast.success(t("categories.edit.success"));
     } catch (e) {
       Toast.apiError(e);
     } finally {
@@ -154,7 +127,7 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title="Edit Category"
+      title={t("categories.edit.title")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -166,30 +139,19 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <GlassHeader>
-          <IconWrapper>
-            <Icon icon={faFolderOpen} />
-          </IconWrapper>
-          <TitleGroup>
-            <h2>Edit Category</h2>
-            <span>Update metadata and classification details</span>
-          </TitleGroup>
-        </GlassHeader>
-
         <FormSection>
           <SectionLabel>
             <Icon icon={faTag} />
-            <h4>Classification Details</h4>
+            <Text>{t("categories.create-edit.identification.title")}</Text>
           </SectionLabel>
 
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Category name is required" }}
+            rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState }) => (
               <Input
-                title="Category Name"
-                placeholder="e.g. Smart Home, Wearables"
+                title={t("common.name")}
                 errorMessage={fieldState.error?.message}
                 required
                 {...field}
@@ -201,12 +163,7 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
             control={control}
             name="description"
             render={({ field }) => (
-              <Textarea
-                title="Description"
-                placeholder="Optional description for this category"
-                rows={5}
-                {...field}
-              />
+              <Textarea title={t("common.description")} rows={5} {...field} />
             )}
           />
         </FormSection>

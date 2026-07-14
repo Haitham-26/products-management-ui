@@ -14,11 +14,11 @@ export const parseCategoriesFiltersFromParams = (
           limit: params.get("limit") ? Number(params.get("limit")) : undefined,
         }
       : meta,
-  minChildrenCount: params.get("minChildrenCount")
-    ? Number(params.get("minChildrenCount"))
+  minUsageCount: params.get("minUsageCount")
+    ? Number(params.get("minUsageCount"))
     : undefined,
-  maxChildrenCount: params.get("maxChildrenCount")
-    ? Number(params.get("maxChildrenCount"))
+  maxUsageCount: params.get("maxUsageCount")
+    ? Number(params.get("maxUsageCount"))
     : undefined,
 });
 
@@ -40,8 +40,8 @@ export const buildCategoriesParams = (
   set("creationDate", filters.creationDate);
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
-  set("minChildrenCount", filters.minChildrenCount?.toString());
-  set("maxChildrenCount", filters.maxChildrenCount?.toString());
+  set("minUsageCount", filters.minUsageCount?.toString());
+  set("maxUsageCount", filters.maxUsageCount?.toString());
 
   // to force reload
   next.set("u", new Date().getTime().toString());
@@ -57,7 +57,7 @@ export const countCategoriesActiveFilters = (
   if (filters.creationDate) {
     n++;
   }
-  if (!isNil(filters.minChildrenCount) || !isNil(filters.maxChildrenCount)) {
+  if (!isNil(filters.minUsageCount) || !isNil(filters.maxUsageCount)) {
     n++;
   }
 
