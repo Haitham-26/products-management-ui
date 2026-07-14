@@ -56,13 +56,13 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.confirmed} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
-  .cancelled-status {
-    background-color: ${({ theme }) => theme.colors.cancelled} !important;
+  .canceled-status {
+    background-color: ${({ theme }) => theme.colors.canceled} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
 
   .archived {
-    background-color: ${({ theme }) => theme.colors.cancelled} !important;
+    background-color: ${({ theme }) => theme.colors.canceled} !important;
     color: ${({ theme }) => theme.colors.surface};
     opacity: 0.8;
   }

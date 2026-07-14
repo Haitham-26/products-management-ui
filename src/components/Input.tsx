@@ -113,7 +113,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       const ltrInputTypes: React.InputHTMLAttributes<HTMLInputElement>["type"][] =
         ["email", "number", "password", "tel", "url"];
 
-      return ltrInputTypes.includes(type) ? "ltr" : props.dir || "default";
+      return ltrInputTypes.includes(type) ? "ltr" : props.dir || "auto";
     };
 
     return (

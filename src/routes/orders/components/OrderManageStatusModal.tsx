@@ -173,7 +173,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
           <Text fontWeight={"bold"}>{t("orders.manageStatus.subtitle")}</Text>
 
           {getRules(t).map((rule) => (
-            <RuleRow>
+            <RuleRow key={`${rule.status[0]}-${rule.status[1]}`}>
               <div>
                 <StatusLabel type={rule.status[0]}>
                   {t(`orders.status.${rule.status[0].toLowerCase()}`)}

@@ -1,7 +1,7 @@
 import { ConfigProvider } from "antd";
 import type React from "react";
 import { theme } from "./theme/theme";
-import i18n from "./i18n";
+import { useTranslation } from "react-i18next";
 
 type AntdConfigProviderProps = {
   children: React.ReactNode;
@@ -10,6 +10,8 @@ type AntdConfigProviderProps = {
 export const AntdConfigProvider: React.FC<AntdConfigProviderProps> = ({
   children,
 }) => {
+  const { i18n } = useTranslation();
+
   return (
     <ConfigProvider
       direction={i18n.dir(i18n.language)}

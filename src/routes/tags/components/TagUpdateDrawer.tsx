@@ -120,7 +120,7 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={onClose}
-      title={t("products.edit.title")}
+      title={t("tags.edit.title")}
       size="large"
       extra={
         <DrawerExtraHeader

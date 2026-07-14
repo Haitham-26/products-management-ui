@@ -214,13 +214,18 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
           </SectionLabel>
           {order.items.map((item, index) => {
             const product = products.find((p) => p._id === item.productId);
+
+            if (!product) {
+              return null;
+            }
+
             return (
               <ReadOnlyItem key={index}>
-                <ItemName>{product?.name || "Unknown Product"}</ItemName>
+                <ItemName>{product.name}</ItemName>
                 <ItemQty>
                   {`${item.quantity} × ${stringWithCurrencyCode(
                     settings.currency,
-                    product?.priceAfterDiscount || 0,
+                    item?.priceAtPurchase || 0,
                   )}`}
                 </ItemQty>
               </ReadOnlyItem>

@@ -1,6 +1,6 @@
 import type React from "react";
 import styled from "styled-components";
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
@@ -64,6 +64,7 @@ const Label = styled.label`
 const PopoverSeparator = styled.hr`
   height: 1px;
   border-color: ${({ theme }) => theme.colors.border}50;
+  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const RangeRow = styled.div`
@@ -194,12 +195,15 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
       </PopoverContent>
 
       {activeFiltersCount ? (
-        <Footer>
+        <Fragment>
           <PopoverSeparator />
-          <Button icon={faRotateLeft} onClick={resetFilters}>
-            {t("common.clearAll")}
-          </Button>
-        </Footer>
+
+          <Footer>
+            <Button icon={faRotateLeft} onClick={resetFilters}>
+              {t("common.clearAll")}
+            </Button>
+          </Footer>
+        </Fragment>
       ) : null}
     </PopoverBody>
   );

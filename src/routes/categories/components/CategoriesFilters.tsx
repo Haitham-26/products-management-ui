@@ -113,6 +113,7 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
+    setUsageCountRange(null);
   }, [setSearchParams]);
 
   return (

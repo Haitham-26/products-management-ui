@@ -195,7 +195,9 @@ export const createProductsTableColumns = ({
       key: "status",
       width: 100,
       render: (value: ProductStatus) =>
-        t(`products.status.${value.toLowerCase()}`),
+        t(
+          `products.status.${(value || ProductStatus.PUBLISHED).toLowerCase()}`,
+        ),
       onCell: (record) => ({
         className: `${(record.status || ProductStatus.PUBLISHED).toLowerCase()}-product`,
       }),

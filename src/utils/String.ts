@@ -5,12 +5,16 @@ export const REGEXES = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 };
 
-const displayNames = new Intl.DisplayNames(
-  localStorage.getItem("lang") || AppLangs.EN,
-  {
-    type: "currency",
-  },
-);
+let storedLang = localStorage.getItem("lang");
+
+storedLang =
+  storedLang && Object.values(AppLangs).includes(storedLang as AppLangs)
+    ? storedLang
+    : AppLangs.EN;
+
+const displayNames = new Intl.DisplayNames(storedLang, {
+  type: "currency",
+});
 
 const EXCLUDED_CODES = new Set([
   "XAU",
@@ -54,7 +58,7 @@ export const stringWithCurrencyCode = (
   const currencyCode = code || defaultCurrency;
 
   try {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(storedLang, {
       style: "currency",
       currency: currencyCode,
     }).format(value);

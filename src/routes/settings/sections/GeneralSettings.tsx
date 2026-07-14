@@ -63,8 +63,6 @@ export const GeneralSettings: React.FC = () => {
       if (dto.lang && i18n.language !== dto.lang) {
         await changeLanguage(dto.lang);
 
-        Toast.success(t("settings.update.success"));
-
         setTimeout(() => {
           window.location.reload();
         }, 1000);

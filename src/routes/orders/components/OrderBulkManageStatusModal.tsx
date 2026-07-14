@@ -163,7 +163,7 @@ export const OrderBulkManageStatusModal: React.FC<
           </Text>
 
           {getRules(t).map((rule) => (
-            <RuleRow>
+            <RuleRow key={`${rule.status[0]}-${rule.status[1]}`}>
               <div>
                 <StatusLabel type={rule.status[0]}>
                   {t(`orders.status.${rule.status[0].toLowerCase()}`)}
