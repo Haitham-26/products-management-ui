@@ -1,10 +1,8 @@
 import type React from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
-import { Icon } from "../../../components/Icon";
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import type { UpdateSettingsDto } from "../../../model/settings/dto/UpdateSettingsDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
@@ -14,19 +12,8 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Toast } from "../../../utils/Toast";
 import { SettingsSection } from "../components/SettingsSection";
 import { Tooltip } from "antd";
-
-const Alert = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primary}10;
-  border: 1px solid ${({ theme }) => theme.colors.primary}25;
-  color: ${({ theme }) => theme.colors.primary};
-  font-size: 0.85rem;
-  line-height: 1.6;
-`;
+import { useTranslation } from "react-i18next";
+import { Info } from "../../../components/Info";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -41,6 +28,7 @@ export const InventorySettings: React.FC = () => {
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({
     defaultValues: {
       userId,
@@ -57,7 +45,7 @@ export const InventorySettings: React.FC = () => {
       await dispatch(settingsActions.updateSettings(getValues())).unwrap();
       await dispatch(settingsActions.getSettings()).unwrap();
 
-      Toast.success("Settings updated successfully");
+      Toast.success(t("settings.update.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -72,35 +60,29 @@ export const InventorySettings: React.FC = () => {
 
   return (
     <SettingsSection
-      title="Inventory Threshold"
-      description="Configure the default minimum stock level used to trigger low stock alerts across your inventory."
+      title={t("settings.pages.inventory.threshold.title")}
+      description={t("settings.pages.inventory.threshold.description")}
       content={
         <Fragment>
-          <Alert>
-            <Icon icon={faCircleInfo} />
-
-            <span>
-              Products without a custom minimum stock value will use this
-              threshold automatically.
-            </span>
-          </Alert>
+          <Info>{t("settings.pages.inventory.threshold.info")}</Info>
 
           <Controller
             name="inventory.defaultMinStock"
             control={control}
             rules={{
-              required: "Default minimum stock is required.",
+              required: t("errors.general.required"),
               min: {
                 value: 1,
-                message: "Default minimum stock must be at least 1.",
+                message: t(
+                  "settings.pages.inventory.threshold.errors.minStock.min",
+                  { min: 1 },
+                ),
               },
             }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <Tooltip
                 title={
-                  isMember
-                    ? "Only the organization owner can change this."
-                    : undefined
+                  isMember ? t("settings.shared.orgOnlyTooltip") : undefined
                 }
               >
                 <Input
@@ -108,8 +90,7 @@ export const InventorySettings: React.FC = () => {
                   onChange={(e) => onChange(Number(e.currentTarget.value))}
                   type="number"
                   min={1}
-                  title="Default Minimum Stock"
-                  placeholder="Ex: 10"
+                  title={t("settings.pages.inventory.threshold.inputTitle")}
                   required
                   errorMessage={error?.message}
                   disabled={isMember}
@@ -123,7 +104,7 @@ export const InventorySettings: React.FC = () => {
               onClick={handleSubmit(onUpdate)}
               loading={updateLoading}
             >
-              Save Changes
+              {t("common.save")}
             </StyledButton>
           ) : null}
         </Fragment>

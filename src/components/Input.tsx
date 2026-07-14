@@ -60,6 +60,10 @@ const StyledInput = styled.input<{ valid: boolean; originalType?: string }>`
         !valid ? `${theme.colors.error}33` : `${theme.colors.primary}33`};
   }
 
+  html[dir="rtl"] &:dir(ltr)::placeholder {
+    text-align: right;
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;

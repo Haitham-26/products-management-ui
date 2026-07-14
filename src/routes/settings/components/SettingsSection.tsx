@@ -15,12 +15,9 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding-bottom: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs || "4px"};
+  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 type SettingsSectionProps = {

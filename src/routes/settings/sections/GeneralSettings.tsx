@@ -13,6 +13,7 @@ import { Select } from "../../../components/Select";
 import { CURRENCY_OPTIONS } from "../../../utils/String";
 import { SettingsSection } from "../components/SettingsSection";
 import { Tooltip } from "antd";
+import { useTranslation } from "react-i18next";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -27,6 +28,7 @@ export const GeneralSettings: React.FC = () => {
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({
     defaultValues: {
       userId,
@@ -41,7 +43,7 @@ export const GeneralSettings: React.FC = () => {
       await dispatch(settingsActions.updateSettings(getValues())).unwrap();
       await dispatch(settingsActions.getSettings()).unwrap();
 
-      Toast.success("Settings updated successfully");
+      Toast.success(t("settings.update.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -56,26 +58,24 @@ export const GeneralSettings: React.FC = () => {
 
   return (
     <SettingsSection
-      title="Currency"
-      description=" Select the currency that will be used to display prices and values. The currency will be used for all prices and values in the application."
+      title={t("settings.pages.general.currency.title")}
+      description={t("settings.pages.general.currency.description")}
       content={
         <Fragment>
           <Controller
             name="currency"
             control={control}
             rules={{
-              required: "Currency is required.",
+              required: t("errors.general.required"),
             }}
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <Tooltip
                 title={
-                  isMember
-                    ? "Only the organization owner can change this."
-                    : undefined
+                  isMember ? t("settings.shared.orgOnlyTooltip") : undefined
                 }
               >
                 <Select
-                  title="Select Currency"
+                  title={t("settings.pages.general.currency.selectTitle")}
                   required
                   errorMessage={error?.message}
                   value={value}
@@ -98,7 +98,7 @@ export const GeneralSettings: React.FC = () => {
               onClick={handleSubmit(onUpdate)}
               loading={updateLoading}
             >
-              Save Changes
+              {t("common.save")}
             </StyledButton>
           ) : null}
         </Fragment>

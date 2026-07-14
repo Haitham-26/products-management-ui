@@ -441,7 +441,61 @@
     }
   },
   "settings": {
-    "title": "Settings"
+    "title": "Settings",
+    "pages": {
+      "general": {
+        "title": "General Settings",
+        "currency": {
+          "title": "Currency",
+          "description": "Select the currency that will be used to display prices and financial values. This currency will be applied to all prices and values across the application.",
+          "selectTitle": "Select Currency"
+        }
+      },
+      "inventory": {
+        "title": "Inventory",
+        "threshold": {
+          "title": "Stock Thresholds",
+          "description": "Configure the default minimum stock level to trigger low stock alerts (alerts appear in: the quantity cell in the products table, during product selection when creating a new order, and in the dashboard).",
+          "inputTitle": "Default Minimum Stock Level",
+          "info": "Products without a custom minimum stock value will use this value automatically.",
+          "errors": {
+            "minStock": {
+              "min": "The minimum stock level must be at least {{min}}."
+            }
+          }
+        }
+      },
+      "security": {
+        "title": "Security",
+        "password": {
+          "title": "Change Password",
+          "description": "Your password must be between 6 and 64 characters long. For better security, we recommend using a mix of letters, numbers, and symbols.",
+          "current": {
+            "title": "Current Password",
+            "placeholder": "Enter your current password"
+          },
+          "new": {
+            "title": "New Password",
+            "placeholder": "Enter your new password"
+          },
+          "confirm": {
+            "title": "Confirm Password",
+            "placeholder": "Enter your new password again"
+          },
+          "errors": {
+            "short": "Password must be at least {{length}} characters long.",
+            "long": "Password cannot exceed {{length}} characters.",
+            "mismatch": "Passwords do not match."
+          }
+        }
+      }
+    },
+    "shared": {
+      "orgOnlyTooltip": "This setting can only be changed by the organization owner."
+    },
+    "update": {
+      "success": "Settings updated successfully!"
+    }
   },
   "profile": {
     "title": "Profile",

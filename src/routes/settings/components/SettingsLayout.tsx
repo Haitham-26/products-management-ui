@@ -14,6 +14,7 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { SignUpMethods } from "../../../model/user/types/SignUpMethods";
 import { appRoutes } from "../../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 const Layout = styled.div`
   display: flex;
@@ -24,11 +25,25 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const getSections = (user: User) => [
-  { key: SettingsKeys.GENERAL, label: "General", icon: faSliders },
-  { key: SettingsKeys.INVENTORY, label: "Inventory", icon: faBox },
+const getSections = (user: User, t: TFunction) => [
+  {
+    key: SettingsKeys.GENERAL,
+    label: t("settings.pages.general.title"),
+    icon: faSliders,
+  },
+  {
+    key: SettingsKeys.INVENTORY,
+    label: t("settings.pages.inventory.title"),
+    icon: faBox,
+  },
   ...(user.signUpMethod === SignUpMethods.EMAIL
-    ? [{ key: SettingsKeys.SECURITY, label: "Security", icon: faShield }]
+    ? [
+        {
+          key: SettingsKeys.SECURITY,
+          label: t("settings.pages.security.title"),
+          icon: faShield,
+        },
+      ]
     : []),
 ];
 
@@ -37,7 +52,7 @@ export const SettingsLayout: React.FC = () => {
 
   const user = useAppSelector(userSliceSelectors.selectUser);
 
-  const sections = getSections(user);
+  const sections = getSections(user, t);
 
   return (
     <Container>

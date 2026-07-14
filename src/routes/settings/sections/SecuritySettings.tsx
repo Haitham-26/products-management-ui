@@ -10,6 +10,10 @@ import { Input } from "../../../components/Input";
 import { userActions } from "../../../redux/user/user.slice";
 import type { ResetPasswordDto } from "../../../model/user/dto/ResetPasswordDto";
 import { SettingsSection } from "../components/SettingsSection";
+import { useTranslation } from "react-i18next";
+
+const MIN_PASSWORD_LENGTH = 6;
+const MAX_PASSWORD_LENGTH = 64;
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -22,6 +26,7 @@ export const SecuritySettings: React.FC = () => {
   const user = useAppSelector(userSliceSelectors.selectUser);
 
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { control, handleSubmit, getValues, reset, watch } = useForm<
     ResetPasswordDto & { confirmPassword: string }
   >({
@@ -51,7 +56,7 @@ export const SecuritySettings: React.FC = () => {
         }),
       ).unwrap();
 
-      Toast.success("Password updated successfully");
+      Toast.success(t("settings.update.success"));
       reset();
     } catch (e) {
       console.log(e);
@@ -63,34 +68,40 @@ export const SecuritySettings: React.FC = () => {
 
   return (
     <SettingsSection
-      title="Update Password"
-      description="Ensure your account stays secure. Your new password must be at least 8 characters long and should contain a mix of letters, numbers, and symbols."
+      title={t("settings.pages.security.password.title")}
+      description={t("settings.pages.security.password.description")}
       content={
         <Fragment>
           <Controller
             control={control}
             name="currentPassword"
             rules={{
-              required: "Current password is required",
+              required: t("errors.general.required"),
               minLength: {
-                value: 6,
-                message: "Password must be at least  characters long",
+                value: MIN_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.short", {
+                  length: MIN_PASSWORD_LENGTH,
+                }),
               },
               maxLength: {
-                value: 64,
-                message: "Password must be at most 64 characters long",
+                value: MAX_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.long", {
+                  length: MAX_PASSWORD_LENGTH,
+                }),
               },
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Current Password"
+                title={t("settings.pages.security.password.current.title")}
                 type="password"
-                placeholder="Enter current password"
+                placeholder={t(
+                  "settings.pages.security.password.current.placeholder",
+                )}
                 {...field}
                 valid={!error}
                 errorMessage={error?.message}
                 autoComplete="current-password"
-                maxLength={64}
+                maxLength={MAX_PASSWORD_LENGTH}
                 required
               />
             )}
@@ -99,26 +110,32 @@ export const SecuritySettings: React.FC = () => {
             control={control}
             name="newPassword"
             rules={{
-              required: "New password is required",
+              required: t("errors.general.required"),
               minLength: {
-                value: 6,
-                message: "Password must be at least  characters long",
+                value: MIN_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.short", {
+                  length: MIN_PASSWORD_LENGTH,
+                }),
               },
               maxLength: {
-                value: 64,
-                message: "Password must be at most 64 characters long",
+                value: MAX_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.long", {
+                  length: MAX_PASSWORD_LENGTH,
+                }),
               },
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="New Password"
+                title={t("settings.pages.security.password.new.title")}
                 type="password"
-                placeholder="Enter new password"
+                placeholder={t(
+                  "settings.pages.security.password.new.placeholder",
+                )}
                 {...field}
                 valid={!error}
                 errorMessage={error?.message}
                 autoComplete="new-password"
-                maxLength={64}
+                maxLength={MAX_PASSWORD_LENGTH}
                 required
               />
             )}
@@ -127,29 +144,35 @@ export const SecuritySettings: React.FC = () => {
             control={control}
             name="confirmPassword"
             rules={{
-              required: "Please confirm your new password",
+              required: t("errors.general.required"),
               minLength: {
-                value: 6,
-                message: "Password must be at least  characters long",
+                value: MIN_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.short", {
+                  length: MIN_PASSWORD_LENGTH,
+                }),
               },
               maxLength: {
-                value: 64,
-                message: "Password must be at most 64 characters long",
+                value: MAX_PASSWORD_LENGTH,
+                message: t("settings.pages.security.password.errors.long", {
+                  length: MAX_PASSWORD_LENGTH,
+                }),
               },
               validate: (value) =>
                 value === getValues("newPassword") ||
-                "The passwords do not match",
+                t("settings.pages.security.password.errors.password.mismatch"),
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
-                title="Confirm New Password"
+                title={t("settings.pages.security.password.confirm.title")}
                 type="password"
-                placeholder="Re-enter new password"
+                placeholder={t(
+                  "settings.pages.security.password.confirm.placeholder",
+                )}
                 {...field}
                 valid={!error}
                 errorMessage={error?.message}
                 autoComplete="new-password"
-                maxLength={64}
+                maxLength={MAX_PASSWORD_LENGTH}
                 required
               />
             )}
@@ -160,7 +183,7 @@ export const SecuritySettings: React.FC = () => {
             loading={loading}
             disabled={!currentPassword || !newPassword || !confirmPassword}
           >
-            Update Password
+            {t("common.save")}
           </StyledButton>
         </Fragment>
       }

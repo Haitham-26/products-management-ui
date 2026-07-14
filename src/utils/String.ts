@@ -1,13 +1,49 @@
 import currencyCodes, { type CurrencyCodeRecord } from "currency-codes";
+import { AppLangs } from "../model/app/types/AppLangs.enum";
 
 export const REGEXES = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 };
 
-export const CURRENCY_OPTIONS = currencyCodes.data.map((currency) => ({
-  label: `${currency.code} - ${currency.currency}`,
-  value: currency.code,
-}));
+const displayNames = new Intl.DisplayNames(
+  localStorage.getItem("lang") || AppLangs.EN,
+  {
+    type: "currency",
+  },
+);
+
+const EXCLUDED_CODES = new Set([
+  "XAU",
+  "XAG",
+  "XPD",
+  "XPT",
+  "XXX",
+  "XTS",
+  "XBA",
+  "XBB",
+  "XBC",
+  "XBD",
+  "XDR",
+  "BOV",
+  "CHE",
+  "CHW",
+  "CLF",
+  "COU",
+  "MXV",
+  "USN",
+  "UYI",
+  "UYW",
+  "XSU",
+  "XUA",
+  "VED",
+]);
+
+export const CURRENCY_OPTIONS = currencyCodes.data
+  .filter((currency) => !EXCLUDED_CODES.has(currency.code))
+  .map((currency) => ({
+    label: `${currency.code} - ${displayNames.of(currency.code) ?? currency.currency}`,
+    value: currency.code,
+  }));
 
 export const stringWithCurrencyCode = (
   code: CurrencyCodeRecord["code"],
