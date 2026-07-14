@@ -23,6 +23,12 @@ const Layout = styled.div`
 
 const Content = styled.div`
   flex: 1;
+
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 `;
 
 const getSections = (user: User, t: TFunction) => [

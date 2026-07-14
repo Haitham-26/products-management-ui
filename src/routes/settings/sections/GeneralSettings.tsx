@@ -14,6 +14,20 @@ import { CURRENCY_OPTIONS } from "../../../utils/String";
 import { SettingsSection } from "../components/SettingsSection";
 import { Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
+import { AppLangs } from "../../../model/app/types/AppLangs.enum";
+import i18n from "../../../i18n";
+import { changeLanguage } from "../../../utils/i18nUtils";
+
+const LANGUAGE_OPTIONS = [
+  {
+    label: "English",
+    value: AppLangs.EN,
+  },
+  {
+    label: "العربية",
+    value: AppLangs.AR,
+  },
+];
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -33,6 +47,7 @@ export const GeneralSettings: React.FC = () => {
     defaultValues: {
       userId,
       currency: settings.currency,
+      lang: settings.lang,
     },
   });
 
@@ -40,8 +55,20 @@ export const GeneralSettings: React.FC = () => {
     try {
       setUpdateLoading(true);
 
-      await dispatch(settingsActions.updateSettings(getValues())).unwrap();
+      const dto = getValues();
+
+      await dispatch(settingsActions.updateSettings(dto)).unwrap();
       await dispatch(settingsActions.getSettings()).unwrap();
+
+      if (dto.lang && i18n.language !== dto.lang) {
+        await changeLanguage(dto.lang);
+
+        Toast.success(t("settings.update.success"));
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
 
       Toast.success(t("settings.update.success"));
     } catch (e) {
@@ -57,52 +84,76 @@ export const GeneralSettings: React.FC = () => {
   }, [dispatch, userId]);
 
   return (
-    <SettingsSection
-      title={t("settings.pages.general.currency.title")}
-      description={t("settings.pages.general.currency.description")}
-      content={
-        <Fragment>
+    <Fragment>
+      <SettingsSection
+        title={t("settings.pages.general.language.title")}
+        description={t("settings.pages.general.language.description")}
+        content={
           <Controller
-            name="currency"
             control={control}
-            rules={{
-              required: t("errors.general.required"),
-            }}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Tooltip
-                title={
-                  isMember ? t("settings.shared.orgOnlyTooltip") : undefined
-                }
-              >
-                <Select
-                  title={t("settings.pages.general.currency.selectTitle")}
-                  required
-                  errorMessage={error?.message}
-                  value={value}
-                  onChange={onChange}
-                  options={CURRENCY_OPTIONS}
-                  showSearch={{
-                    filterOption: (input, option) =>
-                      (option?.label as string)
-                        ?.toLowerCase()
-                        .includes(input?.toLowerCase()),
-                  }}
-                  disabled={isMember}
-                />
-              </Tooltip>
+            name="lang"
+            render={({ field: { value, onChange } }) => (
+              <Select
+                title={t("settings.pages.general.language.selectTitle")}
+                value={value}
+                onChange={onChange}
+                options={LANGUAGE_OPTIONS}
+              />
             )}
           />
+        }
+      />
 
-          {!isMember ? (
-            <StyledButton
-              onClick={handleSubmit(onUpdate)}
-              loading={updateLoading}
-            >
-              {t("common.save")}
-            </StyledButton>
-          ) : null}
-        </Fragment>
-      }
-    />
+      <SettingsSection
+        title={t("settings.pages.general.currency.title")}
+        description={t("settings.pages.general.currency.description")}
+        content={
+          <Fragment>
+            <Controller
+              name="currency"
+              control={control}
+              rules={{
+                required: t("errors.general.required"),
+              }}
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Tooltip
+                  title={
+                    isMember ? t("settings.shared.orgOnlyTooltip") : undefined
+                  }
+                >
+                  <Select
+                    title={t("settings.pages.general.currency.selectTitle")}
+                    required
+                    errorMessage={error?.message}
+                    value={value}
+                    onChange={onChange}
+                    options={CURRENCY_OPTIONS}
+                    showSearch={{
+                      filterOption: (input, option) =>
+                        (option?.label as string)
+                          ?.toLowerCase()
+                          .includes(input?.toLowerCase()),
+                    }}
+                    disabled={isMember}
+                  />
+                </Tooltip>
+              )}
+            />
+
+            {!isMember ? (
+              <StyledButton
+                onClick={handleSubmit(onUpdate)}
+                loading={updateLoading}
+              >
+                {t("common.save")}
+              </StyledButton>
+            ) : null}
+          </Fragment>
+        }
+      />
+    </Fragment>
   );
 };

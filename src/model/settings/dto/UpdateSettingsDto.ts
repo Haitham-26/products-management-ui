@@ -1,3 +1,4 @@
+import type { AppLangs } from "../../app/types/AppLangs.enum";
 import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 
 export interface UpdateSettingsDto extends GenericWithUserId {
@@ -5,4 +6,5 @@ export interface UpdateSettingsDto extends GenericWithUserId {
   inventory?: {
     defaultMinStock?: number;
   };
+  lang?: AppLangs;
 }

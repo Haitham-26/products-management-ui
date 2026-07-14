@@ -5,13 +5,13 @@ import { Text } from "../../../components/Text";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
 
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  &:not(:first-child) {
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+    padding-top: ${({ theme }) => theme.spacing.lg};
+    margin-top: ${({ theme }) => theme.spacing.lg};
+  }
 `;
 
 const Header = styled.div`
