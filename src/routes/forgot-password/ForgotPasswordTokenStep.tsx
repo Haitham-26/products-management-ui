@@ -12,6 +12,8 @@ import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import type { AppLangs } from "../../model/app/types/AppLangs.enum";
+import i18n from "../../i18n";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "forgot-password-token-last-resend-time";
 
@@ -46,9 +48,12 @@ export const ForgotPasswordTokenStep: React.FC = () => {
   const token = watch("token");
 
   const resendToken = () => {
-    return dispatch(
-      userActions.forgotPasswordEmail({ email: getValues("email") }),
-    ).unwrap();
+    const dto = getValues();
+
+    dto.lang = i18n.language as AppLangs;
+    dto.dir = i18n.dir(i18n.language);
+
+    return dispatch(userActions.forgotPasswordEmail(dto)).unwrap();
   };
 
   const onSubmit = async () => {

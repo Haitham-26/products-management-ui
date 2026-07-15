@@ -12,6 +12,8 @@ import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import i18n from "../../i18n";
+import type { AppLangs } from "../../model/app/types/AppLangs.enum";
 
 const Footer = styled.div`
   display: flex;
@@ -55,6 +57,9 @@ export const SignUpEmail: React.FC = () => {
       setLoading(true);
 
       const dto = getValues();
+
+      dto.lang = i18n.language as AppLangs;
+      dto.dir = i18n.dir(i18n.language);
 
       await dispatch(userActions.signUpEmail(dto)).unwrap();
 
