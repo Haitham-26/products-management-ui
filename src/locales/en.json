@@ -4,7 +4,13 @@
     "description": "Sign in to manage your products and orders",
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account? <0>Create an account</0>",
-    "success": "Logged in successfully!"
+    "success": "Logged in successfully!",
+    "errors": {
+      "password": {
+        "min": "The password must be at least {{length}} characters long.",
+        "max": "The password must be at most {{length}} characters long."
+      }
+    }
   },
   "signup": {
     "email": {
@@ -18,7 +24,13 @@
       },
       "submit": "Create Account",
       "hasAccount": "Already have an account? <0>Sign in</0>",
-      "success": "We sent the verification code to your email, please check your inbox."
+      "success": "We sent the verification code to your email, please check your inbox.",
+      "errors": {
+        "password": {
+          "min": "The password must be at least {{length}} characters long.",
+          "max": "The password must be at most {{length}} characters long."
+        }
+      }
     },
     "token": {
       "title": "Confirm Email",
@@ -691,6 +703,24 @@
     },
     "token": {
       "length": "The verification code must be 6 characters long."
+    }
+  },
+  "serverErrors": {
+    "internal": "An unexpected error occurred. Please try again later or contact our support team.",
+    "login": {
+      "email": {
+        "invalid": "Please enter a valid email address."
+      },
+      "password": {
+        "invalid": "Password must be a valid, non-empty string.",
+        "short": "Password must be at least {{min}} characters long.",
+        "long": "Password cannot exceed {{max}} characters.",
+        "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number."
+      },
+      "differentMethod": "This account was created using Google. Please sign in with Google."
+    },
+    "google-login": {
+      "differentMethod": "This account was not created with Google. Please sign in with your email and password."
     }
   }
 }

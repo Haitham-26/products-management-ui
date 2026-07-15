@@ -76,7 +76,7 @@ export const Login: React.FC = () => {
 
       Toast.success(t("login.success"));
     } catch (e) {
-      console.error(e);
+      console.log(e);
       Toast.apiError(e);
     } finally {
       setLoading(false);
@@ -92,12 +92,14 @@ export const Login: React.FC = () => {
           control={control}
           name="email"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.email")}
               placeholder="you@example.com"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               type="email"
+              required
               {...field}
             />
           )}
@@ -107,13 +109,25 @@ export const Login: React.FC = () => {
           <Controller
             control={control}
             name="password"
-            rules={{ required: t("errors.general.required") }}
-            render={({ field, fieldState }) => (
+            rules={{
+              required: t("errors.general.required"),
+              minLength: {
+                value: 8,
+                message: t("login.errors.password.min", { length: 8 }),
+              },
+              maxLength: {
+                value: 64,
+                message: t("login.errors.password.max", { length: 64 }),
+              },
+            }}
+            render={({ field, fieldState: { error } }) => (
               <Input
                 title={t("common.password")}
                 type="password"
                 placeholder="••••••••"
-                errorMessage={fieldState.error?.message}
+                errorMessage={error?.message}
+                valid={!error}
+                required
                 {...field}
               />
             )}

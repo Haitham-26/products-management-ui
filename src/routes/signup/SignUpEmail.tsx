@@ -15,6 +15,9 @@ import { useAppToast } from "../../components/toast/useAppToast";
 import i18n from "../../i18n";
 import type { AppLangs } from "../../model/app/types/AppLangs.enum";
 
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 64;
+
 const Footer = styled.div`
   display: flex;
   flex-direction: column;
@@ -83,11 +86,12 @@ export const SignUpEmail: React.FC = () => {
           control={control}
           name="name"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.name")}
               placeholder={t("signup.email.name.placeholder")}
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />
@@ -109,12 +113,13 @@ export const SignUpEmail: React.FC = () => {
           control={control}
           name="email"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.email")}
               placeholder="you@example.com"
               type="email"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />
@@ -124,13 +129,28 @@ export const SignUpEmail: React.FC = () => {
         <Controller
           control={control}
           name="password"
-          rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          rules={{
+            required: t("errors.general.required"),
+            minLength: {
+              value: MIN_PASSWORD_LENGTH,
+              message: t("signup.email.errors.password.min", {
+                length: MIN_PASSWORD_LENGTH,
+              }),
+            },
+            maxLength: {
+              value: MAX_PASSWORD_LENGTH,
+              message: t("signup.email.errors.password.max", {
+                length: MAX_PASSWORD_LENGTH,
+              }),
+            },
+          }}
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.password")}
               type="password"
               placeholder="••••••••"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />

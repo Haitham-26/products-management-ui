@@ -12,7 +12,7 @@ export const useAppToast = () => {
   return {
     success(description: string) {
       toast.success({
-        message: t("common.success"),
+        title: t("common.success"),
         description,
         placement,
       });
@@ -20,7 +20,7 @@ export const useAppToast = () => {
 
     error(description: string) {
       toast.error({
-        message: t("common.error"),
+        title: t("common.error"),
         description,
         placement,
       });
@@ -31,9 +31,14 @@ export const useAppToast = () => {
         error instanceof AxiosError &&
         typeof error.response?.data?.message === "string"
       ) {
+        console.log(error.response.data.p);
+
         toast.error({
-          message: t("common.apiError"),
-          description: error.response.data.message,
+          title: t("common.error"),
+          description: t(error.response.data.message, {
+            ...((error.response.data?.params as Record<string, string>) || {}),
+            defaultValue: t("serverErrors.internal"),
+          }),
           placement,
         });
 
@@ -41,9 +46,9 @@ export const useAppToast = () => {
       }
 
       toast.error({
-        message: t("common.error"),
+        title: t("common.error"),
         description:
-          typeof error === "string" ? error : t("errors.general.unexpected"),
+          typeof error === "string" ? t(error) : t("errors.general.unexpected"),
         placement,
       });
     },

@@ -11,7 +11,7 @@ import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNe
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 export const ForgotPasswordNewStep: React.FC = () => {

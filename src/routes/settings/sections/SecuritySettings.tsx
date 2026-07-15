@@ -12,7 +12,7 @@ import { SettingsSection } from "../components/SettingsSection";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 const StyledButton = styled(Button)`
