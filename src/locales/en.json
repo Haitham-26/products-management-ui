@@ -916,6 +916,25 @@
         "tags": {
           "notFound": "Some of the selected tags were not found."
         }
+      },
+      "delete": {
+        "notFound": "Product not found."
+      },
+      "bulkManageStatus": {
+        "productIds": {
+          "invalid": "One or more product IDs are invalid.",
+          "minLength": "Please select at least one product.",
+          "someNotFound": "Some of the selected products were not found."
+        },
+        "invalidStatus": "The selected status is invalid."
+      },
+      "manageStock": {
+        "stockChange": {
+          "invalid": "The stock change value must be a valid integer.",
+          "zero": "Stock change value cannot be zero."
+        },
+        "notFound": "Product not found.",
+        "belowZero": "Stock quantity cannot drop below zero."
       }
     },
     "login": {
