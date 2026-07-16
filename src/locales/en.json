@@ -707,6 +707,7 @@
   },
   "serverErrors": {
     "internal": "An unexpected error occurred. Please try again later or contact our support team.",
+    "unauthorized": "Authentication failed.",
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
@@ -715,12 +716,85 @@
         "invalid": "Password must be a valid, non-empty string.",
         "short": "Password must be at least {{min}} characters long.",
         "long": "Password cannot exceed {{max}} characters.",
-        "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number."
+        "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number.",
+        "incorrect": "Incorrect password."
       },
-      "differentMethod": "This account was created using Google. Please sign in with Google."
+      "differentMethod": "This account was created using Google. Please sign in with Google.",
+      "notFound": "Account not found. Please create an account first.",
+      "notVerified": "This account is not verified. Please try creating a new account after a few minutes."
     },
     "google-login": {
       "differentMethod": "This account was not created with Google. Please sign in with your email and password."
+    },
+    "signup": {
+      "email": {
+        "name": {
+          "invalid": "Name must be a valid, non-empty string.",
+          "short": "Name must be at least {{min}} characters long.",
+          "long": "Name cannot exceed {{max}} characters.",
+          "regex": "Name must contain letters only, with spaces, hyphens (-), and single quotes (') allowed."
+        },
+        "company": {
+          "invalid": "Company name must be a valid string.",
+          "long": "Company name cannot exceed {{max}} characters."
+        },
+        "email": {
+          "invalid": "Please enter a valid email address."
+        },
+        "password": {
+          "invalid": "Password must be a valid, non-empty string.",
+          "short": "Password must be at least {{min}} characters long.",
+          "long": "Password cannot exceed {{max}} characters.",
+          "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number."
+        },
+        "userExists": "This email address is already in use.",
+        "notVerifiedExists": "This email address is already registered but has not been verified. Please try again after a few minutes."
+      },
+      "token": {
+        "token": {
+          "invalid": "Verification code must be a valid, non-empty string.",
+          "length": "Verification code must be 6 digits long.",
+          "incorrect": "Incorrect verification code.",
+          "expired": "Verification code has expired. Please request a new one."
+        },
+        "email": {
+          "invalid": "Invalid email address. Please try creating your account again."
+        },
+        "notFound": "No unverified account found associated with this email address."
+      }
+    },
+    "refreshToken": {
+      "token": {
+        "invalid": "Invalid authentication token."
+      }
+    },
+    "forgotPassword": {
+      "email": {
+        "email": {
+          "invalid": "Please enter a valid email address."
+        },
+        "notFound": "No account found with this email address.",
+        "notVerified": "This account is not verified. Please try creating a new account after a few minutes.",
+        "differentMethod": "This account was created using Google and does not have a local password. Please sign in with Google."
+      },
+      "token": {
+        "token": {
+          "invalid": "Verification code must be a valid, non-empty string.",
+          "length": "Verification code must be 6 digits long.",
+          "incorrect": "Incorrect verification code.",
+          "expired": "Verification code has expired. Please request a new one.",
+          "missing": "An unexpected error occurred. Please try initiating the password reset process again."
+        }
+      },
+      "new": {
+        "newPassword": {
+          "invalid": "Password must be a valid, non-empty string.",
+          "short": "Password must be at least {{length}} characters long.",
+          "long": "Password cannot exceed {{length}} characters.",
+          "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number."
+        },
+        "samePassword": "The new password cannot be the same as your current password."
+      }
     }
   }
 }
