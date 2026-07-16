@@ -801,6 +801,38 @@
         "notFound": "No categories found."
       }
     },
+    "orders": {
+      "create": {
+        "customerName": {
+          "invalid": "Customer name must be a valid, non-empty string.",
+          "short": "Customer name must be at least {{min}} characters long.",
+          "long": "Customer name cannot exceed {{max}} characters."
+        },
+        "customerPhone": {
+          "invalid": "Please enter a valid phone number."
+        },
+        "customerEmail": {
+          "invalid": "Please enter a valid email address."
+        },
+        "items": {
+          "invalidProductId": "One or more products have an invalid ID.",
+          "quantity": {
+            "invalid": "Quantity must be a valid number.",
+            "min": "Quantity must be at least {{min}}."
+          },
+          "minLength": "An order must contain at least one item.",
+          "someNotFound": "Some of the selected products were not found. They might have been deleted or moved to drafts.",
+          "insufficientStock": "Insufficient stock for the following items: {{productNames}}."
+        },
+        "note": {
+          "invalid": "Note must be a valid string.",
+          "long": "Note cannot exceed {{max}} characters."
+        }
+      },
+      "update": {
+        "invalidIsArchived": "Invalid value for isArchived, must be 'true' or 'false'."
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
