@@ -740,6 +740,23 @@
         "samePassword": "The new password cannot be the same as your current password."
       }
     },
+    "settings": {
+      "update": {
+        "inventory": {
+          "defaultMinStock": {
+            "invalid": "The default minimum stock must be a number.",
+            "min": "The default minimum stock must be at least {{min}}."
+          }
+        },
+        "currency": {
+          "invalid": "Unsupported currency code."
+        },
+        "lang": {
+          "invalid": "Unsupported language."
+        },
+        "notFound": "Settings not found. PLease contact the support team."
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
