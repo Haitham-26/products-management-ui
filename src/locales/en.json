@@ -830,7 +830,42 @@
         }
       },
       "update": {
-        "invalidIsArchived": "Invalid value for isArchived, must be 'true' or 'false'."
+        "invalidIsArchived": "The archive status must be a boolean value.",
+        "notFound": "Order not found.",
+        "cannotUpdateArchived": "Archived orders cannot be updated.",
+        "cannotUpdateNonPending": "Only pending orders can be updated."
+      },
+      "bulkManageVisibility": {
+        "orderIds": {
+          "invalid": "One or more order IDs are invalid.",
+          "minLength": "Please select at least one order."
+        },
+        "visibility": {
+          "invalid": "Invalid visibility status."
+        },
+        "someNotFound": "Some of the selected orders were not found."
+      },
+      "manageStatus": {
+        "invalidOrderId": "Invalid order ID.",
+        "invalidStatus": "Invalid status.",
+        "notFound": "Order not found.",
+        "cannotChangeConfirmed": "Confirmed orders' status cannot be changed.",
+        "sameStatus": "The order is already in this status.",
+        "canceledToConfirmed": "A canceled order cannot be changed directly to confirmed.",
+        "items": {
+          "insufficientStock": "Order {{orderIdentifier}}: Insufficient stock for the following items: {{productNames}}"
+        }
+      },
+      "bulkManageStatus": {
+        "orderIds": {
+          "invalid": "One or more order IDs are invalid.",
+          "minLength": "Please select at least one order.",
+          "someNotFound": "Some of the selected orders were not found."
+        },
+        "invalidStatus": "Invalid status.",
+        "items": {
+          "insufficientStock": "Order {{orderIdentifier}}: Insufficient stock for the following items: {{productNames}}"
+        }
       }
     },
     "login": {

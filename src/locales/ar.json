@@ -831,7 +831,42 @@
         }
       },
       "update": {
-        "invalidIsArchived": "قيمة غير صالحة ل isArchived، يجب ان تكون 'true' او 'false'."
+        "invalidIsArchived": "يجب أن تكون حالة الأرشفة قيمة منطقية (true/false).",
+        "notFound": "الطلب غير موجود.",
+        "cannotUpdateArchived": "لا يمكن تعديل الطلبات المؤرشفة.",
+        "cannotUpdateNonPending": "لا يمكن تعديل سوى الطلبات المعلقة."
+      },
+      "bulkManageVisibility": {
+        "orderIds": {
+          "invalid": "معرف واحد أو أكثر من معرفات الطلبات المحددة غير صالحة.",
+          "minLength": "يرجى تحديد طلب واحد على الأقل."
+        },
+        "visibility": {
+          "invalid": "حالة الظهور المحددة غير صالحة."
+        },
+        "someNotFound": "بعض الطلبات المحددة غير موجودة."
+      },
+      "manageStatus": {
+        "invalidOrderId": "معرف واحد أو أكثر من معرفات الطلبات المحددة غير صالحة.",
+        "invalidStatus": "حالة الطلب المحددة غير صالحة.",
+        "notFound": "الطلب غير موجود.",
+        "cannotChangeConfirmed": "لا يمكن تعديل الطلبات المؤكدة.",
+        "sameStatus": "الطلب موجود بالفعل في هذه الحالة.",
+        "canceledToConfirmed": "لا يمكن تغيير حالة الطلب الملغي مباشرة إلى مؤكد.",
+        "items": {
+          "insufficientStock": "الطلب {{orderIdentifier}}: الكمية المتوفرة في المخزون غير كافية للمنتجات التالية: {{productNames}}"
+        }
+      },
+      "bulkManageStatus": {
+        "orderIds": {
+          "invalid": "معرف واحد أو أكثر من معرفات الطلبات المحددة غير صالحة.",
+          "minLength": "يرجى تحديد طلب واحد على الأقل.",
+          "someNotFound": "بعض الطلبات المحددة غير موجودة."
+        },
+        "invalidStatus": "حالة الطلب المحددة غير صالحة.",
+        "items": {
+          "insufficientStock": "الطلب {{orderIdentifier}}: الكمية المتوفرة في المخزون غير كافية للمنتجات التالية: {{productNames}}"
+        }
       }
     },
     "login": {
