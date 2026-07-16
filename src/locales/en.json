@@ -904,6 +904,18 @@
         "tags": {
           "someNotFound": "Some of the selected tags were not found."
         }
+      },
+      "update": {
+        "invalidStatus": "The selected status is invalid.",
+        "invalidMainImage": "The main image file is invalid.",
+        "invalidGalleryImage": "One or more gallery images are invalid.",
+        "notFound": "Product not found.",
+        "category": {
+          "notFound": "The selected category was not found."
+        },
+        "tags": {
+          "notFound": "Some of the selected tags were not found."
+        }
       }
     },
     "login": {
