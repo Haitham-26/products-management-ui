@@ -779,6 +779,28 @@
         "notFound": "No tags found."
       }
     },
+    "categories": {
+      "create": {
+        "name": {
+          "invalid": "Name must be a valid, non-empty string.",
+          "short": "Name must be at least {{min}} characters long.",
+          "long": "Name cannot exceed {{max}} characters."
+        },
+        "description": {
+          "invalid": "Description must be a valid string.",
+          "long": "Description cannot exceed {{max}} characters."
+        }
+      },
+      "update": {
+        "notFound": "Category not found."
+      },
+      "delete": {
+        "notFound": "Category not found."
+      },
+      "bulkDelete": {
+        "notFound": "No categories found."
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
