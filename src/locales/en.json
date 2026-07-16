@@ -712,11 +712,33 @@
       "global": "You have exceeded the rate limit. Please try again after 15 minutes."
     },
     "imageUpload": {
-      "invalidType": "Invalid file type. Please upload a valid image."
+      "invalidType": "Invalid file type. Please upload a valid image.",
+      "limit": {
+        "size": "The file size is too large. The maximum allowed size is {{maxSizeMB}}MB.",
+        "field": "Received unexpected file.",
+        "count": "Cannot upload more than {{maxCount}} files."
+      }
     },
     "permissions": {
       "orgOnly": "Only organization owner can perform this action.",
       "hasNoPermission": "You do not have the required permissions to perform this action."
+    },
+    "user": {
+      "get": {
+        "notFound": "User not found."
+      },
+      "update": {
+        "avatar": {
+          "invalid": "Invalid avatar URL."
+        }
+      },
+      "changePassword": {
+        "differentMethod": "This account was created using Google and we don't store a password for it, so you can't change it.",
+        "currentPassword": {
+          "incorrect": "Incorrect current password."
+        },
+        "samePassword": "The new password cannot be the same as your current password."
+      }
     },
     "login": {
       "email": {
