@@ -868,6 +868,44 @@
         }
       }
     },
+    "products": {
+      "create": {
+        "name": {
+          "invalid": "Name must be a valid, non-empty string.",
+          "short": "Name must be at least {{min}} characters long.",
+          "long": "Name cannot exceed {{max}} characters."
+        },
+        "description": {
+          "invalid": "Description must be a valid string.",
+          "long": "Description cannot exceed {{max}} characters."
+        },
+        "price": {
+          "invalid": "Price must be a valid number.",
+          "min": "Price must be at least {{min}}."
+        },
+        "quantity": {
+          "invalid": "Quantity must be a valid number.",
+          "min": "Quantity must be at least {{min}}."
+        },
+        "discount": {
+          "type": {
+            "invalid": "Invalid discount type."
+          },
+          "value": {
+            "invalid": "Discount value must be a valid number.",
+            "min": "Discount value must be at least {{min}}."
+          }
+        },
+        "invalidCategoryId": "Invalid category ID.",
+        "invalidTagId": "One or more tag IDs are invalid.",
+        "category": {
+          "notFound": "The selected category was not found."
+        },
+        "tags": {
+          "someNotFound": "Some of the selected tags were not found."
+        }
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
