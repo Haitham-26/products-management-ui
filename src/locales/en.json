@@ -757,6 +757,28 @@
         "notFound": "Settings not found. PLease contact the support team."
       }
     },
+    "tags": {
+      "create": {
+        "name": {
+          "invalid": "Name must be a valid, non-empty string.",
+          "short": "Name must be at least {{min}} characters long.",
+          "long": "Name cannot exceed {{max}} characters."
+        },
+        "description": {
+          "invalid": "Description must be a valid string.",
+          "long": "Description cannot exceed {{max}} characters."
+        }
+      },
+      "update": {
+        "notFound": "Tag not found."
+      },
+      "delete": {
+        "notFound": "Tag not found."
+      },
+      "bulkDelete": {
+        "notFound": "No tags found."
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
