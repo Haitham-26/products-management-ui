@@ -616,8 +616,12 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
             render={({ field: { value, onChange } }) => (
               <SearchSelect
                 title={t("common.category")}
-                value={categoriesPermissions.READ && value ? value : undefined}
-                onChange={onChange}
+                value={
+                  categoriesPermissions.READ && value
+                    ? categoriesOptions.find((c) => c.value === value)
+                    : undefined
+                }
+                onChange={(v) => onChange(v || null)}
                 options={categoriesOptions}
                 onSearch={searchCategories}
                 allowClear
@@ -637,7 +641,11 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
               <SearchSelect
                 title={t("common.tags")}
                 mode="multiple"
-                value={tagsPermissions.READ && tags ? tags : []}
+                value={
+                  tagsPermissions.READ && tags
+                    ? tagsOptions.filter((t) => tags.includes(t.value))
+                    : []
+                }
                 onChange={onChange}
                 options={tagsOptions}
                 onSearch={searchTags}
