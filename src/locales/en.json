@@ -773,10 +773,13 @@
         "notFound": "Tag not found."
       },
       "delete": {
-        "notFound": "Tag not found."
+        "notFound": "Tag not found.",
+        "invalidId": "Invalid tag ID."
       },
       "bulkDelete": {
-        "notFound": "No tags found."
+        "notFound": "No tags found.",
+        "invalidId": "One or more tag IDs are invalid.",
+        "minLength": "Please select at least one tag."
       }
     },
     "categories": {
@@ -795,10 +798,13 @@
         "notFound": "Category not found."
       },
       "delete": {
-        "notFound": "Category not found."
+        "notFound": "Category not found.",
+        "invalidId": "Invalid category ID."
       },
       "bulkDelete": {
-        "notFound": "No categories found."
+        "notFound": "No categories found.",
+        "invalidId": "One or more category IDs are invalid.",
+        "minLength": "Please select at least one category."
       }
     },
     "orders": {
@@ -918,7 +924,12 @@
         }
       },
       "delete": {
-        "notFound": "Product not found."
+        "notFound": "Product not found.",
+        "invalidId": "Invalid product ID."
+      },
+      "bulkDelete": {
+        "notFound": "One or more products were not found.",
+        "minLength": "Please select at least one product."
       },
       "bulkManageStatus": {
         "productIds": {
