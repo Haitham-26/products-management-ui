@@ -724,7 +724,8 @@
       "notVerified": "This account is not verified. Please try creating a new account after a few minutes."
     },
     "google-login": {
-      "differentMethod": "This account was not created with Google. Please sign in with your email and password."
+      "differentMethod": "This account was not created with Google. Please sign in with your email and password.",
+      "notVerified": "Your google account is not verified. Try with another account."
     },
     "signup": {
       "email": {
