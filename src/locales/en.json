@@ -708,6 +708,16 @@
   "serverErrors": {
     "internal": "An unexpected error occurred. Please try again later or contact our support team.",
     "unauthorized": "Authentication failed.",
+    "rateLimit": {
+      "global": "You have exceeded the rate limit. Please try again after 15 minutes."
+    },
+    "imageUpload": {
+      "invalidType": "Invalid file type. Please upload a valid image."
+    },
+    "permissions": {
+      "orgOnly": "Only organization owner can perform this action.",
+      "hasNoPermission": "You do not have the required permissions to perform this action."
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
