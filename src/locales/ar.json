@@ -251,6 +251,7 @@
       "customerName": "اسم العميل",
       "customerPhone": "رقم هاتف العميل",
       "customerEmail": "بريد العميل",
+      "customerAddress": "عنوان العميل",
       "isArchived": {
         "title": "حالة الأرشفة",
         "archived": "مؤرشف",
@@ -364,7 +365,10 @@
       "errors": {
         "customerInfo": {
           "name": {
-            "long": "اسم العميل يجب ان يكون {{length}} كحد أقصى."
+            "long": "اسم العميل يجب ان يكون {{length}} حرفا كحد أقصى."
+          },
+          "address": {
+            "long": "العنوان يجب ان يكون {{length}} حرفا كحد اقصى."
           }
         }
       }
@@ -690,7 +694,8 @@
     "phone": "رقم الهاتف",
     "success": "نجاح",
     "error": "خطأ",
-    "apiError": "خطأ في الخادم"
+    "apiError": "خطأ في الخادم",
+    "address": "العنوان"
   },
   "errors": {
     "general": {
@@ -822,6 +827,10 @@
         },
         "customerEmail": {
           "invalid": "يرجى إدخال بريد إلكتروني صالح."
+        },
+        "customerAddress": {
+          "invalid": "يجب أن يكون عنوان العميل نصاً صالحاً.",
+          "long": "لا يمكن أن يتجاوز عنوان العميل العميل {{max}} حرفاً."
         },
         "items": {
           "invalidProductId": "معرّف واحد أو أكثر من معرّفات المنتجات غير صالح.",

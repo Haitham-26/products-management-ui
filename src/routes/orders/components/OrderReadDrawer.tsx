@@ -220,6 +220,14 @@ export const OrderReadDrawer: React.FC<Props> = ({
                 {order.customerPhone || "_"}
               </Text>
             </DataItem>
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("orders.fields.customerAddress", "Phone")}
+              </Text>
+              <Text fontStyle={!order.customerAddress ? "italic" : undefined}>
+                {order.customerAddress || "_"}
+              </Text>
+            </DataItem>
           </DataGrid>
         </Section>
 

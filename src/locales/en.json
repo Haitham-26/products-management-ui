@@ -251,6 +251,7 @@
       "customerName": "Customer Name",
       "customerPhone": "Customer Phone",
       "customerEmail": "Customer Email",
+      "customerAddress": "Customer Address",
       "isArchived": {
         "title": "Archive Status",
         "archived": "Archived",
@@ -365,6 +366,9 @@
         "customerInfo": {
           "name": {
             "long": "Customer name must be at most {{length}} characters."
+          },
+          "address": {
+            "long": "Customer address must be at most {{length}} characters."
           }
         }
       }
@@ -690,7 +694,8 @@
     "phone": "Phone",
     "success": "Success",
     "error": "Error",
-    "apiError": "Server Error"
+    "apiError": "Server Error",
+    "address": "Address"
   },
   "errors": {
     "general": {
@@ -821,6 +826,10 @@
         },
         "customerEmail": {
           "invalid": "Please enter a valid email address."
+        },
+        "customerAddress": {
+          "invalid": "Customer address must be a valid string.",
+          "long": "Customer address cannot exceed {{max}} characters."
         },
         "items": {
           "invalidProductId": "One or more products have an invalid ID.",
