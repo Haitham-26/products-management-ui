@@ -948,6 +948,57 @@
         "belowZero": "Stock quantity cannot drop below zero."
       }
     },
+    "organization": {
+      "inviteMembers": {
+        "emails": {
+          "invalid": "One or more email addresses are invalid.",
+          "duplicate": "Duplicate email addresses are not allowed.",
+          "minLength": "Please provide at least {{min}} email address."
+        },
+        "selfInvite": "You cannot invite yourself. Please remove your email address and try again.",
+        "invitees": {
+          "someInOrg": "Some of the invited users are already members of organizations ({{emails}}). Please remove their emails and try again.",
+          "someHavePending": "Some of the invited users already have pending invitations, you don't need to invite them again ({{emails}}).."
+        }
+      },
+      "cancelInvitation": {
+        "notFound": "Invitation not found.",
+        "invalidId": "Invalid invitation ID.",
+        "notPending": "Only pending invitations can be canceled.",
+        "expired": "This invitation has already expired."
+      },
+      "declineInvitation": {
+        "notFound": "Invitation not found.",
+        "invalidId": "Invalid invitation ID.",
+        "notPending": "This invitation is no longer pending.",
+        "expired": "This invitation has expired."
+      },
+      "acceptInvitation": {
+        "notFound": "Invitation not found.",
+        "invalidId": "Invalid invitation ID.",
+        "notPending": "This invitation is no longer pending.",
+        "expired": "This invitation has expired and can no longer be accepted."
+      },
+      "leave": {
+        "notMember": "You are not a member of any organization."
+      },
+      "removeMember": {
+        "invalidId": "Invalid member ID.",
+        "notMember": "The selected user is not a member of this organization."
+      },
+      "managePermissions": {
+        "members": {
+          "invalidId": "One or more member IDs are invalid.",
+          "notMember": "One or more selected users are not members of this organization.",
+          "minLength": "Please select at least {{min}} member.",
+          "permissions": {
+            "invalidType": "The provided permissions are invalid."
+          },
+          "someNotFound": "Some of the selected members were not found."
+        },
+        "self": "You cannot modify your own permissions."
+      }
+    },
     "login": {
       "email": {
         "invalid": "Please enter a valid email address."
