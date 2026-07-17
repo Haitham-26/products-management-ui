@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import appSliceSelectors from "./redux/app/app.selector";
 import { appActions } from "./redux/app/app.slice";
 import last from "lodash/last";
-import { Toast } from "./utils/Toast";
 import { useState } from "react";
 import organizationSliceSelectors from "./redux/organization/organization.selector";
 import { organizationActions } from "./redux/organization/organization.slice";
@@ -13,6 +12,7 @@ import { faEnvelopeOpenText } from "@fortawesome/free-solid-svg-icons/faEnvelope
 import { userActions } from "./redux/user/user.slice";
 import { useNavigate } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "./components/toast/useAppToast";
 
 export const JoinOrganizationInvitationModal: React.FC = () => {
   const [acceptLoading, setAcceptLoading] = useState(false);
@@ -21,6 +21,7 @@ export const JoinOrganizationInvitationModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation(undefined, { keyPrefix: "joinOrgModal" });
+  const Toast = useAppToast();
 
   const lastSeenInvitationId = useAppSelector(
     appSliceSelectors.selectLastSeenInvitationId,

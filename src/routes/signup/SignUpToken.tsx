@@ -6,12 +6,14 @@ import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpTokenDto } from "../../model/user/dto/SignUpTokenDto";
-import { Toast } from "../../utils/Toast";
 import { VerificationCodeInput } from "../../components/VerificationCodeInput";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { ResendVerificationButton } from "../../components/ResendTokenButton";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
+import i18n from "../../i18n";
+import type { AppLangs } from "../../model/app/types/AppLangs.enum";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "signup-token-last-resend-time";
 
@@ -28,6 +30,7 @@ const BoldSpan = styled.span`
 export const SignUpToken: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -40,8 +43,14 @@ export const SignUpToken: React.FC = () => {
   });
 
   const resendToken = () => {
+    const lang = i18n.language as AppLangs;
+
     return dispatch(
-      userActions.signUpResendToken({ email: getValues("email") }),
+      userActions.signUpResendToken({
+        email: getValues("email"),
+        lang,
+        dir: i18n.dir(lang),
+      }),
     ).unwrap();
   };
 

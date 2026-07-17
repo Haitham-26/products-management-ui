@@ -3,20 +3,21 @@ import { AuthContainer } from "../../components/AuthContainer";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../redux/store";
-import { Toast } from "../../utils/Toast";
 import { userActions } from "../../redux/user/user.slice";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import type { ForgotPasswordNewDto } from "../../model/user/dto/ForgotPasswordNewDto";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 export const ForgotPasswordNewStep: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();

@@ -34,7 +34,6 @@ import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import { ProductStockManageModal } from "./components/ProductStockManageModal";
 import { ProductStatus } from "../../model/product/types/ProductStatus.enum";
-import { Toast } from "../../utils/Toast";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import { Button } from "../../components/Button";
@@ -45,6 +44,7 @@ import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons/faCloudArrowUp
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const getToggleStatusModalTexts = (t: TFunction) => ({
   [ProductStatus.DRAFT]: {
@@ -114,6 +114,11 @@ export const Products: React.FC = () => {
   const [productsBulkManageStatusLoading, setProductsBulkManageStatusLoading] =
     useState(false);
 
+  const Toast = useAppToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
@@ -123,16 +128,12 @@ export const Products: React.FC = () => {
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const permissions = checkPermissions(user, "products");
+
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
-
-  const dispatch = useAppDispatch();
-  const { t } = useTranslation();
-
-  const permissions = checkPermissions(user, "products");
 
   const debouncedSetSearchParams = useMemo(
     () =>

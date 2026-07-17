@@ -7,11 +7,16 @@ import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import type { SignUpEmailDto } from "../../model/user/dto/SignUpEmailDto";
-import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
+import i18n from "../../i18n";
+import type { AppLangs } from "../../model/app/types/AppLangs.enum";
+
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 64;
 
 const Footer = styled.div`
   display: flex;
@@ -44,6 +49,7 @@ const OAuthSectionTitle = styled.div`
 export const SignUpEmail: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -54,6 +60,9 @@ export const SignUpEmail: React.FC = () => {
       setLoading(true);
 
       const dto = getValues();
+
+      dto.lang = i18n.language as AppLangs;
+      dto.dir = i18n.dir(i18n.language);
 
       await dispatch(userActions.signUpEmail(dto)).unwrap();
 
@@ -77,11 +86,12 @@ export const SignUpEmail: React.FC = () => {
           control={control}
           name="name"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.name")}
               placeholder={t("signup.email.name.placeholder")}
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />
@@ -103,12 +113,13 @@ export const SignUpEmail: React.FC = () => {
           control={control}
           name="email"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.email")}
               placeholder="you@example.com"
               type="email"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />
@@ -118,13 +129,28 @@ export const SignUpEmail: React.FC = () => {
         <Controller
           control={control}
           name="password"
-          rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          rules={{
+            required: t("errors.general.required"),
+            minLength: {
+              value: MIN_PASSWORD_LENGTH,
+              message: t("signup.email.errors.password.min", {
+                length: MIN_PASSWORD_LENGTH,
+              }),
+            },
+            maxLength: {
+              value: MAX_PASSWORD_LENGTH,
+              message: t("signup.email.errors.password.max", {
+                length: MAX_PASSWORD_LENGTH,
+              }),
+            },
+          }}
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.password")}
               type="password"
               placeholder="••••••••"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               required
               {...field}
             />

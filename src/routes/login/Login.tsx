@@ -7,11 +7,11 @@ import type { LoginDto } from "../../model/user/dto/LoginDto";
 import { userActions } from "../../redux/user/user.slice";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "../../components/Button";
-import { Toast } from "../../utils/Toast";
 import { AuthContainer } from "../../components/AuthContainer";
 import styled from "styled-components";
 import { GoogleLoginButton } from "../../components/GoogleLoginButton";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const PasswordWrapper = styled.div`
   display: flex;
@@ -55,6 +55,7 @@ const OAuthSectionTitle = styled.div`
 export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ export const Login: React.FC = () => {
 
       Toast.success(t("login.success"));
     } catch (e) {
-      console.error(e);
+      console.log(e);
       Toast.apiError(e);
     } finally {
       setLoading(false);
@@ -91,12 +92,14 @@ export const Login: React.FC = () => {
           control={control}
           name="email"
           rules={{ required: t("errors.general.required") }}
-          render={({ field, fieldState }) => (
+          render={({ field, fieldState: { error } }) => (
             <Input
               title={t("common.email")}
               placeholder="you@example.com"
-              errorMessage={fieldState.error?.message}
+              errorMessage={error?.message}
+              valid={!error}
               type="email"
+              required
               {...field}
             />
           )}
@@ -106,13 +109,25 @@ export const Login: React.FC = () => {
           <Controller
             control={control}
             name="password"
-            rules={{ required: t("errors.general.required") }}
-            render={({ field, fieldState }) => (
+            rules={{
+              required: t("errors.general.required"),
+              minLength: {
+                value: 8,
+                message: t("login.errors.password.min", { length: 8 }),
+              },
+              maxLength: {
+                value: 64,
+                message: t("login.errors.password.max", { length: 64 }),
+              },
+            }}
+            render={({ field, fieldState: { error } }) => (
               <Input
                 title={t("common.password")}
                 type="password"
                 placeholder="••••••••"
-                errorMessage={fieldState.error?.message}
+                errorMessage={error?.message}
+                valid={!error}
+                required
                 {...field}
               />
             )}

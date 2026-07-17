@@ -20,7 +20,6 @@ import { organizationActions } from "../../../redux/organization/organization.sl
 import organizationSliceSelectors from "../../../redux/organization/organization.selector";
 import { SpinnerFullScreen } from "../../../components/SpinnerFullScreen";
 import type { User } from "../../../model/user/types/User";
-import { Toast } from "../../../utils/Toast";
 import { WarningModal } from "../../../components/WarningModal";
 import isEmpty from "lodash/isEmpty";
 import { UserRoles } from "../../../model/user/types/UserRoles.enum";
@@ -29,6 +28,7 @@ import { Empty } from "../../../components/Empty";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { UserAvatar } from "../../../components/UserAvatar";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
@@ -153,6 +153,7 @@ export const UserPermissionsMembersTab: React.FC<
   );
   const [saveLoading, setSaveLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const {

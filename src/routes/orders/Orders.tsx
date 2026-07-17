@@ -40,11 +40,11 @@ import { Button } from "../../components/Button";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { faBoxArchive } from "@fortawesome/free-solid-svg-icons/faBoxArchive";
 import { OrderVisibility } from "../../model/order/types/OrderVisibility.enum";
-import { Toast } from "../../utils/Toast";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
 import { OrderBulkManageStatusModal } from "./components/OrderBulkManageStatusModal";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -105,6 +105,7 @@ export const Orders: React.FC = () => {
   const [ordersBulkUnarchiveVisible, setOrdersBulkUnarchiveVisible] =
     useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();

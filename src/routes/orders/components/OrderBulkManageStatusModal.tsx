@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import { Button } from "../../../components/Button";
 import styled from "styled-components";
-import { Toast } from "../../../utils/Toast";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { orderActions } from "../../../redux/order/orders.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
@@ -18,6 +17,7 @@ import { Info } from "../../../components/Info";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import i18n from "../../../i18n";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const getRules = (t: TFunction) => [
   {
@@ -101,6 +101,7 @@ export const OrderBulkManageStatusModal: React.FC<
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const Toast = useAppToast();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();

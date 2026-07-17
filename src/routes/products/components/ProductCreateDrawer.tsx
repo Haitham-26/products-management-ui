@@ -19,7 +19,6 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { Toast } from "../../../utils/Toast";
 import { useSearchParams } from "react-router-dom";
 import {
   buildProductsParams,
@@ -42,6 +41,7 @@ import { ImageUpload } from "../../../components/ImageUpload";
 import { isArray } from "lodash";
 import type { UploadFile } from "antd";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -169,6 +169,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const Toast = useAppToast();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const user = useAppSelector(userSliceSelectors.selectUser)!;

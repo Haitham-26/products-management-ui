@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { AppDispatch, RootState } from "./store";
 import { AxiosError } from "axios";
+import { t } from "i18next";
 
 export const AppThunk = <Returned, ThunkArg = void>(
   prefix: string,
@@ -9,7 +10,7 @@ export const AppThunk = <Returned, ThunkArg = void>(
   return createAsyncThunk<
     Returned,
     ThunkArg,
-    { state: RootState; dispatch: AppDispatch; rejectValue: string }
+    { state: RootState; dispatch: AppDispatch; rejectValue: unknown }
   >(prefix, async (arg, { rejectWithValue }) => {
     try {
       const data = await action(arg);
@@ -17,10 +18,10 @@ export const AppThunk = <Returned, ThunkArg = void>(
       return data;
     } catch (e) {
       if (e instanceof AxiosError) {
-        return rejectWithValue(e.response?.data?.message || "Action failed");
+        return rejectWithValue(e);
       }
 
-      return rejectWithValue("Action failed");
+      return rejectWithValue(t("errors.general.unexpected"));
     }
   });
 };

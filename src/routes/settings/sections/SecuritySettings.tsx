@@ -5,14 +5,14 @@ import { Controller, useForm } from "react-hook-form";
 import { Button } from "../../../components/Button";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { Toast } from "../../../utils/Toast";
 import { Input } from "../../../components/Input";
 import { userActions } from "../../../redux/user/user.slice";
 import type { ResetPasswordDto } from "../../../model/user/dto/ResetPasswordDto";
 import { SettingsSection } from "../components/SettingsSection";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
 
 const StyledButton = styled(Button)`
@@ -25,6 +25,7 @@ export const SecuritySettings: React.FC = () => {
 
   const user = useAppSelector(userSliceSelectors.selectUser);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { control, handleSubmit, getValues, reset, watch } = useForm<

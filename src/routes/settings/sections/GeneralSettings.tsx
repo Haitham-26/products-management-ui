@@ -8,7 +8,6 @@ import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { Fragment, useEffect, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { Toast } from "../../../utils/Toast";
 import { Select } from "../../../components/Select";
 import { CURRENCY_OPTIONS } from "../../../utils/String";
 import { SettingsSection } from "../components/SettingsSection";
@@ -17,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { AppLangs } from "../../../model/app/types/AppLangs.enum";
 import i18n from "../../../i18n";
 import { changeLanguage } from "../../../utils/i18nUtils";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const LANGUAGE_OPTIONS = [
   {
@@ -41,6 +41,7 @@ export const GeneralSettings: React.FC = () => {
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({

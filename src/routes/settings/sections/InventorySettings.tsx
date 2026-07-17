@@ -9,11 +9,11 @@ import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { Fragment, useEffect, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { Toast } from "../../../utils/Toast";
 import { SettingsSection } from "../components/SettingsSection";
 import { Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
 import { Info } from "../../../components/Info";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const StyledButton = styled(Button)`
   width: fit-content;
@@ -27,6 +27,7 @@ export const InventorySettings: React.FC = () => {
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
   const isMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { control, handleSubmit, getValues } = useForm<UpdateSettingsDto>({

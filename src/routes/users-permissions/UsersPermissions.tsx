@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import userSliceSelectors from "../../redux/user/user.selector";
 import { useEffect, useState } from "react";
 import { faPersonWalkingArrowRight } from "@fortawesome/free-solid-svg-icons/faPersonWalkingArrowRight";
-import { Toast } from "../../utils/Toast";
 import { organizationActions } from "../../redux/organization/organization.slice";
 import { userActions } from "../../redux/user/user.slice";
 import { WarningModal } from "../../components/WarningModal";
@@ -22,6 +21,7 @@ import { UsersPermissionsOrgTab } from "./components/UsersPermissionsOrgTab";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../components/toast/useAppToast";
 
 export const UsersPermissions: React.FC = () => {
   const [inviteMembersModalVisible, setInviteMembersModalVisible] =
@@ -29,6 +29,7 @@ export const UsersPermissions: React.FC = () => {
   const [leaveOrgModalVisible, setLeaveOrgModalVisible] = useState(false);
   const [leaveOrgLoading, setLeaveOrgLoading] = useState(false);
 
+  const Toast = useAppToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();

@@ -5,13 +5,13 @@ import { Text } from "../../../components/Text";
 import { Button } from "../../../components/Button";
 import { formatDate } from "../../../utils/Date";
 import { InvitationStatus } from "../../../model/user/organization/types/InvitationStatus.enum";
-import { Toast } from "../../../utils/Toast";
 import { useState } from "react";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { organizationActions } from "../../../redux/organization/organization.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useTranslation } from "react-i18next";
+import { useAppToast } from "../../../components/toast/useAppToast";
 
 const Card = styled.div`
   position: relative;
@@ -159,6 +159,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
 }) => {
   const [reinviteLoading, setReinviteLoading] = useState(false);
 
+  const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
