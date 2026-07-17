@@ -264,7 +264,7 @@
     "status": {
       "pending": "Pending",
       "canceled": "Canceled",
-      "confirmed": "Confirmed"
+      "delivered": "Delivered"
     },
     "read": {
       "title": "Order Items",
@@ -328,7 +328,7 @@
       "rules": {
         "pending-canceled": "Stock will be restored (+)",
         "canceled-pending": "Stock will be deducted (-)",
-        "pending-confirmed": "No stock changes"
+        "pending-delivered": "No stock changes"
       },
       "status": {
         "title": "New Status",
@@ -339,8 +339,8 @@
     "bulkManageStatus": {
       "title": "Update Status for {{count}} Orders",
       "infos": [
-        "Selected confirmed orders will not be updated or affected in any way.",
-        "Selected canceled orders will not be updated if the new status is 'Confirmed'."
+        "Selected delivered orders will not be updated or affected in any way.",
+        "Selected canceled orders will not be updated if the new status is 'Delivered'."
       ],
       "success": "Orders status updated successfully!"
     },
@@ -857,9 +857,9 @@
         "invalidOrderId": "Invalid order ID.",
         "invalidStatus": "Invalid status.",
         "notFound": "Order not found.",
-        "cannotChangeConfirmed": "Confirmed orders' status cannot be changed.",
+        "cannotChangeDelivered": "Delivered orders' status cannot be changed.",
         "sameStatus": "The order is already in this status.",
-        "canceledToConfirmed": "A canceled order cannot be changed directly to confirmed.",
+        "canceledToDelivered": "A canceled order cannot be changed directly to delivered.",
         "items": {
           "insufficientStock": "Order {{orderIdentifier}}: Insufficient stock for the following items: {{productNames}}"
         }
