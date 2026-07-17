@@ -438,8 +438,8 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                     rules={{
                       required:
                         index === 0
-                          ? t("orders.create.items.required")
-                          : t("orders.create.items.requiredOrRemove"),
+                          ? t("orders.create.errors.items.required")
+                          : t("orders.create.errors.items.requiredOrRemove"),
                     }}
                     render={({ field: { value }, fieldState: { error } }) => {
                       const options = getProductsOptions(value);

@@ -18,6 +18,8 @@ import { buildProductsParams } from "../utils/productUtils";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import i18n from "../../../i18n";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
 
 const Container = styled.div`
   display: flex;
@@ -115,6 +117,10 @@ const StockInput = styled(Input)`
   color: ${({ theme }) => theme.colors.textPrimary};
   box-shadow: none !important;
   padding: 0;
+
+  &::placeholder {
+    text-align: center !important;
+  }
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
@@ -339,7 +345,13 @@ export const ProductStockManageModal: React.FC<
             {quantity > 0 ? (
               <Fragment>
                 <PreviewState>{currentStock}</PreviewState>
-                <Icon icon={faArrowRight} />
+                <Icon
+                  icon={
+                    i18n.dir(i18n.language) === "rtl"
+                      ? faArrowLeft
+                      : faArrowRight
+                  }
+                />
                 <PreviewResult $mode={mode}>{previewStock}</PreviewResult>
               </Fragment>
             ) : (

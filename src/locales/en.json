@@ -277,7 +277,6 @@
       "items": {
         "restriction": "You do not have permission to access products.",
         "action": "Add Another Product",
-        "success": "Order created successfully!",
         "dropdown": {
           "placeholder": "Search for a product...",
           "itemStockStatus": {
@@ -300,7 +299,8 @@
             "max": "Quantity cannot exceed available stock ({{max}})"
           }
         }
-      }
+      },
+      "success": "Order created successfully!"
     },
     "archive": {
       "title": "Archive Order {{id}}",
@@ -770,7 +770,8 @@
         }
       },
       "update": {
-        "notFound": "Tag not found."
+        "notFound": "Tag not found.",
+        "invalidId": "Invalid tag ID."
       },
       "delete": {
         "notFound": "Tag not found.",
@@ -795,7 +796,8 @@
         }
       },
       "update": {
-        "notFound": "Category not found."
+        "notFound": "Category not found.",
+        "invalidId": "Invalid category ID."
       },
       "delete": {
         "notFound": "Category not found.",
@@ -904,6 +906,7 @@
         },
         "invalidCategoryId": "Invalid category ID.",
         "invalidTagId": "One or more tag IDs are invalid.",
+        "duplicateTags": "Some of the selected tags are duplicates. Please provide unique tags.",
         "category": {
           "notFound": "The selected category was not found."
         },
@@ -944,6 +947,7 @@
           "invalid": "The stock change value must be a valid integer.",
           "zero": "Stock change value cannot be zero."
         },
+        "invalidProductId": "Invalid product ID.",
         "notFound": "Product not found.",
         "belowZero": "Stock quantity cannot drop below zero."
       }
@@ -1008,11 +1012,10 @@
         "short": "Password must be at least {{min}} characters long.",
         "long": "Password cannot exceed {{max}} characters.",
         "regex": "Password must contain at least one lowercase letter, one uppercase letter, and one number.",
-        "incorrect": "Incorrect password."
+        "incorrect": "Incorrect password or email."
       },
       "differentMethod": "This account was created using Google. Please sign in with Google.",
-      "notFound": "Account not found. Please create an account first.",
-      "notVerified": "This account is not verified. Please try creating a new account after a few minutes."
+      "notFound": "Account not found. Please create an account first."
     },
     "google-login": {
       "differentMethod": "This account was not created with Google. Please sign in with your email and password.",
@@ -1065,9 +1068,7 @@
         "email": {
           "invalid": "Please enter a valid email address."
         },
-        "notFound": "No account found with this email address.",
-        "notVerified": "This account is not verified. Please try creating a new account after a few minutes.",
-        "differentMethod": "This account was created using Google and does not have a local password. Please sign in with Google."
+        "notFound": "No account found with this email address."
       },
       "token": {
         "token": {
