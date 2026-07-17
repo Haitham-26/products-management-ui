@@ -74,7 +74,7 @@ export const createOrdersTableColumns = ({
                 label: t("orders.actions.manageStatus"),
                 onClick: () => onManageStatus?.(record),
                 disabled:
-                  record.status === OrderStatus.CONFIRMED ||
+                  record.status === OrderStatus.DELIVERED ||
                   !isFunction(onManageStatus),
               },
               {

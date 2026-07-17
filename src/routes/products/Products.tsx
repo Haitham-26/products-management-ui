@@ -61,7 +61,7 @@ const StyledContainer = styled(Container)`
   overflow: hidden;
 
   .published-product {
-    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+    background-color: ${({ theme }) => theme.colors.delivered} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
 

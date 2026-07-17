@@ -29,8 +29,8 @@ const getRules = (t: TFunction) => [
     hint: t("orders.manageStatus.rules.canceled-pending"),
   },
   {
-    status: [OrderStatus.PENDING, OrderStatus.CONFIRMED],
-    hint: t("orders.manageStatus.rules.pending-confirmed"),
+    status: [OrderStatus.PENDING, OrderStatus.DELIVERED],
+    hint: t("orders.manageStatus.rules.pending-delivered"),
   },
 ];
 

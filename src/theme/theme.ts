@@ -18,7 +18,7 @@ export const theme = {
     success: "#22c55e",
 
     pending: "#fbbf24",
-    confirmed: "#22c55e",
+    delivered: "#22c55e",
     canceled: "#ef4444",
 
     glassBackground: "rgba(255, 255, 255, 0.6)",

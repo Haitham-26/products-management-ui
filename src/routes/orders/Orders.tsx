@@ -52,8 +52,8 @@ const StyledContainer = styled(Container)`
   .pending-status {
     background-color: ${({ theme }) => theme.colors.pending} !important;
   }
-  .confirmed-status {
-    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+  .delivered-status {
+    background-color: ${({ theme }) => theme.colors.delivered} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
   .canceled-status {
@@ -67,7 +67,7 @@ const StyledContainer = styled(Container)`
     opacity: 0.8;
   }
   .visible {
-    background-color: ${({ theme }) => theme.colors.confirmed} !important;
+    background-color: ${({ theme }) => theme.colors.delivered} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
 `;

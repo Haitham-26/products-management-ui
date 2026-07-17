@@ -28,8 +28,8 @@ const getRules = (t: TFunction) => [
     hint: t("orders.manageStatus.rules.canceled-pending"),
   },
   {
-    status: [OrderStatus.PENDING, OrderStatus.CONFIRMED],
-    hint: t("orders.manageStatus.rules.pending-confirmed"),
+    status: [OrderStatus.PENDING, OrderStatus.DELIVERED],
+    hint: t("orders.manageStatus.rules.pending-delivered"),
   },
 ];
 
@@ -118,7 +118,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
 
         if (
           order.status === OrderStatus.CANCELED &&
-          s === OrderStatus.CONFIRMED
+          s === OrderStatus.DELIVERED
         ) {
           return false;
         }
