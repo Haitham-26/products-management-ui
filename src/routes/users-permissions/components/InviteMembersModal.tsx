@@ -239,6 +239,8 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
 
   const onSubmit = async () => {
     try {
+      setLoading(true);
+
       const { emails, inputValue } = getValues();
       const pendingInput = inputValue.trim().toLowerCase();
 
@@ -254,8 +256,6 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
         }
       }
 
-      setLoading(true);
-
       await dispatch(
         organizationActions.inviteMembers({
           userId,
@@ -269,7 +269,6 @@ export const InviteMembersModal: React.FC<InviteMembersModalProps> = ({
       localOnClose();
       Toast.success(t("usersPermissions.invitations.invite.success"));
     } catch (e) {
-      console.log(e);
       Toast.apiError(e);
     } finally {
       setLoading(false);

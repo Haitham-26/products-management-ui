@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 import { useToast } from "./ToastContext";
+import isString from "lodash/isString";
 
 export const useAppToast = () => {
   const toast = useToast();
@@ -29,14 +30,16 @@ export const useAppToast = () => {
     apiError(error: unknown) {
       if (
         error instanceof AxiosError &&
-        typeof error.response?.data?.message === "string"
+        isString(error.response?.data?.message)
       ) {
-        console.log(error.response.data.p);
+        const message = error.response.data.message;
+        const params =
+          (error.response.data?.params as Record<string, string>) || {};
 
         toast.error({
           title: t("common.error"),
-          description: t(error.response.data.message, {
-            ...((error.response.data?.params as Record<string, string>) || {}),
+          description: t(message, {
+            ...params,
             defaultValue: t("serverErrors.internal"),
           }),
           placement,
@@ -47,8 +50,9 @@ export const useAppToast = () => {
 
       toast.error({
         title: t("common.error"),
-        description:
-          typeof error === "string" ? t(error) : t("errors.general.unexpected"),
+        description: isString(error)
+          ? t(error)
+          : t("errors.general.unexpected"),
         placement,
       });
     },
