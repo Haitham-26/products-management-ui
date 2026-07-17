@@ -177,6 +177,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       customerName: "",
       customerPhone: "",
       customerEmail: "",
+      customerAddress: "",
       items: [{ productId: "", quantity: 1 }],
       note: "",
       userId,
@@ -409,6 +410,30 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                 value={value}
                 onChange={onChange}
                 valid={!error}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerAddress"
+            rules={{
+              maxLength: {
+                value: 256,
+                message: t(
+                  "orders.create-edit.errors.customerInfo.address.long",
+                  {
+                    length: 256,
+                  },
+                ),
+              },
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <Textarea
+                title={t("common.address")}
+                errorMessage={error?.message}
+                valid={!error}
+                {...field}
               />
             )}
           />

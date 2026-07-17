@@ -125,6 +125,13 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
+      title: t("orders.fields.customerAddress"),
+      dataIndex: "customerAddress",
+      key: "customerAddress",
+      width: 360,
+      ellipsis: true,
+    },
+    {
       title: t("common.status"),
       dataIndex: "status",
       key: "status",

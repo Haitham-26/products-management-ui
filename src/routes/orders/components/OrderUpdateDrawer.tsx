@@ -135,6 +135,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
         customerName: order.customerName || "",
         customerPhone: order?.customerPhone || "",
         customerEmail: order.customerEmail || "",
+        customerAddress: order.customerAddress || "",
         note: order.note || "",
         orderId: order._id,
         userId,
@@ -200,6 +201,30 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
             render={({ field, fieldState: { error } }) => (
               <PhoneInput
                 title={t("common.phone")}
+                errorMessage={error?.message}
+                valid={!error}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="customerAddress"
+            rules={{
+              maxLength: {
+                value: 256,
+                message: t(
+                  "orders.create-edit.errors.customerInfo.address.long",
+                  {
+                    length: 256,
+                  },
+                ),
+              },
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <Textarea
+                title={t("common.address")}
                 errorMessage={error?.message}
                 valid={!error}
                 {...field}

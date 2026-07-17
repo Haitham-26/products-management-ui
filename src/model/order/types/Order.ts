@@ -7,6 +7,7 @@ export interface Order {
   customerName: string;
   customerPhone?: string;
   customerEmail?: string;
+  customerAddress?: string;
   userId: string;
   items: OrderItem[];
   note?: string;
