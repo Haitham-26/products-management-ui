@@ -10,6 +10,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.sm};
+  width: fit-content;
+  margin-inline: auto;
 `;
 
 const Card = styled.div`
