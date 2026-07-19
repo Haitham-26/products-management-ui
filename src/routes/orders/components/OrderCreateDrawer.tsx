@@ -327,6 +327,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         }),
       ).unwrap();
 
+      await dispatch(
+        productActions.getProducts({ userId, meta: { page: 1, limit: 50 } }),
+      ).unwrap();
+
       setSearchParams(buildOrdersParams(filters, searchParams), {
         replace: true,
       });
@@ -354,6 +358,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           confirmDisabled={!productsPermissions.CREATE}
         />
       }
+      destroyOnHidden
     >
       <FormContainer>
         <FormSection>
