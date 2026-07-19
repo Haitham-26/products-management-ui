@@ -193,19 +193,27 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const tagsPermissions = checkPermissions(user, "tags");
   const categoriesPermissions = checkPermissions(user, "categories");
 
-  const categoriesOptions = useMemo(
-    () => categories.map((c) => ({ label: c.name, value: c._id })),
-    [categories],
-  );
+  const categoriesOptions = useMemo(() => {
+    const options = categories?.length
+      ? categories
+      : product?.category
+        ? [product.category]
+        : [];
 
-  const tagsOptions = useMemo(
-    () =>
-      tags.map((tag) => ({
-        label: tag.name,
-        value: tag._id,
-      })),
-    [tags],
-  );
+    return options.map((c) => ({
+      label: c.name,
+      value: c._id,
+    }));
+  }, [categories, product?.category]);
+
+  const tagsOptions = useMemo(() => {
+    const options = tags?.length ? tags : product?.tags || [];
+
+    return options.map((tag) => ({
+      label: tag.name,
+      value: tag._id,
+    }));
+  }, [tags, product?.tags]);
 
   const finalPrice = useMemo(() => {
     return calculateProductFinalPrice(price || 0, {
@@ -643,7 +651,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
                 mode="multiple"
                 value={
                   tagsPermissions.READ && tags
-                    ? tagsOptions.filter((t) => tags.includes(t.value))
+                    ? tagsOptions.filter((t) => tags.includes(t.value || ""))
                     : []
                 }
                 onChange={onChange}
