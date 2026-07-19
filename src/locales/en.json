@@ -749,7 +749,7 @@
       "update": {
         "inventory": {
           "defaultMinStock": {
-            "invalid": "The default minimum stock must be a number.",
+            "invalid": "The default minimum stock must be a valid integer.",
             "min": "The default minimum stock must be at least {{min}}."
           }
         },
@@ -834,7 +834,7 @@
         "items": {
           "invalidProductId": "One or more products have an invalid ID.",
           "quantity": {
-            "invalid": "Quantity must be a valid number.",
+            "invalid": "Quantity must be a valid integer.",
             "min": "Quantity must be at least {{min}}."
           },
           "minLength": "An order must contain at least one item.",
@@ -901,7 +901,7 @@
           "min": "Price must be at least {{min}}."
         },
         "quantity": {
-          "invalid": "Quantity must be a valid number.",
+          "invalid": "Quantity must be a valid integer.",
           "min": "Quantity must be at least {{min}}."
         },
         "discount": {
