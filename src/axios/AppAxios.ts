@@ -14,7 +14,8 @@ const AppAxios = axios.create({
 
 let refreshRequest: Promise<string> | null = null;
 
-const clearAuthStorage = () => {
+const onLogout = () => {
+  window.location.href = "/login";
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("persist:root");
@@ -47,22 +48,19 @@ AppAxios.interceptors.response.use(
       !originalRequest._retry &&
       originalRequest.url !== "/auth/refresh-token"
     ) {
-      const refreshToken = localStorage.getItem("refreshToken");
-
-      if (!refreshToken) {
-        console.error("Unauthorized.");
-        clearAuthStorage();
-        return Promise.reject(error);
-      }
-
       originalRequest._retry = true;
 
       try {
         if (!refreshRequest) {
           refreshRequest = AppAxios.post<{
             accessToken: string;
-            refreshToken: string;
-          }>("/auth/refresh-token", { refreshToken })
+          }>(
+            "/auth/refresh-token",
+            {},
+            {
+              withCredentials: true,
+            },
+          )
             .then(({ data }) => {
               localStorage.setItem("accessToken", data.accessToken);
               return data.accessToken;
@@ -75,21 +73,21 @@ AppAxios.interceptors.response.use(
         const accessToken = await refreshRequest;
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
         return AppAxios(originalRequest);
       } catch (refreshError) {
         console.error("Unauthorized.");
-        clearAuthStorage();
+        onLogout();
         return Promise.reject(refreshError);
       }
     }
 
     if (error.response?.status === 401) {
       console.error("Unauthorized.");
-      clearAuthStorage();
+      onLogout();
     }
 
     return Promise.reject(error);
   },
 );
-
 export default AppAxios;

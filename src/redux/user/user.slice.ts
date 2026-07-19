@@ -54,7 +54,7 @@ const signUpResendToken = AppThunk<void, SignUpResendTokenDto>(
 );
 
 const resetPassword = AppThunk<
-  Pick<LoginResponseDto, "accessToken" | "refreshToken">,
+  Pick<LoginResponseDto, "accessToken">,
   ResetPasswordDto
 >("/user/reset-password", UserAxios.resetPassword);
 
@@ -71,17 +71,10 @@ const forgotPasswordNew = AppThunk<void, ForgotPasswordNewDto>(
   UserAxios.forgotPasswordNew,
 );
 
-const logout = AppThunk<void, void>("/logout", async () => {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("persist:root");
-});
+const logout = AppThunk<void, void>("/logout", UserAxios.logout);
 
-const storeAuthTokens = (
-  tokens: Pick<LoginResponseDto, "accessToken" | "refreshToken">,
-) => {
+const storeAuthTokens = (tokens: Pick<LoginResponseDto, "accessToken">) => {
   localStorage.setItem("accessToken", tokens.accessToken);
-  localStorage.setItem("refreshToken", tokens.refreshToken);
 };
 
 export const userSlice = createSlice({

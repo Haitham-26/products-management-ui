@@ -37,21 +37,22 @@ export class UserAxios {
 
   // For logged in user
   static resetPassword(dto: ResetPasswordDto) {
-    return AppAxios.patch<
-      Pick<LoginResponseDto, "accessToken" | "refreshToken">
-    >("/user/reset-password", dto).then(({ data }) => data);
+    return AppAxios.patch<Pick<LoginResponseDto, "accessToken">>(
+      "/user/reset-password",
+      dto,
+    ).then(({ data }) => data);
   }
 
   static login(dto: LoginDto) {
-    return AppAxios.post<LoginResponseDto>("/auth/login", dto).then(
-      ({ data }) => data,
-    );
+    return AppAxios.post<LoginResponseDto>("/auth/login", dto, {
+      withCredentials: true,
+    }).then(({ data }) => data);
   }
 
   static googleLogin(dto: GoogleLoginDto) {
-    return AppAxios.post<LoginResponseDto>("/auth/google-login", dto).then(
-      ({ data }) => data,
-    );
+    return AppAxios.post<LoginResponseDto>("/auth/google-login", dto, {
+      withCredentials: true,
+    }).then(({ data }) => data);
   }
 
   static signUpEmail(dto: SignUpEmailDto) {
@@ -59,9 +60,9 @@ export class UserAxios {
   }
 
   static signUpToken(dto: SignUpTokenDto) {
-    return AppAxios.post<LoginResponseDto>("/auth/signup/token", dto).then(
-      ({ data }) => data,
-    );
+    return AppAxios.post<LoginResponseDto>("/auth/signup/token", dto, {
+      withCredentials: true,
+    }).then(({ data }) => data);
   }
   static signUpResendToken(dto: SignUpResendTokenDto) {
     return AppAxios.post("/auth/signup/token-resend", dto).then(
@@ -83,5 +84,19 @@ export class UserAxios {
     return AppAxios.post("/auth/forgot-password/new", dto).then(
       ({ data }) => data,
     );
+  }
+
+  static logout() {
+    return AppAxios.post(
+      "/auth/logout",
+      {},
+      {
+        withCredentials: true,
+      },
+    ).then(({ data }) => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("persist:root");
+      return data;
+    });
   }
 }

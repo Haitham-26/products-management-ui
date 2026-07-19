@@ -160,7 +160,7 @@ export const SecuritySettings: React.FC = () => {
               },
               validate: (value) =>
                 value === getValues("newPassword") ||
-                t("settings.pages.security.password.errors.password.mismatch"),
+                t("settings.pages.security.password.errors.mismatch"),
             }}
             render={({ field, fieldState: { error } }) => (
               <Input
