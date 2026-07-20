@@ -11,7 +11,6 @@ import { formatDate } from "../../../utils/Date";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 import type { Category } from "../../../model/category/types/Category";
 import type { Tag } from "../../../model/tag/types/Tag";
-import isNaN from "lodash/isNaN";
 import isFunction from "lodash/isFunction";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import styled from "styled-components";
@@ -203,12 +202,56 @@ export const createProductsTableColumns = ({
       }),
     },
     {
-      title: t("products.fields.basePrice"),
-      dataIndex: "price",
-      key: "base-price",
+      title: t("products.fields.purchasePrice"),
+      dataIndex: "purchasePrice",
+      key: "purchasePrice",
       width: 140,
       render: (value: number) => stringWithCurrencyCode(currency, value),
-      sorter: (a, b) => (b?.price || 0) - (a?.price || 0),
+      sorter: (a, b) => (b?.purchasePrice || 0) - (a?.purchasePrice || 0),
+    },
+    {
+      title: t("products.fields.salePrice"),
+      dataIndex: "salePrice",
+      key: "salePrice",
+      width: 140,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
+      sorter: (a, b) => (b?.salePrice || 0) - (a?.salePrice || 0),
+    },
+    {
+      title: t("products.fields.discount"),
+      dataIndex: "discount",
+      key: "discount",
+      width: 140,
+      render: (value: ProductDiscount) => {
+        if (!value) {
+          return "";
+        }
+
+        if (value.type === ProductDiscountTypes.PERCENTAGE) {
+          return `${value.value}%`;
+        }
+
+        return stringWithCurrencyCode(currency, value.value);
+      },
+    },
+    {
+      title: t("products.fields.finalSalePrice"),
+      dataIndex: "finalSalePrice",
+      key: "finalSalePrice",
+      width: 140,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
+      sorter: (a, b) => (b?.finalSalePrice || 0) - (a?.finalSalePrice || 0),
+    },
+    {
+      title: t("products.fields.profit"),
+      dataIndex: "profit",
+      key: "profit",
+      width: 140,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
+      sorter: (a, b) => (b?.profit || 0) - (a?.profit || 0),
+      onCell: (record) => ({
+        className: record.profit < 0 ? "negative-profit" : "positive-profit",
+      }),
     },
     {
       title: t("common.quantity"),
@@ -246,36 +289,6 @@ export const createProductsTableColumns = ({
         );
       },
       sorter: (a, b) => b.quantity - a.quantity,
-    },
-    {
-      title: t("products.fields.discount"),
-      dataIndex: "discount",
-      key: "discount",
-      width: 140,
-      render: (value: ProductDiscount) => {
-        if (!value) {
-          return "";
-        }
-
-        if (value.type === ProductDiscountTypes.PERCENTAGE) {
-          return `${value.value}%`;
-        }
-
-        return stringWithCurrencyCode(currency, value.value);
-      },
-    },
-    {
-      title: t("products.fields.finalPrice"),
-      key: "priceAfterDiscount",
-      width: 180,
-      render: (_: unknown, record: Product) => {
-        return record.priceAfterDiscount && !isNaN(record.priceAfterDiscount)
-          ? stringWithCurrencyCode(currency, record.priceAfterDiscount)
-          : stringWithCurrencyCode(currency, 0);
-      },
-      sorter: (a: Product, b: Product) => {
-        return (b?.priceAfterDiscount || 0) - (a?.priceAfterDiscount || 0);
-      },
     },
     {
       title: t("common.category"),

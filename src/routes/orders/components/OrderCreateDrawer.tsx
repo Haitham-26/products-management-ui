@@ -196,7 +196,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     return new Map(
       products
         .filter((p) => p.status !== ProductStatus.DRAFT)
-        .map((p) => [p._id, p.priceAfterDiscount]),
+        .map((p) => [p._id, p.finalSalePrice]),
     );
   }, [products]);
 

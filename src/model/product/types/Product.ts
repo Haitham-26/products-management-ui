@@ -10,10 +10,12 @@ export interface Product {
   name: string;
   description?: string;
   status: ProductStatus;
-  price: number;
   quantity: number;
+  purchasePrice: number;
+  salePrice: number;
   discount?: ProductDiscount;
-  priceAfterDiscount?: number;
+  finalSalePrice: number;
+  profit: number;
   category?: Partial<Category>;
   tags?: Partial<Tag>[];
   minStock?: number;

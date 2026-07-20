@@ -8,7 +8,8 @@ export interface UpdateProductDto extends GenericWithUserId {
   name?: Product["name"];
   description?: Product["description"];
   status?: Product["status"];
-  price?: Product["price"];
+  purchasePrice?: Product["purchasePrice"];
+  salePrice?: Product["salePrice"];
   quantity?: Product["quantity"];
   discount?: ProductDiscount;
   categoryId?: string;

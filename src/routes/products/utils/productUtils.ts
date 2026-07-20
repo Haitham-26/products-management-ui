@@ -2,6 +2,7 @@ import isNil from "lodash/isNil";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
+import isNaN from "lodash/isNaN";
 
 export const parseProductsFiltersFromParams = (
   params: URLSearchParams,
@@ -14,17 +15,29 @@ export const parseProductsFiltersFromParams = (
   discountType:
     (params.get("discountType") as ProductDiscount["type"]) || undefined,
   tagIds: params.getAll("tagIds"),
-  minBasePrice: params.get("minBasePrice")
-    ? Number(params.get("minBasePrice"))
+  minPurchasePrice: params.get("minPurchasePrice")
+    ? Number(params.get("minPurchasePrice"))
     : undefined,
-  maxBasePrice: params.get("maxBasePrice")
-    ? Number(params.get("maxBasePrice"))
+  maxPurchasePrice: params.get("maxPurchasePrice")
+    ? Number(params.get("maxPurchasePrice"))
     : undefined,
-  minFinalPrice: params.get("minFinalPrice")
+  minSalePrice: params.get("minSalePrice")
+    ? Number(params.get("minSalePrice"))
+    : undefined,
+  maxSalePrice: params.get("maxSalePrice")
+    ? Number(params.get("maxSalePrice"))
+    : undefined,
+  minFinalSalePrice: params.get("minFinalSalePrice")
     ? Number(params.get("minFinalPrice"))
     : undefined,
-  maxFinalPrice: params.get("maxFinalPrice")
+  maxFinalSalePrice: params.get("maxFinalSalePrice")
     ? Number(params.get("maxFinalPrice"))
+    : undefined,
+  minProfit: params.get("minProfit")
+    ? Number(params.get("minProfit"))
+    : undefined,
+  maxProfit: params.get("maxProfit")
+    ? Number(params.get("maxProfit"))
     : undefined,
   minQuantity: params.get("minQuantity")
     ? Number(params.get("minQuantity"))
@@ -61,10 +74,14 @@ export const buildProductsParams = (
   set("creationDate", filters.creationDate);
   set("categoryId", filters.categoryId);
   set("discountType", filters.discountType);
-  set("minBasePrice", filters.minBasePrice?.toString());
-  set("maxBasePrice", filters.maxBasePrice?.toString());
-  set("minFinalPrice", filters.minFinalPrice?.toString());
-  set("maxFinalPrice", filters.maxFinalPrice?.toString());
+  set("minPurchasePrice", filters.minPurchasePrice?.toString());
+  set("maxPurchasePrice", filters.maxPurchasePrice?.toString());
+  set("minSalePrice", filters.minSalePrice?.toString());
+  set("maxSalePrice", filters.maxSalePrice?.toString());
+  set("minFinalSalePrice", filters.minFinalSalePrice?.toString());
+  set("maxFinalSalePrice", filters.maxFinalSalePrice?.toString());
+  set("minProfit", filters.minProfit?.toString());
+  set("maxProfit", filters.maxProfit?.toString());
   set("minQuantity", filters.minQuantity?.toString());
   set("maxQuantity", filters.maxQuantity?.toString());
   set("page", filters.meta?.page?.toString() || "0");
@@ -85,47 +102,54 @@ export const countProductsActiveFilters = (
 ) => {
   let n = 0;
 
-  if (filters.creationDate) {
-    n++;
-  }
-  if (filters.showDraft) {
-    n++;
-  }
-  if (filters.categoryId) {
-    n++;
-  }
-  if (filters.discountType) {
-    n++;
-  }
-  if (filters.tagIds?.length) {
-    n++;
-  }
-  if (!isNil(filters.minBasePrice) || !isNil(filters.maxBasePrice)) {
-    n++;
-  }
-  if (!isNil(filters.minFinalPrice) || !isNil(filters.maxFinalPrice)) {
-    n++;
-  }
-  if (!isNil(filters.minQuantity) || !isNil(filters.maxQuantity)) {
-    n++;
-  }
-  if (filters.stockStatus) {
-    n++;
-  }
+  const applyConditions = [
+    filters.creationDate,
+    filters.showDraft,
+    filters.categoryId,
+    filters.discountType,
+    filters.tagIds?.length,
+    !isNil(filters.minPurchasePrice) || !isNil(filters.maxPurchasePrice),
+    !isNil(filters.minSalePrice) || !isNil(filters.maxSalePrice),
+    !isNil(filters.minFinalSalePrice) || !isNil(filters.maxFinalSalePrice),
+    !isNil(filters.minProfit) || !isNil(filters.maxProfit),
+    !isNil(filters.minQuantity) || !isNil(filters.maxQuantity),
+    filters.stockStatus,
+  ];
+
+  applyConditions.forEach((cond) => {
+    if (cond) {
+      n++;
+    }
+  });
+
   return n;
 };
 
 //
 
-export const calculateProductFinalPrice = (
-  price: number,
+export const calculateProductFinalSalePrice = (
+  salePrice: number,
   discount?: ProductDiscount,
 ) => {
   const discountValue = Number(discount?.value) || 0;
 
   if (discount?.type === ProductDiscountTypes.PERCENTAGE) {
-    return price - (price * discountValue) / 100;
+    return salePrice - (salePrice * discountValue) / 100;
   }
 
-  return price - discountValue;
+  const result = salePrice - discountValue;
+
+  return !isNaN(result) ? result : 0;
+};
+
+export const calculateProductProfit = (
+  salePrice: number,
+  purchasePrice: number,
+  discount?: ProductDiscount,
+) => {
+  const finalSalePrice = calculateProductFinalSalePrice(salePrice, discount);
+
+  const result = finalSalePrice - purchasePrice;
+
+  return !isNaN(result) ? result : 0;
 };

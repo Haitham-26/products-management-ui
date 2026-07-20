@@ -130,8 +130,10 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
   filters,
   applyFilter,
 }) => {
-  const [basePriceRange, setBasePriceRange] = useState<Range>(null);
-  const [finalPriceRange, setFinalPriceRange] = useState<Range>(null);
+  const [purchasePriceRange, setPurchasePriceRange] = useState<Range>(null);
+  const [salePriceRange, setSalePriceRange] = useState<Range>(null);
+  const [finalSalePriceRange, setFinalSalePriceRange] = useState<Range>(null);
+  const [profitRange, setProfitRange] = useState<Range>(null);
   const [quantityRange, setQuantityRange] = useState<Range>(null);
   const [searchCategoriesLoading, setSearchCategoriesLoading] = useState(false);
   const [searchTagsLoading, setSearchTagsLoading] = useState(false);
@@ -211,6 +213,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
+
+    setPurchasePriceRange(null);
+    setSalePriceRange(null);
+    setFinalSalePriceRange(null);
+    setProfitRange(null);
+    setQuantityRange(null);
   }, [setSearchParams]);
 
   return (
@@ -241,20 +249,20 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
 
         <PopoverSection>
           <PopoverLabel>
-            {t("products.fields.basePrice")} ({settings.currency})
+            {t("products.fields.purchasePrice")} ({settings.currency})
           </PopoverLabel>
           <RangeRow>
             <Input
               type="number"
               placeholder={t("common.min")}
-              value={basePriceRange?.min || ""}
+              value={purchasePriceRange?.min || ""}
               onChange={(e) => {
-                setBasePriceRange((prev) => ({
+                setPurchasePriceRange((prev) => ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
                 applyFilter(
-                  "minBasePrice",
+                  "minPurchasePrice",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -265,14 +273,14 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             <Input
               type="number"
               placeholder={t("common.max")}
-              value={basePriceRange?.max || ""}
+              value={purchasePriceRange?.max || ""}
               onChange={(e) => {
-                setBasePriceRange((prev) => ({
+                setPurchasePriceRange((prev) => ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
                 applyFilter(
-                  "maxBasePrice",
+                  "maxPurchasePrice",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -284,20 +292,20 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
 
         <PopoverSection>
           <PopoverLabel>
-            {t("products.fields.finalPrice")} ({settings.currency})
+            {t("products.fields.salePrice")} ({settings.currency})
           </PopoverLabel>
           <RangeRow>
             <Input
               type="number"
               placeholder={t("common.min")}
-              value={finalPriceRange?.min || ""}
+              value={salePriceRange?.min || ""}
               onChange={(e) => {
-                setFinalPriceRange((prev) => ({
+                setSalePriceRange((prev) => ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
                 applyFilter(
-                  "minFinalPrice",
+                  "minSalePrice",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -308,19 +316,103 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             <Input
               type="number"
               placeholder={t("common.max")}
-              value={finalPriceRange?.max || ""}
+              value={salePriceRange?.max || ""}
               onChange={(e) => {
-                setFinalPriceRange((prev) => ({
+                setSalePriceRange((prev) => ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
                 applyFilter(
-                  "maxFinalPrice",
+                  "maxSalePrice",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
               }}
               min={0}
+            />
+          </RangeRow>
+        </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>
+            {t("products.fields.finalSalePrice")} ({settings.currency})
+          </PopoverLabel>
+          <RangeRow>
+            <Input
+              type="number"
+              placeholder={t("common.min")}
+              value={finalSalePriceRange?.min || ""}
+              onChange={(e) => {
+                setFinalSalePriceRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
+                applyFilter(
+                  "minFinalSalePrice",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+              min={0}
+            />
+            <RangeDash>–</RangeDash>
+            <Input
+              type="number"
+              placeholder={t("common.max")}
+              value={finalSalePriceRange?.max || ""}
+              onChange={(e) => {
+                setFinalSalePriceRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
+                applyFilter(
+                  "maxFinalSalePrice",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+              min={0}
+            />
+          </RangeRow>
+        </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>
+            {t("products.fields.profit")} ({settings.currency})
+          </PopoverLabel>
+          <RangeRow>
+            <Input
+              type="number"
+              placeholder={t("common.min")}
+              value={profitRange?.min || ""}
+              onChange={(e) => {
+                setProfitRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
+                applyFilter(
+                  "minProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+            <RangeDash>–</RangeDash>
+            <Input
+              type="number"
+              placeholder={t("common.max")}
+              value={profitRange?.max || ""}
+              onChange={(e) => {
+                setProfitRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
+                applyFilter(
+                  "maxProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
             />
           </RangeRow>
         </PopoverSection>
