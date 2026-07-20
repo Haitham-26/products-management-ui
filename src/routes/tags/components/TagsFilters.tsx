@@ -113,6 +113,8 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
+
+    setUsageCountRange(null);
   }, [setSearchParams]);
 
   return (

@@ -56,21 +56,18 @@ export const buildOrdersParams = (
 export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
   let n = 0;
 
-  if (!isNil(filters.minTotalPrice) || !isNil(filters.maxTotalPrice)) {
-    n++;
-  }
+  const applyConditions = [
+    !isNil(filters.minTotalPrice) || !isNil(filters.maxTotalPrice),
+    filters.status,
+    !isNil(filters.creationDate),
+    filters.showArchived,
+  ];
 
-  if (filters.status) {
-    n++;
-  }
-
-  if (!isNil(filters.creationDate)) {
-    n++;
-  }
-
-  if (filters.showArchived) {
-    n++;
-  }
+  applyConditions.forEach((cond) => {
+    if (cond) {
+      n++;
+    }
+  });
 
   return n;
 };

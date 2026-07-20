@@ -117,6 +117,8 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
+
+    setTotalPriceRange(null);
   }, [setSearchParams]);
 
   return (

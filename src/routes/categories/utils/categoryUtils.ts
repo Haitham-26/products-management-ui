@@ -54,12 +54,16 @@ export const countCategoriesActiveFilters = (
 ) => {
   let n = 0;
 
-  if (filters.creationDate) {
-    n++;
-  }
-  if (!isNil(filters.minUsageCount) || !isNil(filters.maxUsageCount)) {
-    n++;
-  }
+  const applyConditions = [
+    !isNil(filters.creationDate),
+    !isNil(filters.minUsageCount) || !isNil(filters.maxUsageCount),
+  ];
+
+  applyConditions.forEach((cond) => {
+    if (cond) {
+      n++;
+    }
+  });
 
   return n;
 };
