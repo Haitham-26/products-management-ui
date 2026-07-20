@@ -27,7 +27,8 @@ const StyledP = styled.p<StyledTextProps>`
   color: ${({ theme, color }) => theme.colors[color || "textPrimary"]};
   font-weight: ${({ fontSize, fontWeight }) =>
     fontWeight || fontWeights[fontSize || "body"]};
-  line-height: ${({ fontSize }) => lineHeights[fontSize || "body"]};
+  line-height: ${({ fontSize, lineHeight }) =>
+    lineHeight || lineHeights[fontSize || "body"]};
   text-align: ${({ textAlign }) => textAlign};
   font-style: ${({ fontStyle }) => fontStyle};
 `;
@@ -38,6 +39,7 @@ type StyledTextProps = {
   color?: TextProps["color"];
   textAlign?: TextProps["textAlign"];
   fontStyle?: React.CSSProperties["fontStyle"];
+  lineHeight?: React.CSSProperties["lineHeight"];
 };
 
 type TextProps = {
@@ -48,6 +50,7 @@ type TextProps = {
   as?: React.ElementType;
   textAlign?: React.CSSProperties["textAlign"];
   fontStyle?: React.CSSProperties["fontStyle"];
+  lineHeight?: React.CSSProperties["lineHeight"];
 };
 
 export const Text: React.FC<TextProps> = ({ children, ...props }) => {

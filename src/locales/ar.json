@@ -361,7 +361,8 @@
       },
       "items": {
         "title": "محتويات الطلب",
-        "totalAmount": "إجمالي مبلغ الطلب: {{totalAmount}}"
+        "totalAmount": "إجمالي مبلغ الطلب: {{totalAmount}}",
+        "totalProfit": "إجمالي المربح من الطلب: {{totalProfit}}"
       },
       "note": {
         "title": "ملاحظات إضافية"

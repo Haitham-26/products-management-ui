@@ -74,7 +74,7 @@ const SectionLabel = styled.div`
 
 const ProductRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr 120px 44px;
+  grid-template-columns: 1fr 6rem 2rem;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
   border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
@@ -196,15 +196,29 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     return new Map(
       products
         .filter((p) => p.status !== ProductStatus.DRAFT)
-        .map((p) => [p._id, p.finalSalePrice]),
+        .map((p) => [
+          p._id,
+          {
+            finalSalePrice: p.finalSalePrice,
+            profit: p.finalSalePrice - p.purchasePrice,
+          },
+        ]),
     );
   }, [products]);
 
   const totalAmount = useMemo(() => {
     return watchedItems.reduce((total, item) => {
-      const productFinalPrice = productsMap.get(item.productId);
+      const product = productsMap.get(item.productId);
 
-      return total + (productFinalPrice || 0) * item.quantity;
+      return total + (product?.finalSalePrice || 0) * item.quantity;
+    }, 0);
+  }, [watchedItems, productsMap]);
+
+  const totalProfit = useMemo(() => {
+    return watchedItems.reduce((total, item) => {
+      const product = productsMap.get(item.productId);
+
+      return total + (product?.profit || 0) * item.quantity;
     }, 0);
   }, [watchedItems, productsMap]);
 
@@ -228,7 +242,14 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                 <ProductNameContainer>
                   <ProductMainImage url={product.mainImage?.secureUrl} />
 
-                  <span>{product.name}</span>
+                  <span>
+                    {product.name} (
+                    {stringWithCurrencyCode(
+                      settings.currency,
+                      product.finalSalePrice,
+                    )}
+                    )
+                  </span>
                 </ProductNameContainer>
 
                 {isOutOfStock ? (
@@ -259,10 +280,18 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           };
         });
     },
-    [products, watchedItems, t],
+    [products, watchedItems, t, settings.currency],
   );
 
   const productsPermissions = checkPermissions(user, "products");
+
+  const isAddProductButtonDisabled = useMemo(() => {
+    return (
+      loading ||
+      fields.length === products.filter((p) => p.quantity > 0).length ||
+      !productsPermissions.READ
+    );
+  }, [fields.length, loading, products, productsPermissions.READ]);
 
   const localOnClose = () => {
     reset();
@@ -577,17 +606,27 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                 ),
               })}
             </Text>
+
+            <Text
+              color="success"
+              fontSize="small"
+              fontWeight="bold"
+              lineHeight={"2.5"}
+            >
+              {t("orders.general.items.totalProfit", {
+                totalProfit: stringWithCurrencyCode(
+                  settings.currency,
+                  totalProfit,
+                ),
+              })}
+            </Text>
           </div>
 
           <AddItemButton
             onClick={() => append({ productId: "", quantity: 1 })}
             icon={faPlus}
             variant="secondary"
-            disabled={
-              loading ||
-              fields.length === products.length ||
-              !productsPermissions.READ
-            }
+            disabled={isAddProductButtonDisabled}
           >
             {t("orders.create.items.action")}
           </AddItemButton>

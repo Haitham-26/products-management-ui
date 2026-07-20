@@ -361,7 +361,8 @@
       },
       "items": {
         "title": "Order Items",
-        "totalAmount": "Orders Total Amount: {{totalAmount}}"
+        "totalAmount": "Total Order Amount: {{totalAmount}}",
+        "totalProfit": "Total Order Profit: {{totalProfit}}"
       },
       "note": {
         "title": "Additional Notes"
