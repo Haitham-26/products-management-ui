@@ -136,6 +136,18 @@ const Hr = styled.hr`
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
+const SummaryBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const ProductNameContainer = styled.div`
   display: flex;
   align-items: center;
@@ -200,7 +212,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           p._id,
           {
             finalSalePrice: p.finalSalePrice,
-            profit: p.finalSalePrice - p.purchasePrice,
+            profit: p.profit,
           },
         ]),
     );
@@ -598,28 +610,28 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           <div>
             <Hr />
 
-            <Text color="textSecondary" fontSize="small" fontWeight="bold">
-              {t("orders.general.items.totalAmount", {
-                totalAmount: stringWithCurrencyCode(
-                  settings.currency,
-                  totalAmount,
-                ),
-              })}
-            </Text>
+            <SummaryBox>
+              <SummaryRow>
+                <Text color="textSecondary">
+                  {t("orders.general.items.totalAmount")}
+                </Text>
+                <Text fontWeight="600">
+                  {stringWithCurrencyCode(settings.currency, totalAmount)}
+                </Text>
+              </SummaryRow>
 
-            <Text
-              color="success"
-              fontSize="small"
-              fontWeight="bold"
-              lineHeight={"2.5"}
-            >
-              {t("orders.general.items.totalProfit", {
-                totalProfit: stringWithCurrencyCode(
-                  settings.currency,
-                  totalProfit,
-                ),
-              })}
-            </Text>
+              <SummaryRow>
+                <Text color="textSecondary">
+                  {t("orders.general.items.totalProfit")}
+                </Text>
+                <Text
+                  color={totalProfit > 0 ? "success" : "error"}
+                  fontWeight="600"
+                >
+                  {stringWithCurrencyCode(settings.currency, totalProfit)}
+                </Text>
+              </SummaryRow>
+            </SummaryBox>
           </div>
 
           <AddItemButton

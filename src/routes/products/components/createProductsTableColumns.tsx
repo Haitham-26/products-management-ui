@@ -250,7 +250,7 @@ export const createProductsTableColumns = ({
       render: (value: number) => stringWithCurrencyCode(currency, value),
       sorter: (a, b) => (b?.profit || 0) - (a?.profit || 0),
       onCell: (record) => ({
-        className: record.profit < 0 ? "negative-profit" : "positive-profit",
+        className: record.profit > 0 ? "positive-profit" : "negative-profit",
       }),
     },
     {

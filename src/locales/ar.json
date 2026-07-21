@@ -267,7 +267,8 @@
         "archived": "مؤرشف",
         "unarchived": "غير مؤرشف"
       },
-      "totalAmount": "إجمالي المبلغ"
+      "totalAmount": "إجمالي المبلغ",
+      "totalProfit": "إجمالي الربح"
     },
     "filters": {
       "showArchived": "اظهار المؤرشفات"
@@ -361,8 +362,12 @@
       },
       "items": {
         "title": "محتويات الطلب",
-        "totalAmount": "إجمالي مبلغ الطلب: {{totalAmount}}",
-        "totalProfit": "إجمالي المربح من الطلب: {{totalProfit}}"
+        "totalAmount": "إجمالي مبلغ الطلب",
+        "totalProfit": "إجمالي المربح من الطلب",
+        "item": {
+          "price": "{{price}} للقطعة الواحدة (بعد خصم {{discount}})",
+          "profit": "يشمل ربحًا قدره {{totalProfit}}"
+        }
       },
       "note": {
         "title": "ملاحظات إضافية"

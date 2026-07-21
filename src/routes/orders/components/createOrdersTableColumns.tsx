@@ -103,6 +103,37 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
+      title: t("orders.fields.totalAmount"),
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      width: 120,
+      ellipsis: true,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
+      sorter: (a, b) => a.totalAmount - b.totalAmount,
+    },
+    {
+      title: t("orders.fields.totalProfit"),
+      dataIndex: "totalProfit",
+      key: "totalProfit",
+      width: 120,
+      ellipsis: true,
+      render: (value: number) => stringWithCurrencyCode(currency, value),
+      sorter: (a, b) => a.totalProfit - b.totalProfit,
+      onCell: (record) => ({
+        className:
+          record.totalProfit > 0 ? "positive-profit" : "negative-profit",
+      }),
+    },
+    {
+      title: t("common.products"),
+      dataIndex: "items",
+      key: "items",
+      width: 220,
+      ellipsis: true,
+      render: (items: OrderItem[]) =>
+        items.map((i) => i.productName).join(", "),
+    },
+    {
       title: t("orders.fields.customerName"),
       dataIndex: "customerName",
       key: "customerName",
@@ -153,24 +184,6 @@ export const createOrdersTableColumns = ({
       onCell: (record) => ({
         className: record.isArchived ? "archived" : "visible",
       }),
-    },
-    {
-      title: t("orders.fields.totalAmount"),
-      dataIndex: "totalAmount",
-      key: "totalAmount",
-      width: 120,
-      ellipsis: true,
-      render: (value: number) => stringWithCurrencyCode(currency, value),
-      sorter: (a, b) => (a?.totalAmount || 0) - (b?.totalAmount || 0),
-    },
-    {
-      title: t("common.products"),
-      dataIndex: "items",
-      key: "items",
-      width: 220,
-      ellipsis: true,
-      render: (items: OrderItem[]) =>
-        items.map((i) => i.productName).join(", "),
     },
     {
       title: t("common.note"),

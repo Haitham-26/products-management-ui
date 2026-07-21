@@ -267,7 +267,8 @@
         "archived": "Archived",
         "unarchived": "Not Archived"
       },
-      "totalAmount": "Total Amount"
+      "totalAmount": "Total Amount",
+      "totalProfit": "Total Profit"
     },
     "filters": {
       "showArchived": "Show Archived"
@@ -361,8 +362,12 @@
       },
       "items": {
         "title": "Order Items",
-        "totalAmount": "Total Order Amount: {{totalAmount}}",
-        "totalProfit": "Total Order Profit: {{totalProfit}}"
+        "totalAmount": "Total Order Amount",
+        "totalProfit": "Total Order Profit",
+        "item": {
+          "price": "{{price}} per unit (after {{discount}} discount)",
+          "profit": "Profit included: {{totalProfit}}"
+        }
       },
       "note": {
         "title": "Additional Notes"
