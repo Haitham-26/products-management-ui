@@ -10,14 +10,30 @@ import { userActions } from "./redux/user/user.slice";
 import userSliceSelectors from "./redux/user/user.selector";
 import { UserRoles } from "./model/user/types/UserRoles.enum";
 import { organizationActions } from "./redux/organization/organization.slice";
+import { Breakpoints } from "./theme/Breakpoints";
 
 const Container = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-inline: calc(${({ theme }) => theme.spacing.lg} * 1.5);
+  flex-direction: column;
+  flex-grow: 1;
 
   & > div:nth-child(2) {
     width: 100%;
+    order: 0;
+  }
+
+  @media (max-width: ${Breakpoints.MD}) {
+    & > div:nth-child(2) {
+      padding-bottom: ${({ theme }) => `calc(${theme.spacing.xl} * 2)`};
+    }
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    flex-direction: row;
+    margin-inline: calc(${({ theme }) => theme.spacing.lg} * 1.5);
+    gap: ${({ theme }) => theme.spacing.lg};
+    flex-grow: 0;
+    order: 1;
   }
 `;
 

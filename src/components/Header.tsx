@@ -29,6 +29,7 @@ import { UserAvatar } from "./UserAvatar";
 import { appRoutes } from "../utils/appRoutes";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import { Breakpoints } from "../theme/Breakpoints";
 
 const getDropdownItems = (
   navigate: NavigateFunction,
@@ -84,14 +85,26 @@ const LogoutButton = styled(Button)`
 const Wrapper = styled.div`
   position: sticky;
   top: 0;
-  height: 7.5rem;
-  padding: ${({ theme: { spacing } }) =>
-    `${spacing.lg} calc(${spacing.lg} * 1.5)`};
   z-index: 100;
+
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: ${Breakpoints.MD}) {
+    background: ${({ theme }) => theme.colors.surface};
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    height: 7.5rem;
+    margin-bottom: 0;
+    padding: ${({ theme: { spacing } }) =>
+      `${spacing.lg} calc(${spacing.lg} * 1.5)`};
+  }
 `;
 
 const LogoLink = styled(Link)`
-  width: calc(250px - ${({ theme: { spacing } }) => spacing.lg} * 3);
+  max-width: calc(250px - ${({ theme: { spacing } }) => spacing.lg} * 3);
   display: block;
 `;
 
@@ -128,6 +141,7 @@ const IconButton = styled(Button)`
 const EndContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: ${({ theme: { spacing } }) => spacing.md};
 `;
 
@@ -148,13 +162,13 @@ export const Header: React.FC = () => {
     <Wrapper>
       <Container>
         <Row justify="space-between" align="middle" gutter={16}>
-          <Column>
+          <Column xs={{ span: 12 }} md={{ span: 8 }}>
             <LogoLink to="/">
               <Image src={Images.Logo} alt="Inventix" />
             </LogoLink>
           </Column>
 
-          <Column>
+          <Column xs={{ span: 12 }} md={{ span: 16 }}>
             <EndContainer>
               <Link to={appRoutes.settings.path}>
                 <Icon icon={appRoutes.settings.icon} size="xl" />

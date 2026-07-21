@@ -7,15 +7,34 @@ import { Container } from "./Container";
 import { Icon } from "./Icon";
 import { appRoutes } from "../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { Breakpoints } from "../theme/Breakpoints";
 
 const StyledContainer = styled(Container)`
-  width: 250px;
   /* 7.5rem = header's height */
-  height: ${({ theme }) => `calc(100vh - 7.5rem - ${theme.spacing.lg})`};
-  top: 7.5rem;
   display: flex;
   flex-direction: column;
-  position: sticky;
+
+  background: ${({ theme }) => theme.colors.surface};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+
+  order: 1;
+
+  position: fixed;
+  z-index: 3;
+  bottom: 0;
+  width: 100%;
+
+  @media (max-width: ${Breakpoints.MD}) {
+    padding: 0;
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    width: 250px;
+    height: ${({ theme }) => `calc(100vh - 7.5rem - ${theme.spacing.lg})`};
+    top: 7.5rem;
+    position: sticky;
+    order: 0;
+  }
 `;
 
 const MenuStyle = createGlobalStyle`
@@ -25,6 +44,32 @@ const MenuStyle = createGlobalStyle`
 
   .ant-menu-item * {
     transition: all 0s ease !important; 
+  }
+
+  
+  @media (max-width: ${Breakpoints.MD}) {
+    .ant-menu {
+      display: flex;
+    }
+
+    .ant-menu-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: ${({ theme: { spacing } }) => spacing.sm};
+      margin: 0 !important;
+      padding: ${({ theme: { spacing } }) => spacing.sm} !important;
+      border-radius: 0 !important;
+      height: 100% !important;
+    }
+
+    .ant-menu-title-content {
+      overflow: visible !important;
+      margin: 0 !important;
+      font-size: ${({ theme: { typography } }) => typography.small} !important;
+      line-height: normal ;
+    }
   }
   `;
 
@@ -57,10 +102,11 @@ export const SideMenu: React.FC = () => {
   return (
     <StyledContainer>
       <StyledMenu
-        mode="inline"
+        mode={"inline"}
         theme="light"
         items={items}
         selectedKeys={[location.pathname]}
+        overflowedIndicator={null}
       />
       <MenuStyle />
     </StyledContainer>

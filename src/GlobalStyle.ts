@@ -51,6 +51,7 @@ const GlobalStyle = createGlobalStyle`
     font-display: swap;
   }
 
+
   body {
     font-family: "Inter", "IBM Plex Sans Arabic", sans-serif;
   }
@@ -119,6 +120,13 @@ const GlobalStyle = createGlobalStyle`
   transform: scale(1.05);
 }
 
+@media (max-width: 768px) {
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
 `;
 
 export default GlobalStyle;

@@ -163,8 +163,6 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
   onClose,
   product,
 }) => {
-  console.log(product);
-
   const { t } = useTranslation();
 
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
