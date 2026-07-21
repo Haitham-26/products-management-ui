@@ -365,7 +365,8 @@
         "totalAmount": "Total Order Amount",
         "totalProfit": "Total Order Profit",
         "item": {
-          "price": "{{price}} per unit (after {{discount}} discount)",
+          "price": "{{price}} per unit",
+          "priceWithDiscount": "{{price}} per unit (after {{discount}} discount)",
           "profit": "Profit included: {{totalProfit}}"
         }
       },

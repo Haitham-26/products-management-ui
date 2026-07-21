@@ -365,7 +365,8 @@
         "totalAmount": "إجمالي مبلغ الطلب",
         "totalProfit": "إجمالي المربح من الطلب",
         "item": {
-          "price": "{{price}} للقطعة الواحدة (بعد خصم {{discount}})",
+          "price": "{{price}} للقطعة الواحدة",
+          "priceWithDiscount": "{{price}} للقطعة الواحدة (بعد خصم {{discount}})",
           "profit": "يشمل ربحًا قدره {{totalProfit}}"
         }
       },

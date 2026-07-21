@@ -329,7 +329,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
                 {t("products.fields.profit")}
               </Text>
-              <Text color="success">
+              <Text color={product.profit > 0 ? "success" : "error"}>
                 {stringWithCurrencyCode(settings.currency, product.profit)}
               </Text>
             </DataItem>

@@ -106,10 +106,13 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
   activeFiltersCount,
   applyFilter,
 }) => {
-  const [usageCountRange, setUsageCountRange] = useState<Range>(null);
+  const [usageCountRange, setUsageCountRange] = useState<Range>({
+    min: filters.minUsageCount ?? 0,
+    max: filters.maxUsageCount ?? 0,
+  });
 
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });

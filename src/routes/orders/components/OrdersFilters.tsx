@@ -114,11 +114,17 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   filters,
   applyFilter,
 }) => {
-  const [totalAmountRange, setTotalAmountRange] = useState<Range>(null);
-  const [totalProfitRange, setTotalProfitRange] = useState<Range>(null);
+  const [totalAmountRange, setTotalAmountRange] = useState<Range>({
+    min: filters.minTotalAmount ?? 0,
+    max: filters.maxTotalAmount ?? 0,
+  });
+  const [totalProfitRange, setTotalProfitRange] = useState<Range>({
+    min: filters.minTotalProfit ?? 0,
+    max: filters.maxTotalProfit ?? 0,
+  });
 
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });

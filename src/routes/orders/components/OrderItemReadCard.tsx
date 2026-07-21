@@ -86,20 +86,22 @@ export const OrderItemReadCard: React.FC<OrderItemReadCardProps> = ({
         <Text fontWeight="600">{item.productName}</Text>
 
         <Text color="textSecondary" fontSize="small">
-          {t("orders.general.items.item.price", {
-            quantity: item.quantity,
-            price: stringWithCurrencyCode(
-              settings.currency,
-              item.finalSalePriceAtPurchase,
-            ),
-            discount:
-              item?.discountAtPurchase?.type === "PERCENTAGE"
-                ? `${item.discountAtPurchase.value}%`
-                : stringWithCurrencyCode(
-                    settings.currency,
-                    item?.discountAtPurchase?.value,
-                  ),
-          })}
+          {t(
+            `orders.general.items.item.price${item.discountAtPurchase?.value ? "WithDiscount" : ""}`,
+            {
+              price: stringWithCurrencyCode(
+                settings.currency,
+                item.finalSalePriceAtPurchase,
+              ),
+              discount:
+                item?.discountAtPurchase?.type === "PERCENTAGE"
+                  ? `${item.discountAtPurchase.value}%`
+                  : stringWithCurrencyCode(
+                      settings.currency,
+                      item?.discountAtPurchase?.value,
+                    ),
+            },
+          )}
         </Text>
       </ItemMain>
 

@@ -130,11 +130,27 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
   filters,
   applyFilter,
 }) => {
-  const [purchasePriceRange, setPurchasePriceRange] = useState<Range>(null);
-  const [salePriceRange, setSalePriceRange] = useState<Range>(null);
-  const [finalSalePriceRange, setFinalSalePriceRange] = useState<Range>(null);
-  const [profitRange, setProfitRange] = useState<Range>(null);
-  const [quantityRange, setQuantityRange] = useState<Range>(null);
+  const [purchasePriceRange, setPurchasePriceRange] = useState<Range>({
+    min: filters.minPurchasePrice ?? 0,
+    max: filters.maxPurchasePrice ?? 0,
+  });
+  const [salePriceRange, setSalePriceRange] = useState<Range>({
+    min: filters.minSalePrice ?? 0,
+    max: filters.maxSalePrice ?? 0,
+  });
+  const [finalSalePriceRange, setFinalSalePriceRange] = useState<Range>({
+    min: filters.minFinalSalePrice ?? 0,
+    max: filters.maxFinalSalePrice ?? 0,
+  });
+  const [profitRange, setProfitRange] = useState<Range>({
+    min: filters.minProfit ?? 0,
+    max: filters.maxProfit ?? 0,
+  });
+  const [quantityRange, setQuantityRange] = useState<Range>({
+    min: filters.minQuantity ?? 0,
+    max: filters.maxQuantity ?? 0,
+  });
+
   const [searchCategoriesLoading, setSearchCategoriesLoading] = useState(false);
   const [searchTagsLoading, setSearchTagsLoading] = useState(false);
 
@@ -145,7 +161,7 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
 
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchCategories = useCallback(

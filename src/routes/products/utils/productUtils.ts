@@ -28,10 +28,10 @@ export const parseProductsFiltersFromParams = (
     ? Number(params.get("maxSalePrice"))
     : undefined,
   minFinalSalePrice: params.get("minFinalSalePrice")
-    ? Number(params.get("minFinalPrice"))
+    ? Number(params.get("minFinalSalePrice"))
     : undefined,
   maxFinalSalePrice: params.get("maxFinalSalePrice")
-    ? Number(params.get("maxFinalPrice"))
+    ? Number(params.get("maxFinalSalePrice"))
     : undefined,
   minProfit: params.get("minProfit")
     ? Number(params.get("minProfit"))
@@ -128,28 +128,30 @@ export const countProductsActiveFilters = (
 //
 
 export const calculateProductFinalSalePrice = (
-  salePrice: number,
+  salePrice?: number | string,
   discount?: ProductDiscount,
 ) => {
   const discountValue = Number(discount?.value) || 0;
 
+  const numericSalePrice = Number(salePrice || 0);
+
   if (discount?.type === ProductDiscountTypes.PERCENTAGE) {
-    return salePrice - (salePrice * discountValue) / 100;
+    return numericSalePrice - (numericSalePrice * discountValue) / 100;
   }
 
-  const result = salePrice - discountValue;
+  const result = numericSalePrice - discountValue;
 
   return !isNaN(result) ? result : 0;
 };
 
 export const calculateProductProfit = (
-  salePrice: number,
-  purchasePrice: number,
+  salePrice?: number | string,
+  purchasePrice?: number | string,
   discount?: ProductDiscount,
 ) => {
   const finalSalePrice = calculateProductFinalSalePrice(salePrice, discount);
 
-  const result = finalSalePrice - purchasePrice;
+  const result = finalSalePrice - Number(purchasePrice || 0);
 
   return !isNaN(result) ? result : 0;
 };
