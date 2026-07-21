@@ -40,6 +40,7 @@ export const theme = {
     md: "0.625rem",
     lg: "1rem",
     full: "50rem",
+    circle: "50%",
   },
   typography: {
     title: "clamp(1.375rem, 1.25rem + 0.6vw, 1.75rem)",

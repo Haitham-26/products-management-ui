@@ -3,16 +3,23 @@ import styled from "styled-components";
 import { Image } from "../../../components/Image";
 import { Icon } from "../../../components/Icon";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
+import type { ThemeType } from "../../../theme/theme";
 
 type ProductMainImageProps = {
   url?: string;
   width?: React.CSSProperties["width"];
+  borderRadius?: keyof ThemeType["radius"];
 };
 
-const StyledImage = styled(Image)<Pick<ProductMainImageProps, "width">>`
+const StyledImage = styled(Image)<
+  Pick<ProductMainImageProps, "width" | "borderRadius">
+>`
   width: ${({ width }) => width} !important;
   height: ${({ width }) => width} !important;
-  border-radius: ${({ theme }) => `calc(${theme.radius.sm} * 0.75)`};
+  border-radius: ${({ theme, borderRadius }) =>
+    borderRadius
+      ? theme.radius[borderRadius as keyof ThemeType["radius"]]
+      : `calc(${theme.radius.sm} * 0.75)`};
   border: ${({ theme }) => `1px solid ${theme.colors.textSecondary}5a`};
 
   .ant-image-img {
@@ -23,7 +30,9 @@ const StyledImage = styled(Image)<Pick<ProductMainImageProps, "width">>`
   }
 `;
 
-const Placeholder = styled.div<Pick<ProductMainImageProps, "width">>`
+const Placeholder = styled.div<
+  Pick<ProductMainImageProps, "width" | "borderRadius">
+>`
   width: ${({ width }) => width};
   height: ${({ width }) => width};
   display: flex;
@@ -31,7 +40,10 @@ const Placeholder = styled.div<Pick<ProductMainImageProps, "width">>`
   justify-content: center;
   color: ${({ theme }) => theme.colors.textSecondary}5a;
   border: ${({ theme }) => `1px solid ${theme.colors.textSecondary}5a`};
-  border-radius: ${({ theme }) => `calc(${theme.radius.sm} * 0.75)`};
+  border-radius: ${({ theme, borderRadius }) =>
+    borderRadius
+      ? theme.radius[borderRadius as keyof ThemeType["radius"]]
+      : `calc(${theme.radius.sm} * 0.75)`};
 
   svg {
     font-size: ${({ width }) => `calc(${width} * 0.4)`};
@@ -41,13 +53,21 @@ const Placeholder = styled.div<Pick<ProductMainImageProps, "width">>`
 export const ProductMainImage: React.FC<ProductMainImageProps> = ({
   url,
   width = "1.5rem",
+  borderRadius,
 }) => {
   if (url) {
-    return <StyledImage src={url} width={width} loading="lazy" />;
+    return (
+      <StyledImage
+        src={url}
+        width={width}
+        borderRadius={borderRadius}
+        loading="lazy"
+      />
+    );
   }
 
   return (
-    <Placeholder width={width}>
+    <Placeholder width={width} borderRadius={borderRadius}>
       <Icon icon={faImage} />
     </Placeholder>
   );

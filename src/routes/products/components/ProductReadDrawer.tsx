@@ -163,6 +163,8 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
   onClose,
   product,
 }) => {
+  console.log(product);
+
   const { t } = useTranslation();
 
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
@@ -187,17 +189,6 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
     }
 
     return stringWithCurrencyCode(settings.currency, product.discount.value);
-  };
-
-  const calculateFinalPrice = () => {
-    const price = product.price || 0;
-    const discountValue = product.discount?.value || 0;
-
-    if (product.discount?.type === ProductDiscountTypes.PERCENTAGE) {
-      return price - (price * discountValue) / 100;
-    }
-
-    return price - discountValue;
   };
 
   return (
@@ -296,10 +287,21 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
           <DataGrid>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("products.fields.basePrice")}
+                {t("products.fields.purchasePrice")}
               </Text>
               <Text>
-                {stringWithCurrencyCode(settings.currency, product.price)}
+                {stringWithCurrencyCode(
+                  settings.currency,
+                  product.purchasePrice,
+                )}
+              </Text>
+            </DataItem>
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("products.fields.salePrice")}
+              </Text>
+              <Text>
+                {stringWithCurrencyCode(settings.currency, product.salePrice)}
               </Text>
             </DataItem>
             <DataItem>
@@ -310,17 +312,28 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
                 {formatDiscount()}
               </Text>
             </DataItem>
+
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("products.fields.finalPrice")}
+                {t("products.fields.finalSalePrice")}
               </Text>
-              <Text color="success">
+              <Text>
                 {stringWithCurrencyCode(
                   settings.currency,
-                  calculateFinalPrice(),
+                  product.finalSalePrice,
                 )}
               </Text>
             </DataItem>
+
+            <DataItem>
+              <Text fontSize="small" color="textSecondary" fontWeight="bold">
+                {t("products.fields.profit")}
+              </Text>
+              <Text color={product.profit > 0 ? "success" : "error"}>
+                {stringWithCurrencyCode(settings.currency, product.profit)}
+              </Text>
+            </DataItem>
+
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
                 {t("products.read.availableStock")}

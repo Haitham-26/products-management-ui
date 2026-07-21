@@ -11,10 +11,14 @@ export interface GetProductsDto extends GenericWithUserId {
   keyword?: string;
   showDraft?: boolean;
   creationDate?: CreationDateFilters;
-  minBasePrice?: number;
-  maxBasePrice?: number;
-  minFinalPrice?: number;
-  maxFinalPrice?: number;
+  minPurchasePrice?: number;
+  maxPurchasePrice?: number;
+  minSalePrice?: number;
+  maxSalePrice?: number;
+  minFinalSalePrice?: number;
+  maxFinalSalePrice?: number;
+  minProfit?: number;
+  maxProfit?: number;
   minQuantity?: number;
   maxQuantity?: number;
   discountType?: ProductDiscount["type"];

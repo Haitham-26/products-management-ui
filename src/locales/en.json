@@ -199,7 +199,14 @@
       },
       "price": {
         "title": "Pricing",
-        "basePrice": "Base Price",
+        "purchasePrice": {
+          "title": "Purchase Price",
+          "explanation": "The amount you paid to acquire the product from your supplier. It can include taxes and other acquisition costs. Your profit is the difference between the final sale price (the sale price after discounts are applied) and the purchase price: Final Sale Price − Purchase Price."
+        },
+        "salePrice": {
+          "title": "Sale Price",
+          "explanation": "The product's selling price before any discounts are applied. The final sale price is determined after applying the selected discount to this price."
+        },
         "discount": {
           "type": {
             "title": "Discount Type"
@@ -210,7 +217,8 @@
           },
           "value": "Discount Value"
         },
-        "finalPrice": "Final price per unit: "
+        "finalSalePrice": "Final sale price per unit: ",
+        "profit": "Profit per unit: "
       },
       "taxonomy": {
         "title": "Category & Tags",
@@ -228,9 +236,11 @@
       }
     },
     "fields": {
-      "basePrice": "Base Price",
-      "finalPrice": "Final Price",
-      "discount": "Discount"
+      "purchasePrice": "Purchase Price",
+      "salePrice": "Sale Price",
+      "finalSalePrice": "Final Sale Price",
+      "discount": "Discount",
+      "profit": "Profit"
     },
     "filters": {
       "showDraft": "Show Drafts"
@@ -257,7 +267,8 @@
         "archived": "Archived",
         "unarchived": "Not Archived"
       },
-      "totalAmount": "Total Amount"
+      "totalAmount": "Total Amount",
+      "totalProfit": "Total Profit"
     },
     "filters": {
       "showArchived": "Show Archived"
@@ -351,7 +362,13 @@
       },
       "items": {
         "title": "Order Items",
-        "totalAmount": "Orders Total Amount: {{totalAmount}}"
+        "totalAmount": "Total Order Amount",
+        "totalProfit": "Total Order Profit",
+        "item": {
+          "price": "{{price}} per unit",
+          "priceWithDiscount": "{{price}} per unit (after {{discount}} discount)",
+          "profit": "Profit included: {{totalProfit}}"
+        }
       },
       "note": {
         "title": "Additional Notes"
@@ -896,9 +913,13 @@
           "invalid": "Description must be a valid string.",
           "long": "Description cannot exceed {{max}} characters."
         },
-        "price": {
-          "invalid": "Price must be a valid number.",
-          "min": "Price must be at least {{min}}."
+        "purchasePrice": {
+          "invalid": "Purchase price must be a valid number.",
+          "min": "Purchase price must be at least {{min}}."
+        },
+        "salePrice": {
+          "invalid": "Sale price must be a valid number.",
+          "min": "Sale price must be at least {{min}}."
         },
         "quantity": {
           "invalid": "Quantity must be a valid integer.",

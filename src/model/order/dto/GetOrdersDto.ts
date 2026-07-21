@@ -7,8 +7,10 @@ export interface GetOrdersDto extends GenericWithUserId {
   meta?: PaginationMeta;
   keyword?: string;
   creationDate?: CreationDateFilters;
-  minTotalPrice?: number;
-  maxTotalPrice?: number;
+  minTotalAmount?: number;
+  maxTotalAmount?: number;
+  minTotalProfit?: number;
+  maxTotalProfit?: number;
   status?: OrderStatus;
   showArchived?: boolean;
 }

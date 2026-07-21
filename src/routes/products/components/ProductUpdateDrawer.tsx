@@ -21,7 +21,8 @@ import tagSliceSelectors from "../../../redux/tag/tags.selector";
 import { useSearchParams } from "react-router-dom";
 import {
   buildProductsParams,
-  calculateProductFinalPrice,
+  calculateProductFinalSalePrice,
+  calculateProductProfit,
 } from "../utils/productUtils";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
@@ -43,6 +44,8 @@ import createUploadFileFromImageUrl from "../../../utils/createUploadFileFromIma
 import { isArray } from "lodash";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import type { ThemeType } from "../../../theme/theme";
+import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -90,17 +93,34 @@ const TwoInputsWrapper = styled.div`
 
 const PriceBadge = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ theme }) => theme.colors.success}10;
   border: 1px dashed ${({ theme }) => theme.colors.success};
   border-radius: ${({ theme }) => theme.radius.md};
 
-  b {
-    color: ${({ theme }) => theme.colors.success};
-    font-size: ${({ theme }) => theme.typography.subtitle};
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: ${({ theme }) => theme.spacing.xs};
+
+    &:first-child {
+      border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+      padding-bottom: ${({ theme }) => theme.spacing.md};
+      margin-bottom: ${({ theme }) => theme.spacing.md};
+    }
   }
+
+  span {
+    font-size: ${({ theme }) => theme.typography.body};
+  }
+`;
+
+const PriceBadgeBold = styled.b<{ color: keyof ThemeType["colors"] }>`
+  color: ${({ theme, color }) => theme.colors[color]};
+  font-size: ${({ theme }) => theme.typography.body};
 `;
 
 const ImagesGrid = styled.div`
@@ -182,10 +202,18 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
   const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
 
-  const [discountValue, discountType, price, mainImage, galleryImages] = watch([
+  const [
+    discountValue,
+    discountType,
+    purchasePrice,
+    salePrice,
+    mainImage,
+    galleryImages,
+  ] = watch([
     "discount.value",
     "discount.type",
-    "price",
+    "purchasePrice",
+    "salePrice",
     "mainImage",
     "galleryImages",
   ]);
@@ -215,12 +243,19 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     }));
   }, [tags, product?.tags]);
 
-  const finalPrice = useMemo(() => {
-    return calculateProductFinalPrice(price || 0, {
-      type: discountType as ProductDiscountTypes,
+  const finalSalePrice = useMemo(() => {
+    return calculateProductFinalSalePrice(salePrice, {
+      type: discountType as ProductDiscount["type"],
       value: discountValue || 0,
     });
-  }, [price, discountType, discountValue]);
+  }, [salePrice, discountType, discountValue]);
+
+  const profit = useMemo(() => {
+    return calculateProductProfit(salePrice, purchasePrice, {
+      type: discountType as ProductDiscount["type"],
+      value: discountValue || 0,
+    });
+  }, [discountType, discountValue, salePrice, purchasePrice]);
 
   const taxonomyHintTransKey = useMemo(() => {
     let transKeyPrefix = "products.create-edit.taxonomy.restrictions.";
@@ -297,7 +332,8 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
       const payload = {
         ...dto,
-        price: Number(dto.price),
+        purchasePrice: Number(dto.purchasePrice),
+        salePrice: Number(dto.salePrice),
         quantity: Number(dto.quantity),
         discount: dto.discount?.type
           ? { ...dto.discount, value: Number(dto.discount.value) }
@@ -348,7 +384,8 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     reset({
       name: product.name,
       description: product.description,
-      price: product.price,
+      purchasePrice: product.purchasePrice,
+      salePrice: product.salePrice,
       productId: product._id,
       quantity: product.quantity || 0,
       discount: product.discount || {
@@ -368,12 +405,12 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
     const maxValue =
       discountType === ProductDiscountTypes.PERCENTAGE
         ? 100
-        : Number(price) || 0;
+        : Number(salePrice) || 0;
 
     if (Number(discountValue) > maxValue) {
       setValue("discount.value", maxValue);
     }
-  }, [price, discountType, discountValue, setValue]);
+  }, [salePrice, discountType, discountValue, setValue]);
 
   return (
     <Drawer
@@ -545,21 +582,43 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
             <Text>{t("products.create-edit.price.title")}</Text>
           </SectionLabel>
 
-          <Controller
-            control={control}
-            name="price"
-            rules={{ required: t("errors.general.required") }}
-            render={({ field, fieldState: { error } }) => (
-              <Input
-                title={t("products.create-edit.price.basePrice")}
-                required
-                errorMessage={error?.message}
-                type="number"
-                min={0}
-                {...field}
-              />
-            )}
-          />
+          <TwoInputsWrapper>
+            <Controller
+              control={control}
+              name="purchasePrice"
+              rules={{ required: t("errors.general.required") }}
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title={t("products.create-edit.price.purchasePrice.title")}
+                  required
+                  errorMessage={error?.message}
+                  type="number"
+                  min={0}
+                  info={t(
+                    "products.create-edit.price.purchasePrice.explanation",
+                  )}
+                  {...field}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="salePrice"
+              rules={{ required: t("errors.general.required") }}
+              render={({ field, fieldState: { error } }) => (
+                <Input
+                  title={t("products.create-edit.price.salePrice.title")}
+                  required
+                  errorMessage={error?.message}
+                  type="number"
+                  min={0}
+                  info={t("products.create-edit.price.salePrice.explanation")}
+                  {...field}
+                />
+              )}
+            />
+          </TwoInputsWrapper>
 
           <TwoInputsWrapper>
             <Controller
@@ -605,8 +664,18 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
           </TwoInputsWrapper>
 
           <PriceBadge>
-            <span>{t("products.create-edit.price.finalPrice")}</span>
-            <b>{stringWithCurrencyCode(settings.currency, finalPrice)}</b>
+            <div>
+              <span>{t("products.create-edit.price.finalSalePrice")}</span>
+              <PriceBadgeBold color="success">
+                {stringWithCurrencyCode(settings.currency, finalSalePrice)}
+              </PriceBadgeBold>
+            </div>
+            <div>
+              <span>{t("products.create-edit.price.profit")}</span>
+              <PriceBadgeBold color={profit < 0 ? "error" : "success"}>
+                {stringWithCurrencyCode(settings.currency, profit)}
+              </PriceBadgeBold>
+            </div>
           </PriceBadge>
         </FormSection>
 

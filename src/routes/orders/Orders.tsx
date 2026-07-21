@@ -70,6 +70,19 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.delivered} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
+
+  .negative-profit,
+  .positive-profit {
+    font-weight: 700;
+    direction: ltr;
+    text-align: -webkit-match-parent;
+  }
+  .negative-profit {
+    color: ${({ theme }) => theme.colors.error};
+  }
+  .positive-profit {
+    color: ${({ theme }) => theme.colors.success};
+  }
 `;
 
 const BulkActionsWrapper = styled.div`

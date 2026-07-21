@@ -59,6 +59,10 @@ const Label = styled.label`
   font-weight: 700;
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  &:not(:first-child) {
+    margin-top: ${({ theme }) => theme.spacing.xs};
+  }
 `;
 
 const PopoverSeparator = styled.hr`
@@ -110,13 +114,23 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   filters,
   applyFilter,
 }) => {
-  const [totalPriceRange, setTotalPriceRange] = useState<Range>(null);
+  const [totalAmountRange, setTotalAmountRange] = useState<Range>({
+    min: filters.minTotalAmount ?? 0,
+    max: filters.maxTotalAmount ?? 0,
+  });
+  const [totalProfitRange, setTotalProfitRange] = useState<Range>({
+    min: filters.minTotalProfit ?? 0,
+    max: filters.maxTotalProfit ?? 0,
+  });
 
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
+
+    setTotalAmountRange(null);
+    setTotalProfitRange(null);
   }, [setSearchParams]);
 
   return (
@@ -143,20 +157,22 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
           />
         </Section>
 
+        <PopoverSeparator />
+
         <Section>
           <Label>{t("orders.fields.totalAmount")}</Label>
           <RangeRow>
             <Input
               type="number"
               placeholder={t("common.min")}
-              value={totalPriceRange?.min || ""}
+              value={totalAmountRange?.min || ""}
               onChange={(e) => {
-                setTotalPriceRange((prev) => ({
+                setTotalAmountRange((prev) => ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
                 applyFilter(
-                  "minTotalPrice",
+                  "minTotalAmount",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -167,14 +183,14 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
             <Input
               type="number"
               placeholder={t("common.max")}
-              value={totalPriceRange?.max || ""}
+              value={totalAmountRange?.max || ""}
               onChange={(e) => {
-                setTotalPriceRange((prev) => ({
+                setTotalAmountRange((prev) => ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
                 applyFilter(
-                  "maxTotalPrice",
+                  "maxTotalAmount",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -182,7 +198,46 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
               min={0}
             />
           </RangeRow>
+
+          <Label>{t("orders.fields.totalProfit")}</Label>
+          <RangeRow>
+            <Input
+              type="number"
+              placeholder={t("common.min")}
+              value={totalProfitRange?.min || ""}
+              onChange={(e) => {
+                setTotalProfitRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
+                applyFilter(
+                  "minTotalProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+            <RangeDash>–</RangeDash>
+            <Input
+              type="number"
+              placeholder={t("common.max")}
+              value={totalProfitRange?.max || ""}
+              onChange={(e) => {
+                setTotalProfitRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
+                applyFilter(
+                  "maxTotalProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+          </RangeRow>
         </Section>
+
+        <PopoverSeparator />
 
         <Section>
           <Checkbox

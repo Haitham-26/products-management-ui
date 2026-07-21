@@ -13,7 +13,6 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { useSearchParams } from "react-router-dom";
 import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
-import productSliceSelectors from "../../../redux/product/products.selector";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
 import { Input } from "../../../components/Input";
@@ -25,6 +24,7 @@ import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import { OrderItemReadCard } from "./OrderItemReadCard";
 
 const FormContainer = styled.div`
   display: flex;
@@ -33,7 +33,7 @@ const FormContainer = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
 `;
 
-const InfoSection = styled.section`
+const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
@@ -43,6 +43,12 @@ const InfoSection = styled.section`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: ${({ theme }) => theme.shadow.sm};
+`;
+
+const ItemsGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const SectionLabel = styled.div`
@@ -62,21 +68,19 @@ const SectionLabel = styled.div`
   }
 `;
 
-const ReadOnlyItem = styled.div`
+const SummaryBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const SummaryRow = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing.xs} 0;
-  border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
-`;
-
-const ItemName = styled.span`
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-weight: 500;
-`;
-
-const ItemQty = styled.span`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-family: monospace;
+  align-items: center;
 `;
 
 type OrderUpdateDrawerProps = {
@@ -97,7 +101,6 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
-  const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const Toast = useAppToast();
@@ -163,7 +166,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
       }
     >
       <FormContainer>
-        <InfoSection>
+        <Section>
           <SectionLabel>
             <Icon icon={faUser} />
             <Text>{t("orders.general.customerInfo.title")}</Text>
@@ -231,44 +234,45 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
               />
             )}
           />
-        </InfoSection>
+        </Section>
 
-        <InfoSection>
+        <Section>
           <SectionLabel>
             <Icon icon={faTag} />
             <Text>{t("orders.general.items.title")}</Text>
           </SectionLabel>
-          {order.items.map((item, index) => {
-            const product = products.find((p) => p._id === item.productId);
 
-            if (!product) {
-              return null;
-            }
+          <ItemsGrid>
+            {order.items.map((item) => (
+              <OrderItemReadCard key={item.productId} item={item} />
+            ))}
+          </ItemsGrid>
 
-            return (
-              <ReadOnlyItem key={index}>
-                <ItemName>{product.name}</ItemName>
-                <ItemQty>
-                  {`${item.quantity} × ${stringWithCurrencyCode(
-                    settings.currency,
-                    item?.priceAtPurchase || 0,
-                  )}`}
-                </ItemQty>
-              </ReadOnlyItem>
-            );
-          })}
+          <SummaryBox>
+            <SummaryRow>
+              <Text color="textSecondary">
+                {t("orders.general.items.totalAmount")}
+              </Text>
+              <Text fontWeight="600">
+                {stringWithCurrencyCode(settings.currency, order.totalAmount)}
+              </Text>
+            </SummaryRow>
 
-          <Text color="textSecondary" fontSize="small" fontWeight="bold">
-            {t("orders.general.items.totalAmount", {
-              totalAmount: stringWithCurrencyCode(
-                settings.currency,
-                order.totalAmount,
-              ),
-            })}
-          </Text>
-        </InfoSection>
+            <SummaryRow>
+              <Text color="textSecondary">
+                {t("orders.general.items.totalProfit")}
+              </Text>
+              <Text
+                color={order.totalProfit > 0 ? "success" : "error"}
+                fontWeight="600"
+              >
+                {stringWithCurrencyCode(settings.currency, order.totalProfit)}
+              </Text>
+            </SummaryRow>
+          </SummaryBox>
+        </Section>
 
-        <InfoSection>
+        <Section>
           <SectionLabel>
             <Icon icon={faNoteSticky} />
             <Text>{t("orders.general.note.title")}</Text>
@@ -280,7 +284,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
               <Textarea title={t("common.note")} rows={5} {...field} />
             )}
           />
-        </InfoSection>
+        </Section>
       </FormContainer>
     </Drawer>
   );

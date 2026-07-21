@@ -3,13 +3,12 @@ import styled from "styled-components";
 import { Drawer } from "../../../components/Drawer";
 import { Text } from "../../../components/Text";
 import type { Order } from "../../../model/order/types/Order";
-import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { stringWithCurrencyCode } from "../../../utils/String";
-import { ProductMainImage } from "../../products/components/ProductMainImage";
 import { useTranslation } from "react-i18next";
 import type { ThemeType } from "../../../theme/theme";
+import { OrderItemReadCard } from "./OrderItemReadCard";
 
 const FormContainer = styled.div`
   display: flex;
@@ -45,7 +44,7 @@ const Section = styled.section`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
   padding-top: ${({ theme }) => theme.spacing.lg};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 2.5px solid ${({ theme }) => theme.colors.border};
 
   &:first-of-type {
     border-top: none;
@@ -72,73 +71,22 @@ const DataItem = styled.div`
 const OrderLineItemsWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const OrderLineItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${({ theme }) => theme.spacing.md} 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border}40;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const ItemInfo = styled.div`
+const SummaryBox = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-`;
-
-const ItemTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-weight: 600;
-`;
-
-const PriceColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-`;
-
-const ItemTotal = styled.span`
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const DiscountBadge = styled.span`
-  font-size: 0.7rem;
-  background: ${({ theme }) => theme.colors.error}15;
-  color: ${({ theme }) => theme.colors.error};
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-  width: fit-content;
-`;
-
-const GrandTotalSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.xs};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-const TotalAmount = styled.span`
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary};
+const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 type Props = {
@@ -158,23 +106,6 @@ export const OrderReadDrawer: React.FC<Props> = ({
   if (!order) {
     return null;
   }
-
-  const renderDiscount = (item: Order["items"][0]) => {
-    if (!item.discountAtPurchase || !item.discountAtPurchase.value) {
-      return null;
-    }
-
-    const { type, value } = item.discountAtPurchase;
-
-    const label = t("orders.read.items.discount", {
-      discount:
-        type === ProductDiscountTypes.PERCENTAGE
-          ? `${value}%`
-          : stringWithCurrencyCode(settings.currency, value),
-    });
-
-    return <DiscountBadge>{label}</DiscountBadge>;
-  };
 
   return (
     <Drawer
@@ -235,43 +166,33 @@ export const OrderReadDrawer: React.FC<Props> = ({
           <Text fontWeight="bold">{t("orders.general.items.title")}</Text>
 
           <OrderLineItemsWrapper>
-            {order.items.map((item, index) => (
-              <OrderLineItem key={`${item.productId}-${index}`}>
-                <ItemInfo>
-                  <ItemTitle>
-                    <ProductMainImage
-                      url={item.productMainImage}
-                      width="2rem"
-                    />
-                    <Text fontWeight="600">{item.productName}</Text>
-                  </ItemTitle>
-                  <Text fontSize="small" color="textSecondary">
-                    {`${item.quantity} × ${stringWithCurrencyCode(
-                      settings.currency,
-                      item.priceAtPurchase,
-                    )}`}
-                  </Text>
-                </ItemInfo>
-
-                <PriceColumn>
-                  <ItemTotal>
-                    {stringWithCurrencyCode(
-                      settings.currency,
-                      item.finalPrice * item.quantity,
-                    )}
-                  </ItemTotal>
-                  {renderDiscount(item)}
-                </PriceColumn>
-              </OrderLineItem>
+            {order.items.map((item) => (
+              <OrderItemReadCard key={item.productId} item={item} />
             ))}
           </OrderLineItemsWrapper>
 
-          <GrandTotalSection>
-            <Text fontWeight="600">{t("orders.fields.totalAmount")}</Text>
-            <TotalAmount>
-              {stringWithCurrencyCode(settings.currency, order.totalAmount)}
-            </TotalAmount>
-          </GrandTotalSection>
+          <SummaryBox>
+            <SummaryRow>
+              <Text color="textSecondary">
+                {t("orders.general.items.totalAmount")}
+              </Text>
+              <Text fontWeight="600">
+                {stringWithCurrencyCode(settings.currency, order.totalAmount)}
+              </Text>
+            </SummaryRow>
+
+            <SummaryRow>
+              <Text color="textSecondary">
+                {t("orders.general.items.totalProfit")}
+              </Text>
+              <Text
+                color={order.totalProfit > 0 ? "success" : "error"}
+                fontWeight="600"
+              >
+                {stringWithCurrencyCode(settings.currency, order.totalProfit)}
+              </Text>
+            </SummaryRow>
+          </SummaryBox>
         </Section>
 
         <Section>
