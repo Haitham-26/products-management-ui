@@ -8,8 +8,6 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html {
-    min-height: 100vh;
-
     background: linear-gradient(90deg, #cde5ff 0%, #f6faff 100%);
     background-position: center;
     background-size: cover;
@@ -51,6 +49,10 @@ const GlobalStyle = createGlobalStyle`
     font-display: swap;
   }
 
+
+  #root {
+    min-height: 100vh
+  }
 
   body {
     font-family: "Inter", "IBM Plex Sans Arabic", sans-serif;
@@ -122,7 +124,6 @@ const GlobalStyle = createGlobalStyle`
 
 @media (max-width: 768px) {
   #root {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
   }

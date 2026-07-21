@@ -10,12 +10,9 @@ import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../theme/Breakpoints";
 
 const StyledContainer = styled(Container)`
-  /* 7.5rem = header's height */
   display: flex;
   flex-direction: column;
-
-  background: ${({ theme }) => theme.colors.surface};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  height: 3.5rem;
 
   order: 1;
 
@@ -25,13 +22,17 @@ const StyledContainer = styled(Container)`
   width: 100%;
 
   @media (max-width: ${Breakpoints.MD}) {
-    padding: 0;
+    padding: 0 !important;
+    background: ${({ theme }) => theme.colors.primary}20;
   }
 
   @media (min-width: ${Breakpoints.MD}) {
     width: 250px;
+
+    /* 7.5rem = header's height */
     height: ${({ theme }) => `calc(100vh - 7.5rem - ${theme.spacing.lg})`};
     top: 7.5rem;
+
     position: sticky;
     order: 0;
   }

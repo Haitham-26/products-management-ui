@@ -18,6 +18,8 @@ import type { ThemeType } from "../../../theme/theme";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 import { customChartJsTooltip } from "../utils/customChartJsTooltip";
 import { useTranslation } from "react-i18next";
+import { Breakpoints } from "../../../theme/Breakpoints";
+import i18n from "../../../i18n";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -43,7 +45,15 @@ const Header = styled.div`
 const ChartCanvasWrapper = styled.div`
   flex: 1;
   position: relative;
-  min-height: 16rem;
+  min-width: 0;
+
+  canvas {
+    max-width: 100% !important;
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    min-height: 16rem;
+  }
 
   .chartjs-tooltip {
     position: absolute;
@@ -69,12 +79,13 @@ const getChartColors = (theme: ThemeType) => [
   `${theme.colors.primary}70`,
 ];
 
-const getOptions = (theme: ThemeType): ChartOptions<"bar"> => ({
+const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
       display: false,
+      rtl: isRTL,
     },
     tooltip: {
       enabled: false,
@@ -83,6 +94,7 @@ const getOptions = (theme: ThemeType): ChartOptions<"bar"> => ({
   },
   scales: {
     x: {
+      reverse: isRTL,
       grid: { display: false },
       ticks: {
         color: theme.colors.textSecondary,
@@ -93,6 +105,7 @@ const getOptions = (theme: ThemeType): ChartOptions<"bar"> => ({
       },
     },
     y: {
+      position: isRTL ? "right" : "left",
       grid: {
         color: `${theme.colors.border}20`,
       },
@@ -138,7 +151,10 @@ export const DashboardTopProductsCard: React.FC = () => {
       </Header>
 
       <ChartCanvasWrapper>
-        <Bar options={getOptions(theme)} data={data} />
+        <Bar
+          options={getOptions(theme, i18n.dir(i18n.language) === "rtl")}
+          data={data}
+        />
       </ChartCanvasWrapper>
     </Container>
   );

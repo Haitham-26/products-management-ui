@@ -91,8 +91,9 @@ const Wrapper = styled.div`
   flex-direction: column;
 
   @media (max-width: ${Breakpoints.MD}) {
-    background: ${({ theme }) => theme.colors.surface};
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+    & > div:first-child {
+      background: ${({ theme }) => theme.colors.primary}20;
+    }
   }
 
   @media (min-width: ${Breakpoints.MD}) {

@@ -13,6 +13,7 @@ import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
 import { SpinnerFullScreen } from "../../components/SpinnerFullScreen";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
+import { Breakpoints } from "../../theme/Breakpoints";
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
@@ -30,7 +31,7 @@ const DashboardGrid = styled.div`
     "out-of-stock"
     "top-products";
 
-  @media (min-width: 768px) {
+  @media (min-width: ${Breakpoints.LG}) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
       "total-products total-orders"
@@ -38,7 +39,7 @@ const DashboardGrid = styled.div`
       "top-products   top-products";
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: ${Breakpoints.XL}) {
     grid-template-columns: repeat(3, 1fr);
     grid-template-areas:
       "total-products total-orders   top-products"

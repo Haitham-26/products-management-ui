@@ -16,6 +16,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  /* 3.5rem = App bar's height on mobile */
+  margin-bottom: 3.5rem;
 
   & > div:nth-child(2) {
     width: 100%;
@@ -24,7 +26,7 @@ const Container = styled.div`
 
   @media (max-width: ${Breakpoints.MD}) {
     & > div:nth-child(2) {
-      padding-bottom: ${({ theme }) => `calc(${theme.spacing.xl} * 2)`};
+      flex-grow: 1;
     }
   }
 
@@ -34,6 +36,7 @@ const Container = styled.div`
     gap: ${({ theme }) => theme.spacing.lg};
     flex-grow: 0;
     order: 1;
+    margin-bottom: ${({ theme }) => theme.spacing.lg};
   }
 `;
 

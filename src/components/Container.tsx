@@ -7,13 +7,14 @@ const StyledContainer = styled.div`
   flex-direction: column;
   padding: ${({ theme: { spacing } }) => `${spacing.sm} ${spacing.md}`};
   border: ${({ theme }) => `1px solid ${theme.colors.glassBorder}`};
+  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  -webkit-backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  background: ${({ theme }) => theme.colors.glassBackground};
 
   @media (min-width: ${Breakpoints.MD}) {
     border-radius: ${({ theme }) => theme.radius.md};
     padding: ${({ theme: { spacing } }) => `${spacing.md} ${spacing.lg}`};
     box-shadow: ${({ theme }) => theme.shadow.md};
-    backdrop-filter: blur(${({ theme }) => theme.glass.blur});
-    background: ${({ theme }) => theme.colors.glassBackground};
   }
 `;
 
