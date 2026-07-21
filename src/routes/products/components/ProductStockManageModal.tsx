@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import i18n from "../../../i18n";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const Container = styled.div`
   display: flex;
@@ -99,6 +100,10 @@ const NumericSelector = styled.div`
   &:focus-within {
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary}15;
+  }
+
+  @media (max-width: ${Breakpoints.MD}) {
+    max-width: 100%;
   }
 `;
 

@@ -46,6 +46,7 @@ import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import type { ThemeType } from "../../../theme/theme";
 import type { ProductDiscount } from "../../../model/product/types/ProductDiscount";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -53,7 +54,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const FormSection = styled.section`
@@ -86,9 +86,13 @@ const SectionLabel = styled.div`
 
 const TwoInputsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (min-width: ${Breakpoints.MD}) {
+    grid-template-columns: 1fr 1fr;
+  }
 `;
 
 const PriceBadge = styled.div`

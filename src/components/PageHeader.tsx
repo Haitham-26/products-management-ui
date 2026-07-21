@@ -9,6 +9,7 @@ import { Input } from "./Input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
 import { useTranslation } from "react-i18next";
+import { Breakpoints } from "../theme/Breakpoints";
 
 const Wrapper = styled.div`
   display: flex;
@@ -75,7 +76,7 @@ const Search = styled.div`
 
   input {
     padding-inline-start: ${({ theme }) => theme.spacing.md};
-    min-width: 17rem;
+    min-width: 16rem;
   }
 
   svg {
@@ -111,9 +112,19 @@ const FilterChip = styled.button<{ active?: boolean }>`
   font-size: 0.75rem;
   cursor: pointer;
 
+  span {
+    display: none;
+  }
+
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
     color: ${({ theme }) => theme.colors.primary};
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    span {
+      display: inline;
+    }
   }
 `;
 
@@ -231,7 +242,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             >
               <FilterChip active={filters.activeCount > 0}>
                 <Icon icon={faFilter} />
-                {t("common.filters.title")}
+                <span>{t("common.filters.title")}</span>
                 {filters.activeCount ? ` (${filters.activeCount})` : ""}
               </FilterChip>
             </Popover>

@@ -31,6 +31,7 @@ const StyledP = styled.p<StyledTextProps>`
     lineHeight || lineHeights[fontSize || "body"]};
   text-align: ${({ textAlign }) => textAlign};
   font-style: ${({ fontStyle }) => fontStyle};
+  word-break: break-word;
 `;
 
 type StyledTextProps = {
