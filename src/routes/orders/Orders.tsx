@@ -397,7 +397,7 @@ export const Orders: React.FC = () => {
             onChange: handlePageChange,
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],
-            position: ["bottomRight"],
+            placement: ["bottomEnd"],
           }}
         />
       ) : (

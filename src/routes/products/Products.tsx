@@ -45,6 +45,10 @@ import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import { Grid } from "antd";
+import { PaginatedDataCards } from "../../components/PaginatedDataCards";
+import { ProductCard } from "./components/ProductCard";
+import { Breakpoints } from "../../theme/Breakpoints";
 
 const getToggleStatusModalTexts = (t: TFunction) => ({
   [ProductStatus.DRAFT]: {
@@ -80,19 +84,25 @@ const StyledContainer = styled(Container)`
   .positive-profit {
     color: ${({ theme }) => theme.colors.success};
   }
+
+  @media (max-width: ${Breakpoints.MD}) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 `;
 
 const BulkActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
-
-  button {
-    height: auto;
-  }
+  width: 100%;
 
   button:first-child {
     color: ${({ theme }) => theme.colors.error};
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    justify-content: flex-end;
   }
 `;
 
@@ -130,6 +140,7 @@ export const Products: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -202,6 +213,15 @@ export const Products: React.FC = () => {
   const activeFiltersCount = countProductsActiveFilters(filters);
 
   const toggleStatusModalTexts = getToggleStatusModalTexts(t);
+
+  const sharedPaginationOptions = {
+    current: productsMeta?.page || 1,
+    pageSize: productsMeta?.limit || 10,
+    total: productsMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
+  };
 
   const onDelete = (product: Product) => {
     setCurrentProduct(product);
@@ -419,21 +439,28 @@ export const Products: React.FC = () => {
     }
   };
 
+  const tableActions = useMemo(
+    () => ({
+      onDelete: permissions.DELETE ? onDelete : undefined,
+      onEdit: permissions.UPDATE ? onEdit : undefined,
+      onRead: permissions.READ ? onRead : undefined,
+      onManageStock: permissions.UPDATE ? onManageStock : undefined,
+      onToggleStatus: permissions.UPDATE ? onToggleStatus : undefined,
+    }),
+    [permissions],
+  );
+
   const tableColumns = useMemo(
     () =>
       createProductsTableColumns({
         functions: {
-          onDelete: permissions.DELETE ? onDelete : undefined,
-          onEdit: permissions.UPDATE ? onEdit : undefined,
-          onRead: permissions.READ ? onRead : undefined,
-          onManageStock: permissions.UPDATE ? onManageStock : undefined,
-          onToggleStatus: permissions.UPDATE ? onToggleStatus : undefined,
+          ...tableActions,
           t,
         },
         currency: settings.currency,
         settings,
       }),
-    [settings, permissions, t],
+    [settings, tableActions, t],
   );
 
   useEffect(() => {
@@ -489,7 +516,7 @@ export const Products: React.FC = () => {
                   icon={faTrash}
                   variant="secondary"
                 >
-                  {t("common.delete")}
+                  {`${t("common.delete")}${!md ? ` (${selectedRowIds.length})` : ""}`}
                 </Button>
               ) : null}
 
@@ -500,7 +527,7 @@ export const Products: React.FC = () => {
                     icon={faCloudArrowUp}
                     variant="secondary"
                   >
-                    {t("products.actions.publish")}
+                    {`${t("products.actions.publish")}${!md ? ` (${selectedRowIds.length})` : ""}`}
                   </Button>
 
                   <Button
@@ -508,7 +535,7 @@ export const Products: React.FC = () => {
                     icon={faCloudArrowDown}
                     variant="secondary"
                   >
-                    {t("products.actions.moveToDraft")}
+                    {`${t("products.actions.moveToDraft")}${!md ? ` (${selectedRowIds.length})` : ""}`}
                   </Button>
                 </Fragment>
               ) : null}
@@ -519,26 +546,41 @@ export const Products: React.FC = () => {
       />
 
       {permissions.READ ? (
-        <Table
-          loading={productsLoading}
-          columns={tableColumns}
-          dataSource={products}
-          rowSelection={{
-            selectedRowKeys: selectedRowIds,
-            onChange(newSelectedRowKeys) {
-              setSelectedRowIds(newSelectedRowKeys);
-            },
-          }}
-          pagination={{
-            current: productsMeta?.page || 1,
-            pageSize: productsMeta?.limit || 10,
-            total: productsMeta?.total || 0,
-            onChange: handlePageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
-            position: ["bottomRight"],
-          }}
-        />
+        md ? (
+          <Table
+            loading={productsLoading}
+            columns={tableColumns}
+            dataSource={products}
+            rowSelection={{
+              selectedRowKeys: selectedRowIds,
+              onChange(newSelectedRowKeys) {
+                setSelectedRowIds(newSelectedRowKeys);
+              },
+            }}
+            pagination={{
+              ...sharedPaginationOptions,
+              showTotal: (total) => t("table.total", { total }),
+              placement: ["bottomEnd"],
+            }}
+          />
+        ) : (
+          <PaginatedDataCards
+            data={products}
+            paginationOptions={sharedPaginationOptions}
+            itemRender={(item) => (
+              <ProductCard
+                key={item._id}
+                product={item as Product}
+                functions={tableActions}
+                selectedData={selectedRowIds}
+                setSelectedData={setSelectedRowIds}
+              />
+            )}
+            loading={productsLoading}
+            selectedData={selectedRowIds}
+            setSelectedData={setSelectedRowIds}
+          />
+        )
       ) : (
         <NoPermissions />
       )}

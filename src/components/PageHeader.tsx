@@ -1,6 +1,6 @@
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 import { Button, type ButtonProps } from "./Button";
@@ -67,8 +67,11 @@ const ContextBar = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme }) => theme.colors.glassBackground};
-  backdrop-filter: blur(${({ theme }) => theme.glass.blur});
   border: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (min-width: ${Breakpoints.MD}) {
+    backdrop-filter: blur(${({ theme }) => theme.glass.blur});
+  }
 `;
 
 const Search = styled.div`
@@ -76,7 +79,7 @@ const Search = styled.div`
 
   input {
     padding-inline-start: ${({ theme }) => theme.spacing.md};
-    min-width: 16rem;
+    min-width: 14.5rem;
   }
 
   svg {
@@ -86,6 +89,12 @@ const Search = styled.div`
     inset-block-start: ${({ theme }) => theme.spacing.sm};
     font-size: 12px;
     color: ${({ theme }) => theme.colors.textSecondary};
+  }
+
+  @media (min-width: ${Breakpoints.SM}) {
+    input {
+      min-width: 16rem;
+    }
   }
 `;
 
@@ -129,22 +138,85 @@ const FilterChip = styled.button<{ active?: boolean }>`
 `;
 
 const FixedContentContainer = styled.div`
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  // 3.5rem = App bar's height
+  bottom: 3.5rem;
+  inset-inline: 0;
   z-index: 2;
-  width: 100%;
-  height: 100%;
   background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: inherit;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline-start: ${({ theme }) => theme.spacing.md};
-  padding-inline-end: ${({ theme }) => theme.spacing.sm};
+  white-space: nowrap;
+  gap: ${({ theme }) => theme.spacing.md};
 
-  button {
-    height: 2rem !important;
+  & > p:nth-child(1) {
+    display: none;
   }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    position: absolute;
+    inset-inline: auto;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    padding-inline-start: ${({ theme }) => theme.spacing.md};
+    padding-inline-end: ${({ theme }) => theme.spacing.sm};
+
+    & > p:nth-child(1) {
+      display: block;
+    }
+  }
+`;
+
+const BulkActionsContentWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  height: 100%;
+  width: 100%;
+
+  & > div:first-child {
+    gap: 0;
+  }
+
+  @media (max-width: ${Breakpoints.MD}) {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+    button {
+      flex-grow: 1;
+      border-radius: 0;
+      padding-inline: ${({ theme }) => theme.spacing.md};
+      font-size: calc(${({ theme }) => theme.typography.small} * 0.9);
+      height: 2.5rem !important;
+    }
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    & > div:first-child {
+      gap: ${({ theme }) => theme.spacing.sm};
+    }
+
+    button {
+      height: 2rem !important;
+    }
+  }
+`;
+
+const GlobalStyle = createGlobalStyle<{ hasSelection: boolean }>`
+  ${({ hasSelection }) =>
+    // 3.5rem = App bar's height
+    // 2.5rem = Fixed content's height
+    hasSelection
+      ? `
+    @media (max-width: ${Breakpoints.MD}) {
+      #content-conatiner {
+        margin-bottom: calc(3.5rem + 2.5rem)
+      }
+    }
+  `
+      : ""}
 `;
 
 type PageHeaderProps = {
@@ -254,11 +326,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 {selectedTableItemsCount} {t("common.selected").toLowerCase()}
               </Text>
 
-              {bulkActionsContent}
+              <BulkActionsContentWrapper>
+                {bulkActionsContent}
+              </BulkActionsContentWrapper>
             </FixedContentContainer>
           ) : null}
         </ContextBar>
       ) : null}
+
+      <GlobalStyle hasSelection={selectedTableItemsCount > 0} />
     </Wrapper>
   );
 };

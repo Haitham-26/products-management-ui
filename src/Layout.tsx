@@ -64,7 +64,7 @@ export const Layout: React.FC = () => {
 
       <Header />
 
-      <Container>
+      <Container id="content-conatiner">
         <SideMenu />
 
         <Outlet />

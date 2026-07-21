@@ -4,6 +4,7 @@ import { Image } from "../../../components/Image";
 import { Icon } from "../../../components/Icon";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import type { ThemeType } from "../../../theme/theme";
+import { Grid } from "antd";
 
 type ProductMainImageProps = {
   url?: string;
@@ -55,6 +56,8 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
   width = "1.5rem",
   borderRadius,
 }) => {
+  const { md } = Grid.useBreakpoint();
+
   if (url) {
     return (
       <StyledImage
@@ -62,6 +65,7 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
         width={width}
         borderRadius={borderRadius}
         loading="lazy"
+        preview={!md}
       />
     );
   }

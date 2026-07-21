@@ -5,26 +5,17 @@ import styled from "styled-components";
 import { Text } from "./Text";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: ${({ theme }) => theme.spacing.sm};
-  width: fit-content;
-  margin-inline: auto;
-`;
-
 const Card = styled.div`
-  width: 100%;
-  max-width: 24rem;
-  padding: ${({ theme }) => theme.spacing.xl};
+  width: clamp(12rem, 90%, 24rem);
+  padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadow.md};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
-  margin-inline: auto;
+  margin: auto;
+  position: relative;
 
   a {
     color: ${({ theme }) => theme.colors.primary};
@@ -35,6 +26,12 @@ const Card = styled.div`
   a:hover {
     color: ${({ theme }) => theme.colors.primaryHover};
   }
+`;
+
+const LangSwitcherWrapper = styled.div`
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.sm};
+  inset-inline-start: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Brand = styled.div`
@@ -75,27 +72,27 @@ export const AuthContainer: React.FC<AuthContainerProps> = ({
   footerContent,
 }) => {
   return (
-    <Container>
-      <LanguageSwitcher />
+    <Card>
+      <LangSwitcherWrapper>
+        <LanguageSwitcher />
+      </LangSwitcherWrapper>
 
-      <Card>
-        <Header>
-          <Brand>
-            <Image src={Images.Logo} alt="Inventix" />
-          </Brand>
+      <Header>
+        <Brand>
+          <Image src={Images.Logo} alt="Inventix" />
+        </Brand>
 
-          <Text fontWeight="bold" fontSize="title">
-            {title}
-          </Text>
-          <Text color="textSecondary" fontSize="small">
-            {description}
-          </Text>
-        </Header>
+        <Text fontWeight="bold" fontSize="title">
+          {title}
+        </Text>
+        <Text color="textSecondary" fontSize="small">
+          {description}
+        </Text>
+      </Header>
 
-        <Form>{formItems.map((item) => item)}</Form>
+      <Form>{formItems.map((item) => item)}</Form>
 
-        {footerContent ? <Footer>{footerContent}</Footer> : null}
-      </Card>
-    </Container>
+      {footerContent ? <Footer>{footerContent}</Footer> : null}
+    </Card>
   );
 };
