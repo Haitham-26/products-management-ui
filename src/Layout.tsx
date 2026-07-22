@@ -27,6 +27,7 @@ const Container = styled.div`
   @media (max-width: ${Breakpoints.MD}) {
     & > div:nth-child(2) {
       flex-grow: 1;
+      padding-block: ${({ theme }) => theme.spacing.md};
     }
   }
 
