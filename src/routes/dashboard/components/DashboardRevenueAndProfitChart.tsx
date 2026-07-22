@@ -94,6 +94,35 @@ const Container = styled.div`
   height: 100%;
 `;
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const ExtraWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  width: fit-content;
+  border-radius: 9999px;
+  background: ${({ theme }) => `${theme.colors.success}0d`};
+  user-select: none;
+
+  p {
+    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  }
+`;
+
+const StatusDot = styled.span`
+  width: 6px;
+  height: 6px;
+  border-radius: ${({ theme }) => theme.radius.circle};
+  background: ${({ theme }) => theme.colors.success};
+`;
+
 const ChartCanvasWrapper = styled.div`
   flex: 1;
   position: relative;
@@ -159,9 +188,18 @@ export const DashboardRevenueAndProfitChart: React.FC<
 
   return (
     <Container>
-      <Text color="primary" fontWeight={"bold"} fontSize="subtitle">
-        {t("dashboard.salesProfits.title")}
-      </Text>
+      <Header>
+        <Text color="primary" fontWeight={"bold"} fontSize="subtitle">
+          {t("dashboard.salesProfits.title")}
+        </Text>
+
+        <ExtraWrapper>
+          <StatusDot />
+          <Text fontSize="small" color="success">
+            {t("dashboard.totalProfits.note")}
+          </Text>
+        </ExtraWrapper>
+      </Header>
 
       <ChartCanvasWrapper>
         <Bar
