@@ -72,8 +72,8 @@ export const OrderActionsDropdown: React.FC<OrderActionsDropdownProps> = ({
             label: t(
               `orders.actions.${order.isArchived ? "unarchive" : "archive"}`,
             ),
-            onClick: () =>
-              onToggleArchive?.(order) || !isFunction(onToggleArchive),
+            onClick: () => onToggleArchive?.(order),
+            disabled: !isFunction(onToggleArchive),
           },
         ].filter((item) => item.disabled !== true),
       }}
