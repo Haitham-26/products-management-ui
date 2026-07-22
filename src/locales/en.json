@@ -89,17 +89,21 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalProducts": {
-      "title": "Total Products"
+    "totalRevenues": "Total Revenue",
+    "totalProfits": "Total Profit",
+    "pendingOrders": "Pending Orders",
+    "stockAlerts": {
+      "title": "Stock Alerts",
+      "out": "Out",
+      "low": "Low"
     },
-    "totalOrders": {
-      "title": "Total Orders"
+    "salesProfits": {
+      "title": "Sales & Profit Over Time",
+      "profits": "Profits",
+      "revenues": "Revenues"
     },
-    "lowStockProducts": {
-      "title": "Low Stock Products"
-    },
-    "outOfStockProducts": {
-      "title": "Out of Stock Products"
+    "orderStatus": {
+      "title": "Order Status Distribution"
     },
     "mostSoldProducts": {
       "title": "Most Sold Products"

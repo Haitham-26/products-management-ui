@@ -3,16 +3,6 @@ import styled, { useTheme } from "styled-components";
 import { Text } from "../../../components/Text";
 import { Bar } from "react-chartjs-2";
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-  type ChartOptions,
-} from "chart.js";
-
 import { useAppSelector } from "../../../redux/store";
 import type { ThemeType } from "../../../theme/theme";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
@@ -20,8 +10,7 @@ import { customChartJsTooltip } from "../utils/customChartJsTooltip";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import i18n from "../../../i18n";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+import type { ChartOptions } from "chart.js";
 
 const Container = styled.div`
   display: flex;
@@ -116,7 +105,7 @@ const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
   },
 });
 
-export const DashboardTopProductsCard: React.FC = () => {
+export const DashboardTopProductsChart: React.FC = () => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -129,10 +118,13 @@ export const DashboardTopProductsCard: React.FC = () => {
   );
 
   const data = {
-    labels: products.map((p) => p.name),
+    labels: [...products.map((p) => p.name), ...products.map((p) => p.name)],
     datasets: [
       {
-        data: products.map((p) => p.totalSold),
+        data: [
+          ...products.map((p) => p.totalSold),
+          ...products.map((p) => p.totalSold),
+        ],
         backgroundColor: getChartColors(theme).slice(0, products.length),
         borderRadius: 6,
         borderSkipped: false,
@@ -145,7 +137,7 @@ export const DashboardTopProductsCard: React.FC = () => {
   return (
     <Container>
       <Header>
-        <Text fontWeight="bold" fontSize="subtitle">
+        <Text fontWeight="bold" fontSize="subtitle" color="primary">
           {t("dashboard.mostSoldProducts.title")}
         </Text>
       </Header>

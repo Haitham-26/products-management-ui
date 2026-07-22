@@ -89,17 +89,21 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "totalProducts": {
-      "title": "عدد المنتجات الكلي"
+    "totalRevenues": "إجمالي المبيعات",
+    "totalProfits": "صافي الأرباح",
+    "pendingOrders": "الطلبات المعلقة",
+    "stockAlerts": {
+      "title": "تنبيهات المخزون",
+      "out": "نفد",
+      "low": "منخفض"
     },
-    "totalOrders": {
-      "title": "عدد الطلبات الكلي"
+    "salesProfits": {
+      "title": "المبيعات والأرباح",
+      "profits": "الأرباح",
+      "revenues": "المبيعات"
     },
-    "lowStockProducts": {
-      "title": "منتجات على وشك النفاد"
-    },
-    "outOfStockProducts": {
-      "title": "منتجات نفدت من المخزون"
+    "orderStatus": {
+      "title": "حالة الطلبات"
     },
     "mostSoldProducts": {
       "title": "المنتجات الأكثر مبيعاً"

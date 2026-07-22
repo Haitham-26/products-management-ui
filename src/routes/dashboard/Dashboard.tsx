@@ -2,9 +2,6 @@ import type React from "react";
 import { Container } from "../../components/Container";
 import styled from "styled-components";
 import { PageHeader } from "../../components/PageHeader";
-import { DashboardTopCard } from "./components/DashboardTopCard";
-import { DashboardTopProductsCard } from "./components/DashboardTopProductsCard";
-import { ProductStockStatus } from "../../model/product/types/ProductStockStatus.enum";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
@@ -17,6 +14,20 @@ import { Select } from "../../components/Select";
 import { DatePeriodFilters } from "../../model/shared/types/DatePeriodFilters.enum";
 import type { TFunction } from "i18next";
 import camelCase from "lodash/camelCase";
+import { DashboardKPICard } from "./components/DashboardKPICard";
+import { faSackDollar } from "@fortawesome/free-solid-svg-icons/faSackDollar";
+import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
+import { Icon } from "../../components/Icon";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
+import { Tag } from "antd";
+import i18n from "../../i18n";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { DashboardRevenueAndProfitChart } from "./components/DashboardRevenueAndProfitChart";
+import { DashboardOrdersChart } from "./components/DashboardOrdersChart";
+import { DashboardTopProductsChart } from "./components/DashboardTopProductsChart";
+import { ProductStockStatus } from "../../model/product/types/ProductStockStatus.enum";
 
 const getDateRangeOptions = (t: TFunction) =>
   Object.values(DatePeriodFilters).map((d) => ({
@@ -32,39 +43,75 @@ const StyledSelect = styled(Select)`
   min-width: 8rem;
 `;
 
-const DashboardGrid = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing.lg};
-  align-items: start;
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    "total-products"
-    "total-orders"
-    "low-stock"
-    "out-of-stock"
-    "top-products";
+const GridsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
 
-  @media (min-width: ${Breakpoints.LG}) {
+const KPIsGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.md};
+  grid-template-columns: 1fr;
+
+  @media (min-width: ${Breakpoints.SM}) {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      "total-products total-orders"
-      "low-stock       out-of-stock"
-      "top-products   top-products";
   }
 
-  @media (min-width: ${Breakpoints.XL}) {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-areas:
-      "total-products total-orders   top-products"
-      "low-stock       out-of-stock   top-products";
+  @media (min-width: ${Breakpoints.LG}) {
+    grid-template-columns: repeat(4, 1fr);
   }
 `;
 
-const AreaWrapper = styled.div<{ area: string }>`
-  grid-area: ${({ area }) => area};
+const ChartsGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.md};
+  grid-template-columns: 1fr;
+
+  @media (min-width: ${Breakpoints.LG}) {
+    grid-template-columns: 2fr 1fr;
+
+    & > :nth-child(3) {
+      grid-column: 1 / -1;
+    }
+  }
+`;
+
+const BadgesWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  align-self: stretch;
+  gap: 4px;
+  margin-top: auto;
+`;
+
+const AlertBadge = styled(Tag)`
+  flex-grow: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+
+  .arrow-icon {
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+  }
+
+  html[dir="ltr"] & .arrow-icon {
+    transform: translateX(-4px);
+  }
+  html[dir="rtl"] & .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  &:hover .arrow-icon {
+    opacity: 1;
+  }
+
+  html[dir="ltr"] &:hover .arrow-icon {
+    transform: translateX(-8px);
+  }
+  html[dir="rtl"] &:hover .arrow-icon {
+    transform: translateX(0px);
+  }
 `;
 
 export const Dashboard: React.FC = () => {
@@ -81,8 +128,6 @@ export const Dashboard: React.FC = () => {
   );
 
   const { dashboard } = appRoutes;
-
-  const { products, orders, lowStockProducts, outOfStockProducts } = stats;
 
   useEffect(() => {
     dispatch(dashboardActions.getDashboardStats({ datePeriod }));
@@ -103,56 +148,81 @@ export const Dashboard: React.FC = () => {
       />
 
       {!loading ? (
-        <DashboardGrid>
-          <AreaWrapper area="total-products">
-            <DashboardTopCard
-              title={t("dashboard.totalProducts.title")}
-              link={appRoutes.products.path}
-              totalCount={products?.totalCount || 0}
-              trends={{
-                today: products?.todayCount || 0,
-                lastWeek: products?.lastWeekCount || 0,
-                lastMonth: products?.lastMonthCount || 0,
-              }}
-              variant="MAIN"
+        <GridsWrapper>
+          <KPIsGrid>
+            <DashboardKPICard
+              icon={faSackDollar}
+              title={t("dashboard.totalRevenues")}
+              value="$4,000"
             />
-          </AreaWrapper>
 
-          <AreaWrapper area="total-orders">
-            <DashboardTopCard
-              title={t("dashboard.totalOrders.title")}
-              link={appRoutes.orders.path}
-              totalCount={orders?.totalCount || 0}
-              trends={{
-                today: orders?.todayCount || 0,
-                lastWeek: orders?.lastWeekCount || 0,
-                lastMonth: orders?.lastMonthCount || 0,
-              }}
+            <DashboardKPICard
+              icon={faChartLine}
+              title={t("dashboard.totalProfits")}
+              value="$275"
             />
-          </AreaWrapper>
 
-          <AreaWrapper area="low-stock">
-            <DashboardTopCard
-              title={t("dashboard.lowStockProducts.title")}
-              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.LOW_STOCK}`}
-              totalCount={lowStockProducts?.totalCount}
-              variant="WARNING"
+            <DashboardKPICard
+              icon={faClock}
+              title={t("dashboard.pendingOrders")}
+              value="175"
             />
-          </AreaWrapper>
 
-          <AreaWrapper area="out-of-stock">
-            <DashboardTopCard
-              title={t("dashboard.outOfStockProducts.title")}
-              link={`${appRoutes.products.path}?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
-              totalCount={outOfStockProducts?.totalCount}
-              variant="DANGER"
+            <DashboardKPICard
+              icon={faTriangleExclamation}
+              title={t("dashboard.stockAlerts.title")}
+              value={
+                <BadgesWrapper>
+                  <AlertBadge
+                    color="error"
+                    href={`/products?stockStatus=${ProductStockStatus.OUT_OF_STOCK}`}
+                    variant="outlined"
+                  >
+                    <span>
+                      {7} {t("dashboard.stockAlerts.out")}
+                    </span>
+                    <Icon
+                      icon={
+                        i18n.dir(i18n.language) === "ltr"
+                          ? faArrowRight
+                          : faArrowLeft
+                      }
+                      size="xs"
+                      className="arrow-icon"
+                    />
+                  </AlertBadge>
+
+                  <AlertBadge
+                    href={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
+                    color="warning"
+                    variant="outlined"
+                  >
+                    <span>
+                      {5} {t("dashboard.stockAlerts.low")}
+                    </span>
+                    <Icon
+                      icon={
+                        i18n.dir(i18n.language) === "ltr"
+                          ? faArrowRight
+                          : faArrowLeft
+                      }
+                      size="xs"
+                      className="arrow-icon"
+                    />
+                  </AlertBadge>
+                </BadgesWrapper>
+              }
             />
-          </AreaWrapper>
+          </KPIsGrid>
 
-          <AreaWrapper area="top-products">
-            <DashboardTopProductsCard />
-          </AreaWrapper>
-        </DashboardGrid>
+          <ChartsGrid>
+            <DashboardRevenueAndProfitChart />
+
+            <DashboardOrdersChart />
+
+            <DashboardTopProductsChart />
+          </ChartsGrid>
+        </GridsWrapper>
       ) : (
         <SpinnerFullScreen />
       )}
