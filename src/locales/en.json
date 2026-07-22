@@ -558,7 +558,7 @@
     },
     "members": {
       "title": "Members",
-      "subtitle": "Manage members permissions",
+      "subtitle": "Manage permissions",
       "empty": "You have no members yet.",
       "removeMember": {
         "title": "Remove \"{{member}}\" from your organization?",

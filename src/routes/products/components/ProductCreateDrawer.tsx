@@ -403,7 +403,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(handleSubmission)}
-          onCancel={localOnClose}
         />
       }
     >

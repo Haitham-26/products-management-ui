@@ -29,10 +29,12 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons/faUserPlus";
 import { UserAvatar } from "../../../components/UserAvatar";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const StickyBar = styled.div<{ blur: boolean }>`
   position: sticky;
-  top: 6.5rem;
+  // 4rem = Header's height on mobile
+  top: 4rem;
   z-index: 100;
   margin-bottom: ${({ theme, blur }) => (!blur ? theme.spacing.md : 0)};
 
@@ -51,6 +53,11 @@ const StickyBar = styled.div<{ blur: boolean }>`
 
   backdrop-filter: ${({ blur }) => (blur ? "blur(10px)" : "none")};
   -webkit-backdrop-filter: ${({ blur }) => (blur ? "blur(10px)" : "none")};
+
+  @media (min-width: ${Breakpoints.MD}) {
+    // 7.5rem = Header's height on mobile
+    top: 7.5rem;
+  }
 `;
 
 const MemberHeader = styled.div`
@@ -100,14 +107,15 @@ const Info = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  width: 100%;
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 70vh;
 `;
 
 const PermissionTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  text-align: start;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 `;
 
 const Th = styled.th`
@@ -117,6 +125,21 @@ const Th = styled.th`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.small};
   border-bottom: 2px solid ${({ theme }) => theme.colors.border};
+  white-space: nowrap;
+  background: ${({ theme }) => theme.colors.surface};
+
+  position: sticky;
+  top: 0;
+  z-index: 3;
+
+  &:not(:last-child) {
+    border-inline-end: 1px solid ${({ theme }) => theme.colors.border};
+  }
+`;
+
+const FirstTh = styled(Th)`
+  inset-inline-start: 0;
+  z-index: 4;
 `;
 
 const Td = styled.td`
@@ -124,6 +147,22 @@ const Td = styled.td`
   vertical-align: middle;
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: ${({ theme }) => theme.typography.body};
+  white-space: nowrap;
+
+  &:first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 2;
+    background: ${({ theme }) => theme.colors.surface};
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  }
+
+  p {
+    white-space: nowrap;
+  }
 `;
 
 const Tr = styled.tr`
@@ -360,7 +399,7 @@ export const UserPermissionsMembersTab: React.FC<
                     <PermissionTable>
                       <thead>
                         <tr>
-                          <Th>{t("common.entity")}</Th>
+                          <FirstTh>{t("common.entity")}</FirstTh>
                           {availableActions.map((action) => (
                             <Th key={action}>
                               {t(`common.${action.toLowerCase()}`)}

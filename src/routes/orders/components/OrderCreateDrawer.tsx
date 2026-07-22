@@ -394,7 +394,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
-          onCancel={localOnClose}
           confirmDisabled={!productsPermissions.CREATE}
         />
       }

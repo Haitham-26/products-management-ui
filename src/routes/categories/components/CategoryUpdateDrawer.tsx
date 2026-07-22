@@ -133,7 +133,6 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onUpdate)}
-          onCancel={localOnClose}
           editMode
         />
       }

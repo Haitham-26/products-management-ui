@@ -121,7 +121,6 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
-          onCancel={localOnClose}
         />
       }
     >

@@ -86,11 +86,13 @@ const Wrapper = styled.div`
   position: sticky;
   top: 0;
   z-index: 100;
-
   display: flex;
   flex-direction: column;
+  height: 4rem;
 
   @media (max-width: ${Breakpoints.MD}) {
+    justify-content: center;
+
     & > div:first-child {
       background: ${({ theme }) => theme.colors.primary}20;
     }

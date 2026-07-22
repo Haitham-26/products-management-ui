@@ -126,7 +126,6 @@ export const TagUpdateDrawer: React.FC<TagUpdateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onUpdate)}
-          onCancel={onClose}
           editMode
         />
       }

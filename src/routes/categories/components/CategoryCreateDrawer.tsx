@@ -122,7 +122,6 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
-          onCancel={localOnClose}
         />
       }
     >

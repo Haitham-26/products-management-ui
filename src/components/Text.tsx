@@ -52,6 +52,7 @@ type TextProps = {
   textAlign?: React.CSSProperties["textAlign"];
   fontStyle?: React.CSSProperties["fontStyle"];
   lineHeight?: React.CSSProperties["lineHeight"];
+  className?: string;
 };
 
 export const Text: React.FC<TextProps> = ({ children, ...props }) => {

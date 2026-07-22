@@ -11,7 +11,6 @@ const Container = styled.div`
 type DrawerExtraHeaderProps = {
   editMode?: boolean;
   onConfirm: VoidFunction;
-  onCancel: VoidFunction;
   loading?: boolean;
   confirmDisabled?: boolean;
 };
@@ -19,7 +18,6 @@ type DrawerExtraHeaderProps = {
 export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
   editMode,
   onConfirm,
-  onCancel,
   loading = false,
   confirmDisabled = false,
 }) => {
@@ -27,10 +25,6 @@ export const DrawerExtraHeader: React.FC<DrawerExtraHeaderProps> = ({
 
   return (
     <Container>
-      <Button variant="ghost" onClick={onCancel}>
-        {t("cancel")}
-      </Button>
-
       <Button onClick={onConfirm} loading={loading} disabled={confirmDisabled}>
         {t(editMode ? "edit" : "create")}
       </Button>

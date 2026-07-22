@@ -426,7 +426,6 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onSave)}
-          onCancel={onClose}
           editMode
         />
       }

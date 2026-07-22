@@ -11,23 +11,23 @@ import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../theme/Breakpoints";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
 const Top = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: ${Breakpoints.SM}) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 const TitleBlock = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+  min-width: 0;
 `;
 
 const IconBox = styled.div`
@@ -37,6 +37,7 @@ const IconBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 
   background: ${({ theme }) => theme.colors.primary}15;
   border: 1px solid ${({ theme }) => theme.colors.primary}30;
@@ -50,11 +51,44 @@ const IconBox = styled.div`
 const TitleGroup = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
+
+  .page-header-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   span {
     font-size: 0.75rem;
     color: ${({ theme }) => theme.colors.textSecondary};
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
+`;
+
+const ActionWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: ${Breakpoints.SM}) {
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+`;
+//
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
 const ContextBar = styled.div`
@@ -244,6 +278,7 @@ type PageHeaderProps = {
 
   bulkActionsContent?: React.ReactNode;
   selectedTableItemsCount?: number;
+  className?: string;
 };
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -255,6 +290,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   filters,
   bulkActionsContent,
   selectedTableItemsCount = 0,
+  className,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -262,7 +298,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Top>
         <TitleBlock>
           <IconBox>
@@ -270,19 +306,24 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           </IconBox>
 
           <TitleGroup>
-            <Text fontSize="title">{title}</Text>
+            <Text fontSize="title" className="page-header-title">
+              {title}
+            </Text>
+
             {subtitle ? <span>{subtitle}</span> : null}
           </TitleGroup>
         </TitleBlock>
 
         {action ? (
-          <Button
-            icon={action.icon}
-            onClick={action.onClick}
-            variant={action.variant}
-          >
-            {action.title}
-          </Button>
+          <ActionWrapper>
+            <Button
+              icon={action.icon}
+              onClick={action.onClick}
+              variant={action.variant}
+            >
+              {action.title}
+            </Button>
+          </ActionWrapper>
         ) : null}
       </Top>
 

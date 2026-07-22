@@ -159,7 +159,6 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onUpdate)}
-          onCancel={localOnClose}
           editMode
         />
       }
