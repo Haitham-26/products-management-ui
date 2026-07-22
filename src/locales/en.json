@@ -149,7 +149,7 @@
     },
     "statusUpdateSuccess": "Product status updated successfully!",
     "subheader": {
-      "action": "Create New Product",
+      "action": "New Product",
       "inputPlaceholder": "Search by name, description, or ID..."
     },
     "title": "Products",
@@ -249,7 +249,7 @@
   "orders": {
     "title": "Orders",
     "subheader": {
-      "action": "Create New Order",
+      "action": "New Order",
       "inputPlaceholder": "Search by customer information or ID..."
     },
     "actions": {
@@ -268,7 +268,8 @@
         "unarchived": "Not Archived"
       },
       "totalAmount": "Total Amount",
-      "totalProfit": "Total Profit"
+      "totalProfit": "Total Profit",
+      "itemsCount": "Items Count"
     },
     "filters": {
       "showArchived": "Show Archived"
@@ -397,7 +398,7 @@
       "usageCount": "Usage Count"
     },
     "subheader": {
-      "action": "Create New Category",
+      "action": "New Category",
       "inputPlaceholder": "Search by name or description..."
     },
     "create": {
@@ -438,7 +439,7 @@
       "usageCount": "Usage Count"
     },
     "subheader": {
-      "action": "Create New Tag",
+      "action": "New Tag",
       "inputPlaceholder": "Search by name or description..."
     },
     "create": {
@@ -557,7 +558,7 @@
     },
     "members": {
       "title": "Members",
-      "subtitle": "Manage members permissions",
+      "subtitle": "Manage permissions",
       "empty": "You have no members yet.",
       "removeMember": {
         "title": "Remove \"{{member}}\" from your organization?",
@@ -640,7 +641,8 @@
     "cancelSort": "Click to cancel sort",
     "emptyText": "No data",
     "itemsPerPage": "per page",
-    "total": "Total items: {{total}}"
+    "total": "Total items: {{total}}",
+    "selectedCount": "{{count}} of {{total}} selected"
   },
   "common": {
     "email": "Email",
@@ -712,7 +714,9 @@
     "success": "Success",
     "error": "Error",
     "apiError": "Server Error",
-    "address": "Address"
+    "address": "Address",
+    "selectAll": "Select All",
+    "clearSelected": "Clear Selected"
   },
   "errors": {
     "general": {

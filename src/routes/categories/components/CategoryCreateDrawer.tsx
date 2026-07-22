@@ -23,7 +23,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const FormSection = styled.section`
@@ -123,7 +122,6 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
-          onCancel={localOnClose}
         />
       }
     >

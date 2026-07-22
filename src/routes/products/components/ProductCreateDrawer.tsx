@@ -44,6 +44,7 @@ import type { UploadFile } from "antd";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import type { ThemeType } from "../../../theme/theme";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const MAX_GALLERY_IMAGES_COUNT = 5;
 
@@ -51,7 +52,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const FormSection = styled.section`
@@ -117,9 +117,13 @@ const PriceBadgeBold = styled.b<{ color: keyof ThemeType["colors"] }>`
 
 const TwoInputsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (min-width: ${Breakpoints.MD}) {
+    grid-template-columns: 1fr 1fr;
+  }
 `;
 
 const ImagesGrid = styled.div`
@@ -399,7 +403,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(handleSubmission)}
-          onCancel={localOnClose}
         />
       }
     >

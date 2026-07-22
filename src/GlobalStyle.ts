@@ -8,8 +8,6 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html {
-    min-height: 100vh;
-
     background: linear-gradient(90deg, #cde5ff 0%, #f6faff 100%);
     background-position: center;
     background-size: cover;
@@ -49,6 +47,11 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 400;
     font-style: normal;
     font-display: swap;
+  }
+
+
+  #root {
+    min-height: 100vh
   }
 
   body {
@@ -119,6 +122,12 @@ const GlobalStyle = createGlobalStyle`
   transform: scale(1.05);
 }
 
+@media (max-width: 768px) {
+  #root {
+    display: flex;
+    flex-direction: column;
+  }
+}
 `;
 
 export default GlobalStyle;

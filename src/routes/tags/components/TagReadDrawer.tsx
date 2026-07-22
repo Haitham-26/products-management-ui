@@ -4,12 +4,12 @@ import { Drawer } from "../../../components/Drawer";
 import { Text } from "../../../components/Text";
 import type { Tag } from "../../../model/tag/types/Tag";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "../../../utils/Date";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const Section = styled.section`
@@ -81,6 +81,15 @@ export const TagReadDrawer: React.FC<TagReadDrawerProps> = ({
                 count: tag.usageCount,
               })}
             </Text>
+          </DataItem>
+        </Section>
+
+        <Section>
+          <DataItem>
+            <Text fontSize="small" color="textSecondary" fontWeight="bold">
+              {t("common.filters.creationDate.title")}
+            </Text>
+            <Text>{formatDate(tag.createdAt, true)}</Text>
           </DataItem>
         </Section>
       </FormContainer>

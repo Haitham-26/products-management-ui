@@ -45,6 +45,10 @@ import { OrderBulkManageStatusModal } from "./components/OrderBulkManageStatusMo
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import { Breakpoints } from "../../theme/Breakpoints";
+import { Grid } from "antd";
+import { PaginatedDataCards } from "../../components/PaginatedDataCards";
+import { OrderCard } from "./components/OrderCard";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -83,15 +87,21 @@ const StyledContainer = styled(Container)`
   .positive-profit {
     color: ${({ theme }) => theme.colors.success};
   }
+
+  @media (max-width: ${Breakpoints.MD}) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 `;
 
 const BulkActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
+  width: 100%;
 
-  button {
-    height: auto;
+  @media (min-width: ${Breakpoints.MD}) {
+    justify-content: flex-end;
   }
 `;
 
@@ -121,6 +131,7 @@ export const Orders: React.FC = () => {
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const orders = useAppSelector(orderSliceSelectors.selectOrders);
@@ -159,6 +170,15 @@ export const Orders: React.FC = () => {
       replace: true,
     });
     debouncedSetSearchParams(newFilters);
+  };
+
+  const sharedPaginationOptions = {
+    current: ordersMeta?.page || 1,
+    pageSize: ordersMeta?.limit || 10,
+    total: ordersMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
   };
 
   const applyFilter = useCallback(
@@ -209,19 +229,26 @@ export const Orders: React.FC = () => {
     setOrderToggleArchiveVisible(true);
   };
 
+  const tableActions = useMemo(
+    () => ({
+      onEdit: permissions.UPDATE ? onEdit : undefined,
+      onRead: permissions.READ ? onRead : undefined,
+      onManageStatus: permissions.UPDATE ? onManageStatus : undefined,
+      onToggleArchive: permissions.UPDATE ? onToggleArchive : undefined,
+    }),
+    [permissions.UPDATE, permissions.READ],
+  );
+
   const tableColumns = useMemo(
     () =>
       createOrdersTableColumns({
         functions: {
-          onEdit: permissions.UPDATE ? onEdit : undefined,
-          onRead: permissions.READ ? onRead : undefined,
-          onManageStatus: permissions.UPDATE ? onManageStatus : undefined,
-          onToggleArchive: permissions.UPDATE ? onToggleArchive : undefined,
           t,
+          ...tableActions,
         },
         currency: settings.currency,
       }),
-    [settings.currency, permissions, t],
+    [settings.currency, tableActions, t],
   );
 
   const fetchOrders = async (removedItemsCount: number = 0) => {
@@ -380,26 +407,39 @@ export const Orders: React.FC = () => {
       />
 
       {permissions.READ ? (
-        <Table
-          loading={ordersLoading}
-          columns={tableColumns}
-          dataSource={orders}
-          rowSelection={{
-            selectedRowKeys: selectedRowIds,
-            onChange(newSelectedRowKeys) {
-              setSelectedRowIds(newSelectedRowKeys);
-            },
-          }}
-          pagination={{
-            current: ordersMeta?.page || 1,
-            pageSize: ordersMeta?.limit || 10,
-            total: ordersMeta?.total || 0,
-            onChange: handlePageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
-            position: ["bottomRight"],
-          }}
-        />
+        md ? (
+          <Table
+            loading={ordersLoading}
+            columns={tableColumns}
+            dataSource={orders}
+            rowSelection={{
+              selectedRowKeys: selectedRowIds,
+              onChange(newSelectedRowKeys) {
+                setSelectedRowIds(newSelectedRowKeys);
+              },
+            }}
+            pagination={{
+              ...sharedPaginationOptions,
+              placement: ["bottomEnd"],
+            }}
+          />
+        ) : (
+          <PaginatedDataCards
+            data={orders}
+            paginationOptions={sharedPaginationOptions}
+            selectedData={selectedRowIds}
+            setSelectedData={setSelectedRowIds}
+            loading={ordersLoading}
+            itemRender={(item) => (
+              <OrderCard
+                selectedData={selectedRowIds}
+                setSelectedData={setSelectedRowIds}
+                order={item as Order}
+                actions={tableActions}
+              />
+            )}
+          />
+        )
       ) : (
         <NoPermissions />
       )}

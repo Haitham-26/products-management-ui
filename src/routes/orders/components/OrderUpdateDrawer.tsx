@@ -30,7 +30,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const Section = styled.section`
@@ -160,7 +159,6 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onUpdate)}
-          onCancel={localOnClose}
           editMode
         />
       }

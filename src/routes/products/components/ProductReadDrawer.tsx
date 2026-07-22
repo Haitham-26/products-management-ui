@@ -19,18 +19,12 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const HeaderSection = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.lg};
   align-items: center;
-
-  @media (max-width: 600px) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 `;
 
 const HeaderMeta = styled.div`
@@ -163,8 +157,6 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
   onClose,
   product,
 }) => {
-  console.log(product);
-
   const { t } = useTranslation();
 
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);

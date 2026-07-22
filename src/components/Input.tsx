@@ -5,6 +5,7 @@ import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
 import { Tooltip } from "antd";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import i18n from "../i18n";
 
 const Wrapper = styled.div`
   display: flex;
@@ -42,7 +43,7 @@ const StyledInput = styled.input<{ valid: boolean; originalType?: string }>`
     ${({ theme, valid }) => (!valid ? theme.colors.error : theme.colors.border)};
 
   border-radius: ${({ theme }) => theme.radius.md};
-  font-size: 0.875rem;
+  font-size: ${({ theme }) => theme.typography.small};
   height: 2rem;
 
   ${({ originalType, theme }) =>
@@ -113,7 +114,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       const ltrInputTypes: React.InputHTMLAttributes<HTMLInputElement>["type"][] =
         ["email", "number", "password", "tel", "url"];
 
-      return ltrInputTypes.includes(type) ? "ltr" : props.dir || "auto";
+      return ltrInputTypes.includes(type)
+        ? "ltr"
+        : props.dir || i18n.dir(i18n.language);
     };
 
     return (

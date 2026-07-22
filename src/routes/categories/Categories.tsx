@@ -37,18 +37,32 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import { PaginatedDataCards } from "../../components/PaginatedDataCards";
+import { CategoryCard } from "./components/CategoryCard";
+import { Grid } from "antd";
+import { Breakpoints } from "../../theme/Breakpoints";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
+
+  @media (max-width: ${Breakpoints.MD}) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 `;
 
 const BulkActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+  width: 100%;
 
-  button {
-    height: auto;
+  button:first-child {
+    color: ${({ theme }) => theme.colors.error};
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    justify-content: flex-end;
   }
 `;
 
@@ -70,6 +84,7 @@ export const Categories: React.FC = () => {
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
 
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const categoriesLoading = useAppSelector(
@@ -112,6 +127,15 @@ export const Categories: React.FC = () => {
       replace: true,
     });
     debouncedSetSearchParams(newFilters);
+  };
+
+  const sharedPaginationOptions = {
+    current: categoriesMeta?.page || 1,
+    pageSize: categoriesMeta?.limit || 10,
+    total: categoriesMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
   };
 
   const applyFilter = useCallback(
@@ -261,15 +285,22 @@ export const Categories: React.FC = () => {
     }
   };
 
+  const tableActions = useMemo(
+    () => ({
+      onDelete: permissions.DELETE ? onDelete : undefined,
+      onEdit: permissions.UPDATE ? onEdit : undefined,
+      onRead: permissions.READ ? onRead : undefined,
+    }),
+    [permissions.DELETE, permissions.READ, permissions.UPDATE],
+  );
+
   const tableColumns = useMemo(
     () =>
       createCategoriesTableColumns({
-        onDelete: permissions.DELETE ? onDelete : undefined,
-        onEdit: permissions.UPDATE ? onEdit : undefined,
-        onRead: permissions.READ ? onRead : undefined,
         t,
+        ...tableActions,
       }),
-    [permissions, t],
+    [tableActions, t],
   );
 
   useEffect(() => {
@@ -335,26 +366,39 @@ export const Categories: React.FC = () => {
       />
 
       {permissions.READ ? (
-        <Table
-          loading={categoriesLoading}
-          columns={tableColumns}
-          dataSource={categories}
-          rowSelection={{
-            selectedRowKeys: selectedRowIds,
-            onChange(newSelectedRowKeys) {
-              setSelectedRowIds(newSelectedRowKeys);
-            },
-          }}
-          pagination={{
-            current: categoriesMeta?.page || 1,
-            pageSize: categoriesMeta?.limit || 10,
-            total: categoriesMeta?.total || 0,
-            onChange: handlePageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
-            position: ["bottomRight"],
-          }}
-        />
+        md ? (
+          <Table
+            loading={categoriesLoading}
+            columns={tableColumns}
+            dataSource={categories}
+            rowSelection={{
+              selectedRowKeys: selectedRowIds,
+              onChange(newSelectedRowKeys) {
+                setSelectedRowIds(newSelectedRowKeys);
+              },
+            }}
+            pagination={{
+              ...sharedPaginationOptions,
+              placement: ["bottomEnd"],
+            }}
+          />
+        ) : (
+          <PaginatedDataCards
+            data={categories}
+            paginationOptions={sharedPaginationOptions}
+            selectedData={selectedRowIds}
+            setSelectedData={setSelectedRowIds}
+            loading={categoriesLoading}
+            itemRender={(item) => (
+              <CategoryCard
+                category={item as Category}
+                selectedData={selectedRowIds}
+                setSelectedData={setSelectedRowIds}
+                actions={tableActions}
+              />
+            )}
+          />
+        )
       ) : (
         <NoPermissions />
       )}

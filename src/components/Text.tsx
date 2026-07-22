@@ -31,6 +31,7 @@ const StyledP = styled.p<StyledTextProps>`
     lineHeight || lineHeights[fontSize || "body"]};
   text-align: ${({ textAlign }) => textAlign};
   font-style: ${({ fontStyle }) => fontStyle};
+  word-break: break-word;
 `;
 
 type StyledTextProps = {
@@ -51,6 +52,7 @@ type TextProps = {
   textAlign?: React.CSSProperties["textAlign"];
   fontStyle?: React.CSSProperties["fontStyle"];
   lineHeight?: React.CSSProperties["lineHeight"];
+  className?: string;
 };
 
 export const Text: React.FC<TextProps> = ({ children, ...props }) => {

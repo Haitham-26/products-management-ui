@@ -37,18 +37,32 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
+import { Grid } from "antd";
+import { PaginatedDataCards } from "../../components/PaginatedDataCards";
+import { TagCard } from "./components/TagCard";
+import { Breakpoints } from "../../theme/Breakpoints";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
+
+  @media (max-width: ${Breakpoints.MD}) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 `;
 
 const BulkActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+  width: 100%;
 
-  button {
-    height: auto;
+  button:first-child {
+    color: ${({ theme }) => theme.colors.error};
+  }
+
+  @media (min-width: ${Breakpoints.MD}) {
+    justify-content: flex-end;
   }
 `;
 
@@ -69,6 +83,7 @@ export const Tags: React.FC = () => {
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
 
   const user = useAppSelector(userSliceSelectors.selectUser)!;
   const tags = useAppSelector(tagSliceSelectors.selectTags);
@@ -107,6 +122,15 @@ export const Tags: React.FC = () => {
       replace: true,
     });
     debouncedSetSearchParams(newFilters);
+  };
+
+  const sharedPaginationOptions = {
+    current: tagsMeta?.page || 1,
+    pageSize: tagsMeta?.limit || 10,
+    total: tagsMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
   };
 
   const applyFilter = useCallback(
@@ -256,15 +280,22 @@ export const Tags: React.FC = () => {
     }
   };
 
+  const tableActions = useMemo(
+    () => ({
+      onDelete: permissions.DELETE ? onDelete : undefined,
+      onEdit: permissions.UPDATE ? onEdit : undefined,
+      onRead: permissions.READ ? onRead : undefined,
+    }),
+    [permissions.DELETE, permissions.READ, permissions.UPDATE],
+  );
+
   const tableColumns = useMemo(
     () =>
       createTagsTableColumns({
-        onDelete: permissions.DELETE ? onDelete : undefined,
-        onEdit: permissions.UPDATE ? onEdit : undefined,
-        onRead: permissions.READ ? onRead : undefined,
+        ...tableActions,
         t,
       }),
-    [permissions, t],
+    [t, tableActions],
   );
 
   useEffect(() => {
@@ -330,26 +361,39 @@ export const Tags: React.FC = () => {
       />
 
       {permissions.READ ? (
-        <Table
-          loading={tagsLoading}
-          columns={tableColumns}
-          dataSource={tags}
-          pagination={{
-            current: tagsMeta?.page || 1,
-            pageSize: tagsMeta?.limit || 10,
-            total: tagsMeta?.total || 0,
-            onChange: handlePageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "50", "100"],
-            position: ["bottomRight"],
-          }}
-          rowSelection={{
-            selectedRowKeys: selectedRowIds,
-            onChange(newSelectedRowKeys) {
-              setSelectedRowIds(newSelectedRowKeys);
-            },
-          }}
-        />
+        md ? (
+          <Table
+            loading={tagsLoading}
+            columns={tableColumns}
+            dataSource={tags}
+            pagination={{
+              ...sharedPaginationOptions,
+              placement: ["bottomEnd"],
+            }}
+            rowSelection={{
+              selectedRowKeys: selectedRowIds,
+              onChange(newSelectedRowKeys) {
+                setSelectedRowIds(newSelectedRowKeys);
+              },
+            }}
+          />
+        ) : (
+          <PaginatedDataCards
+            data={tags}
+            loading={tagsLoading}
+            paginationOptions={sharedPaginationOptions}
+            selectedData={selectedRowIds}
+            setSelectedData={setSelectedRowIds}
+            itemRender={(item) => (
+              <TagCard
+                tag={item as Tag}
+                selectedData={selectedRowIds}
+                setSelectedData={setSelectedRowIds}
+                actions={tableActions}
+              />
+            )}
+          />
+        )
       ) : (
         <NoPermissions />
       )}

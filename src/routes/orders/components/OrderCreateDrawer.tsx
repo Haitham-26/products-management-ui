@@ -40,7 +40,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const FormSection = styled.section`
@@ -395,7 +394,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         <DrawerExtraHeader
           loading={loading}
           onConfirm={handleSubmit(onCreate)}
-          onCancel={localOnClose}
           confirmDisabled={!productsPermissions.CREATE}
         />
       }

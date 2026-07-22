@@ -1,20 +1,11 @@
 import type React from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import styled, { createGlobalStyle } from "styled-components";
-
-const GlobalStyle = createGlobalStyle`
-  #root {
-    height: inherit;
-    align-content: center;
-  }
-`;
+import styled from "styled-components";
 
 const Container = styled.div`
-  margin: auto;
-
-  @media (min-width: 768px) {
-    max-width: 25rem;
-  }
+  min-height: inherit;
+  align-content: center;
+  padding-block: ${({ theme }) => theme.spacing.md};
 `;
 
 export const PublicLayout: React.FC = () => {
@@ -22,7 +13,6 @@ export const PublicLayout: React.FC = () => {
     <Container>
       <Outlet />
       <ScrollRestoration />
-      <GlobalStyle />
     </Container>
   );
 };

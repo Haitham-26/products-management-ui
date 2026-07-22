@@ -149,7 +149,7 @@
       "success": "تم حذف المنتجات بنجاح!"
     },
     "subheader": {
-      "action": "إنشاء منتج جديد",
+      "action": "منتج جديد",
       "inputPlaceholder": "ابحث بالاسم أو الوصف أو الرمز التعريفي..."
     },
     "title": "المنتجات",
@@ -249,7 +249,7 @@
   "orders": {
     "title": "الطلبات",
     "subheader": {
-      "action": "إنشاء طلب جديد",
+      "action": "طلب جديد",
       "inputPlaceholder": "ابحث ببيانات العميل أو الرمز التعريفي..."
     },
     "actions": {
@@ -268,7 +268,8 @@
         "unarchived": "غير مؤرشف"
       },
       "totalAmount": "إجمالي المبلغ",
-      "totalProfit": "إجمالي الربح"
+      "totalProfit": "إجمالي الربح",
+      "itemsCount": "عدد القطع"
     },
     "filters": {
       "showArchived": "اظهار المؤرشفات"
@@ -394,7 +395,7 @@
   "categories": {
     "title": "التصنيفات",
     "subheader": {
-      "action": "إنشاء تصنيف جديد",
+      "action": "تصنيف جديد",
       "inputPlaceholder": "ابحث بالاسم أو الوصف..."
     },
     "fields": {
@@ -435,7 +436,7 @@
   "tags": {
     "title": "الوسوم",
     "subheader": {
-      "action": "إنشاء وسم جديد",
+      "action": "وسم جديد",
       "inputPlaceholder": "ابحث بالاسم أو الوصف..."
     },
     "fields": {
@@ -557,7 +558,7 @@
     },
     "members": {
       "title": "الأعضاء",
-      "subtitle": "إدارة صلاحيات الأعضاء",
+      "subtitle": "إدارة الصلاحيات",
       "empty": "ليس لديك أي أعضاء بعد.",
       "removeMember": {
         "title": "هل تريد إزالة \"{{member}}\" من المنظمة؟",
@@ -640,7 +641,8 @@
     "cancelSort": "انقر لإلغاء الترتيب",
     "emptyText": "لا يوجد بيانات",
     "itemsPerPage": "لكل صفحة",
-    "total": "إجمالي العناصر: {{total}}"
+    "total": "إجمالي العناصر: {{total}}",
+    "selectedCount": "تم تحديد {{count}} من {{total}}"
   },
   "common": {
     "email": "البريد الإلكتروني",
@@ -712,7 +714,9 @@
     "success": "نجاح",
     "error": "خطأ",
     "apiError": "خطأ في الخادم",
-    "address": "العنوان"
+    "address": "العنوان",
+    "selectAll": "تحديد الكل",
+    "clearSelected": "إلغاء تحديد الكل"
   },
   "errors": {
     "general": {

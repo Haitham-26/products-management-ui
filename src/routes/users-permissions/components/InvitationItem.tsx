@@ -12,9 +12,21 @@ import { organizationActions } from "../../../redux/organization/organization.sl
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import { Tag } from "antd";
+
+const getStatusColor = (status: InvitationStatus) => {
+  switch (status) {
+    case InvitationStatus.ACCEPTED:
+      return "success";
+    case InvitationStatus.CANCELED:
+    case InvitationStatus.DECLINED:
+      return "error";
+    case InvitationStatus.PENDING:
+      return "warning";
+  }
+};
 
 const Card = styled.div`
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -24,31 +36,8 @@ const Card = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   box-shadow: ${({ theme }) => theme.shadow.sm};
   gap: ${({ theme }) => theme.spacing.lg};
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: transparent;
-    transition: background-color 0.2s ease;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadow.md};
-    border-color: ${({ theme }) => theme.colors.primary}40;
-
-    &::before {
-      background: ${({ theme }) => theme.colors.primary};
-    }
-  }
-
-  @media (min-width: 768px) {
+  @media (min-width: ${Breakpoints.MD}) {
     flex-direction: row;
     align-items: center;
   }
@@ -72,39 +61,6 @@ const EmailText = styled(Text)`
   font-size: ${({ theme }) => theme.typography.body};
   color: ${({ theme }) => theme.colors.textPrimary};
   letter-spacing: -0.01em;
-`;
-
-const StatusBadge = styled.span<{ status: InvitationStatus }>`
-  display: inline-flex;
-  align-items: center;
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: ${({ theme }) => theme.radius.full};
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  ${({ status, theme }) => {
-    switch (status) {
-      case InvitationStatus.ACCEPTED:
-        return `
-          background-color: ${theme.colors.success}10;
-          color: ${theme.colors.success};
-        `;
-      case InvitationStatus.PENDING:
-        return `
-          background-color: ${theme.colors.warning}10;
-          color: ${theme.colors.warning};
-        `;
-      case InvitationStatus.DECLINED:
-      case InvitationStatus.CANCELED:
-      default:
-        return `
-          background-color: ${theme.colors.error}10;
-          color: ${theme.colors.error};
-        `;
-    }
-  }}
 `;
 
 const MetaGrid = styled.div`
@@ -201,11 +157,11 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
       <MainContent>
         <HeaderGroup>
           <EmailText fontWeight="bold">{invitation.inviteeEmail}</EmailText>
-          <StatusBadge status={invitation.status}>
+          <Tag color={getStatusColor(invitation.status)}>
             {t(
               `usersPermissions.invitations.status.${invitation.status.toLowerCase()}`,
             )}
-          </StatusBadge>
+          </Tag>
         </HeaderGroup>
 
         <MetaGrid>
