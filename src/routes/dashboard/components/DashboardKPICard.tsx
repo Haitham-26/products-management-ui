@@ -8,48 +8,67 @@ import isString from "lodash/isString";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
-  height: 100%;
+  min-height: 120px;
 `;
 
 const Header = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const MainValue = styled.div`
+  display: flex;
+  align-items: baseline;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+`;
+
+const Footer = styled.div`
+  display: flex;
+  align-items: center;
+  min-height: 24px;
 `;
 
 type DashboardKPICardProps = {
   icon: IconProp;
   title: string;
-  value: string | React.ReactNode;
+  value: string | number | React.ReactNode;
+  extra?: React.ReactNode;
 };
 
 export const DashboardKPICard: React.FC<DashboardKPICardProps> = ({
   icon,
   title,
   value,
+  extra,
 }) => {
   return (
     <Container>
       <Header>
-        <Icon icon={icon} size="sm" color="textSecondary" />
-
-        <Text fontSize="small" color="textSecondary">
+        <Text fontSize="small" color="textSecondary" fontWeight="medium">
           {title}
         </Text>
+        <Icon icon={icon} size="sm" color="textSecondary" />
       </Header>
 
-      {isString(value) ? (
-        <Text fontSize="subtitle" color="primary" fontWeight="bold">
-          {value}
-        </Text>
-      ) : (
-        value
-      )}
+      <MainValue>
+        {isString(value) || typeof value === "number" ? (
+          <Text fontSize="subtitle" color="primary" fontWeight="bold">
+            {value}
+          </Text>
+        ) : (
+          value
+        )}
+      </MainValue>
+
+      <Footer>{extra || null}</Footer>
     </Container>
   );
 };

@@ -89,9 +89,15 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "totalRevenues": "إجمالي المبيعات",
-    "totalProfits": "صافي الأرباح",
-    "pendingOrders": "الطلبات المعلقة",
+    "totalRevenues": {
+      "title": "إجمالي المبيعات",
+      "note": "الطلبات المسلّمة فقط"
+    },
+    "totalProfits": {
+      "title": "صافي الأرباح",
+      "note": "الطلبات المسلّمة فقط"
+    },
+    "pendingOrders": { "title": "الطلبات المعلقة", "action": "عرض الكل" },
     "stockAlerts": {
       "title": "تنبيهات المخزون",
       "out": "نفد",

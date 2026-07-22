@@ -89,9 +89,15 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalRevenues": "Total Revenue",
-    "totalProfits": "Total Profit",
-    "pendingOrders": "Pending Orders",
+    "totalRevenues": {
+      "title": "Total Revenue",
+      "note": "Delivered orders only"
+    },
+    "totalProfits": {
+      "title": "Total Profit",
+      "note": "Delivered orders only"
+    },
+    "pendingOrders": { "title": "Pending Orders", "action": "View All" },
     "stockAlerts": {
       "title": "Stock Alerts",
       "out": "Out",

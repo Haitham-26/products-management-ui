@@ -28,6 +28,9 @@ import { DashboardRevenueAndProfitChart } from "./components/DashboardRevenueAnd
 import { DashboardOrdersChart } from "./components/DashboardOrdersChart";
 import { DashboardTopProductsChart } from "./components/DashboardTopProductsChart";
 import { ProductStockStatus } from "../../model/product/types/ProductStockStatus.enum";
+import { Text } from "../../components/Text";
+import { Link } from "react-router-dom";
+import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 
 const getDateRangeOptions = (t: TFunction) =>
   Object.values(DatePeriodFilters).map((d) => ({
@@ -79,27 +82,24 @@ const ChartsGrid = styled.div`
 
 const BadgesWrapper = styled.div`
   display: flex;
-  gap: 4px;
-  margin-top: auto;
+  gap: 6px;
+  width: 100%;
 `;
 
 const AlertBadge = styled(Tag)`
-  flex-grow: 1;
+  flex: 1;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 2px 6px;
+  margin: 0;
 
   .arrow-icon {
     opacity: 0;
-    transition: all 0.2s ease-in-out;
-  }
-
-  html[dir="ltr"] & .arrow-icon {
-    transform: translateX(-4px);
-  }
-  html[dir="rtl"] & .arrow-icon {
-    transform: translateX(4px);
+    transition:
+      transform 0.2s ease-in-out,
+      opacity 0.2s ease-in-out;
   }
 
   &:hover .arrow-icon {
@@ -107,10 +107,56 @@ const AlertBadge = styled(Tag)`
   }
 
   html[dir="ltr"] &:hover .arrow-icon {
-    transform: translateX(-8px);
+    transform: translateX(2px);
   }
+
   html[dir="rtl"] &:hover .arrow-icon {
-    transform: translateX(0px);
+    transform: translateX(-2px);
+  }
+`;
+
+const ExtraWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  width: fit-content;
+  border-radius: 9999px;
+  background: ${({ theme }) => `${theme.colors.success}0d`};
+  user-select: none;
+
+  p {
+    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  }
+`;
+
+const StatusDot = styled.span`
+  width: 6px;
+  height: 6px;
+  border-radius: ${({ theme }) => theme.radius.circle};
+  background: ${({ theme }) => theme.colors.success};
+`;
+
+const ViewOrdersLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.85);
+  color: ${({ theme }) => theme.colors.primary} !important;
+  text-decoration: none;
+  font-weight: 500;
+
+  .arrow-icon {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &:hover .arrow-icon {
+    html[dir="ltr"] & {
+      transform: translateX(3px);
+    }
+    html[dir="rtl"] & {
+      transform: translateX(-3px);
+    }
   }
 `;
 
@@ -127,7 +173,13 @@ export const Dashboard: React.FC = () => {
     dashboardSliceSelectors.selectDashboardStatsLoading,
   );
 
-  const { dashboard } = appRoutes;
+  const { dashboard, orders } = appRoutes;
+  const isRtl = i18n.dir(i18n.language) === "rtl";
+  const arrowIcon = isRtl ? faArrowLeft : faArrowRight;
+
+  const outOfStockCount = 7;
+  const lowStockCount = 5;
+  const totalStockAlerts = outOfStockCount + lowStockCount;
 
   useEffect(() => {
     dispatch(dashboardActions.getDashboardStats({ datePeriod }));
@@ -152,26 +204,51 @@ export const Dashboard: React.FC = () => {
           <KPIsGrid>
             <DashboardKPICard
               icon={faSackDollar}
-              title={t("dashboard.totalRevenues")}
+              title={t("dashboard.totalRevenues.title")}
               value="$4,000"
+              extra={
+                <ExtraWrapper>
+                  <StatusDot />
+                  <Text fontSize="small" color="success">
+                    {t("dashboard.totalRevenues.note")}
+                  </Text>
+                </ExtraWrapper>
+              }
             />
 
             <DashboardKPICard
               icon={faChartLine}
-              title={t("dashboard.totalProfits")}
+              title={t("dashboard.totalProfits.title")}
               value="$275"
+              extra={
+                <ExtraWrapper>
+                  <StatusDot />
+                  <Text fontSize="small" color="success">
+                    {t("dashboard.totalProfits.note")}
+                  </Text>
+                </ExtraWrapper>
+              }
             />
 
             <DashboardKPICard
               icon={faClock}
-              title={t("dashboard.pendingOrders")}
+              title={t("dashboard.pendingOrders.title")}
               value="175"
+              extra={
+                <ViewOrdersLink
+                  to={`${orders.path}?status=${OrderStatus.PENDING}`}
+                >
+                  <span>{t("dashboard.pendingOrders.action")}</span>
+                  <Icon icon={arrowIcon} size="xs" className="arrow-icon" />
+                </ViewOrdersLink>
+              }
             />
 
             <DashboardKPICard
               icon={faTriangleExclamation}
               title={t("dashboard.stockAlerts.title")}
-              value={
+              value={totalStockAlerts}
+              extra={
                 <BadgesWrapper>
                   <AlertBadge
                     color="error"
@@ -179,36 +256,20 @@ export const Dashboard: React.FC = () => {
                     variant="outlined"
                   >
                     <span>
-                      {7} {t("dashboard.stockAlerts.out")}
+                      {outOfStockCount} {t("dashboard.stockAlerts.out")}
                     </span>
-                    <Icon
-                      icon={
-                        i18n.dir(i18n.language) === "ltr"
-                          ? faArrowRight
-                          : faArrowLeft
-                      }
-                      size="xs"
-                      className="arrow-icon"
-                    />
+                    <Icon icon={arrowIcon} size="xs" className="arrow-icon" />
                   </AlertBadge>
 
                   <AlertBadge
-                    href={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
                     color="warning"
+                    href={`/products?stockStatus=${ProductStockStatus.LOW_STOCK}`}
                     variant="outlined"
                   >
                     <span>
-                      {5} {t("dashboard.stockAlerts.low")}
+                      {lowStockCount} {t("dashboard.stockAlerts.low")}
                     </span>
-                    <Icon
-                      icon={
-                        i18n.dir(i18n.language) === "ltr"
-                          ? faArrowRight
-                          : faArrowLeft
-                      }
-                      size="xs"
-                      className="arrow-icon"
-                    />
+                    <Icon icon={arrowIcon} size="xs" className="arrow-icon" />
                   </AlertBadge>
                 </BadgesWrapper>
               }
@@ -217,9 +278,7 @@ export const Dashboard: React.FC = () => {
 
           <ChartsGrid>
             <DashboardRevenueAndProfitChart />
-
             <DashboardOrdersChart />
-
             <DashboardTopProductsChart />
           </ChartsGrid>
         </GridsWrapper>
