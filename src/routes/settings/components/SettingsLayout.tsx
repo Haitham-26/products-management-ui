@@ -15,10 +15,16 @@ import { SignUpMethods } from "../../../model/user/types/SignUpMethods";
 import { appRoutes } from "../../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const Layout = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.xl};
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  @media (min-width: ${Breakpoints.LG}) {
+    flex-direction: row;
+  }
 `;
 
 const Content = styled.div`
@@ -68,10 +74,7 @@ export const SettingsLayout: React.FC = () => {
       />
 
       <Layout>
-        <PageSidebar
-          pageRoute={appRoutes.settings.path.replace("/", "")}
-          sections={sections}
-        />
+        <PageSidebar pageRoute={appRoutes.settings.path} sections={sections} />
 
         <Content>
           <Outlet />

@@ -49,11 +49,11 @@ const MenuStyle = createGlobalStyle`
 
   
   @media (max-width: ${Breakpoints.MD}) {
-    .ant-menu {
+    .side-menu {
       display: flex;
     }
 
-    .ant-menu-item {
+    .side-menu-item {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -65,7 +65,7 @@ const MenuStyle = createGlobalStyle`
       height: 100% !important;
     }
 
-    .ant-menu-title-content {
+    .side-menu-title-content {
       overflow: visible !important;
       margin: 0 !important;
       font-size: ${({ theme: { typography } }) => typography.small} !important;
@@ -108,6 +108,7 @@ export const SideMenu: React.FC = () => {
         items={items}
         selectedKeys={[location.pathname]}
         overflowedIndicator={null}
+        prefixCls="side-menu"
       />
       <MenuStyle />
     </StyledContainer>

@@ -1,52 +1,80 @@
 import type React from "react";
 import styled from "styled-components";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Icon } from "./Icon";
+import { Grid, Menu, type MenuProps } from "antd";
+import { Breakpoints } from "../theme/Breakpoints";
 
-const Wrapper = styled.aside`
-  width: 240px;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
+const StyledMenu = styled(Menu)`
+  border: 0 !important;
+  background: transparent;
 
-const Item = styled(NavLink)`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  .ant-menu-item {
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.sm};
 
-  padding: ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.md};
+    height: auto;
+    line-height: normal;
+    margin: 0;
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
 
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
+    padding: ${({ theme }) => theme.spacing.sm} !important;
+    border-radius: ${({ theme }) => theme.radius.md};
 
-  border: 1px solid transparent;
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: 0.9rem;
+    font-weight: 500;
 
-  transition: all 0.15s ease;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
 
-  &:hover {
-    background: ${({ theme }) => `${theme.colors.primary}10`};
-    color: ${({ theme }) => theme.colors.primary};
+    &::after {
+      display: none !important;
+    }
+
+    .ant-menu-title-content {
+      margin-inline-start: 0 !important;
+    }
+
+    svg {
+      font-size: 14px;
+    }
+
+    &:hover {
+      background: ${({ theme }) => `${theme.colors.primary}10`} !important;
+      color: ${({ theme }) => theme.colors.primary} !important;
+    }
   }
 
-  &.active {
-    background: ${({ theme }) => `${theme.colors.primary}15`};
-    color: ${({ theme }) => theme.colors.primary};
-    border-color: ${({ theme }) => `${theme.colors.primary}30`};
+  .ant-menu-item-selected {
+    background: ${({ theme }) => `${theme.colors.primary}15`} !important;
+    color: ${({ theme }) => theme.colors.primary} !important;
+    border-color: ${({ theme }) => `${theme.colors.primary}30`} !important;
+
+    &::after {
+      display: none !important;
+    }
+
+    a,
+    svg {
+      color: inherit !important;
+    }
   }
-`;
 
-const IconWrapper = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .ant-menu-item-icon {
+    font-size: 14px !important;
+    min-width: 14px;
+  }
 
-  svg {
-    font-size: 14px;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (min-width: ${Breakpoints.LG}) {
+    width: 240px !important;
   }
 `;
 
@@ -65,16 +93,25 @@ export const PageSidebar: React.FC<PageSidebarProps> = ({
   pageRoute,
   sections,
 }) => {
+  const { lg } = Grid.useBreakpoint();
+
+  const location = useLocation();
+
+  const items: MenuProps["items"] = sections.map((sect) => {
+    const path = `${pageRoute}/${sect.key}`;
+
+    return {
+      key: path,
+      icon: <Icon icon={sect.icon} />,
+      label: <NavLink to={path}>{sect.label}</NavLink>,
+    };
+  });
+
   return (
-    <Wrapper>
-      {sections.map((section) => (
-        <Item key={section.key} to={`/${pageRoute}/${section.key}`}>
-          <IconWrapper>
-            <Icon icon={section.icon} />
-          </IconWrapper>
-          {section.label}
-        </Item>
-      ))}
-    </Wrapper>
+    <StyledMenu
+      mode={lg ? "inline" : "horizontal"}
+      items={items}
+      selectedKeys={[location.pathname]}
+    />
   );
 };
