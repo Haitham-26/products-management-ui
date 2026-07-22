@@ -39,11 +39,11 @@ const StyledContainer = styled(Container)`
 `;
 
 const MenuStyle = createGlobalStyle`
-  .ant-menu {
+  .side-menu {
     border: 0 !important;
   }
 
-  .ant-menu-item * {
+  .side-menu-item * {
     transition: all 0s ease !important; 
   }
 
