@@ -9,12 +9,12 @@ import { stringWithCurrencyCode } from "../../../utils/String";
 import { useTranslation } from "react-i18next";
 import type { ThemeType } from "../../../theme/theme";
 import { OrderItemReadCard } from "./OrderItemReadCard";
+import { formatDate } from "../../../utils/Date";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const OrderTitleContainer = styled.div`
@@ -56,10 +56,6 @@ const DataGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: ${({ theme }) => theme.spacing.lg};
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const DataItem = styled.div`
@@ -203,6 +199,15 @@ export const OrderReadDrawer: React.FC<Props> = ({
             <Text fontStyle={!order.note?.length ? "italic" : undefined}>
               {order.note || "_"}
             </Text>
+          </DataItem>
+        </Section>
+
+        <Section>
+          <DataItem>
+            <Text fontSize="small" color="textSecondary" fontWeight="bold">
+              {t("common.filters.creationDate.title")}
+            </Text>
+            <Text>{formatDate(order.createdAt, true)}</Text>
           </DataItem>
         </Section>
       </FormContainer>

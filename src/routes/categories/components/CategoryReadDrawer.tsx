@@ -4,12 +4,12 @@ import { Drawer } from "../../../components/Drawer";
 import { Text } from "../../../components/Text";
 import type { Category } from "../../../model/category/types/Category";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "../../../utils/Date";
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const Section = styled.section`
@@ -83,6 +83,15 @@ export const CategoryReadDrawer: React.FC<CategoryReadDrawerProps> = ({
                 count: category.usageCount ?? 0,
               })}
             </Text>
+          </DataItem>
+        </Section>
+
+        <Section>
+          <DataItem>
+            <Text fontSize="small" color="textSecondary" fontWeight="bold">
+              {t("common.filters.creationDate.title")}
+            </Text>
+            <Text>{formatDate(category.createdAt, true)}</Text>
           </DataItem>
         </Section>
       </FormContainer>

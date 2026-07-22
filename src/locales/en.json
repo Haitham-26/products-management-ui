@@ -268,7 +268,8 @@
         "unarchived": "Not Archived"
       },
       "totalAmount": "Total Amount",
-      "totalProfit": "Total Profit"
+      "totalProfit": "Total Profit",
+      "itemsCount": "Items Count"
     },
     "filters": {
       "showArchived": "Show Archived"

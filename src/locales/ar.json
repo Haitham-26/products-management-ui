@@ -268,7 +268,8 @@
         "unarchived": "غير مؤرشف"
       },
       "totalAmount": "إجمالي المبلغ",
-      "totalProfit": "إجمالي الربح"
+      "totalProfit": "إجمالي الربح",
+      "itemsCount": "عدد القطع"
     },
     "filters": {
       "showArchived": "اظهار المؤرشفات"

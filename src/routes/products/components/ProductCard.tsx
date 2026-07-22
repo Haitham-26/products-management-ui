@@ -43,6 +43,8 @@ const Header = styled.div`
 
 const Identifier = styled(Text)`
   direction: ltr;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.small};
   text-align: start;
 
   html[dir="rtl"] & {
@@ -144,9 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <Details>
             <Text fontWeight="700">{product.name}</Text>
-            <Identifier color="textSecondary" fontSize="small">
-              #{product.identifier}
-            </Identifier>
+            <Identifier>#{product.identifier}</Identifier>
             <Tag
               color={
                 product.status === ProductStatus.PUBLISHED ? "success" : "error"

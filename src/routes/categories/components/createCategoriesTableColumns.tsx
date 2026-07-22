@@ -1,20 +1,9 @@
 import type { ColumnsType } from "antd/es/table";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons/faEllipsis";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons/faPenToSquare";
-import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
-import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 
-import { Icon } from "../../../components/Icon";
-import { Dropdown } from "../../../components/Dropdown";
 import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
-import isFunction from "lodash/isFunction";
-import styled from "styled-components";
 import type { TFunction } from "i18next";
-
-const ActionsIcon = styled(Icon)`
-  margin-inline: auto;
-`;
+import { CategoryActionsDropdown } from "./CategoryActionsDropdown";
 
 type FNType = VoidCallback<Category>;
 
@@ -26,10 +15,8 @@ type CreateCategoriesTableColumnsArgs = {
 };
 
 export const createCategoriesTableColumns = ({
-  onEdit,
-  onDelete,
-  onRead,
   t,
+  ...restActions
 }: CreateCategoriesTableColumnsArgs): ColumnsType<Category> => {
   return [
     {
@@ -39,37 +26,7 @@ export const createCategoriesTableColumns = ({
       align: "center",
       fixed: "left",
       render: (_, record) => (
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "view",
-                icon: <Icon icon={faEye} />,
-                label: t("common.view"),
-                onClick: () => onRead?.(record),
-                disabled: !isFunction(onRead),
-              },
-              {
-                key: "edit",
-                icon: <Icon icon={faPenToSquare} />,
-                label: t("common.edit"),
-                onClick: () => onEdit?.(record),
-                disabled: !isFunction(onEdit),
-              },
-              {
-                key: "delete",
-                icon: <Icon icon={faTrash} />,
-                label: t("common.delete"),
-                danger: true,
-                onClick: () => onDelete?.(record),
-                disabled: !isFunction(onDelete),
-              },
-            ].filter((item) => item.disabled !== true),
-          }}
-        >
-          <ActionsIcon icon={faEllipsis} />
-        </Dropdown>
+        <CategoryActionsDropdown category={record} actions={restActions} />
       ),
     },
     {
