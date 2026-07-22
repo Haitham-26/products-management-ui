@@ -266,6 +266,8 @@ type PageHeaderProps = {
     variant?: ButtonProps["variant"];
   };
 
+  extra?: React.ReactNode;
+
   search?: {
     placeholder?: string;
     onChange: (value: string) => void;
@@ -291,6 +293,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   bulkActionsContent,
   selectedTableItemsCount = 0,
   className,
+  extra,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -313,6 +316,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {subtitle ? <span>{subtitle}</span> : null}
           </TitleGroup>
         </TitleBlock>
+
+        {extra || null}
 
         {action ? (
           <ActionWrapper>

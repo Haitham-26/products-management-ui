@@ -3,6 +3,7 @@ import { AppThunk } from "../AppThunk";
 import { userActions } from "../user/user.slice";
 import type { GetDashboardStatsResponseDto } from "../../model/dashboard/dto/GetDashboardStatsResponseDto";
 import { DashboardAxios } from "../../axios/dashboard/dashboard.axios";
+import type { GetDashboardStatsDto } from "../../model/dashboard/dto/GetDashboardStatsDto";
 
 interface DashboardState {
   stats: GetDashboardStatsResponseDto;
@@ -34,10 +35,10 @@ const initialState: DashboardState = {
   statsLoading: false,
 };
 
-const getDashboardStats = AppThunk<GetDashboardStatsResponseDto, void>(
-  "/dashboard",
-  DashboardAxios.getDashboardStats,
-);
+const getDashboardStats = AppThunk<
+  GetDashboardStatsResponseDto,
+  GetDashboardStatsDto
+>("/dashboard", DashboardAxios.getDashboardStats);
 
 export const dashboardSlice = createSlice({
   name: "dashboard",

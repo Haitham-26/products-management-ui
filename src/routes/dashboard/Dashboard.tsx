@@ -5,18 +5,31 @@ import { PageHeader } from "../../components/PageHeader";
 import { DashboardTopCard } from "./components/DashboardTopCard";
 import { DashboardTopProductsCard } from "./components/DashboardTopProductsCard";
 import { ProductStockStatus } from "../../model/product/types/ProductStockStatus.enum";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
-import userSliceSelectors from "../../redux/user/user.selector";
 import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
 import { SpinnerFullScreen } from "../../components/SpinnerFullScreen";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../theme/Breakpoints";
+import { Select } from "../../components/Select";
+import { DatePeriodFilters } from "../../model/shared/types/DatePeriodFilters.enum";
+import type { TFunction } from "i18next";
+import camelCase from "lodash/camelCase";
+
+const getDateRangeOptions = (t: TFunction) =>
+  Object.values(DatePeriodFilters).map((d) => ({
+    label: t(`common.${camelCase(d)}`),
+    value: d,
+  }));
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
+`;
+
+const StyledSelect = styled(Select)`
+  min-width: 8rem;
 `;
 
 const DashboardGrid = styled.div`
@@ -55,10 +68,13 @@ const AreaWrapper = styled.div<{ area: string }>`
 `;
 
 export const Dashboard: React.FC = () => {
+  const [datePeriod, setDatePeriod] = useState<DatePeriodFilters>(
+    DatePeriodFilters.TODAY,
+  );
+
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const stats = useAppSelector(dashboardSliceSelectors.selectDashboardStats);
   const loading = useAppSelector(
     dashboardSliceSelectors.selectDashboardStatsLoading,
@@ -69,12 +85,22 @@ export const Dashboard: React.FC = () => {
   const { products, orders, lowStockProducts, outOfStockProducts } = stats;
 
   useEffect(() => {
-    dispatch(dashboardActions.getDashboardStats());
-  }, [dispatch, userId]);
+    dispatch(dashboardActions.getDashboardStats({ datePeriod }));
+  }, [dispatch, datePeriod]);
 
   return (
     <StyledContainer>
-      <PageHeader icon={dashboard.icon} title={t(dashboard.titleKey)} />
+      <PageHeader
+        icon={dashboard.icon}
+        title={t(dashboard.titleKey)}
+        extra={
+          <StyledSelect
+            value={datePeriod}
+            onChange={setDatePeriod}
+            options={getDateRangeOptions(t)}
+          />
+        }
+      />
 
       {!loading ? (
         <DashboardGrid>
