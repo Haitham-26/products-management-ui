@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 import type { TFunction } from "i18next";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
+import { useAppSelector } from "../../../redux/store";
+import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 
 const getOptions = (
   theme: ThemeType,
@@ -96,6 +98,10 @@ export const DashboardOrdersChart: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const { ordersCountByStatus } = useAppSelector(
+    dashboardSliceSelectors.selectDashboardStats,
+  );
+
   const data = {
     labels: [
       t("orders.status.pending"),
@@ -104,7 +110,17 @@ export const DashboardOrdersChart: React.FC = () => {
     ],
     datasets: [
       {
-        data: [12, 18, 43],
+        data: [
+          ordersCountByStatus[
+            OrderStatus.PENDING.toLowerCase() as keyof typeof ordersCountByStatus
+          ],
+          ordersCountByStatus[
+            OrderStatus.CANCELED.toLowerCase() as keyof typeof ordersCountByStatus
+          ],
+          ordersCountByStatus[
+            OrderStatus.DELIVERED.toLowerCase() as keyof typeof ordersCountByStatus
+          ],
+        ],
         backgroundColor: [
           theme.colors.warning,
           theme.colors.error,

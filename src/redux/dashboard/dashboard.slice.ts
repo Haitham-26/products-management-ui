@@ -12,24 +12,24 @@ interface DashboardState {
 
 const initialState: DashboardState = {
   stats: {
-    products: {
-      totalCount: 0,
-      todayCount: 0,
-      lastWeekCount: 0,
-      lastMonthCount: 0,
+    totalProfit: 0,
+    totalRevenue: 0,
+    ordersCountByStatus: {
+      pending: 0,
+      delivered: 0,
+      canceled: 0,
     },
-    orders: {
-      totalCount: 0,
-      todayCount: 0,
-      lastWeekCount: 0,
-      lastMonthCount: 0,
+    productsCountByStatus: {
+      outOfStock: 0,
+      lowStock: 0,
     },
-    lowStockProducts: {
-      totalCount: 0,
-    },
-    outOfStockProducts: {
-      totalCount: 0,
-    },
+    profitAndRevenue: [
+      {
+        profit: 0,
+        revenue: 0,
+        date: null,
+      },
+    ],
     mostSoldProducts: [],
   },
   statsLoading: false,

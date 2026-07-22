@@ -31,6 +31,9 @@ import { ProductStockStatus } from "../../model/product/types/ProductStockStatus
 import { Text } from "../../components/Text";
 import { Link } from "react-router-dom";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
+import { stringWithCurrencyCode } from "../../utils/String";
+import { settingsActions } from "../../redux/settings/settings.slice";
+import settingsSliceSelectors from "../../redux/settings/settings.selector";
 
 const getDateRangeOptions = (t: TFunction) =>
   Object.values(DatePeriodFilters).map((d) => ({
@@ -172,17 +175,25 @@ export const Dashboard: React.FC = () => {
   const loading = useAppSelector(
     dashboardSliceSelectors.selectDashboardStatsLoading,
   );
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const { dashboard, orders } = appRoutes;
   const isRtl = i18n.dir(i18n.language) === "rtl";
   const arrowIcon = isRtl ? faArrowLeft : faArrowRight;
 
-  const outOfStockCount = 7;
-  const lowStockCount = 5;
-  const totalStockAlerts = outOfStockCount + lowStockCount;
+  const {
+    totalRevenue,
+    totalProfit,
+    ordersCountByStatus,
+    productsCountByStatus,
+  } = stats;
+
+  const totalStockAlerts =
+    productsCountByStatus.outOfStock + productsCountByStatus.lowStock;
 
   useEffect(() => {
     dispatch(dashboardActions.getDashboardStats({ datePeriod }));
+    dispatch(settingsActions.getSettings());
   }, [dispatch, datePeriod]);
 
   return (
@@ -205,7 +216,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faSackDollar}
               title={t("dashboard.totalRevenues.title")}
-              value="$4,000"
+              value={stringWithCurrencyCode(settings.currency, totalRevenue)}
               extra={
                 <ExtraWrapper>
                   <StatusDot />
@@ -219,7 +230,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faChartLine}
               title={t("dashboard.totalProfits.title")}
-              value="$275"
+              value={stringWithCurrencyCode(settings.currency, totalProfit)}
               extra={
                 <ExtraWrapper>
                   <StatusDot />
@@ -233,7 +244,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faClock}
               title={t("dashboard.pendingOrders.title")}
-              value="175"
+              value={ordersCountByStatus.pending}
               extra={
                 <ViewOrdersLink
                   to={`${orders.path}?status=${OrderStatus.PENDING}`}
@@ -256,7 +267,8 @@ export const Dashboard: React.FC = () => {
                     variant="outlined"
                   >
                     <span>
-                      {outOfStockCount} {t("dashboard.stockAlerts.out")}
+                      {productsCountByStatus.outOfStock}{" "}
+                      {t("dashboard.stockAlerts.out")}
                     </span>
                     <Icon icon={arrowIcon} size="xs" className="arrow-icon" />
                   </AlertBadge>
@@ -267,7 +279,8 @@ export const Dashboard: React.FC = () => {
                     variant="outlined"
                   >
                     <span>
-                      {lowStockCount} {t("dashboard.stockAlerts.low")}
+                      {productsCountByStatus.lowStock}{" "}
+                      {t("dashboard.stockAlerts.low")}
                     </span>
                     <Icon icon={arrowIcon} size="xs" className="arrow-icon" />
                   </AlertBadge>
@@ -277,7 +290,7 @@ export const Dashboard: React.FC = () => {
           </KPIsGrid>
 
           <ChartsGrid>
-            <DashboardRevenueAndProfitChart />
+            <DashboardRevenueAndProfitChart selectedDatePeriod={datePeriod} />
             <DashboardOrdersChart />
             <DashboardTopProductsChart />
           </ChartsGrid>

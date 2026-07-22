@@ -7,6 +7,45 @@ import type { ChartOptions } from "chart.js";
 import i18n from "../../../i18n";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "../../../redux/store";
+import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
+import { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
+import type { TFunction } from "i18next";
+import type { GetDashboardStatsResponseDto } from "../../../model/dashboard/dto/GetDashboardStatsResponseDto";
+import { useMemo } from "react";
+
+const getLabels = (
+  selectedDatePeriod: DatePeriodFilters,
+  dates: Array<
+    GetDashboardStatsResponseDto["profitAndRevenue"][number]["date"]
+  >,
+  t: TFunction,
+) => {
+  const currentLang = i18n.language;
+
+  switch (selectedDatePeriod) {
+    case DatePeriodFilters.LAST_WEEK:
+    case DatePeriodFilters.LAST_MONTH:
+      return dates.map((dateStr) => {
+        if (!dateStr) {
+          return "";
+        }
+
+        const options: Intl.DateTimeFormatOptions =
+          selectedDatePeriod === DatePeriodFilters.LAST_WEEK
+            ? { weekday: "long" }
+            : { day: "numeric", month: "short" };
+
+        const date = new Date(dateStr);
+
+        return new Intl.DateTimeFormat(currentLang, options).format(date);
+      });
+
+    case DatePeriodFilters.TODAY:
+    default:
+      return [t("common.today")];
+  }
+};
 
 const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
   responsive: true,
@@ -69,16 +108,39 @@ const ChartCanvasWrapper = styled.div`
   }
 `;
 
-export const DashboardRevenueAndProfitChart: React.FC = () => {
+type DashboardRevenueAndProfitChartProps = {
+  selectedDatePeriod: DatePeriodFilters;
+};
+
+export const DashboardRevenueAndProfitChart: React.FC<
+  DashboardRevenueAndProfitChartProps
+> = ({ selectedDatePeriod }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
+  const { profitAndRevenue } = useAppSelector(
+    dashboardSliceSelectors.selectDashboardStats,
+  );
+
+  const dates = useMemo(
+    () => profitAndRevenue.map((item) => item.date),
+    [profitAndRevenue],
+  );
+  const profitData = useMemo(
+    () => profitAndRevenue.map((item) => item.profit),
+    [profitAndRevenue],
+  );
+  const revenueData = useMemo(
+    () => profitAndRevenue.map((item) => item.revenue),
+    [profitAndRevenue],
+  );
+
   const data = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: getLabels(selectedDatePeriod, dates, t),
     datasets: [
       {
         label: t("dashboard.salesProfits.revenues"),
-        data: [10, 20, 30, 40, 50, 60, 70],
+        data: revenueData,
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 32,
@@ -86,7 +148,7 @@ export const DashboardRevenueAndProfitChart: React.FC = () => {
       },
       {
         label: t("dashboard.salesProfits.profits"),
-        data: [20, 5, 45, 30, 10, 40, 50],
+        data: profitData,
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 32,

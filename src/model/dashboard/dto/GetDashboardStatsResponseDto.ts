@@ -1,26 +1,24 @@
 export interface GetDashboardStatsResponseDto {
-  products: {
-    totalCount: number;
-    todayCount: number;
-    lastWeekCount: number;
-    lastMonthCount: number;
+  totalRevenue: number;
+  totalProfit: number;
+  ordersCountByStatus: {
+    pending: number;
+    delivered: number;
+    canceled: number;
   };
-  orders: {
-    totalCount: number;
-    todayCount: number;
-    lastWeekCount: number;
-    lastMonthCount: number;
+  productsCountByStatus: {
+    outOfStock: number;
+    lowStock: number;
   };
-  lowStockProducts: {
-    totalCount: number;
-  };
-  outOfStockProducts: {
-    totalCount: number;
-  };
-  mostSoldProducts: Array<{
+  profitAndRevenue: {
+    date?: string | null;
+    profit: number;
+    revenue: number;
+  }[];
+  mostSoldProducts: {
     _id: string;
     name: string;
     totalSold: number;
     image?: string;
-  }>;
+  }[];
 }
