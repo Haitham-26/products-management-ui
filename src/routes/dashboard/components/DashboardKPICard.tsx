@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Icon } from "../../../components/Icon";
 import { Text } from "../../../components/Text";
 import isString from "lodash/isString";
+import { Tag } from "antd";
 
 const Container = styled.div`
   display: flex;
@@ -24,6 +25,20 @@ const Header = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
+const Title = styled(Text)`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.small};
+  font-weight: 500;
+`;
+
+const StyledTag = styled(Tag)`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  font-weight: 500;
+`;
+
 const MainValue = styled.div`
   display: flex;
   align-items: baseline;
@@ -39,6 +54,7 @@ const Footer = styled.div`
 type DashboardKPICardProps = {
   icon: IconProp;
   title: string;
+  badgeContent: string;
   value: string | number | React.ReactNode;
   extra?: React.ReactNode;
 };
@@ -46,15 +62,18 @@ type DashboardKPICardProps = {
 export const DashboardKPICard: React.FC<DashboardKPICardProps> = ({
   icon,
   title,
+  badgeContent,
   value,
   extra,
 }) => {
   return (
     <Container>
       <Header>
-        <Text fontSize="small" color="textSecondary" fontWeight="medium">
+        <Title>
           {title}
-        </Text>
+
+          <StyledTag color={"blue"}>{badgeContent}</StyledTag>
+        </Title>
         <Icon icon={icon} size="sm" color="textSecondary" />
       </Header>
 

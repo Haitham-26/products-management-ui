@@ -726,7 +726,8 @@
     "apiError": "Server Error",
     "address": "Address",
     "selectAll": "Select All",
-    "clearSelected": "Clear Selected"
+    "clearSelected": "Clear Selected",
+    "allTime": "All Time"
   },
   "errors": {
     "general": {

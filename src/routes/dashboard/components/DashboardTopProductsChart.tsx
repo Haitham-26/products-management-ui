@@ -11,6 +11,9 @@ import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import i18n from "../../../i18n";
 import type { ChartOptions } from "chart.js";
+import { Tag } from "antd";
+import camelCase from "lodash/camelCase";
+import type { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
 
 const Container = styled.div`
   display: flex;
@@ -83,6 +86,20 @@ const ChartCanvasWrapper = styled.div`
   }
 `;
 
+const Title = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.subtitle};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const StyledTag = styled(Tag)`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  font-weight: 500;
+`;
+
 const getChartColors = (theme: ThemeType) => [
   theme.colors.primary,
   `${theme.colors.primary}dd`,
@@ -128,7 +145,13 @@ const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
   },
 });
 
-export const DashboardTopProductsChart: React.FC = () => {
+type DashboardTopProductsChartProps = {
+  selectedDatePeriod: DatePeriodFilters;
+};
+
+export const DashboardTopProductsChart: React.FC<
+  DashboardTopProductsChartProps
+> = ({ selectedDatePeriod }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -157,9 +180,13 @@ export const DashboardTopProductsChart: React.FC = () => {
   return (
     <Container>
       <Header>
-        <Text color="primary" fontWeight={"bold"} fontSize="subtitle">
-          {t("dashboard.mostSoldProducts.title")}
-        </Text>
+        <Title>
+          <span>{t("dashboard.mostSoldProducts.title")}</span>
+
+          <StyledTag color={"blue"}>
+            {t(`common.${camelCase(selectedDatePeriod)}`)}
+          </StyledTag>
+        </Title>
 
         <ExtraWrapper>
           <StatusDot />

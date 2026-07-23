@@ -13,6 +13,8 @@ import { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters
 import type { TFunction } from "i18next";
 import type { GetDashboardStatsResponseDto } from "../../../model/dashboard/dto/GetDashboardStatsResponseDto";
 import { useMemo } from "react";
+import { Tag } from "antd";
+import camelCase from "lodash/camelCase";
 
 const getLabels = (
   selectedDatePeriod: DatePeriodFilters,
@@ -101,6 +103,15 @@ const Header = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
+const Title = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.subtitle};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
 const ExtraWrapper = styled.div`
   display: inline-flex;
   align-items: center;
@@ -135,6 +146,11 @@ const ChartCanvasWrapper = styled.div`
   @media (min-width: ${Breakpoints.MD}) {
     min-height: 16rem;
   }
+`;
+
+const StyledTag = styled(Tag)`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  font-weight: 500;
 `;
 
 type DashboardRevenueAndProfitChartProps = {
@@ -189,9 +205,13 @@ export const DashboardRevenueAndProfitChart: React.FC<
   return (
     <Container>
       <Header>
-        <Text color="primary" fontWeight={"bold"} fontSize="subtitle">
-          {t("dashboard.salesProfits.title")}
-        </Text>
+        <Title>
+          <span>{t("dashboard.salesProfits.title")}</span>
+
+          <StyledTag color={"blue"}>
+            {t(`common.${camelCase(selectedDatePeriod)}`)}
+          </StyledTag>
+        </Title>
 
         <ExtraWrapper>
           <StatusDot />

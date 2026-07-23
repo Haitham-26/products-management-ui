@@ -41,6 +41,10 @@ const getDateRangeOptions = (t: TFunction) =>
     value: d,
   }));
 
+const getSelectedPeriodLabel = (period: DatePeriodFilters, t: TFunction) => {
+  return t(`common.${camelCase(period)}`);
+};
+
 const StyledContainer = styled(Container)`
   flex-grow: 1;
 `;
@@ -181,6 +185,8 @@ export const Dashboard: React.FC = () => {
   const isRtl = i18n.dir(i18n.language) === "rtl";
   const arrowIcon = isRtl ? faArrowLeft : faArrowRight;
 
+  const selectedPeriodLabel = getSelectedPeriodLabel(datePeriod, t);
+
   const {
     totalRevenue,
     totalProfit,
@@ -216,6 +222,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faSackDollar}
               title={t("dashboard.totalRevenues.title")}
+              badgeContent={selectedPeriodLabel}
               value={stringWithCurrencyCode(settings.currency, totalRevenue)}
               extra={
                 <ExtraWrapper>
@@ -230,6 +237,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faChartLine}
               title={t("dashboard.totalProfits.title")}
+              badgeContent={selectedPeriodLabel}
               value={stringWithCurrencyCode(settings.currency, totalProfit)}
               extra={
                 <ExtraWrapper>
@@ -244,6 +252,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faClock}
               title={t("dashboard.pendingOrders.title")}
+              badgeContent={t("common.allTime")}
               value={ordersCountByStatus.pending}
               extra={
                 <ViewOrdersLink
@@ -258,6 +267,7 @@ export const Dashboard: React.FC = () => {
             <DashboardKPICard
               icon={faTriangleExclamation}
               title={t("dashboard.stockAlerts.title")}
+              badgeContent={t("common.allTime")}
               value={totalStockAlerts}
               extra={
                 <BadgesWrapper>
@@ -292,7 +302,7 @@ export const Dashboard: React.FC = () => {
           <ChartsGrid>
             <DashboardRevenueAndProfitChart selectedDatePeriod={datePeriod} />
             <DashboardOrdersChart />
-            <DashboardTopProductsChart />
+            <DashboardTopProductsChart selectedDatePeriod={datePeriod} />
           </ChartsGrid>
         </GridsWrapper>
       ) : (

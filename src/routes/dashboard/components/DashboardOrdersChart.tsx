@@ -12,6 +12,7 @@ import type { TFunction } from "i18next";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import { useAppSelector } from "../../../redux/store";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
+import { Tag } from "antd";
 
 const getOptions = (
   theme: ThemeType,
@@ -93,6 +94,20 @@ const ChartCanvasWrapper = styled.div`
   }
 `;
 
+const Title = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.subtitle};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const StyledTag = styled(Tag)`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  font-weight: 500;
+`;
+
 export const DashboardOrdersChart: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -133,9 +148,11 @@ export const DashboardOrdersChart: React.FC = () => {
   };
   return (
     <Container>
-      <Text color="primary" fontWeight={"bold"} fontSize="subtitle">
-        {t("dashboard.orderStatus.title")}
-      </Text>
+      <Title>
+        <span>{t("dashboard.orderStatus.title")}</span>
+
+        <StyledTag color={"blue"}>{t(`common.allTime`)}</StyledTag>
+      </Title>
 
       <ChartCanvasWrapper>
         <Pie

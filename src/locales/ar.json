@@ -726,7 +726,8 @@
     "apiError": "خطأ في الخادم",
     "address": "العنوان",
     "selectAll": "تحديد الكل",
-    "clearSelected": "إلغاء تحديد الكل"
+    "clearSelected": "إلغاء تحديد الكل",
+    "allTime": "كل الأوقات"
   },
   "errors": {
     "general": {
