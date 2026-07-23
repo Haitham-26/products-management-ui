@@ -3,6 +3,7 @@ import { AppThunk } from "../AppThunk";
 import { userActions } from "../user/user.slice";
 import type { GetDashboardStatsResponseDto } from "../../model/dashboard/dto/GetDashboardStatsResponseDto";
 import { DashboardAxios } from "../../axios/dashboard/dashboard.axios";
+import type { GetDashboardStatsDto } from "../../model/dashboard/dto/GetDashboardStatsDto";
 
 interface DashboardState {
   stats: GetDashboardStatsResponseDto;
@@ -11,33 +12,33 @@ interface DashboardState {
 
 const initialState: DashboardState = {
   stats: {
-    products: {
-      totalCount: 0,
-      todayCount: 0,
-      lastWeekCount: 0,
-      lastMonthCount: 0,
+    totalProfit: 0,
+    totalRevenue: 0,
+    ordersCountByStatus: {
+      pending: 0,
+      delivered: 0,
+      canceled: 0,
     },
-    orders: {
-      totalCount: 0,
-      todayCount: 0,
-      lastWeekCount: 0,
-      lastMonthCount: 0,
+    productsCountByStatus: {
+      outOfStock: 0,
+      lowStock: 0,
     },
-    lowStockProducts: {
-      totalCount: 0,
-    },
-    outOfStockProducts: {
-      totalCount: 0,
-    },
+    profitAndRevenue: [
+      {
+        profit: 0,
+        revenue: 0,
+        date: null,
+      },
+    ],
     mostSoldProducts: [],
   },
   statsLoading: false,
 };
 
-const getDashboardStats = AppThunk<GetDashboardStatsResponseDto, void>(
-  "/dashboard",
-  DashboardAxios.getDashboardStats,
-);
+const getDashboardStats = AppThunk<
+  GetDashboardStatsResponseDto,
+  GetDashboardStatsDto
+>("/dashboard", DashboardAxios.getDashboardStats);
 
 export const dashboardSlice = createSlice({
   name: "dashboard",

@@ -3,16 +3,6 @@ import styled, { useTheme } from "styled-components";
 import { Text } from "../../../components/Text";
 import { Bar } from "react-chartjs-2";
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-  type ChartOptions,
-} from "chart.js";
-
 import { useAppSelector } from "../../../redux/store";
 import type { ThemeType } from "../../../theme/theme";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
@@ -20,8 +10,10 @@ import { customChartJsTooltip } from "../utils/customChartJsTooltip";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import i18n from "../../../i18n";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+import type { ChartOptions } from "chart.js";
+import { Tag } from "antd";
+import camelCase from "lodash/camelCase";
+import type { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
 
 const Container = styled.div`
   display: flex;
@@ -40,6 +32,29 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const ExtraWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  width: fit-content;
+  border-radius: 9999px;
+  background: ${({ theme }) => `${theme.colors.success}0d`};
+  user-select: none;
+
+  p {
+    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  }
+`;
+
+const StatusDot = styled.span`
+  width: 6px;
+  height: 6px;
+  border-radius: ${({ theme }) => theme.radius.circle};
+  background: ${({ theme }) => theme.colors.success};
 `;
 
 const ChartCanvasWrapper = styled.div`
@@ -69,6 +84,20 @@ const ChartCanvasWrapper = styled.div`
     transition: all 0.08s ease;
     z-index: 9999;
   }
+`;
+
+const Title = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.typography.subtitle};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const StyledTag = styled(Tag)`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+  font-weight: 500;
 `;
 
 const getChartColors = (theme: ThemeType) => [
@@ -116,15 +145,21 @@ const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
   },
 });
 
-export const DashboardTopProductsCard: React.FC = () => {
+type DashboardTopProductsChartProps = {
+  selectedDatePeriod: DatePeriodFilters;
+};
+
+export const DashboardTopProductsChart: React.FC<
+  DashboardTopProductsChartProps
+> = ({ selectedDatePeriod }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const rawProducts = useAppSelector(
+  const { mostSoldProducts } = useAppSelector(
     dashboardSliceSelectors.selectDashboardStats,
   );
 
-  const products = [...(rawProducts?.mostSoldProducts || [])].sort(
+  const products = [...(mostSoldProducts || [])].sort(
     (a, b) => b.totalSold - a.totalSold,
   );
 
@@ -145,9 +180,20 @@ export const DashboardTopProductsCard: React.FC = () => {
   return (
     <Container>
       <Header>
-        <Text fontWeight="bold" fontSize="subtitle">
-          {t("dashboard.mostSoldProducts.title")}
-        </Text>
+        <Title>
+          <span>{t("dashboard.mostSoldProducts.title")}</span>
+
+          <StyledTag color={"blue"}>
+            {t(`common.${camelCase(selectedDatePeriod)}`)}
+          </StyledTag>
+        </Title>
+
+        <ExtraWrapper>
+          <StatusDot />
+          <Text fontSize="small" color="success">
+            {t("dashboard.totalProfits.note")}
+          </Text>
+        </ExtraWrapper>
       </Header>
 
       <ChartCanvasWrapper>

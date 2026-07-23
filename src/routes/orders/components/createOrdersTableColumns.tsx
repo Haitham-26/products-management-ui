@@ -66,6 +66,17 @@ export const createOrdersTableColumns = ({
       }),
     },
     {
+      title: t("common.status"),
+      dataIndex: "status",
+      key: "status",
+      width: 90,
+      ellipsis: true,
+      render: (value: string) => t(`orders.status.${value.toLowerCase()}`),
+      onCell: (record) => ({
+        className: `${record.status.toLowerCase()}-status`,
+      }),
+    },
+    {
       title: t("common.products"),
       dataIndex: "items",
       key: "items",
@@ -102,17 +113,6 @@ export const createOrdersTableColumns = ({
       key: "customerAddress",
       width: 360,
       ellipsis: true,
-    },
-    {
-      title: t("common.status"),
-      dataIndex: "status",
-      key: "status",
-      width: 90,
-      ellipsis: true,
-      render: (value: string) => t(`orders.status.${value.toLowerCase()}`),
-      onCell: (record) => ({
-        className: `${record.status.toLowerCase()}-status`,
-      }),
     },
     {
       title: t("orders.fields.isArchived.title"),

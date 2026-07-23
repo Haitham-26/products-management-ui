@@ -89,17 +89,27 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "totalProducts": {
-      "title": "عدد المنتجات الكلي"
+    "totalRevenues": {
+      "title": "إجمالي المبيعات",
+      "note": "الطلبات المسلّمة فقط"
     },
-    "totalOrders": {
-      "title": "عدد الطلبات الكلي"
+    "totalProfits": {
+      "title": "صافي الأرباح",
+      "note": "الطلبات المسلّمة فقط"
     },
-    "lowStockProducts": {
-      "title": "منتجات على وشك النفاد"
+    "pendingOrders": { "title": "الطلبات المعلقة", "action": "عرض الكل" },
+    "stockAlerts": {
+      "title": "تنبيهات المخزون",
+      "out": "نفد",
+      "low": "منخفض"
     },
-    "outOfStockProducts": {
-      "title": "منتجات نفدت من المخزون"
+    "salesProfits": {
+      "title": "المبيعات والأرباح",
+      "profits": "الأرباح",
+      "revenues": "المبيعات"
+    },
+    "orderStatus": {
+      "title": "حالة الطلبات"
     },
     "mostSoldProducts": {
       "title": "المنتجات الأكثر مبيعاً"
@@ -716,7 +726,8 @@
     "apiError": "خطأ في الخادم",
     "address": "العنوان",
     "selectAll": "تحديد الكل",
-    "clearSelected": "إلغاء تحديد الكل"
+    "clearSelected": "إلغاء تحديد الكل",
+    "allTime": "كل الأوقات"
   },
   "errors": {
     "general": {

@@ -89,17 +89,27 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalProducts": {
-      "title": "Total Products"
+    "totalRevenues": {
+      "title": "Total Revenue",
+      "note": "Delivered orders only"
     },
-    "totalOrders": {
-      "title": "Total Orders"
+    "totalProfits": {
+      "title": "Total Profit",
+      "note": "Delivered orders only"
     },
-    "lowStockProducts": {
-      "title": "Low Stock Products"
+    "pendingOrders": { "title": "Pending Orders", "action": "View All" },
+    "stockAlerts": {
+      "title": "Stock Alerts",
+      "out": "Out",
+      "low": "Low"
     },
-    "outOfStockProducts": {
-      "title": "Out of Stock Products"
+    "salesProfits": {
+      "title": "Sales & Profit Over Time",
+      "profits": "Profits",
+      "revenues": "Revenues"
+    },
+    "orderStatus": {
+      "title": "Order Status Distribution"
     },
     "mostSoldProducts": {
       "title": "Most Sold Products"
@@ -716,7 +726,8 @@
     "apiError": "Server Error",
     "address": "Address",
     "selectAll": "Select All",
-    "clearSelected": "Clear Selected"
+    "clearSelected": "Clear Selected",
+    "allTime": "All Time"
   },
   "errors": {
     "general": {
