@@ -95,7 +95,6 @@ export class UserAxios {
       },
     ).then(({ data }) => {
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("persist:root");
       return data;
     });
   }

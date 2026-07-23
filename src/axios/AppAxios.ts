@@ -18,7 +18,6 @@ const onLogout = () => {
   window.location.href = "/login";
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
-  localStorage.removeItem("persist:root");
 };
 
 AppAxios.interceptors.request.use(
