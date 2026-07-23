@@ -17,6 +17,7 @@
     "@react-oauth/google": "^0.13.5",
     "@reduxjs/toolkit": "^2.11.2",
     "@types/lodash": "^4.17.24",
+    "@vvo/tzdb": "^6.198.0",
     "antd": "^6.3.0",
     "antd-img-crop": "^4.30.0",
     "axios": "^1.13.5",

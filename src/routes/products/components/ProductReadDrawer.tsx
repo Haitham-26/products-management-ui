@@ -340,7 +340,9 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
               {t("common.filters.creationDate.title")}
             </Text>
-            <Text>{formatDate(product.createdAt, true)}</Text>
+            <Text>
+              {formatDate(product.createdAt, true, settings.timeZone)}
+            </Text>
           </DataItem>
         </Section>
       </FormContainer>

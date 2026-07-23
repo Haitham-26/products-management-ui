@@ -175,7 +175,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               {t("common.filters.creationDate.title")}
             </Text>
 
-            <Text>{formatDate(order.createdAt)}</Text>
+            <Text>{formatDate(order.createdAt, false, settings.timeZone)}</Text>
           </Stat>
 
           <Stat>

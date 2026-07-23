@@ -4,19 +4,23 @@ import { formatDate } from "../../../utils/Date";
 import type { Tag } from "../../../model/tag/types/Tag";
 import type { TFunction } from "i18next";
 import { TagActionsDropdown } from "./TagActionsDropdown";
+import type { Settings } from "../../../model/settings/types/Settings";
 
 type FNType = VoidCallback<Tag>;
 
 type CreateTagsTableColumnsArgs = {
-  onEdit?: FNType;
-  onDelete?: FNType;
-  onRead?: FNType;
-  t: TFunction;
+  functions: {
+    onEdit?: FNType;
+    onDelete?: FNType;
+    onRead?: FNType;
+    t: TFunction;
+  };
+  timeZone: Settings["timeZone"];
 };
 
 export const createTagsTableColumns = ({
-  t,
-  ...restActions
+  functions: { t, ...restActions },
+  timeZone,
 }: CreateTagsTableColumnsArgs): ColumnsType<Tag> => {
   return [
     {
@@ -57,7 +61,7 @@ export const createTagsTableColumns = ({
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
-      render: (value: string) => formatDate(new Date(value), true),
+      render: (value: string) => formatDate(new Date(value), true, timeZone),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },

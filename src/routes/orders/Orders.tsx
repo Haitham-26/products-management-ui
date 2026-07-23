@@ -31,7 +31,6 @@ import { OrderReadDrawer } from "./components/OrderReadDrawer";
 import { OrderManageStatusModal } from "./components/OrderManageStatusModal";
 import { OrderToggleArchiveModal } from "./components/OrderToggleArchiveModal";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
-import { settingsActions } from "../../redux/settings/settings.slice";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
@@ -246,9 +245,9 @@ export const Orders: React.FC = () => {
           t,
           ...tableActions,
         },
-        currency: settings.currency,
+        settings,
       }),
-    [settings.currency, tableActions, t],
+    [settings, tableActions, t],
   );
 
   const fetchOrders = async (removedItemsCount: number = 0) => {
@@ -332,7 +331,6 @@ export const Orders: React.FC = () => {
         userId,
       }),
     );
-    dispatch(settingsActions.getSettings());
 
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps

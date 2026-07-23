@@ -34,6 +34,7 @@ import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { stringWithCurrencyCode } from "../../utils/String";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import type { ThemeType } from "../../theme/theme";
 
 const getDateRangeOptions = (t: TFunction) =>
   Object.values(DatePeriodFilters).map((d) => ({
@@ -144,6 +145,10 @@ const StatusDot = styled.span`
   background: ${({ theme }) => theme.colors.success};
 `;
 
+const TotalProfitSpan = styled.span<{ color: keyof ThemeType["colors"] }>`
+  color: ${({ theme, color }) => theme.colors[color]};
+`;
+
 const ViewOrdersLink = styled(Link)`
   display: inline-flex;
   align-items: center;
@@ -238,7 +243,11 @@ export const Dashboard: React.FC = () => {
               icon={faChartLine}
               title={t("dashboard.totalProfits.title")}
               badgeContent={selectedPeriodLabel}
-              value={stringWithCurrencyCode(settings.currency, totalProfit)}
+              value={
+                <TotalProfitSpan color={totalProfit >= 0 ? "primary" : "error"}>
+                  {stringWithCurrencyCode(settings.currency, totalProfit)}
+                </TotalProfitSpan>
+              }
               extra={
                 <ExtraWrapper>
                   <StatusDot />

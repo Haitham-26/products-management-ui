@@ -26,15 +26,15 @@ const getLabels = (
   const currentLang = i18n.language;
 
   switch (selectedDatePeriod) {
-    case DatePeriodFilters.LAST_WEEK:
-    case DatePeriodFilters.LAST_MONTH:
+    case DatePeriodFilters.LAST_7_DAYS:
+    case DatePeriodFilters.LAST_30_DAYS:
       return dates.map((dateStr) => {
         if (!dateStr) {
           return "";
         }
 
         const options: Intl.DateTimeFormatOptions =
-          selectedDatePeriod === DatePeriodFilters.LAST_WEEK
+          selectedDatePeriod === DatePeriodFilters.LAST_7_DAYS
             ? { weekday: "long" }
             : { day: "numeric", month: "short" };
 

@@ -498,6 +498,11 @@
           "title": "Language",
           "description": "Select the language that will be used in the application and the emails we send you.",
           "selectTitle": "Select Language"
+        },
+        "timezone": {
+          "title": "Timezone",
+          "description": "Used to adjust the dates for reports and analytics.",
+          "selectTitle": "Select a timezone"
         }
       },
       "inventory": {
@@ -664,8 +669,8 @@
     "name": "Name",
     "logout": "Logout",
     "today": "Today",
-    "lastWeek": "Last Week",
-    "lastMonth": "Last Month",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
     "company": "Company",
     "save": "Save",
     "you": "You",
@@ -790,6 +795,9 @@
         },
         "lang": {
           "invalid": "Unsupported language."
+        },
+        "timeZone": {
+          "invalid": "Invalid time zone."
         },
         "notFound": "Settings not found. PLease contact the support team."
       }

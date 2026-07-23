@@ -5,7 +5,7 @@ import { Button } from "../../../components/Button";
 import type { UpdateSettingsDto } from "../../../model/settings/dto/UpdateSettingsDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
@@ -17,6 +17,7 @@ import { AppLangs } from "../../../model/app/types/AppLangs.enum";
 import i18n from "../../../i18n";
 import { changeLanguage } from "../../../utils/i18nUtils";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import { getTimeZones } from "@vvo/tzdb";
 
 const LANGUAGE_OPTIONS = [
   {
@@ -28,10 +29,28 @@ const LANGUAGE_OPTIONS = [
     value: AppLangs.AR,
   },
 ];
+const getTimezoneOptions = () => {
+  return getTimeZones()
+    .map((timezone) => {
+      const offset =
+        timezone.currentTimeFormat.match(/[+-]\d{2}:\d{2}/)?.[0] ?? "+00:00";
+
+      const [region, ...parts] = timezone.name.split("/");
+
+      const city = parts.join(" / ").replace(/_/g, " ");
+
+      return {
+        value: timezone.name,
+        label: `(UTC${offset}) ${city} - ${region}`,
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
+};
 
 const StyledButton = styled(Button)`
   width: fit-content;
   margin-inline-start: auto;
+  margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
 export const GeneralSettings: React.FC = () => {
@@ -49,8 +68,11 @@ export const GeneralSettings: React.FC = () => {
       userId,
       currency: settings.currency,
       lang: settings.lang,
+      timeZone: settings?.timeZone,
     },
   });
+
+  const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
 
   const onUpdate = async () => {
     try {
@@ -78,10 +100,6 @@ export const GeneralSettings: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(settingsActions.getSettings());
-  }, [dispatch, userId]);
-
   return (
     <Fragment>
       <SettingsSection
@@ -107,9 +125,46 @@ export const GeneralSettings: React.FC = () => {
         title={t("settings.pages.general.currency.title")}
         description={t("settings.pages.general.currency.description")}
         content={
+          <Controller
+            name="currency"
+            control={control}
+            rules={{
+              required: t("errors.general.required"),
+            }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Tooltip
+                title={
+                  isMember ? t("settings.shared.orgOnlyTooltip") : undefined
+                }
+              >
+                <Select
+                  title={t("settings.pages.general.currency.selectTitle")}
+                  required
+                  errorMessage={error?.message}
+                  value={value}
+                  onChange={onChange}
+                  options={CURRENCY_OPTIONS}
+                  showSearch={{
+                    filterOption: (input, option) =>
+                      (option?.label as string)
+                        ?.toLowerCase()
+                        .includes(input?.toLowerCase()),
+                  }}
+                  disabled={isMember}
+                />
+              </Tooltip>
+            )}
+          />
+        }
+      />
+
+      <SettingsSection
+        title={t("settings.pages.general.timezone.title")}
+        description={t("settings.pages.general.timezone.description")}
+        content={
           <Fragment>
             <Controller
-              name="currency"
+              name="timeZone"
               control={control}
               rules={{
                 required: t("errors.general.required"),
@@ -124,12 +179,12 @@ export const GeneralSettings: React.FC = () => {
                   }
                 >
                   <Select
-                    title={t("settings.pages.general.currency.selectTitle")}
+                    title={t("settings.pages.general.timezone.selectTitle")}
                     required
                     errorMessage={error?.message}
                     value={value}
                     onChange={onChange}
-                    options={CURRENCY_OPTIONS}
+                    options={timezoneOptions}
                     showSearch={{
                       filterOption: (input, option) =>
                         (option?.label as string)

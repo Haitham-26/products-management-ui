@@ -4,9 +4,9 @@ import { formatDate } from "../../../utils/Date";
 import type { Order } from "../../../model/order/types/Order";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import { stringWithCurrencyCode } from "../../../utils/String";
-import type { CurrencyCodeRecord } from "currency-codes";
 import type { TFunction } from "i18next";
 import { OrderActionsDropdown } from "../../products/components/OrderActionsDropdown";
+import type { Settings } from "../../../model/settings/types/Settings";
 
 type FNType = VoidCallback<Order>;
 
@@ -18,12 +18,12 @@ type CreateOrdersTableColumnsArgs = {
     onToggleArchive?: FNType;
     t: TFunction;
   };
-  currency: CurrencyCodeRecord["code"];
+  settings: Settings;
 };
 
 export const createOrdersTableColumns = ({
   functions: { t, ...restActions },
-  currency,
+  settings,
 }: CreateOrdersTableColumnsArgs): ColumnsType<Order> => {
   return [
     {
@@ -49,7 +49,8 @@ export const createOrdersTableColumns = ({
       key: "totalAmount",
       width: 120,
       ellipsis: true,
-      render: (value: number) => stringWithCurrencyCode(currency, value),
+      render: (value: number) =>
+        stringWithCurrencyCode(settings.currency, value),
       sorter: (a, b) => a.totalAmount - b.totalAmount,
     },
     {
@@ -58,7 +59,8 @@ export const createOrdersTableColumns = ({
       key: "totalProfit",
       width: 120,
       ellipsis: true,
-      render: (value: number) => stringWithCurrencyCode(currency, value),
+      render: (value: number) =>
+        stringWithCurrencyCode(settings.currency, value),
       sorter: (a, b) => a.totalProfit - b.totalProfit,
       onCell: (record) => ({
         className:
@@ -138,7 +140,8 @@ export const createOrdersTableColumns = ({
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
-      render: (value: string) => formatDate(new Date(value), true),
+      render: (value: string) =>
+        formatDate(new Date(value), true, settings.timeZone),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },

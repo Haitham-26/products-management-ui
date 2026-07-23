@@ -6,7 +6,7 @@ import { Button } from "../../../components/Button";
 import type { UpdateSettingsDto } from "../../../model/settings/dto/UpdateSettingsDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { SettingsSection } from "../components/SettingsSection";
@@ -54,10 +54,6 @@ export const InventorySettings: React.FC = () => {
       setUpdateLoading(false);
     }
   };
-
-  useEffect(() => {
-    dispatch(settingsActions.getSettings());
-  }, [dispatch, userId]);
 
   return (
     <SettingsSection
