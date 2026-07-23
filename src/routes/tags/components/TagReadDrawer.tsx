@@ -5,6 +5,8 @@ import { Text } from "../../../components/Text";
 import type { Tag } from "../../../model/tag/types/Tag";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../../../utils/Date";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { useAppSelector } from "../../../redux/store";
 
 const FormContainer = styled.div`
   display: flex;
@@ -43,6 +45,8 @@ export const TagReadDrawer: React.FC<TagReadDrawerProps> = ({
   tag,
 }) => {
   const { t } = useTranslation();
+
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   if (!tag) {
     return null;
@@ -89,7 +93,7 @@ export const TagReadDrawer: React.FC<TagReadDrawerProps> = ({
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
               {t("common.filters.creationDate.title")}
             </Text>
-            <Text>{formatDate(tag.createdAt, true)}</Text>
+            <Text>{formatDate(tag.createdAt, true, timeZone)}</Text>
           </DataItem>
         </Section>
       </FormContainer>

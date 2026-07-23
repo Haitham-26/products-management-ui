@@ -7,6 +7,8 @@ import { Text } from "../../../components/Text";
 import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
 import { CategoryActionsDropdown } from "./CategoryActionsDropdown";
+import { useAppSelector } from "../../../redux/store";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const Card = styled.div`
   display: flex;
@@ -83,6 +85,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
+
   const isSelected = useMemo(
     () => selectedData.includes(category._id),
     [selectedData, category._id],
@@ -132,7 +136,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               {t("common.filters.creationDate.title")}
             </Text>
 
-            <Text>{formatDate(category.createdAt)}</Text>
+            <Text>{formatDate(category.createdAt, false, timeZone)}</Text>
           </Stat>
         </Stats>
       </Content>

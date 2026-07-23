@@ -11,6 +11,7 @@ import userSliceSelectors from "./redux/user/user.selector";
 import { UserRoles } from "./model/user/types/UserRoles.enum";
 import { organizationActions } from "./redux/organization/organization.slice";
 import { Breakpoints } from "./theme/Breakpoints";
+import { settingsActions } from "./redux/settings/settings.slice";
 
 const Container = styled.div`
   display: flex;
@@ -52,6 +53,7 @@ export const Layout: React.FC = () => {
     }
 
     dispatch(userActions.getUserById());
+    dispatch(settingsActions.getSettings());
 
     if (!user.roles.includes(UserRoles.MEMBER)) {
       dispatch(organizationActions.getJoinOrgInvitations());

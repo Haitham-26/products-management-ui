@@ -251,7 +251,8 @@ export const createProductsTableColumns = ({
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
-      render: (value: string) => formatDate(new Date(value), true),
+      render: (value: string) =>
+        formatDate(new Date(value), true, settings.timeZone),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },

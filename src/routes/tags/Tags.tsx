@@ -41,6 +41,7 @@ import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { TagCard } from "./components/TagCard";
 import { Breakpoints } from "../../theme/Breakpoints";
+import settingsSliceSelectors from "../../redux/settings/settings.selector";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -90,6 +91,7 @@ export const Tags: React.FC = () => {
   const tagsLoading = useAppSelector(tagSliceSelectors.selectTagsLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -292,10 +294,10 @@ export const Tags: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createTagsTableColumns({
-        ...tableActions,
-        t,
+        functions: { ...tableActions, t },
+        timeZone,
       }),
-    [t, tableActions],
+    [t, tableActions, timeZone],
   );
 
   useEffect(() => {

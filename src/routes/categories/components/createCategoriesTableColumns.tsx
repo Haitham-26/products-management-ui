@@ -4,19 +4,23 @@ import { formatDate } from "../../../utils/Date";
 import type { Category } from "../../../model/category/types/Category";
 import type { TFunction } from "i18next";
 import { CategoryActionsDropdown } from "./CategoryActionsDropdown";
+import type { Settings } from "../../../model/settings/types/Settings";
 
 type FNType = VoidCallback<Category>;
 
 type CreateCategoriesTableColumnsArgs = {
-  onEdit?: FNType;
-  onDelete?: FNType;
-  onRead?: FNType;
-  t: TFunction;
+  functions: {
+    onEdit?: FNType;
+    onDelete?: FNType;
+    onRead?: FNType;
+    t: TFunction;
+  };
+  timeZone: Settings["timeZone"];
 };
 
 export const createCategoriesTableColumns = ({
-  t,
-  ...restActions
+  functions: { t, ...restActions },
+  timeZone,
 }: CreateCategoriesTableColumnsArgs): ColumnsType<Category> => {
   return [
     {
@@ -57,7 +61,7 @@ export const createCategoriesTableColumns = ({
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
-      render: (value: string) => formatDate(new Date(value), true),
+      render: (value: string) => formatDate(new Date(value), true, timeZone),
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },

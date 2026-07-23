@@ -5,7 +5,7 @@ import { Button } from "../../../components/Button";
 import type { UpdateSettingsDto } from "../../../model/settings/dto/UpdateSettingsDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
@@ -68,7 +68,7 @@ export const GeneralSettings: React.FC = () => {
       userId,
       currency: settings.currency,
       lang: settings.lang,
-      timezone: settings?.timezone,
+      timeZone: settings?.timeZone,
     },
   });
 
@@ -99,10 +99,6 @@ export const GeneralSettings: React.FC = () => {
       setUpdateLoading(false);
     }
   };
-
-  useEffect(() => {
-    dispatch(settingsActions.getSettings());
-  }, [dispatch, userId]);
 
   return (
     <Fragment>
@@ -168,7 +164,7 @@ export const GeneralSettings: React.FC = () => {
         content={
           <Fragment>
             <Controller
-              name="timezone"
+              name="timeZone"
               control={control}
               rules={{
                 required: t("errors.general.required"),

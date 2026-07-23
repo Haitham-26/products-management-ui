@@ -31,7 +31,6 @@ import {
 } from "./utils/productUtils";
 import { PageHeader } from "../../components/PageHeader";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
-import { settingsActions } from "../../redux/settings/settings.slice";
 import { ProductStockManageModal } from "./components/ProductStockManageModal";
 import { ProductStatus } from "../../model/product/types/ProductStatus.enum";
 import { checkPermissions } from "../../utils/checkPermissions";
@@ -470,7 +469,7 @@ export const Products: React.FC = () => {
         userId,
       } as GetProductsDto),
     );
-    dispatch(settingsActions.getSettings());
+
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 

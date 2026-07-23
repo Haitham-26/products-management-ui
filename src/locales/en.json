@@ -796,6 +796,9 @@
         "lang": {
           "invalid": "Unsupported language."
         },
+        "timeZone": {
+          "invalid": "Invalid time zone."
+        },
         "notFound": "Settings not found. PLease contact the support team."
       }
     },

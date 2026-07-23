@@ -41,6 +41,7 @@ import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { CategoryCard } from "./components/CategoryCard";
 import { Grid } from "antd";
 import { Breakpoints } from "../../theme/Breakpoints";
+import settingsSliceSelectors from "../../redux/settings/settings.selector";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -95,6 +96,7 @@ export const Categories: React.FC = () => {
   const categoriesMeta = useAppSelector(
     categorySliceSelectors.selectCategoriesMeta,
   );
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -297,10 +299,11 @@ export const Categories: React.FC = () => {
   const tableColumns = useMemo(
     () =>
       createCategoriesTableColumns({
-        t,
-        ...tableActions,
+        functions: { t, ...tableActions },
+        timeZone,
       }),
-    [tableActions, t],
+
+    [tableActions, t, timeZone],
   );
 
   useEffect(() => {

@@ -7,6 +7,8 @@ import { Text } from "../../../components/Text";
 import type { Tag } from "../../../model/tag/types/Tag";
 import { TagActionsDropdown } from "./TagActionsDropdown";
 import { formatDate } from "../../../utils/Date";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
+import { useAppSelector } from "../../../redux/store";
 
 const Card = styled.div`
   display: flex;
@@ -83,6 +85,8 @@ export const TagCard: React.FC<TagCardProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
+
   const isSelected = useMemo(
     () => selectedData.includes(tag._id),
     [selectedData, tag._id],
@@ -132,7 +136,7 @@ export const TagCard: React.FC<TagCardProps> = ({
               {t("common.filters.creationDate.title")}
             </Text>
 
-            <Text>{formatDate(tag.createdAt)}</Text>
+            <Text>{formatDate(tag.createdAt, false, timeZone)}</Text>
           </Stat>
         </Stats>
       </Content>

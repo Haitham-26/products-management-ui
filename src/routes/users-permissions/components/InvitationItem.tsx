@@ -13,6 +13,7 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import { Tag } from "antd";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const getStatusColor = (status: InvitationStatus) => {
   switch (status) {
@@ -120,6 +121,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
   const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const onReinvite = async () => {
     try {
@@ -149,7 +151,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
 
     expirationDate.setMonth(expirationDate.getMonth() + 1);
 
-    return formatDate(expirationDate, true);
+    return formatDate(expirationDate, true, timeZone);
   };
 
   return (
@@ -168,7 +170,7 @@ export const InvitationItem: React.FC<PendingInvitationItemProps> = ({
           <MetaItem>
             <MetaLabel>{t("usersPermissions.invitations.sentOn")}</MetaLabel>
             <Text color="textSecondary" fontSize="small">
-              {formatDate(invitation.sentAt, true)}
+              {formatDate(invitation.sentAt, true, timeZone)}
             </Text>
           </MetaItem>
 

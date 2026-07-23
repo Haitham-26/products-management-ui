@@ -5,6 +5,8 @@ import { Text } from "../../../components/Text";
 import type { Category } from "../../../model/category/types/Category";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../../../utils/Date";
+import { useAppSelector } from "../../../redux/store";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const FormContainer = styled.div`
   display: flex;
@@ -43,6 +45,8 @@ export const CategoryReadDrawer: React.FC<CategoryReadDrawerProps> = ({
   category,
 }) => {
   const { t } = useTranslation();
+
+  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   if (!category) {
     return null;
@@ -91,7 +95,7 @@ export const CategoryReadDrawer: React.FC<CategoryReadDrawerProps> = ({
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
               {t("common.filters.creationDate.title")}
             </Text>
-            <Text>{formatDate(category.createdAt, true)}</Text>
+            <Text>{formatDate(category.createdAt, true, timeZone)}</Text>
           </DataItem>
         </Section>
       </FormContainer>
