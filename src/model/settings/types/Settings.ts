@@ -7,6 +7,7 @@ export interface Settings {
     defaultMinStock: number;
   };
   lang: AppLangs;
+  timezone?: string;
   currency: string;
   createdAt: string;
   updatedAt: string;

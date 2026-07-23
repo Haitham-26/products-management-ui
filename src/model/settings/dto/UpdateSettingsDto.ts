@@ -7,4 +7,5 @@ export interface UpdateSettingsDto extends GenericWithUserId {
     defaultMinStock?: number;
   };
   lang?: AppLangs;
+  timezone?: string;
 }

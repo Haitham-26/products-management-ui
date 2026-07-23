@@ -74,6 +74,10 @@ const StyledMenu = styled(Menu)`
   }
 
   @media (min-width: ${Breakpoints.LG}) {
+    height: fit-content;
+    position: sticky;
+    /* 7.5rem = Header's height */
+    top: 7.5rem;
     width: 240px !important;
   }
 `;
