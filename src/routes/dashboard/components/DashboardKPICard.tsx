@@ -3,7 +3,6 @@ import type React from "react";
 import styled from "styled-components";
 import { Icon } from "../../../components/Icon";
 import { Text } from "../../../components/Text";
-import isString from "lodash/isString";
 import { Tag } from "antd";
 
 const Container = styled.div`
@@ -78,13 +77,9 @@ export const DashboardKPICard: React.FC<DashboardKPICardProps> = ({
       </Header>
 
       <MainValue>
-        {isString(value) || typeof value === "number" ? (
-          <Text fontSize="subtitle" color="primary" fontWeight="bold">
-            {value}
-          </Text>
-        ) : (
-          value
-        )}
+        <Text fontSize="subtitle" color="primary" fontWeight="bold">
+          {value}
+        </Text>
       </MainValue>
 
       <Footer>{extra || null}</Footer>
