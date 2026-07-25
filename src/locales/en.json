@@ -667,8 +667,8 @@
         },
         "items": {
           "notes": [
-            "Reports Impact: Total revenue and profit for returned items will be deducted from financial reports.",
-            "Order Status: Order status will automatically update to \"Returned\" (if all items are returned) or \"Partially Returned\" (if some items are returned)."
+            "<0>Reports Impact</0>: Total revenue and profit for returned items will be deducted from financial reports.",
+            "<0>Order Status</0>: Order status will automatically update to \"Returned\" (if all items are returned) or \"Partially Returned\" (if some items are returned)."
           ],
           "emptyTooltip": "All order items have already been added.",
           "item": {

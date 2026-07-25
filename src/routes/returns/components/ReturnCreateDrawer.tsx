@@ -7,7 +7,7 @@ import {
   useFieldArray,
   FormProvider,
 } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 
@@ -38,6 +38,7 @@ import { ReturnCreateItem } from "./ReturnCreateItem";
 import { faBook } from "@fortawesome/free-solid-svg-icons/faBook";
 import { Tooltip } from "antd";
 import { Info } from "../../../components/Info";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const FormContainer = styled.div`
   display: flex;
@@ -88,9 +89,12 @@ const InfoContent = styled.div`
 `;
 
 const ItemsButton = styled(Button)`
-  width: 15rem;
   background-color: transparent;
   border: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (min-width: ${Breakpoints.SM}) {
+    width: 15rem;
+  }
 `;
 
 type ReturnCreateDrawerProps = {
@@ -293,7 +297,10 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
                 <InfoContent>
                   {Array.from({ length: 2 }, (_, i) => (
                     <li key={i}>
-                      {t(`returns.create-edit.order.items.notes.${i}`)}
+                      <Trans
+                        i18nKey={`returns.create-edit.order.items.notes.${i}`}
+                        components={[<strong />]}
+                      />
                     </li>
                   ))}
                 </InfoContent>
@@ -303,7 +310,6 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
                 menu={{
                   items: itemsDropdownItems,
                 }}
-                disabled={!availableOrderItems.length}
               >
                 <Tooltip
                   title={

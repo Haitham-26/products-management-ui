@@ -14,7 +14,6 @@ import { Button } from "./Button";
 import type { Key } from "react";
 import type { Return } from "../model/return/types/Return";
 import isFunction from "lodash/isFunction";
-import isNil from "lodash/isNil";
 
 const { useBreakpoint } = Grid;
 
@@ -72,7 +71,7 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
   const { md } = useBreakpoint();
   const { t } = useTranslation();
 
-  if (md || isNil(selectedData) || !isFunction(setSelectedData)) {
+  if (md) {
     return null;
   }
 
@@ -102,17 +101,19 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
           </Text>
         </HeaderInfo>
 
-        <StyledButton
-          onClick={() =>
-            setSelectedData(
-              isAllSelected ? [] : [...new Set(data.map((p) => p._id))],
-            )
-          }
-        >
-          {isAllSelected
-            ? `${t("common.clearSelected")} (${selectedData.length})`
-            : t("common.selectAll")}
-        </StyledButton>
+        {isFunction(setSelectedData) ? (
+          <StyledButton
+            onClick={() =>
+              setSelectedData(
+                isAllSelected ? [] : [...new Set(data.map((p) => p._id))],
+              )
+            }
+          >
+            {isAllSelected
+              ? `${t("common.clearSelected")} (${selectedData.length})`
+              : t("common.selectAll")}
+          </StyledButton>
+        ) : null}
       </Header>
 
       <DataWrapper>{data.map((p) => itemRender(p))}</DataWrapper>

@@ -8,14 +8,14 @@ import type { PaginatedResponse } from "../../model/shared/meta/PaginatedRespons
 import AppAxios from "../AppAxios";
 
 export class ReturnAxios {
-  static createReturn(dto: CreateReturnDto) {
-    return AppAxios.post("/returns/create", dto).then(({ data }) => data);
-  }
-
   static getReturns(dto: GetReturnsDto) {
     return AppAxios.get<PaginatedResponse<Return>>("/returns", {
       params: dto,
     }).then(({ data }) => data);
+  }
+
+  static createReturn(dto: CreateReturnDto) {
+    return AppAxios.post("/returns/create", dto).then(({ data }) => data);
   }
 
   static voidReturn(dto: VoidReturnDto) {

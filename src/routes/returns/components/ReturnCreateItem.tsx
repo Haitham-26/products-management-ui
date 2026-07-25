@@ -10,6 +10,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import styled from "styled-components";
 import type { CreateReturnDto } from "../../../model/return/dto/CreateReturnDto";
 import { Tooltip } from "antd";
+import { Breakpoints } from "../../../theme/Breakpoints";
 
 const ItemRow = styled.div`
   display: flex;
@@ -36,20 +37,40 @@ const ItemInfo = styled.div`
 
 const ItemInputs = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (min-width: ${Breakpoints.SM}) {
+    flex-direction: row;
+  }
 `;
 
 const ErrorText = styled(Text)`
   color: ${({ theme }) => theme.colors.error};
   font-size: ${({ theme }) => theme.typography.small};
+  margin-top: -${({ theme }) => theme.spacing.xs};
 `;
 
 const StyledButton = styled(Button)`
   width: 2rem;
   height: 2rem;
+  padding-inline: ${({ theme }) => theme.spacing.md};
   margin-inline-start: auto;
-  margin-top: ${({ theme }) => theme.spacing.md};
+`;
+
+const SmallScreenButton = styled(StyledButton)`
+  @media (min-width: ${Breakpoints.SM}) {
+    display: none;
+  }
+`;
+
+const LargeScreenButton = styled(StyledButton)`
+  margin-top: auto;
+
+  @media (max-width: ${Breakpoints.SM}) {
+    display: none;
+  }
 `;
 
 type ReturnCreateItemProps = {
@@ -185,7 +206,11 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
         />
 
         <Tooltip title={t("common.remove")}>
-          <StyledButton variant="danger" icon={faTrashCan} onClick={onRemove} />
+          <LargeScreenButton
+            variant="danger"
+            icon={faTrashCan}
+            onClick={onRemove}
+          />
         </Tooltip>
       </ItemInputs>
 
@@ -196,6 +221,14 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
           <ErrorText>* {restockedCountError.message}</ErrorText>
         ) : null
       ) : null}
+
+      <Tooltip title={t("common.remove")}>
+        <SmallScreenButton
+          variant="danger"
+          icon={faTrashCan}
+          onClick={onRemove}
+        />
+      </Tooltip>
     </ItemRow>
   );
 };
