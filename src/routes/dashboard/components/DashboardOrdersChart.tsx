@@ -33,13 +33,18 @@ const getOptions = (
       case t("orders.status.pending"):
         navigate(`/orders?status=${OrderStatus.PENDING}`);
         break;
-
       case t("orders.status.delivered"):
         navigate(`/orders?status=${OrderStatus.DELIVERED}`);
         break;
 
       case t("orders.status.canceled"):
         navigate(`/orders?status=${OrderStatus.CANCELED}`);
+        break;
+      case t("orders.status.returned"):
+        navigate(`/orders?status=${OrderStatus.RETURNED}`);
+        break;
+      case t("orders.status.partiallyReturned"):
+        navigate(`/orders?status=${OrderStatus.PARTIALLY_RETURNED}`);
         break;
     }
   },
@@ -122,6 +127,8 @@ export const DashboardOrdersChart: React.FC = () => {
       t("orders.status.pending"),
       t("orders.status.canceled"),
       t("orders.status.delivered"),
+      t("orders.status.returned"),
+      t("orders.status.partiallyReturned"),
     ],
     datasets: [
       {

@@ -15,7 +15,7 @@ export interface Order {
   /**
    * @description Total amount paid by the customer (final sale price).
    */
-  totalAmount: number;
+  totalRevenue: number;
   /**
    * @description Total profit generated from the sold items.
    */

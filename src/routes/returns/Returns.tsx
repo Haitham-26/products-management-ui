@@ -37,21 +37,22 @@ import { returnActions } from "../../redux/return/returns.slice";
 import { ReturnCard } from "./components/ReturnCard";
 import { ReturnCreateDrawer } from "./components/ReturnCreateDrawer";
 import { ReturnsFilters } from "./components/ReturnsFilters";
+import { orderActions } from "../../redux/order/orders.slice";
+import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
 
-  .negative-profit,
-  .positive-profit {
-    font-weight: 700;
-    direction: ltr;
-    text-align: -webkit-match-parent;
+  .completed-return,
+  .voided-return {
+    color: ${({ theme }) => theme.colors.surface};
   }
-  .negative-profit {
-    color: ${({ theme }) => theme.colors.error};
+
+  .completed-return {
+    background-color: ${({ theme }) => theme.colors.delivered} !important;
   }
-  .positive-profit {
-    color: ${({ theme }) => theme.colors.success};
+  .voided-return {
+    background-color: ${({ theme }) => theme.colors.error} !important;
   }
 
   @media (max-width: ${Breakpoints.MD}) {
@@ -83,7 +84,7 @@ export const Returns: React.FC = () => {
     returnSliceSelectors.selectReturnsLoading,
   );
   const returnsMeta = useAppSelector(returnSliceSelectors.selectReturnsMeta);
-  const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -189,9 +190,9 @@ export const Returns: React.FC = () => {
     () =>
       createReturnsTableColumns({
         functions: { ...tableActions, t },
-        timeZone,
+        settings,
       }),
-    [t, tableActions, timeZone],
+    [t, tableActions, settings],
   );
 
   useEffect(() => {
@@ -199,6 +200,12 @@ export const Returns: React.FC = () => {
       returnActions.getReturns({
         ...filters,
       } as GetReturnsDto),
+    );
+    dispatch(
+      orderActions.getOrders({
+        meta: { page: 1, limit: 10 },
+        status: OrderStatus.DELIVERED,
+      }),
     );
 
     return () => debouncedSetSearchParams.cancel();

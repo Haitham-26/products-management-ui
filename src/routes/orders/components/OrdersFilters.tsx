@@ -114,9 +114,9 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   filters,
   applyFilter,
 }) => {
-  const [totalAmountRange, setTotalAmountRange] = useState<Range>({
-    min: filters.minTotalAmount ?? 0,
-    max: filters.maxTotalAmount ?? 0,
+  const [totalRevenueRange, setTotalRevenueRange] = useState<Range>({
+    min: filters.minTotalRevenue ?? 0,
+    max: filters.maxTotalRevenue ?? 0,
   });
   const [totalProfitRange, setTotalProfitRange] = useState<Range>({
     min: filters.minTotalProfit ?? 0,
@@ -129,7 +129,7 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
 
-    setTotalAmountRange(null);
+    setTotalRevenueRange(null);
     setTotalProfitRange(null);
   }, [setSearchParams]);
 
@@ -160,19 +160,19 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
         <PopoverSeparator />
 
         <Section>
-          <Label>{t("orders.fields.totalAmount")}</Label>
+          <Label>{t("orders.fields.totalRevenue")}</Label>
           <RangeRow>
             <Input
               type="number"
               placeholder={t("common.min")}
-              value={totalAmountRange?.min || ""}
+              value={totalRevenueRange?.min || ""}
               onChange={(e) => {
-                setTotalAmountRange((prev) => ({
+                setTotalRevenueRange((prev) => ({
                   ...prev,
                   min: Number(e.target.value),
                 }));
                 applyFilter(
-                  "minTotalAmount",
+                  "minTotalRevenue",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );
@@ -183,14 +183,14 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
             <Input
               type="number"
               placeholder={t("common.max")}
-              value={totalAmountRange?.max || ""}
+              value={totalRevenueRange?.max || ""}
               onChange={(e) => {
-                setTotalAmountRange((prev) => ({
+                setTotalRevenueRange((prev) => ({
                   ...prev,
                   max: Number(e.target.value),
                 }));
                 applyFilter(
-                  "maxTotalAmount",
+                  "maxTotalRevenue",
                   e.target.value ? Number(e.target.value) : undefined,
                   true,
                 );

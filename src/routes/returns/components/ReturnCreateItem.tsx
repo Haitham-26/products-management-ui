@@ -99,17 +99,15 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
 
   const maxAllowedReturnCount = orderItem.quantity;
 
-  const totalReturnedCountError = errors.items?.[index]?.totalReturnedCount;
-  const restockedCountError = errors.items?.[index]?.restockedCount;
+  const returnedQuantityError = errors.items?.[index]?.returnedQuantity;
+  const restockedQuantityError = errors.items?.[index]?.restockedQuantity;
 
-  const hasError = totalReturnedCountError || restockedCountError;
+  const hasError = returnedQuantityError || restockedQuantityError;
 
   return (
     <ItemRow>
       <InfoContainer>
-        {!orderItem.productMainImage ? (
-          <ProductMainImage url={orderItem.productMainImage} width={"3rem"} />
-        ) : null}
+        <ProductMainImage url={orderItem.productMainImage} width={"3rem"} />
 
         <ItemInfo>
           <Text fontWeight="600">{orderItem.productName}</Text>
@@ -124,7 +122,7 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
       <ItemInputs>
         <Controller
           control={control}
-          name={`items.${index}.totalReturnedCount`}
+          name={`items.${index}.returnedQuantity`}
           rules={{
             required: t("errors.general.required"),
             min: {
@@ -160,12 +158,12 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
 
                 onChange(newValue);
 
-                if (watchedItem.restockedCount > newValue) {
-                  setValue(`items.${index}.restockedCount`, newValue);
+                if (watchedItem.restockedQuantity > newValue) {
+                  setValue(`items.${index}.restockedQuantity`, newValue);
                 }
               }}
               type="number"
-              valid={!totalReturnedCountError}
+              valid={!returnedQuantityError}
               required
             />
           )}
@@ -173,7 +171,7 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
 
         <Controller
           control={control}
-          name={`items.${index}.restockedCount`}
+          name={`items.${index}.restockedQuantity`}
           rules={{
             required: t("errors.general.required"),
             min: {
@@ -184,10 +182,10 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
               ),
             },
             max: {
-              value: watchedItem.totalReturnedCount,
+              value: watchedItem.returnedQuantity,
               message: t(
                 "returns.create-edit.order.items.item.restockQty.errors.max",
-                { max: watchedItem.totalReturnedCount },
+                { max: watchedItem.returnedQuantity },
               ),
             },
           }}
@@ -196,11 +194,11 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
               title={t("returns.create-edit.order.items.item.restockQty.title")}
               info={t("returns.create-edit.order.items.item.restockQty.info")}
               min={0}
-              max={watchedItem.totalReturnedCount}
+              max={watchedItem.returnedQuantity}
               value={value}
               onChange={(e) => onChange(Number(e.currentTarget.value ?? 0))}
               type="number"
-              valid={!restockedCountError}
+              valid={!restockedQuantityError}
             />
           )}
         />
@@ -215,10 +213,10 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
       </ItemInputs>
 
       {hasError ? (
-        totalReturnedCountError ? (
-          <ErrorText>* {totalReturnedCountError.message}</ErrorText>
-        ) : restockedCountError ? (
-          <ErrorText>* {restockedCountError.message}</ErrorText>
+        returnedQuantityError ? (
+          <ErrorText>* {returnedQuantityError.message}</ErrorText>
+        ) : restockedQuantityError ? (
+          <ErrorText>* {restockedQuantityError.message}</ErrorText>
         ) : null
       ) : null}
 

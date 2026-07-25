@@ -219,7 +219,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     );
   }, [products]);
 
-  const totalAmount = useMemo(() => {
+  const totalRevenue = useMemo(() => {
     return watchedItems.reduce((total, item) => {
       const product = productsMap.get(item.productId);
 
@@ -366,7 +366,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       ).unwrap();
 
       await dispatch(
-        productActions.getProducts({ userId, meta: { page: 1, limit: 0 } }),
+        productActions.getProducts({ userId, meta: { page: 1, limit: 10 } }),
       ).unwrap();
 
       setSearchParams(buildOrdersParams(filters, searchParams), {
@@ -608,10 +608,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             <SummaryBox>
               <SummaryRow>
                 <Text color="textSecondary">
-                  {t("orders.general.items.totalAmount")}
+                  {t("orders.general.items.totalRevenue")}
                 </Text>
                 <Text fontWeight="600">
-                  {stringWithCurrencyCode(settings.currency, totalAmount)}
+                  {stringWithCurrencyCode(settings.currency, totalRevenue)}
                 </Text>
               </SummaryRow>
 

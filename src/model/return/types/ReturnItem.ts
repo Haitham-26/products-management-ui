@@ -4,6 +4,6 @@ export interface ReturnItem {
   productMainImage?: string;
   returnedQuantity: number;
   restockedQuantity: number;
-  totalAmount: number;
+  totalRevenue: number;
   totalProfit: number;
 }

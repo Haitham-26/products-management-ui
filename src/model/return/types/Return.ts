@@ -8,7 +8,7 @@ export interface Return {
   returnReason: string;
   status: ReturnStatus;
   items: ReturnItem[];
-  totalReturnAmount: number;
+  totalReturnRevenue: number;
   totalReturnProfit: number;
   returnedAt?: Date;
   voidedAt?: Date;

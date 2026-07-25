@@ -59,7 +59,9 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.delivered} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
-  .canceled-status {
+  .canceled-status,
+  .returned-status,
+  .partially-returned-status {
     background-color: ${({ theme }) => theme.colors.canceled} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
@@ -325,12 +327,7 @@ export const Orders: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      orderActions.getOrders({
-        ...filters,
-        userId,
-      }),
-    );
+    dispatch(orderActions.getOrders(filters));
 
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps

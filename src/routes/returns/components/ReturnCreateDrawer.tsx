@@ -6,6 +6,7 @@ import {
   useForm,
   useFieldArray,
   FormProvider,
+  useWatch,
 } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -39,6 +40,9 @@ import { faBook } from "@fortawesome/free-solid-svg-icons/faBook";
 import { Tooltip } from "antd";
 import { Info } from "../../../components/Info";
 import { Breakpoints } from "../../../theme/Breakpoints";
+import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
+import { stringWithCurrencyCode } from "../../../utils/String";
+import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 
 const FormContainer = styled.div`
   display: flex;
@@ -84,6 +88,19 @@ const SectionLabel = styled.div`
   }
 `;
 
+const SummaryBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const InfoContent = styled.div`
   list-style-position: inside;
 `;
@@ -123,7 +140,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
     },
   });
 
-  const { control, handleSubmit, reset, watch, getValues } = formMethods;
+  const { control, handleSubmit, reset, getValues } = formMethods;
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -133,6 +150,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
   const orders = useAppSelector(orderSliceSelectors.selectOrders);
   const ordersLoading = useAppSelector(orderSliceSelectors.selectOrdersLoading);
   const user = useAppSelector(userSliceSelectors.selectUser);
+  const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const orderPermissions = checkPermissions(user, "orders");
 
@@ -140,14 +158,17 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
     (orderItem: OrderItem) => {
       append({
         productId: orderItem.productId,
-        totalReturnedCount: 1,
-        restockedCount: 1,
+        returnedQuantity: 1,
+        restockedQuantity: 0,
       });
     },
     [append],
   );
 
-  const [watchedItems, selectedOrderId] = watch(["items", "orderId"]);
+  const [watchedItems, selectedOrderId] = useWatch({
+    control,
+    name: ["items", "orderId"],
+  });
 
   const selectedOrder = useMemo(
     () => orders.find((o) => o._id === selectedOrderId),
@@ -157,7 +178,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
   const orderOptions = useMemo(
     () =>
       orders.map((order) => ({
-        label: `#${order.identifier} - ${order.customerName}`,
+        label: `(#${order.identifier}) - ${order.customerName}`,
         value: order._id,
       })),
     [orders],
@@ -186,6 +207,34 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
     [availableOrderItems, handleAddItem],
   );
 
+  const { totalReturnRevenue, totalReturnProfit } = useMemo(() => {
+    if (!watchedItems?.length || !selectedOrder?.items?.length) {
+      return { totalReturnRevenue: 0, totalReturnProfit: 0 };
+    }
+
+    return watchedItems.reduce(
+      (acc, item) => {
+        const orderItem = selectedOrder.items.find(
+          (orderItem) => String(orderItem.productId) === String(item.productId),
+        );
+
+        console.log(orderItem);
+
+        if (!orderItem) {
+          return acc;
+        }
+
+        const qty = Number(item.returnedQuantity) || 0;
+
+        acc.totalReturnRevenue += orderItem.finalSalePriceAtPurchase * qty;
+        acc.totalReturnProfit += orderItem.profitAtPurchase * qty;
+
+        return acc;
+      },
+      { totalReturnRevenue: 0, totalReturnProfit: 0 },
+    );
+  }, [selectedOrder, watchedItems]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchOrders = useCallback(
     debounce(async (keyword: string) => {
@@ -194,6 +243,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
           orderActions.getOrders({
             keyword,
             meta: { page: 1, limit: 50 },
+            status: OrderStatus.DELIVERED,
           }),
         ).unwrap();
       } catch (e) {
@@ -221,7 +271,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
       await dispatch(returnActions.createReturn(dto)).unwrap();
 
       await dispatch(
-        orderActions.getOrders({ meta: { page: 1, limit: 0 } }),
+        orderActions.getOrders({ meta: { page: 1, limit: 10 } }),
       ).unwrap();
 
       setSearchParams(buildReturnsParams(filters, searchParams), {
@@ -229,7 +279,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
       });
 
       localOnClose();
-      Toast.success("Returns created successfully");
+      Toast.success(t("returns.create.success"));
     } catch (e) {
       Toast.apiError(e);
       console.log(e);
@@ -252,6 +302,8 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
       }
     >
       <FormContainer>
+        <Info>{t("returns.create.info")}</Info>
+
         <FormSection>
           <SectionLabel>
             <Icon icon={faReceipt} />
@@ -331,9 +383,17 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
               {fields.map((field, index) => {
                 const watchedField = watchedItems[index];
 
+                if (!watchedField) {
+                  return null;
+                }
+
                 const currentOrderItem = selectedOrder.items.find(
                   (i) => i.productId === watchedField.productId,
-                )!;
+                );
+
+                if (!currentOrderItem) {
+                  return null;
+                }
 
                 return (
                   <FormProvider key={field.id} {...formMethods}>
@@ -345,6 +405,34 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
                   </FormProvider>
                 );
               })}
+
+              {fields.length ? (
+                <SummaryBox>
+                  <SummaryRow>
+                    <Text color="textSecondary">
+                      {t("returns.fields.totalReturnRevenue")}
+                    </Text>
+                    <Text fontWeight="600" color={"error"}>
+                      {stringWithCurrencyCode(
+                        settings.currency,
+                        totalReturnRevenue,
+                      )}
+                    </Text>
+                  </SummaryRow>
+
+                  <SummaryRow>
+                    <Text color="textSecondary">
+                      {t("returns.fields.totalReturnProfit")}
+                    </Text>
+                    <Text color={"error"} fontWeight="600">
+                      {stringWithCurrencyCode(
+                        settings.currency,
+                        totalReturnProfit,
+                      )}
+                    </Text>
+                  </SummaryRow>
+                </SummaryBox>
+              ) : null}
             </OrderItemsWrapper>
           ) : null}
         </FormSection>

@@ -67,7 +67,7 @@ export const ReturnActionsDropdown: React.FC<ReturnActionsDropdownProps> = ({
             : {
                 key: "unvoid",
                 icon: <Icon icon={faRotateLeft} />,
-                label: t("common.restore"),
+                label: t("common.reactivate"),
                 onClick: () => onUnvoid?.(record),
                 disabled: !isFunction(onUnvoid),
               },

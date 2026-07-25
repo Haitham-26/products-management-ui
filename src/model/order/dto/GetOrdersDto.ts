@@ -6,8 +6,8 @@ export interface GetOrdersDto {
   meta?: PaginationMeta;
   keyword?: string;
   creationDate?: SortKind;
-  minTotalAmount?: number;
-  maxTotalAmount?: number;
+  minTotalRevenue?: number;
+  maxTotalRevenue?: number;
   minTotalProfit?: number;
   maxTotalProfit?: number;
   status?: OrderStatus;

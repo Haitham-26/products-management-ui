@@ -41,15 +41,26 @@ const Header = styled.div`
 `;
 
 const Details = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
   flex: 1;
-  min-width: 0;
+
+  .ant-tag {
+    width: fit-content;
+  }
+`;
+
+const ReasonContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Identifier = styled(Text)`
   direction: ltr;
-  color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.small};
   text-align: start;
+  font-weight: 600;
 
   html[dir="rtl"] & {
     text-align: end;
@@ -85,10 +96,9 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
 
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const totalRefundedItemsCount = useMemo(
+  const returnedItemsQuantity = useMemo(
     () =>
-      record.items?.reduce((acc, item) => acc + item.totalReturnedCount, 0) ||
-      0,
+      record.items?.reduce((acc, item) => acc + item.returnedQuantity, 0) || 0,
     [record.items],
   );
 
@@ -96,15 +106,17 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
     <Content>
       <Header>
         <Details>
+          <ReasonContainer>
+            <Identifier>#{record.orderIdentifier}</Identifier>
+
+            <Tag color={getStatusColor(record.status)}>
+              {t(`returns.fields.status.${record.status.toLowerCase()}`)}
+            </Tag>
+          </ReasonContainer>
+
           <Text fontSize="small" color="textSecondary">
             {truncate(record.returnReason, { length: 50 })}
           </Text>
-
-          <Identifier>#{record.orderIdentifier}</Identifier>
-
-          <Tag color={getStatusColor(record.status)}>
-            {t(`returns.status.${record.status.toLowerCase()}`)}
-          </Tag>
         </Details>
 
         <ReturnActionsDropdown record={record} actions={actions} />
@@ -113,13 +125,13 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
       <Stats>
         <Stat>
           <Text color="textSecondary" fontSize="small">
-            {t("returns.fields.totalReturnAmount")}
+            {t("returns.fields.totalReturnRevenue")}
           </Text>
 
           <Text fontWeight="600">
             {stringWithCurrencyCode(
               settings.currency,
-              record.totalReturnAmount,
+              record.totalReturnRevenue,
             )}
           </Text>
         </Stat>
@@ -140,7 +152,7 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
             {t("returns.fields.itemsCount")}
           </Text>
 
-          <Text>{totalRefundedItemsCount}</Text>
+          <Text>{returnedItemsQuantity}</Text>
         </Stat>
 
         <Stat>

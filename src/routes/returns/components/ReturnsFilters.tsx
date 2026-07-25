@@ -45,7 +45,7 @@ const getStatusOptions = (t: TFunction) => [
     value: null,
   },
   ...Object.values(ReturnStatus).map((s) => ({
-    label: t(`returns.status.${camelCase(s)}`),
+    label: t(`returns.fields.status.${camelCase(s)}`),
     value: s,
   })),
 ];

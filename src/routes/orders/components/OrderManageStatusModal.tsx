@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import i18n from "../../../i18n";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import camelCase from "lodash/camelCase";
 
 const getRules = (t: TFunction) => [
   {
@@ -112,6 +113,12 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
 
     return Object.values(OrderStatus)
       .filter((s) => {
+        if (
+          [OrderStatus.RETURNED, OrderStatus.PARTIALLY_RETURNED].includes(s)
+        ) {
+          return false;
+        }
+
         if (s === order.status) {
           return false;
         }
@@ -125,7 +132,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
 
         return true;
       })
-      .map((s) => ({ label: t(`orders.status.${s.toLowerCase()}`), value: s }));
+      .map((s) => ({ label: t(`orders.status.${camelCase(s)}`), value: s }));
   }, [order, t]);
 
   const localOnClose = () => {

@@ -277,7 +277,7 @@
         "archived": "Archived",
         "unarchived": "Not Archived"
       },
-      "totalAmount": "Total Amount",
+      "totalRevenue": "Total Revenue",
       "totalProfit": "Total Profit",
       "itemsCount": "Items Count"
     },
@@ -287,7 +287,9 @@
     "status": {
       "pending": "Pending",
       "canceled": "Canceled",
-      "delivered": "Delivered"
+      "delivered": "Delivered",
+      "returned": "Returned",
+      "partiallyReturned": "Partially Returned"
     },
     "read": {
       "title": "Order Items",
@@ -373,7 +375,7 @@
       },
       "items": {
         "title": "Order Items",
-        "totalAmount": "Total Order Amount",
+        "totalRevenue": "Total Order Revenue",
         "totalProfit": "Total Order Profit",
         "item": {
           "price": "{{price}} per unit",
@@ -654,9 +656,11 @@
       "inputPlaceholder": "Search by order identifier..."
     },
     "create": {
+      "info": "Returns can only be created for delivered orders.",
       "order": {
         "restriction": "You do not have permission to access orders."
-      }
+      },
+      "success": "Return created successfully!"
     },
     "create-edit": {
       "order": {
@@ -699,16 +703,17 @@
         }
       }
     },
-    "status": {
-      "completed": "Completed",
-      "voided": "Voided"
-    },
     "fields": {
       "orderId": "Order Identifier",
-      "totalReturnAmount": "Total Return Amount",
+      "totalReturnRevenue": "Total Return Revenue",
       "totalReturnProfit": "Total Return Profit",
       "returnReason": "Return Reason",
-      "returnedAt": "Return Date"
+      "returnedAt": "Return Date",
+      "status": {
+        "completed": "Completed",
+        "voided": "Voided"
+      },
+      "itemsCount": "Returned Items Count"
     }
   },
   "cropImageModal": {
@@ -829,6 +834,36 @@
     "permissions": {
       "orgOnly": "Only organization owner can perform this action.",
       "hasNoPermission": "You do not have the required permissions to perform this action."
+    },
+    "returns": {
+      "create": {
+        "order": {
+          "invalidId": "Invalid order ID.",
+          "notFound": "Order not found."
+        },
+        "items": {
+          "invalidProductId": "One or more products have an invalid ID.",
+          "returnedQuantity": {
+            "invalid": "Total returned quantity must be a valid integer for each item.",
+            "min": "Total returned quantity must be at least {{min}} for each item."
+          },
+          "restockedQuantity": {
+            "invalid": "Restock quantity must be a valid integer for each item.",
+            "min": "Restock quantity must be at least {{min}} for each item."
+          },
+          "minLength": "A return must contain at least one item.",
+          "someNotFound": "Some products were not found or don't belong to the order.",
+          "duplicateItems": "Return items must be unique.",
+          "someExceededQuantity": "Total return quantity must be less than or equal to the purchased quantity.",
+          "someExceededRestockedQuantity": "Restock quantity must be less than or equal to the total return quantity."
+        },
+        "returnReason": {
+          "invalid": "Return reason must be a valid non-empty string.",
+          "required": "Return reason is required.",
+          "long": "Return reason cannot exceed {{max}} characters."
+        },
+        "alreadyHasReturn": "This order already has a return. You can reactivate the existing return if it's not activated."
+      }
     },
     "user": {
       "get": {
@@ -971,7 +1006,7 @@
         "invalidOrderId": "Invalid order ID.",
         "invalidStatus": "Invalid status.",
         "notFound": "Order not found.",
-        "cannotChangeDelivered": "Delivered orders' status cannot be changed.",
+        "cannotChangeStatus": "Delivered, Returned and Partially Returned orders' status cannot be changed.",
         "sameStatus": "The order is already in this status.",
         "canceledToDelivered": "A canceled order cannot be changed directly to delivered.",
         "items": {

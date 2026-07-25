@@ -3,7 +3,10 @@ export interface CreateReturnDto {
   returnReason: string;
   items: {
     productId: string;
-    totalReturnedCount: number;
-    restockedCount: number;
+    /**
+     * The total quantity of returned items including the restocked quantity
+     */
+    returnedQuantity: number;
+    restockedQuantity: number;
   }[];
 }

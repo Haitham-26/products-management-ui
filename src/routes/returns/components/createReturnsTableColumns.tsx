@@ -5,6 +5,7 @@ import type { TFunction } from "i18next";
 import type { Settings } from "../../../model/settings/types/Settings";
 import type { Return } from "../../../model/return/types/Return";
 import { ReturnActionsDropdown } from "./ReturnActionsDropdown";
+import { stringWithCurrencyCode } from "../../../utils/String";
 
 type FNType = VoidCallback<Return>;
 
@@ -16,12 +17,12 @@ type CreateReturnsTableColumnsArgs = {
     onRead?: FNType;
     t: TFunction;
   };
-  timeZone: Settings["timeZone"];
+  settings: Settings;
 };
 
 export const createReturnsTableColumns = ({
   functions: { t, ...restActions },
-  timeZone,
+  settings,
 }: CreateReturnsTableColumnsArgs): ColumnsType<Return> => {
   return [
     {
@@ -50,26 +51,29 @@ export const createReturnsTableColumns = ({
         t(`returns.fields.status.${status.toLowerCase()}`),
       width: 220,
       ellipsis: true,
+      onCell: (record) => ({
+        className: `${record.status.toLowerCase()}-return`,
+      }),
     },
     {
-      title: t("returns.fields.totalReturnAmount"),
-      dataIndex: "totalReturnAmount",
-      key: "totalReturnAmount",
+      title: t("returns.fields.totalReturnRevenue"),
+      dataIndex: "totalReturnRevenue",
+      key: "totalReturnRevenue",
+      render: (value: number) =>
+        stringWithCurrencyCode(settings.currency, value),
       width: 220,
       ellipsis: true,
-      sorter: (a, b) => a.totalReturnAmount - b.totalReturnAmount,
+      sorter: (a, b) => a.totalReturnRevenue - b.totalReturnRevenue,
     },
     {
       title: t("returns.fields.totalReturnProfit"),
       dataIndex: "totalReturnProfit",
       key: "totalReturnProfit",
+      render: (value: number) =>
+        stringWithCurrencyCode(settings.currency, value),
       width: 220,
       ellipsis: true,
       sorter: (a, b) => a.totalReturnProfit - b.totalReturnProfit,
-      onCell: (record) => ({
-        className:
-          record.totalReturnProfit > 0 ? "positive-profit" : "negative-profit",
-      }),
     },
     {
       title: t("common.products"),
@@ -80,7 +84,7 @@ export const createReturnsTableColumns = ({
         record.items
           .slice(0, 3)
           .filter(Boolean)
-          .map((item) => `${item.productName} x ${item.totalReturnedCount}`)
+          .map((item) => `(${item.productName} x ${item.returnedQuantity})`)
           .join(", "),
       ellipsis: true,
     },
@@ -96,7 +100,8 @@ export const createReturnsTableColumns = ({
       dataIndex: "returnedAt",
       key: "returnedAt",
       width: 180,
-      render: (value: string) => formatDate(new Date(value), true, timeZone),
+      render: (value: string) =>
+        formatDate(new Date(value), true, settings.timeZone),
       sorter: (a, b) => {
         const timeA = a.returnedAt ? new Date(a.returnedAt).getTime() : 0;
         const timeB = b.returnedAt ? new Date(b.returnedAt).getTime() : 0;

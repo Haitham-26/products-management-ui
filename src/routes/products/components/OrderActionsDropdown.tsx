@@ -63,8 +63,11 @@ export const OrderActionsDropdown: React.FC<OrderActionsDropdownProps> = ({
             label: t("orders.actions.manageStatus"),
             onClick: () => onManageStatus?.(order),
             disabled:
-              order.status === OrderStatus.DELIVERED ||
-              !isFunction(onManageStatus),
+              [
+                OrderStatus.DELIVERED,
+                OrderStatus.RETURNED,
+                OrderStatus.PARTIALLY_RETURNED,
+              ].includes(order.status) || !isFunction(onManageStatus),
           },
           {
             key: "toggle-archive",
