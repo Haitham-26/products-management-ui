@@ -90,7 +90,7 @@
   "dashboard": {
     "title": "لوحة التحكم",
     "totalRevenues": {
-      "title": "إجمالي المبيعات",
+      "title": "إجمالي الإيرادات",
       "note": "الطلبات المسلّمة فقط"
     },
     "totalProfits": {
