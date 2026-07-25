@@ -648,7 +648,63 @@
     }
   },
   "returns": {
-    "title": "Returns"
+    "title": "Returns",
+    "subheader": {
+      "action": "New Return",
+      "inputPlaceholder": "Search by order identifier..."
+    },
+    "create-edit": {
+      "order": {
+        "title": "Order & Products Selection",
+        "description": "Select the order you want to process returns for.",
+        "select": {
+          "title": "Select Order"
+        },
+        "items": {
+          "notes": [
+            "Reports Impact: Total revenue and profit for returned items will be deducted from financial reports.",
+            "Order Status: Order status will automatically update to \"Returned\" (if all items are returned) or \"Partially Returned\" (if some items are returned)."
+          ],
+          "emptyTooltip": "All order items have already been added.",
+          "item": {
+            "originalQty": "Purchased Quantity: {{qty}}",
+            "totalReturnQty": {
+              "title": "Total Return Quantity",
+              "info": "Total quantity returned, including restocked items.",
+              "errors": {
+                "min": "Total return quantity must be at least {{min}}.",
+                "max": "Total return quantity cannot exceed purchased quantity ({{max}})."
+              }
+            },
+            "restockQty": {
+              "title": "Restock Quantity",
+              "info": "Quantity to be added back to product stock (if product exists).",
+              "errors": {
+                "min": "Restock quantity cannot be less than {{min}}.",
+                "max": "Restock quantity cannot exceed total return quantity ({{max}})."
+              }
+            }
+          }
+        }
+      },
+      "reason": {
+        "title": "Return Details",
+        "input": {
+          "title": "Return Reason"
+        }
+      }
+    },
+    "status": {
+      "completed": "Completed",
+      "voided": "Voided"
+    },
+    "fields": {
+      "orderId": "Order Identifier",
+      "totalReturnAmount": "Total Return Amount",
+      "totalReturnProfit": "Total Return Profit",
+      "returnReason": "Return Reason",
+      "returnedAt": "Return Date"
+    }
   },
   "cropImageModal": {
     "title": "Edit Image"
@@ -663,6 +719,8 @@
     "selectedCount": "{{count}} of {{total}} selected"
   },
   "common": {
+    "sortBy": "Sort By",
+    "datePeriod": "Date Period",
     "email": "Email",
     "password": "Password",
     "login": "Login",
@@ -705,7 +763,6 @@
       "title": "Filters",
       "clear": "Clear Filters",
       "creationDate": {
-        "title": "Creation Date",
         "newest": "Newest First",
         "oldest": "Oldest First"
       }

@@ -91,7 +91,7 @@ export const TagReadDrawer: React.FC<TagReadDrawerProps> = ({
         <Section>
           <DataItem>
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
             <Text>{formatDate(tag.createdAt, true, timeZone)}</Text>
           </DataItem>

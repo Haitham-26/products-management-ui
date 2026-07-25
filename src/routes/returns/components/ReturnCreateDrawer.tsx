@@ -37,6 +37,7 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons/faAngleDown";
 import { ReturnCreateItem } from "./ReturnCreateItem";
 import { faBook } from "@fortawesome/free-solid-svg-icons/faBook";
 import { Tooltip } from "antd";
+import { Info } from "../../../components/Info";
 
 const FormContainer = styled.div`
   display: flex;
@@ -80,6 +81,10 @@ const SectionLabel = styled.div`
     font-size: ${({ theme }) => theme.typography.small};
     color: ${({ theme }) => theme.colors.textSecondary};
   }
+`;
+
+const InfoContent = styled.div`
+  list-style-position: inside;
 `;
 
 const ItemsButton = styled(Button)`
@@ -233,7 +238,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
     <Drawer
       open={open}
       onClose={localOnClose}
-      title={"Create Return"}
+      title={t("returns.subheader.action")}
       size="large"
       extra={
         <DrawerExtraHeader
@@ -246,11 +251,11 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faReceipt} />
-            <Text>{"Order Selection"}</Text>
+            <Text>{t("returns.create-edit.order.title")}</Text>
           </SectionLabel>
 
           <Text color="textSecondary" fontSize="small">
-            Select an order to make returns for its items
+            {t("returns.create-edit.order.description")}
           </Text>
 
           <Controller
@@ -259,29 +264,36 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
             rules={{ required: t("errors.general.required") }}
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <SearchSelect
-                title={"Select Order"}
+                title={t("returns.create-edit.order.select.title")}
                 value={
                   orderOptions?.find((p) => p.value === value) || undefined
                 }
-                onChange={onChange}
+                onChange={(v) => {
+                  onChange(v);
+                  remove();
+                }}
                 options={orderOptions}
                 onSearch={searchOrders}
                 allowClear
                 loading={ordersLoading}
                 valid={!error}
                 disabled={!orderPermissions.READ}
+                required
               />
             )}
           />
 
           {selectedOrder ? (
             <OrderItemsWrapper>
-              <Text color="textSecondary" fontSize="small">
-                The total revenue and profit of the returned items will be
-                decreased from the reports, just like if these items weren't
-                even sold, and the order's status will be updated to "Returned"
-                if all items returned, or to "Partially Returned" if some.
-              </Text>
+              <Info>
+                <InfoContent>
+                  {Array.from({ length: 2 }, (_, i) => (
+                    <li key={i}>
+                      {t(`returns.create-edit.order.items.notes.${i}`)}
+                    </li>
+                  ))}
+                </InfoContent>
+              </Info>
 
               <Dropdown
                 menu={{
@@ -292,7 +304,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
                 <Tooltip
                   title={
                     !availableOrderItems.length
-                      ? "All items have been added"
+                      ? t("returns.create-edit.order.items.emptyTooltip")
                       : ""
                   }
                 >
@@ -301,7 +313,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
                     icon={faAngleDown}
                     disabled={!availableOrderItems.length}
                   >
-                    Items
+                    {t("common.products")}
                   </ItemsButton>
                 </Tooltip>
               </Dropdown>
@@ -330,7 +342,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
         <FormSection>
           <SectionLabel>
             <Icon icon={faBook} />
-            <Text>{"Return Details"}</Text>
+            <Text>{t("returns.create-edit.reason.title")}</Text>
           </SectionLabel>
 
           <Controller
@@ -339,7 +351,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
             rules={{ required: t("errors.general.required") }}
             render={({ field, fieldState: { error } }) => (
               <Textarea
-                title={"Return Reason"}
+                title={t("returns.create-edit.reason.input.title")}
                 required
                 valid={!error}
                 errorMessage={error?.message}

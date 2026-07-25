@@ -71,6 +71,9 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
     formState: { errors },
   } = useFormContext<CreateReturnDto>();
 
+  if (!orderItem) {
+    return null;
+  }
   const watchedItem = watch(`items.${index}`);
 
   const maxAllowedReturnCount = orderItem.quantity;
@@ -90,7 +93,9 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
         <ItemInfo>
           <Text fontWeight="600">{orderItem.productName}</Text>
           <Text color="textSecondary" fontSize="small">
-            {"Item's quantity in the order"}: {maxAllowedReturnCount}
+            {t("returns.create-edit.order.items.item.originalQty", {
+              qty: orderItem.quantity,
+            })}
           </Text>
         </ItemInfo>
       </InfoContainer>
@@ -100,20 +105,30 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
           control={control}
           name={`items.${index}.totalReturnedCount`}
           rules={{
-            required: true,
+            required: t("errors.general.required"),
             min: {
               value: 1,
-              message: "Return quantity must be at least 1.",
+              message: t(
+                "returns.create-edit.order.items.item.totalReturnQty.errors.min",
+                { min: 1 },
+              ),
             },
             max: {
               value: maxAllowedReturnCount,
-              message: `Return quantity must be less than or equal to the item's quantity in the order (${maxAllowedReturnCount}).`,
+              message: t(
+                "returns.create-edit.order.items.item.totalReturnQty.errors.max",
+                { max: maxAllowedReturnCount },
+              ),
             },
           }}
           render={({ field: { value, onChange } }) => (
             <Input
-              title="Total return quantity"
-              info="The total quantity of this item that should be returned (It includes the restocked quantity)."
+              title={t(
+                "returns.create-edit.order.items.item.totalReturnQty.title",
+              )}
+              info={t(
+                "returns.create-edit.order.items.item.totalReturnQty.info",
+              )}
               min={1}
               max={maxAllowedReturnCount}
               value={value}
@@ -130,7 +145,7 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
               }}
               type="number"
               valid={!totalReturnedCountError}
-              errorMessage={totalReturnedCountError?.message}
+              required
             />
           )}
         />
@@ -139,27 +154,32 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
           control={control}
           name={`items.${index}.restockedCount`}
           rules={{
-            required: true,
+            required: t("errors.general.required"),
             min: {
               value: 0,
-              message: "Restock quantity must be at least 0.",
+              message: t(
+                "returns.create-edit.order.items.item.restockQty.errors.min",
+                { min: 0 },
+              ),
             },
             max: {
               value: watchedItem.totalReturnedCount,
-              message: `Restock quantity must be less than or equal to the total return quantity (${watchedItem.totalReturnedCount}).`,
+              message: t(
+                "returns.create-edit.order.items.item.restockQty.errors.max",
+                { max: watchedItem.totalReturnedCount },
+              ),
             },
           }}
           render={({ field: { value, onChange } }) => (
             <Input
-              title="Restock quantity"
-              info="The quantity that should be added back to the product's quantity (if the product exists)."
+              title={t("returns.create-edit.order.items.item.restockQty.title")}
+              info={t("returns.create-edit.order.items.item.restockQty.info")}
               min={0}
               max={watchedItem.totalReturnedCount}
               value={value}
-              onChange={(val) => onChange(val ?? 0)}
+              onChange={(e) => onChange(Number(e.currentTarget.value ?? 0))}
               type="number"
               valid={!restockedCountError}
-              errorMessage={restockedCountError?.message}
             />
           )}
         />

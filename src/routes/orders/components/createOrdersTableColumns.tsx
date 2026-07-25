@@ -136,7 +136,7 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
-      title: t("common.filters.creationDate.title"),
+      title: t("common.creationDate"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

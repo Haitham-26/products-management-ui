@@ -205,7 +205,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
         <Section>
           <DataItem>
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
             <Text>{formatDate(order.createdAt, true, settings.timeZone)}</Text>
           </DataItem>

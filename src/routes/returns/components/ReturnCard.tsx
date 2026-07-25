@@ -123,7 +123,6 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
             )}
           </Text>
         </Stat>
-
         <Stat>
           <Text color="textSecondary" fontSize="small">
             {t("returns.fields.totalReturnProfit")}
@@ -136,10 +135,17 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
             )}
           </Text>
         </Stat>
+        <Stat>
+          <Text color="textSecondary" fontSize="small">
+            {t("returns.fields.itemsCount")}
+          </Text>
+
+          <Text>{totalRefundedItemsCount}</Text>
+        </Stat>
 
         <Stat>
           <Text color="textSecondary" fontSize="small">
-            {t("common.filters.creationDate.title")}
+            {t("common.creationDate")}
           </Text>
 
           <Text>
@@ -149,14 +155,6 @@ export const ReturnCard: React.FC<ReturnCardProps> = ({ record, actions }) => {
               settings.timeZone,
             )}
           </Text>
-        </Stat>
-
-        <Stat>
-          <Text color="textSecondary" fontSize="small">
-            {t("returns.fields.itemsCount")}
-          </Text>
-
-          <Text>{totalRefundedItemsCount}</Text>
         </Stat>
       </Stats>
     </Content>

@@ -119,7 +119,7 @@ export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
+          <PopoverLabel>{t("common.sortBy")}</PopoverLabel>
           <Select
             placeholder={t("common.default")}
             value={filters.sortBy}
@@ -129,7 +129,7 @@ export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
         </PopoverSection>
 
         <PopoverSection>
-          <PopoverLabel>{t("common.filters.datePeriod.title")}</PopoverLabel>
+          <PopoverLabel>{t("common.datePeriod")}</PopoverLabel>
           <Select
             placeholder={t("common.all")}
             value={filters.datePeriod}
@@ -141,7 +141,7 @@ export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>{t("common.filters.status.title")}</PopoverLabel>
+          <PopoverLabel>{t("common.status")}</PopoverLabel>
           <Select
             placeholder={t("common.all")}
             value={filters.status}

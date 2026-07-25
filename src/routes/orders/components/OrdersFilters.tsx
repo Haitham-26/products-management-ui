@@ -137,7 +137,7 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <Section>
-          <Label>{t("common.filters.creationDate.title")}</Label>
+          <Label>{t("common.sortBy")}</Label>
           <Select
             placeholder={t("common.default")}
             value={filters.creationDate}

@@ -124,7 +124,7 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
+          <PopoverLabel>{t("common.sortBy")}</PopoverLabel>
           <Select
             placeholder={t("common.default")}
             value={filters.creationDate}

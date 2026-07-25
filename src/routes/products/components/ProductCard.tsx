@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Checkbox, Tag } from "antd";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 import { ProductActionsDropdown } from "./ProductActionsDropdown";
+import { formatDate } from "../../../utils/Date";
 
 const Card = styled.div`
   display: flex;
@@ -200,6 +201,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </Text>
 
             <Text>{product.category?.name || "-"}</Text>
+          </Stat>
+
+          <Stat>
+            <Text color="textSecondary" fontSize="small">
+              {t("common.creationDate")}
+            </Text>
+
+            <Text>
+              {formatDate(product.createdAt, false, settings.timeZone)}
+            </Text>
           </Stat>
         </Stats>
       </Content>

@@ -172,18 +172,18 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("common.filters.creationDate.title")}
-            </Text>
-
-            <Text>{formatDate(order.createdAt, false, settings.timeZone)}</Text>
-          </Stat>
-
-          <Stat>
-            <Text color="textSecondary" fontSize="small">
               {t("orders.fields.itemsCount")}
             </Text>
 
             <Text>{orderItemsCount}</Text>
+          </Stat>
+
+          <Stat>
+            <Text color="textSecondary" fontSize="small">
+              {t("common.creationDate")}
+            </Text>
+
+            <Text>{formatDate(order.createdAt, false, settings.timeZone)}</Text>
           </Stat>
         </Stats>
       </Content>

@@ -133,7 +133,7 @@ export const TagCard: React.FC<TagCardProps> = ({
 
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
 
             <Text>{formatDate(tag.createdAt, false, timeZone)}</Text>

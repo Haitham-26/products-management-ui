@@ -133,7 +133,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
 
             <Text>{formatDate(category.createdAt, false, timeZone)}</Text>
