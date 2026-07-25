@@ -19,6 +19,7 @@ const Label = styled.label`
 const StyledTextarea = styled.textarea<{ valid: boolean }>`
   width: 100%;
   min-height: 6rem;
+  max-height: 15rem;
   resize: vertical;
 
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
