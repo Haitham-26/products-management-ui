@@ -653,6 +653,11 @@
       "action": "إرجاع جديد",
       "inputPlaceholder": "ابحث برمز الطلب التعريفي..."
     },
+    "create": {
+      "order": {
+        "restriction": "ليست لديك صلاحية الوصول للطلبات."
+      }
+    },
     "create-edit": {
       "order": {
         "title": "تحديد الطلب والمنتجات",

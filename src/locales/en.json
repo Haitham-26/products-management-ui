@@ -653,6 +653,11 @@
       "action": "New Return",
       "inputPlaceholder": "Search by order identifier..."
     },
+    "create": {
+      "order": {
+        "restriction": "You do not have permission to access orders."
+      }
+    },
     "create-edit": {
       "order": {
         "title": "Order & Products Selection",

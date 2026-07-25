@@ -258,6 +258,10 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
             {t("returns.create-edit.order.description")}
           </Text>
 
+          {!orderPermissions.READ ? (
+            <Info>{t("returns.create.order.restriction")}</Info>
+          ) : null}
+
           <Controller
             control={control}
             name="orderId"
