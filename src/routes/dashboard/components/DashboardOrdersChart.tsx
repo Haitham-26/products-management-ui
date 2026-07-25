@@ -13,6 +13,7 @@ import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import { useAppSelector } from "../../../redux/store";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 import { Tag } from "antd";
+import camelCase from "lodash/camelCase";
 
 const getOptions = (
   theme: ThemeType,
@@ -122,37 +123,33 @@ export const DashboardOrdersChart: React.FC = () => {
     dashboardSliceSelectors.selectDashboardStats,
   );
 
+  const orderedStatuses = [
+    OrderStatus.PENDING,
+    OrderStatus.CANCELED,
+    OrderStatus.DELIVERED,
+    OrderStatus.RETURNED,
+    OrderStatus.PARTIALLY_RETURNED,
+  ];
+
   const data = {
-    labels: [
-      t("orders.status.pending"),
-      t("orders.status.canceled"),
-      t("orders.status.delivered"),
-      t("orders.status.returned"),
-      t("orders.status.partiallyReturned"),
-    ],
+    labels: orderedStatuses.map((s) => t(`orders.status.${camelCase(s)}`)),
     datasets: [
       {
-        data: [
-          ordersCountByStatus[
-            OrderStatus.PENDING.toLowerCase() as keyof typeof ordersCountByStatus
-          ],
-          ordersCountByStatus[
-            OrderStatus.CANCELED.toLowerCase() as keyof typeof ordersCountByStatus
-          ],
-          ordersCountByStatus[
-            OrderStatus.DELIVERED.toLowerCase() as keyof typeof ordersCountByStatus
-          ],
-        ],
-        backgroundColor: [
-          theme.colors.warning,
-          theme.colors.error,
-          theme.colors.success,
-        ],
+        data: orderedStatuses.map(
+          (s) =>
+            ordersCountByStatus[
+              camelCase(s) as keyof typeof ordersCountByStatus
+            ],
+        ),
+        backgroundColor: orderedStatuses.map(
+          (s) => theme.colors[camelCase(s) as keyof ThemeType["colors"]],
+        ),
         borderColor: theme.colors.surface,
         borderWidth: 2,
       },
     ],
   };
+
   return (
     <Container>
       <Title>

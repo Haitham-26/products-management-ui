@@ -5,6 +5,8 @@ export interface GetDashboardStatsResponseDto {
     pending: number;
     delivered: number;
     canceled: number;
+    returned: number;
+    partiallyReturned: number;
   };
   productsCountByStatus: {
     outOfStock: number;

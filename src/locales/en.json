@@ -655,6 +655,9 @@
       "action": "New Return",
       "inputPlaceholder": "Search by order identifier..."
     },
+    "read": {
+      "title": "Return Details"
+    },
     "create": {
       "info": "Returns can only be created for delivered orders.",
       "order": {
@@ -700,6 +703,19 @@
         "title": "Return Details",
         "input": {
           "title": "Return Reason"
+        }
+      }
+    },
+    "general": {
+      "details": {
+        "title": "Return Information"
+      },
+      "items": {
+        "title": "Returned Items",
+        "totalRevenue": "Total Returned Revenue",
+        "totalProfit": "Total Returned Profit",
+        "item": {
+          "restocked": "{{restocked}} of {{returned}} restocked"
         }
       }
     },
@@ -802,7 +818,8 @@
     "address": "Address",
     "selectAll": "Select All",
     "clearSelected": "Clear Selected",
-    "allTime": "All Time"
+    "allTime": "All Time",
+    "order": "Order"
   },
   "errors": {
     "general": {

@@ -39,6 +39,7 @@ import { ReturnCreateDrawer } from "./components/ReturnCreateDrawer";
 import { ReturnsFilters } from "./components/ReturnsFilters";
 import { orderActions } from "../../redux/order/orders.slice";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
+import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -281,7 +282,11 @@ export const Returns: React.FC = () => {
 
       {permissions.UPDATE ? <Fragment></Fragment> : null}
 
-      {permissions.READ ? <></> : null}
+      <ReturnReadDrawer
+        open={returnReadVisible}
+        onClose={() => setReturnReadVisible(false)}
+        returnRecord={currentReturn}
+      />
     </StyledContainer>
   );
 };

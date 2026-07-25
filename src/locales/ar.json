@@ -655,6 +655,9 @@
       "action": "إرجاع جديد",
       "inputPlaceholder": "ابحث برمز الطلب التعريفي..."
     },
+    "read": {
+      "title": "تفاصيل الإرجاع"
+    },
     "create": {
       "info": "يمكن إنشاء إرجاعات للطلبات المسلَّمة فقط.",
       "order": {
@@ -700,6 +703,19 @@
         "title": "تفاصيل الإرجاع",
         "input": {
           "title": "سبب الإرجاع"
+        }
+      }
+    },
+    "general": {
+      "details": {
+        "title": "معلومات الإرجاع"
+      },
+      "items": {
+        "title": "العناصر المُرجَعة",
+        "totalRevenue": "إجمالي الإيرادات",
+        "totalProfit": "إجمالي الربح",
+        "item": {
+          "restocked": "تمت إعادة تخزين {{restocked}} من {{returned}}"
         }
       }
     },
@@ -802,7 +818,8 @@
     "address": "العنوان",
     "selectAll": "تحديد الكل",
     "clearSelected": "إلغاء تحديد الكل",
-    "allTime": "كل الأوقات"
+    "allTime": "كل الأوقات",
+    "order": "الطلب"
   },
   "errors": {
     "general": {
