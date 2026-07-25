@@ -39,7 +39,7 @@ export const createReturnsTableColumns = ({
       title: t("returns.fields.orderId"),
       dataIndex: "orderIdentifier",
       key: "orderIdentifier",
-      width: 220,
+      width: 150,
       ellipsis: true,
       sorter: (a, b) => a.orderIdentifier.localeCompare(b.orderIdentifier),
     },
@@ -49,7 +49,7 @@ export const createReturnsTableColumns = ({
       key: "status",
       render: (status: Return["status"]) =>
         t(`returns.fields.status.${status.toLowerCase()}`),
-      width: 220,
+      width: 100,
       ellipsis: true,
       onCell: (record) => ({
         className: `${record.status.toLowerCase()}-return`,
@@ -61,7 +61,7 @@ export const createReturnsTableColumns = ({
       key: "totalReturnRevenue",
       render: (value: number) =>
         stringWithCurrencyCode(settings.currency, value),
-      width: 220,
+      width: 180,
       ellipsis: true,
       sorter: (a, b) => a.totalReturnRevenue - b.totalReturnRevenue,
     },
@@ -71,7 +71,7 @@ export const createReturnsTableColumns = ({
       key: "totalReturnProfit",
       render: (value: number) =>
         stringWithCurrencyCode(settings.currency, value),
-      width: 220,
+      width: 180,
       ellipsis: true,
       sorter: (a, b) => a.totalReturnProfit - b.totalReturnProfit,
     },
@@ -92,7 +92,7 @@ export const createReturnsTableColumns = ({
       title: t("returns.fields.returnReason"),
       dataIndex: "returnReason",
       key: "returnReason",
-      width: 360,
+      width: 300,
       ellipsis: true,
     },
     {
