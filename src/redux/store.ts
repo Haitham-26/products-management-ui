@@ -20,6 +20,7 @@ import settingsSlice from "./settings/settings.slice";
 import dashboardSlice from "./dashboard/dashboard.slice";
 import organizationSlice from "./organization/organization.slice";
 import appSlice from "./app/app.slice";
+import returnsSlice from "./return/returns.slice";
 import storage from "redux-persist/lib/storage";
 
 const rootReducer = combineReducers({
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   categories: categoriesSlice,
   tags: tagsSlice,
   orders: ordersSlice,
+  returns: returnsSlice,
   user: userSlice,
   settings: settingsSlice,
   dashboard: dashboardSlice,

@@ -13,7 +13,7 @@ import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import { SortKind } from "../../../model/shared/types/SortKind.enum";
 import { Checkbox } from "antd";
 import { SearchSelect } from "../../../components/SearchSelect";
 import { categoryActions } from "../../../redux/category/categories.slice";
@@ -31,11 +31,11 @@ const getCreationDateOptions = (t: TFunction) => [
   },
   {
     label: t("common.filters.creationDate.newest"),
-    value: CreationDateFilters.NEWEST,
+    value: SortKind.NEWEST,
   },
   {
     label: t("common.filters.creationDate.oldest"),
-    value: CreationDateFilters.OLDEST,
+    value: SortKind.OLDEST,
   },
 ];
 

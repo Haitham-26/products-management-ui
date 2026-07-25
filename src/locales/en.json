@@ -647,6 +647,9 @@
       }
     }
   },
+  "returns": {
+    "title": "Returns"
+  },
   "cropImageModal": {
     "title": "Edit Image"
   },

@@ -10,6 +10,7 @@ import { settingsRoutes } from "./settings/SettingsRoutes";
 import { UsersPermissions } from "./users-permissions/UsersPermissions";
 import { Profile } from "./profile/Profile";
 import { appRoutes } from "../utils/appRoutes";
+import { Returns } from "./returns/Returns";
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
@@ -33,6 +34,10 @@ export const PrivateRoutes: RouteObject = {
     {
       path: appRoutes.orders.path,
       element: <AppPrivateRoute component={<Orders />} />,
+    },
+    {
+      path: appRoutes.returns.path,
+      element: <AppPrivateRoute component={<Returns />} />,
     },
     settingsRoutes,
     {

@@ -165,7 +165,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   filters,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [searchProductsLoading, setSearchProductsLoading] = useState(false);
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
@@ -175,6 +174,9 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const productsLoading = useAppSelector(
+    productSliceSelectors.selectProductsLoading,
+  );
 
   const {
     control,
@@ -329,8 +331,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const searchProducts = useCallback(
     debounce(async (keyword: string) => {
       try {
-        setSearchProductsLoading(true);
-
         await dispatch(
           productActions.getProducts({
             userId,
@@ -340,8 +340,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         ).unwrap();
       } catch (e) {
         console.log(e);
-      } finally {
-        setSearchProductsLoading(false);
       }
     }, 800),
     [dispatch, userId],
@@ -368,7 +366,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       ).unwrap();
 
       await dispatch(
-        productActions.getProducts({ userId, meta: { page: 1, limit: 50 } }),
+        productActions.getProducts({ userId, meta: { page: 1, limit: 0 } }),
       ).unwrap();
 
       setSearchParams(buildOrdersParams(filters, searchParams), {
@@ -397,7 +395,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           confirmDisabled={!productsPermissions.CREATE}
         />
       }
-      destroyOnHidden
     >
       <FormContainer>
         <FormSection>
@@ -523,7 +520,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           options={options}
                           onSearch={searchProducts}
                           allowClear
-                          loading={searchProductsLoading}
+                          loading={productsLoading}
                           placeholder={t(
                             "orders.create.items.dropdown.placeholder",
                           )}

@@ -1,17 +1,19 @@
 import type React from "react";
 import styled from "styled-components";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
-import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { Select } from "../../../components/Select";
 import { SortKind } from "../../../model/shared/types/SortKind.enum";
-import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+import type { GetReturnsDto } from "../../../model/return/dto/GetReturnsDto";
+import { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
+import camelCase from "lodash/camelCase";
+import { ReturnStatus } from "../../../model/return/types/ReturnStatus.enum";
 
-const getCreationDateOptions = (t: TFunction) => [
+const getSortByDateOptions = (t: TFunction) => [
   {
     label: t("common.default"),
     value: null,
@@ -24,6 +26,28 @@ const getCreationDateOptions = (t: TFunction) => [
     label: t("common.filters.creationDate.oldest"),
     value: SortKind.OLDEST,
   },
+];
+
+const getDatePeriodOptions = (t: TFunction) => [
+  {
+    label: t("common.all"),
+    value: null,
+  },
+  ...Object.values(DatePeriodFilters).map((d) => ({
+    label: t(`common.${camelCase(d)}`),
+    value: d,
+  })),
+];
+
+const getStatusOptions = (t: TFunction) => [
+  {
+    label: t("common.all"),
+    value: null,
+  },
+  ...Object.values(ReturnStatus).map((s) => ({
+    label: t(`returns.status.${camelCase(s)}`),
+    value: s,
+  })),
 ];
 
 const PopoverBody = styled.div`
@@ -63,61 +87,32 @@ const PopoverSeparator = styled.hr`
   border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
-const RangeRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-
-  input {
-    flex: 1;
-    min-width: 0;
-  }
-`;
-
-const RangeDash = styled.span`
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  flex-shrink: 0;
-`;
-
 const PopoverFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   padding-top: 4px;
 `;
 
-type Range = {
-  min?: number;
-  max?: number;
-} | null;
-
-type CategoriesFiltersProps = {
-  filters: Partial<GetCategoriesDto>;
+type ReturnsFiltersProps = {
+  filters: Partial<GetReturnsDto>;
   activeFiltersCount: number;
   applyFilter: (
-    key: keyof GetCategoriesDto,
-    value: GetCategoriesDto[keyof GetCategoriesDto],
+    key: keyof GetReturnsDto,
+    value: GetReturnsDto[keyof GetReturnsDto],
     debounce?: boolean,
   ) => void;
 };
 
-export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
+export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
   filters,
   activeFiltersCount,
   applyFilter,
 }) => {
-  const [usageCountRange, setUsageCountRange] = useState<Range>({
-    min: filters.minUsageCount ?? 0,
-    max: filters.maxUsageCount ?? 0,
-  });
-
-  const { t } = useTranslation();
   const [, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
-
-    setUsageCountRange(null);
   }, [setSearchParams]);
 
   return (
@@ -127,53 +122,32 @@ export const CategoriesFilters: React.FC<CategoriesFiltersProps> = ({
           <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
           <Select
             placeholder={t("common.default")}
-            value={filters.creationDate}
-            onChange={(val) => applyFilter("creationDate", val)}
-            options={getCreationDateOptions(t)}
+            value={filters.sortBy}
+            onChange={(val) => applyFilter("sortBy", val)}
+            options={getSortByDateOptions(t)}
+          />
+        </PopoverSection>
+
+        <PopoverSection>
+          <PopoverLabel>{t("common.filters.datePeriod.title")}</PopoverLabel>
+          <Select
+            placeholder={t("common.all")}
+            value={filters.datePeriod}
+            onChange={(val) => applyFilter("datePeriod", val)}
+            options={getDatePeriodOptions(t)}
           />
         </PopoverSection>
 
         <PopoverSeparator />
 
         <PopoverSection>
-          <PopoverLabel>{t("categories.fields.usageCount")}</PopoverLabel>
-          <RangeRow>
-            <Input
-              type="number"
-              placeholder={t("common.min")}
-              value={usageCountRange?.min || ""}
-              onChange={(e) => {
-                setUsageCountRange((prev) => ({
-                  ...prev,
-                  min: Number(e.target.value),
-                }));
-                applyFilter(
-                  "minUsageCount",
-                  e.target.value ? Number(e.target.value) : undefined,
-                  true,
-                );
-              }}
-              min={0}
-            />
-            <RangeDash>–</RangeDash>
-            <Input
-              type="number"
-              placeholder={t("common.max")}
-              value={usageCountRange?.max || ""}
-              onChange={(e) => {
-                setUsageCountRange((prev) => ({
-                  ...prev,
-                  max: Number(e.target.value),
-                }));
-                applyFilter(
-                  "maxUsageCount",
-                  e.target.value ? Number(e.target.value) : undefined,
-                  true,
-                );
-              }}
-              min={0}
-            />
-          </RangeRow>
+          <PopoverLabel>{t("common.filters.status.title")}</PopoverLabel>
+          <Select
+            placeholder={t("common.all")}
+            value={filters.status}
+            onChange={(val) => applyFilter("status", val)}
+            options={getStatusOptions(t)}
+          />
         </PopoverSection>
       </PopoverContent>
 

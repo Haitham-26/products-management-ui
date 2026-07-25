@@ -89,6 +89,7 @@ export const SideMenu: React.FC = () => {
     "orders",
     "categories",
     "tags",
+    "returns",
   ].map((key) => {
     const route = appRoutes[key as keyof typeof appRoutes];
 

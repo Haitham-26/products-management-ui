@@ -6,6 +6,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import { faTags } from "@fortawesome/free-solid-svg-icons/faTags";
 import { faUsersGear } from "@fortawesome/free-solid-svg-icons/faUsersGear";
 import { faGear } from "@fortawesome/free-solid-svg-icons/faGear";
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 
 export const appRoutes = {
   dashboard: {
@@ -22,6 +23,11 @@ export const appRoutes = {
     path: "/orders",
     titleKey: "orders.title",
     icon: faCartShopping,
+  },
+  returns: {
+    path: "/returns",
+    titleKey: "returns.title",
+    icon: faRotateLeft,
   },
   categories: {
     path: "/categories",

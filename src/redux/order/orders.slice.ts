@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppThunk } from "../AppThunk";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import { userActions } from "../user/user.slice";
 import type { PaginationMeta } from "../../model/shared/meta/PaginationMeta";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
@@ -11,6 +10,7 @@ import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 import type { BulkManageOrderVisibilityDto } from "../../model/order/dto/BulkManageOrderVisibilityDto";
 import type { BulkManageOrderStatusDto } from "../../model/order/dto/BulkManageOrderStatusDto";
+import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
 
 interface OrderState {
   orders?: Order[];
@@ -33,7 +33,7 @@ const createOrder = AppThunk<void, CreateOrderDto>(
   OrderAxios.createOrder,
 );
 
-const getOrders = AppThunk<PaginatedResponse<Order>, GenericWithUserId>(
+const getOrders = AppThunk<PaginatedResponse<Order>, GetOrdersDto>(
   "/orders",
   OrderAxios.getOrders,
 );

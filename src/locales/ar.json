@@ -647,6 +647,9 @@
       }
     }
   },
+  "returns": {
+    "title": "الإرجاعات"
+  },
   "cropImageModal": {
     "title": "تعديل الصورة"
   },
