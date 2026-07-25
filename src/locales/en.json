@@ -658,6 +658,13 @@
     "read": {
       "title": "Return Details"
     },
+    "edit": {
+      "title": "Edit Return",
+      "items": {
+        "title": "Return Items <0>(Read Only)</0>"
+      },
+      "success": "Return updated successfully!"
+    },
     "create": {
       "info": "Returns can only be created for delivered orders.",
       "order": {
@@ -880,6 +887,17 @@
           "long": "Return reason cannot exceed {{max}} characters."
         },
         "alreadyHasReturn": "This order already has a return. You can reactivate the existing return if it's not activated."
+      },
+      "update": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found."
+        },
+        "returnReason": {
+          "invalid": "Return reason must be a valid string.",
+          "long": "Return reason cannot exceed {{max}} characters.",
+          "required": "Return reason cannot be empty."
+        }
       }
     },
     "user": {

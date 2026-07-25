@@ -47,7 +47,7 @@ const DataGrid = styled.div`
   }
 `;
 
-const ReturnLineItemsWrapper = styled.div`
+const ReturnItemsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
@@ -135,11 +135,11 @@ export const ReturnReadDrawer: React.FC<Props> = ({
         <Section>
           <Text fontWeight="bold">{t("returns.general.items.title")}</Text>
 
-          <ReturnLineItemsWrapper>
+          <ReturnItemsWrapper>
             {returnRecord.items.map((item) => (
               <ReturnItemReadCard key={item.productId} item={item} />
             ))}
-          </ReturnLineItemsWrapper>
+          </ReturnItemsWrapper>
 
           <SummaryBox>
             <SummaryRow>
