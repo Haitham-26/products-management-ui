@@ -19,11 +19,11 @@ export class ReturnAxios {
   }
 
   static cancelReturn(dto: CancelReturnDto) {
-    return AppAxios.post(`/returns/cancel`, dto).then(({ data }) => data);
+    return AppAxios.patch(`/returns/cancel`, dto).then(({ data }) => data);
   }
 
   static activateReturn(dto: ActivateReturnDto) {
-    return AppAxios.post(`/returns/activate`, dto).then(({ data }) => data);
+    return AppAxios.patch(`/returns/activate`, dto).then(({ data }) => data);
   }
 
   static updateReturn(dto: UpdateReturnDto) {
