@@ -826,7 +826,8 @@
     "selectAll": "Select All",
     "clearSelected": "Clear Selected",
     "allTime": "All Time",
-    "order": "Order"
+    "order": "Order",
+    "reactivate": "Reactivate"
   },
   "errors": {
     "general": {

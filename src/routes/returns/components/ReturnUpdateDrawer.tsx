@@ -85,7 +85,7 @@ type ReturnUpdateDrawerProps = {
   open: boolean;
   onClose: VoidFunction;
   filters: Partial<GetReturnsDto>;
-  returnRecord: Return;
+  returnRecord: Return | null;
 };
 
 export const ReturnUpdateDrawer: React.FC<ReturnUpdateDrawerProps> = ({

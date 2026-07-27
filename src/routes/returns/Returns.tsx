@@ -19,7 +19,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import { appRoutes } from "../../utils/appRoutes";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
 import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
@@ -41,6 +41,7 @@ import { orderActions } from "../../redux/order/orders.slice";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
 import { ReturnUpdateDrawer } from "./components/ReturnUpdateDrawer";
+import { Text } from "../../components/Text";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -63,8 +64,23 @@ const StyledContainer = styled(Container)`
   }
 `;
 
+const WarningModalDescriptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  text-align: start;
+
+  ul {
+    list-style-position: inside;
+  }
+`;
+
+const BoldSpan = styled.span`
+  font-weight: bold;
+`;
+
 export const Returns: React.FC = () => {
-  const [currentReturn, setCurrentReturn] = useState<any | null>(null);
+  const [currentReturn, setCurrentReturn] = useState<Return | null>(null);
 
   const [returnEditVisible, setReturnEditVisible] = useState(false);
   const [returnVoidVisible, setReturnVoidVisible] = useState(false);
@@ -197,6 +213,66 @@ export const Returns: React.FC = () => {
     [t, tableActions, settings],
   );
 
+  const voidReturn = async () => {
+    if (!currentReturn) {
+      return;
+    }
+
+    try {
+      setReturnVoidLoading(true);
+
+      await dispatch(
+        returnActions.voidReturn({
+          returnId: currentReturn._id,
+        }),
+      ).unwrap();
+
+      setSearchParams(buildReturnsParams(filters, searchParams), {
+        replace: true,
+      });
+
+      setReturnVoidVisible(false);
+      setCurrentReturn(null);
+
+      Toast.success(t("returns.void.success"));
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setReturnVoidLoading(false);
+    }
+  };
+
+  const unvoidReturn = async () => {
+    if (!currentReturn) {
+      return;
+    }
+
+    try {
+      setReturnUnvoidLoading(true);
+
+      await dispatch(
+        returnActions.unvoidReturn({
+          returnId: currentReturn._id,
+        }),
+      ).unwrap();
+
+      setSearchParams(buildReturnsParams(filters, searchParams), {
+        replace: true,
+      });
+
+      setReturnVoidVisible(false);
+      setCurrentReturn(null);
+
+      Toast.success(t("returns.unvoid.success"));
+    } catch (e) {
+      console.log(e);
+      Toast.apiError(e);
+    } finally {
+      setReturnUnvoidLoading(false);
+    }
+  };
+
   useEffect(() => {
     dispatch(
       returnActions.getReturns({
@@ -288,6 +364,72 @@ export const Returns: React.FC = () => {
             onClose={() => setReturnEditVisible(false)}
             filters={filters}
             returnRecord={currentReturn}
+          />
+
+          <WarningModal
+            title={t("returns.void.title", {
+              orderIdentifier: currentReturn?.orderIdentifier,
+            })}
+            description={
+              <WarningModalDescriptionContainer>
+                <Text fontSize="small" color="textSecondary">
+                  {t("returns.void.description.paragraph")}
+                </Text>
+
+                <ul>
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <Text
+                      fontSize="small"
+                      color="textSecondary"
+                      as="li"
+                      key={index}
+                    >
+                      <Trans
+                        i18nKey={`returns.void.description.listItems.${index}`}
+                        components={[<BoldSpan />]}
+                      />
+                    </Text>
+                  ))}
+                </ul>
+              </WarningModalDescriptionContainer>
+            }
+            open={returnVoidVisible}
+            onClose={() => setReturnVoidVisible(false)}
+            confirmLoading={returnVoidLoading}
+            onConfirm={voidReturn}
+          />
+
+          <WarningModal
+            title={t("returns.unvoid.title", {
+              orderIdentifier: currentReturn?.orderIdentifier,
+            })}
+            description={
+              <WarningModalDescriptionContainer>
+                <Text fontSize="small" color="textSecondary">
+                  {t("returns.unvoid.description.paragraph")}
+                </Text>
+
+                <ul>
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <Text
+                      fontSize="small"
+                      color="textSecondary"
+                      as="li"
+                      key={index}
+                    >
+                      <Trans
+                        i18nKey={`returns.unvoid.description.listItems.${index}`}
+                        components={[<BoldSpan />]}
+                      />
+                    </Text>
+                  ))}
+                </ul>
+              </WarningModalDescriptionContainer>
+            }
+            open={returnUnvoidVisible}
+            onClose={() => setReturnUnvoidVisible(false)}
+            confirmLoading={returnUnvoidLoading}
+            onConfirm={unvoidReturn}
           />
         </Fragment>
       ) : null}

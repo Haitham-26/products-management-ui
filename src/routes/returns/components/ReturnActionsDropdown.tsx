@@ -59,7 +59,7 @@ export const ReturnActionsDropdown: React.FC<ReturnActionsDropdownProps> = ({
             ? {
                 key: "void",
                 icon: <Icon icon={faBan} />,
-                label: t("common.void"),
+                label: t("common.cancel"),
                 onClick: () => onVoid?.(record),
                 disabled: !isFunction(onVoid),
                 danger: true,
