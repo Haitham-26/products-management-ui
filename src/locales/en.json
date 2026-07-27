@@ -925,7 +925,8 @@
           "invalidId": "Invalid return ID.",
           "notFound": "Return not found.",
           "alreadyActive": "This return is already active."
-        }
+        },
+        "parentOrderNotFound": "The order associated with this return was not found."
       },
       "update": {
         "return": {
