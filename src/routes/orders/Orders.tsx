@@ -63,6 +63,15 @@ const StyledContainer = styled(Container)`
     background-color: ${({ theme }) => theme.colors.canceled} !important;
     color: ${({ theme }) => theme.colors.surface};
   }
+  .returned-status {
+    background-color: ${({ theme }) => theme.colors.returned} !important;
+    color: ${({ theme }) => theme.colors.surface};
+  }
+  .partially-returned-status {
+    background-color: ${({ theme }) =>
+      theme.colors.partiallyReturned} !important;
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
 
   .archived {
     background-color: ${({ theme }) => theme.colors.canceled} !important;
@@ -325,12 +334,7 @@ export const Orders: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      orderActions.getOrders({
-        ...filters,
-        userId,
-      }),
-    );
+    dispatch(orderActions.getOrders(filters));
 
     return () => debouncedSetSearchParams.cancel();
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps

@@ -338,7 +338,7 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
         <Section>
           <DataItem>
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
             <Text>
               {formatDate(product.createdAt, true, settings.timeZone)}

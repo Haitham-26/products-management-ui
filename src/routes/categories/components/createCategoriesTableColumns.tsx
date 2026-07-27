@@ -57,7 +57,7 @@ export const createCategoriesTableColumns = ({
       sorter: (a, b) => b.usageCount - a.usageCount,
     },
     {
-      title: t("common.filters.creationDate.title"),
+      title: t("common.creationDate"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

@@ -165,7 +165,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   filters,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [searchProductsLoading, setSearchProductsLoading] = useState(false);
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
@@ -175,6 +174,9 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const products = useAppSelector(productSliceSelectors.selectProducts);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const productsLoading = useAppSelector(
+    productSliceSelectors.selectProductsLoading,
+  );
 
   const {
     control,
@@ -217,7 +219,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
     );
   }, [products]);
 
-  const totalAmount = useMemo(() => {
+  const totalRevenue = useMemo(() => {
     return watchedItems.reduce((total, item) => {
       const product = productsMap.get(item.productId);
 
@@ -329,8 +331,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
   const searchProducts = useCallback(
     debounce(async (keyword: string) => {
       try {
-        setSearchProductsLoading(true);
-
         await dispatch(
           productActions.getProducts({
             userId,
@@ -340,8 +340,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
         ).unwrap();
       } catch (e) {
         console.log(e);
-      } finally {
-        setSearchProductsLoading(false);
       }
     }, 800),
     [dispatch, userId],
@@ -368,7 +366,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       ).unwrap();
 
       await dispatch(
-        productActions.getProducts({ userId, meta: { page: 1, limit: 50 } }),
+        productActions.getProducts({ userId, meta: { page: 1, limit: 10 } }),
       ).unwrap();
 
       setSearchParams(buildOrdersParams(filters, searchParams), {
@@ -397,7 +395,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
           confirmDisabled={!productsPermissions.CREATE}
         />
       }
-      destroyOnHidden
     >
       <FormContainer>
         <FormSection>
@@ -523,7 +520,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
                           options={options}
                           onSearch={searchProducts}
                           allowClear
-                          loading={searchProductsLoading}
+                          loading={productsLoading}
                           placeholder={t(
                             "orders.create.items.dropdown.placeholder",
                           )}
@@ -611,10 +608,10 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
             <SummaryBox>
               <SummaryRow>
                 <Text color="textSecondary">
-                  {t("orders.general.items.totalAmount")}
+                  {t("orders.general.items.totalRevenue")}
                 </Text>
                 <Text fontWeight="600">
-                  {stringWithCurrencyCode(settings.currency, totalAmount)}
+                  {stringWithCurrencyCode(settings.currency, totalRevenue)}
                 </Text>
               </SummaryRow>
 

@@ -1,14 +1,13 @@
-import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
-import type { CreationDateFilters } from "../../shared/types/CreationDateFilters.enum";
+import type { SortKind } from "../../shared/types/SortKind.enum";
 import type { OrderStatus } from "../types/OrderStatus.enum";
 
-export interface GetOrdersDto extends GenericWithUserId {
+export interface GetOrdersDto {
   meta?: PaginationMeta;
   keyword?: string;
-  creationDate?: CreationDateFilters;
-  minTotalAmount?: number;
-  maxTotalAmount?: number;
+  creationDate?: SortKind;
+  minTotalRevenue?: number;
+  maxTotalRevenue?: number;
   minTotalProfit?: number;
   maxTotalProfit?: number;
   status?: OrderStatus;

@@ -7,7 +7,7 @@ import { Button } from "../../../components/Button";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 import { Select } from "../../../components/Select";
-import { CreationDateFilters } from "../../../model/shared/types/CreationDateFilters.enum";
+import { SortKind } from "../../../model/shared/types/SortKind.enum";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
@@ -18,11 +18,11 @@ const getCreationDateOptions = (t: TFunction) => [
   },
   {
     label: t("common.filters.creationDate.newest"),
-    value: CreationDateFilters.NEWEST,
+    value: SortKind.NEWEST,
   },
   {
     label: t("common.filters.creationDate.oldest"),
-    value: CreationDateFilters.OLDEST,
+    value: SortKind.OLDEST,
   },
 ];
 
@@ -124,7 +124,7 @@ export const TagsFilters: React.FC<TagsFiltersProps> = ({
     <PopoverBody>
       <PopoverContent>
         <PopoverSection>
-          <PopoverLabel>{t("common.filters.creationDate.title")}</PopoverLabel>
+          <PopoverLabel>{t("common.sortBy")}</PopoverLabel>
           <Select
             placeholder={t("common.default")}
             value={filters.creationDate}

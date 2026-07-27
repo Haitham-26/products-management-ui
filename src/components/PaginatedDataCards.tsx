@@ -12,6 +12,8 @@ import { SpinnerFullScreen } from "./SpinnerFullScreen";
 import { Text } from "./Text";
 import { Button } from "./Button";
 import type { Key } from "react";
+import type { Return } from "../model/return/types/Return";
+import isFunction from "lodash/isFunction";
 
 const { useBreakpoint } = Grid;
 
@@ -47,15 +49,15 @@ const DataWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-type Data = Product | Order | Tag | Category;
+type Data = Product | Order | Tag | Category | Return;
 
 type PaginatedDataCardsProps = {
   data: Array<Data>;
   itemRender: (item: Data) => React.ReactNode;
   paginationOptions: PaginationProps;
   loading?: boolean;
-  selectedData: Key[];
-  setSelectedData: VoidCallback<Key[]>;
+  selectedData?: Key[];
+  setSelectedData?: VoidCallback<Key[]>;
 };
 
 export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
@@ -63,7 +65,7 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
   itemRender,
   paginationOptions,
   loading = false,
-  selectedData = [],
+  selectedData,
   setSelectedData,
 }) => {
   const { md } = useBreakpoint();
@@ -82,8 +84,11 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
   }
 
   const total = paginationOptions.total || 0;
-  const isAllSelected = selectedData.length && selectedData.length >= total;
-  const hasSelection = Boolean(selectedData.length);
+
+  const selectedCount = selectedData?.length;
+
+  const isAllSelected = selectedCount && selectedCount >= total;
+  const hasSelection = Boolean(selectedCount);
 
   return (
     <Container>
@@ -91,22 +96,24 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
         <HeaderInfo>
           <Text>
             {hasSelection
-              ? t("table.selectedCount", { count: selectedData.length, total })
+              ? t("table.selectedCount", { count: selectedCount, total })
               : t("table.total", { total })}
           </Text>
         </HeaderInfo>
 
-        <StyledButton
-          onClick={() =>
-            setSelectedData(
-              isAllSelected ? [] : [...new Set(data.map((p) => p._id))],
-            )
-          }
-        >
-          {isAllSelected
-            ? `${t("common.clearSelected")} (${selectedData.length})`
-            : t("common.selectAll")}
-        </StyledButton>
+        {isFunction(setSelectedData) ? (
+          <StyledButton
+            onClick={() =>
+              setSelectedData(
+                isAllSelected ? [] : [...new Set(data.map((p) => p._id))],
+              )
+            }
+          >
+            {isAllSelected
+              ? `${t("common.clearSelected")} (${selectedData.length})`
+              : t("common.selectAll")}
+          </StyledButton>
+        ) : null}
       </Header>
 
       <DataWrapper>{data.map((p) => itemRender(p))}</DataWrapper>

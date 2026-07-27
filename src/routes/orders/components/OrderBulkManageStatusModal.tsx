@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import i18n from "../../../i18n";
 import { useAppToast } from "../../../components/toast/useAppToast";
+import camelCase from "lodash/camelCase";
 
 const getRules = (t: TFunction) => [
   {
@@ -110,8 +111,14 @@ export const OrderBulkManageStatusModal: React.FC<
 
   const statusOptions = useMemo(() => {
     return Object.values(OrderStatus)
-
-      .map((s) => ({ label: t(`orders.status.${s.toLowerCase()}`), value: s }));
+      .filter(
+        (s) =>
+          ![OrderStatus.RETURNED, OrderStatus.PARTIALLY_RETURNED].includes(s),
+      )
+      .map((s) => ({
+        label: t(`orders.status.${camelCase(s)}`),
+        value: s,
+      }));
   }, [t]);
 
   const localOnClose = () => {

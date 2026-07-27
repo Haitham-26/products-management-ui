@@ -7,6 +7,7 @@ import { stringWithCurrencyCode } from "../../../utils/String";
 import type { TFunction } from "i18next";
 import { OrderActionsDropdown } from "../../products/components/OrderActionsDropdown";
 import type { Settings } from "../../../model/settings/types/Settings";
+import camelCase from "lodash/camelCase";
 
 type FNType = VoidCallback<Order>;
 
@@ -44,14 +45,14 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
-      title: t("orders.fields.totalAmount"),
-      dataIndex: "totalAmount",
-      key: "totalAmount",
+      title: t("orders.fields.totalRevenue"),
+      dataIndex: "totalRevenue",
+      key: "totalRevenue",
       width: 120,
       ellipsis: true,
       render: (value: number) =>
         stringWithCurrencyCode(settings.currency, value),
-      sorter: (a, b) => a.totalAmount - b.totalAmount,
+      sorter: (a, b) => a.totalRevenue - b.totalRevenue,
     },
     {
       title: t("orders.fields.totalProfit"),
@@ -73,9 +74,9 @@ export const createOrdersTableColumns = ({
       key: "status",
       width: 90,
       ellipsis: true,
-      render: (value: string) => t(`orders.status.${value.toLowerCase()}`),
+      render: (value: string) => t(`orders.status.${camelCase(value)}`),
       onCell: (record) => ({
-        className: `${record.status.toLowerCase()}-status`,
+        className: `${record.status.toLowerCase().replace("_", "-")}-status`,
       }),
     },
     {
@@ -85,7 +86,7 @@ export const createOrdersTableColumns = ({
       width: 220,
       ellipsis: true,
       render: (items: OrderItem[]) =>
-        items.map((i) => i.productName).join(", "),
+        items.map((i) => `(${i.productName} × ${i.quantity})`).join(", "),
     },
     {
       title: t("orders.fields.customerName"),
@@ -136,7 +137,7 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
-      title: t("common.filters.creationDate.title"),
+      title: t("common.creationDate"),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,

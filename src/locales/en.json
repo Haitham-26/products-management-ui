@@ -277,7 +277,7 @@
         "archived": "Archived",
         "unarchived": "Not Archived"
       },
-      "totalAmount": "Total Amount",
+      "totalRevenue": "Total Revenue",
       "totalProfit": "Total Profit",
       "itemsCount": "Items Count"
     },
@@ -287,7 +287,9 @@
     "status": {
       "pending": "Pending",
       "canceled": "Canceled",
-      "delivered": "Delivered"
+      "delivered": "Delivered",
+      "returned": "Returned",
+      "partiallyReturned": "Partially Returned"
     },
     "read": {
       "title": "Order Items",
@@ -373,7 +375,7 @@
       },
       "items": {
         "title": "Order Items",
-        "totalAmount": "Total Order Amount",
+        "totalRevenue": "Total Order Revenue",
         "totalProfit": "Total Order Profit",
         "item": {
           "price": "{{price}} per unit",
@@ -647,6 +649,120 @@
       }
     }
   },
+  "returns": {
+    "title": "Returns",
+    "subheader": {
+      "action": "New Return",
+      "inputPlaceholder": "Search by order identifier..."
+    },
+    "read": {
+      "title": "Return Details"
+    },
+    "edit": {
+      "title": "Edit Return",
+      "items": {
+        "title": "Return Items <0>(Read Only)</0>"
+      },
+      "success": "Return updated successfully!"
+    },
+    "create": {
+      "info": "Returns can only be created for delivered orders.",
+      "order": {
+        "restriction": "You do not have permission to access orders."
+      },
+      "success": "Return created successfully!"
+    },
+    "create-edit": {
+      "order": {
+        "title": "Order & Products Selection",
+        "description": "Select the order you want to process returns for.",
+        "select": {
+          "title": "Select Order"
+        },
+        "items": {
+          "notes": [
+            "<0>Reports Impact</0>: Total revenue and profit for returned items will be deducted from financial reports.",
+            "<0>Order Status</0>: Order status will automatically update to \"Returned\" (if all items are returned) or \"Partially Returned\" (if some items are returned)."
+          ],
+          "emptyTooltip": "All order items have already been added.",
+          "item": {
+            "originalQty": "Purchased Quantity: {{qty}}",
+            "totalReturnQty": {
+              "title": "Total Return Quantity",
+              "info": "Total quantity returned, including restocked items.",
+              "errors": {
+                "min": "Total return quantity must be at least {{min}}.",
+                "max": "Total return quantity cannot exceed purchased quantity ({{max}})."
+              }
+            },
+            "restockQty": {
+              "title": "Restock Quantity",
+              "info": "Quantity to be added back to product stock (if product exists).",
+              "errors": {
+                "min": "Restock quantity cannot be less than {{min}}.",
+                "max": "Restock quantity cannot exceed total return quantity ({{max}})."
+              }
+            }
+          }
+        }
+      },
+      "reason": {
+        "title": "Return Details",
+        "input": {
+          "title": "Return Reason"
+        }
+      }
+    },
+    "cancel": {
+      "title": "Cancel return for order {{orderIdentifier}}?",
+      "description": {
+        "paragraph": "Canceling this return will result in the following:",
+        "listItems": [
+          "Reinstating the order's revenue and profits in financial reports.",
+          "Changing the order status to <0>Delivered</0>.",
+          "Reverting stock increases resulting from this return (if any)."
+        ]
+      },
+      "success": "Return canceled successfully!"
+    },
+    "activate": {
+      "title": "Reactivate return for order {{orderIdentifier}}?",
+      "description": {
+        "paragraph": "Reactivating this return will result in the following:",
+        "listItems": [
+          "Deducting the order's revenue and profits from financial reports.",
+          "Updating the order status to <0>Returned</0> (if all items are returned) or <0>Partially Returned</0> (if some items are returned).",
+          "Adding the returned items back to inventory (if any restocked)."
+        ]
+      },
+      "success": "Return reactivated successfully!"
+    },
+    "general": {
+      "details": {
+        "title": "Return Information"
+      },
+      "items": {
+        "title": "Returned Items",
+        "totalRevenue": "Total Returned Revenue",
+        "totalProfit": "Total Returned Profit",
+        "item": {
+          "restocked": "{{restocked}} of {{returned}} restocked"
+        }
+      }
+    },
+    "fields": {
+      "orderId": "Order Identifier",
+      "totalReturnRevenue": "Total Return Revenue",
+      "totalReturnProfit": "Total Return Profit",
+      "returnReason": "Return Reason",
+      "returnedAt": "Return Date",
+      "status": {
+        "active": "Active",
+        "canceled": "Canceled"
+      },
+      "itemsCount": "Returned Items Count"
+    }
+  },
   "cropImageModal": {
     "title": "Edit Image"
   },
@@ -660,6 +776,8 @@
     "selectedCount": "{{count}} of {{total}} selected"
   },
   "common": {
+    "sortBy": "Sort By",
+    "datePeriod": "Date Period",
     "email": "Email",
     "password": "Password",
     "login": "Login",
@@ -702,7 +820,6 @@
       "title": "Filters",
       "clear": "Clear Filters",
       "creationDate": {
-        "title": "Creation Date",
         "newest": "Newest First",
         "oldest": "Oldest First"
       }
@@ -732,7 +849,9 @@
     "address": "Address",
     "selectAll": "Select All",
     "clearSelected": "Clear Selected",
-    "allTime": "All Time"
+    "allTime": "All Time",
+    "order": "Order",
+    "reactivate": "Reactivate"
   },
   "errors": {
     "general": {
@@ -764,6 +883,62 @@
     "permissions": {
       "orgOnly": "Only organization owner can perform this action.",
       "hasNoPermission": "You do not have the required permissions to perform this action."
+    },
+    "returns": {
+      "create": {
+        "order": {
+          "invalidId": "Invalid order ID.",
+          "notFound": "Order not found."
+        },
+        "items": {
+          "invalidProductId": "One or more products have an invalid ID.",
+          "returnedQuantity": {
+            "invalid": "Total returned quantity must be a valid integer for each item.",
+            "min": "Total returned quantity must be at least {{min}} for each item."
+          },
+          "restockedQuantity": {
+            "invalid": "Restock quantity must be a valid integer for each item.",
+            "min": "Restock quantity must be at least {{min}} for each item."
+          },
+          "minLength": "A return must contain at least one item.",
+          "someNotFound": "Some products were not found or don't belong to the order.",
+          "duplicateItems": "Return items must be unique.",
+          "someExceededQuantity": "Total return quantity must be less than or equal to the purchased quantity.",
+          "someExceededRestockedQuantity": "Restock quantity must be less than or equal to the total return quantity."
+        },
+        "returnReason": {
+          "invalid": "Return reason must be a valid non-empty string.",
+          "required": "Return reason is required.",
+          "long": "Return reason cannot exceed {{max}} characters."
+        },
+        "alreadyHasReturn": "This order already has a return. You can reactivate the existing return if it's not activated."
+      },
+      "cancel": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found.",
+          "alreadyCanceled": "This return is already canceled."
+        }
+      },
+      "activate": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found.",
+          "alreadyActive": "This return is already active."
+        },
+        "parentOrderNotFound": "The order associated with this return was not found."
+      },
+      "update": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found."
+        },
+        "returnReason": {
+          "invalid": "Return reason must be a valid string.",
+          "long": "Return reason cannot exceed {{max}} characters.",
+          "required": "Return reason cannot be empty."
+        }
+      }
     },
     "user": {
       "get": {
@@ -906,7 +1081,7 @@
         "invalidOrderId": "Invalid order ID.",
         "invalidStatus": "Invalid status.",
         "notFound": "Order not found.",
-        "cannotChangeDelivered": "Delivered orders' status cannot be changed.",
+        "cannotChangeStatus": "Delivered, Returned and Partially Returned orders' status cannot be changed.",
         "sameStatus": "The order is already in this status.",
         "canceledToDelivered": "A canceled order cannot be changed directly to delivered.",
         "items": {

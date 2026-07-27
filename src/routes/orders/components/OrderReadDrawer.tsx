@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import type { ThemeType } from "../../../theme/theme";
 import { OrderItemReadCard } from "./OrderItemReadCard";
 import { formatDate } from "../../../utils/Date";
+import camelCase from "lodash/camelCase";
 
 const FormContainer = styled.div`
   display: flex;
@@ -116,7 +117,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
             #{order.identifier}
           </Text>
           <StatusBadge status={order.status}>
-            {t(`orders.status.${order.status.toLowerCase()}`)}
+            {t(`orders.status.${camelCase(order.status)}`)}
           </StatusBadge>
         </OrderTitleContainer>
 
@@ -127,13 +128,13 @@ export const OrderReadDrawer: React.FC<Props> = ({
           <DataGrid>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("orders.fields.customerName", "Name")}
+                {t("orders.fields.customerName")}
               </Text>
               <Text>{order.customerName}</Text>
             </DataItem>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("orders.fields.customerEmail", "Email")}
+                {t("orders.fields.customerEmail")}
               </Text>
               <Text fontStyle={!order.customerEmail ? "italic" : undefined}>
                 {order.customerEmail || "_"}
@@ -141,7 +142,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
             </DataItem>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("orders.fields.customerPhone", "Phone")}
+                {t("orders.fields.customerPhone")}
               </Text>
               <Text fontStyle={!order.customerPhone ? "italic" : undefined}>
                 {order.customerPhone || "_"}
@@ -149,7 +150,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
             </DataItem>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                {t("orders.fields.customerAddress", "Phone")}
+                {t("orders.fields.customerAddress")}
               </Text>
               <Text fontStyle={!order.customerAddress ? "italic" : undefined}>
                 {order.customerAddress || "_"}
@@ -170,10 +171,10 @@ export const OrderReadDrawer: React.FC<Props> = ({
           <SummaryBox>
             <SummaryRow>
               <Text color="textSecondary">
-                {t("orders.general.items.totalAmount")}
+                {t("orders.general.items.totalRevenue")}
               </Text>
               <Text fontWeight="600">
-                {stringWithCurrencyCode(settings.currency, order.totalAmount)}
+                {stringWithCurrencyCode(settings.currency, order.totalRevenue)}
               </Text>
             </SummaryRow>
 
@@ -205,7 +206,7 @@ export const OrderReadDrawer: React.FC<Props> = ({
         <Section>
           <DataItem>
             <Text fontSize="small" color="textSecondary" fontWeight="bold">
-              {t("common.filters.creationDate.title")}
+              {t("common.creationDate")}
             </Text>
             <Text>{formatDate(order.createdAt, true, settings.timeZone)}</Text>
           </DataItem>

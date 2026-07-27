@@ -1,10 +1,10 @@
 import type { BulkManageOrderStatusDto } from "../../model/order/dto/BulkManageOrderStatusDto";
 import type { BulkManageOrderVisibilityDto } from "../../model/order/dto/BulkManageOrderVisibilityDto";
 import type { CreateOrderDto } from "../../model/order/dto/CreateOrderDto";
+import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
 import type { ManageOrderStatusDto } from "../../model/order/dto/ManageOrderStatusDto";
 import type { UpdateOrderDto } from "../../model/order/dto/UpdateOrderDto";
 import type { Order } from "../../model/order/types/Order";
-import type { GenericWithUserId } from "../../model/shared/dto/GenericWithUserId";
 import type { PaginatedResponse } from "../../model/shared/meta/PaginatedResponse";
 import AppAxios from "../AppAxios";
 
@@ -13,7 +13,7 @@ export class OrderAxios {
     return AppAxios.post("/orders/create", dto).then(({ data }) => data);
   }
 
-  static getOrders(dto: GenericWithUserId) {
+  static getOrders(dto: GetOrdersDto) {
     return AppAxios.get<PaginatedResponse<Order>>("/orders", {
       params: dto,
     }).then(({ data }) => data);

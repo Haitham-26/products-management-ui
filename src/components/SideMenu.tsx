@@ -68,7 +68,7 @@ const MenuStyle = createGlobalStyle`
     .side-menu-title-content {
       overflow: visible !important;
       margin: 0 !important;
-      font-size: ${({ theme: { typography } }) => typography.small} !important;
+      font-size: ${({ theme: { typography } }) => `calc(${typography.small} * 0.8)`} !important;
       line-height: normal ;
     }
   }
@@ -89,6 +89,7 @@ export const SideMenu: React.FC = () => {
     "orders",
     "categories",
     "tags",
+    "returns",
   ].map((key) => {
     const route = appRoutes[key as keyof typeof appRoutes];
 

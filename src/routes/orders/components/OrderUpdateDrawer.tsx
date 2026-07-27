@@ -249,10 +249,10 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
           <SummaryBox>
             <SummaryRow>
               <Text color="textSecondary">
-                {t("orders.general.items.totalAmount")}
+                {t("orders.general.items.totalRevenue")}
               </Text>
               <Text fontWeight="600">
-                {stringWithCurrencyCode(settings.currency, order.totalAmount)}
+                {stringWithCurrencyCode(settings.currency, order.totalRevenue)}
               </Text>
             </SummaryRow>
 

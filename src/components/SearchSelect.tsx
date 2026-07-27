@@ -11,6 +11,15 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing.xs};
 `;
 
+const Label = styled(Text)`
+  font-size: ${({ theme }) => theme.typography.small};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  span {
+    color: ${({ theme }) => theme.colors.error};
+  }
+`;
+
 type SearchSelectProps = SelectProps & {
   onSearch: VoidCallback<string>;
   notFoundText?: React.ReactNode;
@@ -22,6 +31,7 @@ export const SearchSelect: React.FC<SearchSelectProps> = ({
   options,
   onSearch,
   notFoundText,
+  required,
   ...props
 }) => {
   const { t } = useTranslation(undefined, { keyPrefix: "common" });
@@ -29,9 +39,9 @@ export const SearchSelect: React.FC<SearchSelectProps> = ({
   return (
     <Container>
       {title ? (
-        <Text color="textSecondary" fontSize="small">
-          {title}
-        </Text>
+        <Label>
+          {title} {required ? <span>*</span> : null}
+        </Label>
       ) : null}
 
       <Select

@@ -11,10 +11,13 @@ import type { Order } from "../../../model/order/types/Order";
 import { OrderActionsDropdown } from "../../products/components/OrderActionsDropdown";
 import { formatDate } from "../../../utils/Date";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
+import camelCase from "lodash/camelCase";
 
 const getStatusColor = (status: Order["status"]): TagProps["color"] => {
   switch (status) {
     case OrderStatus.CANCELED:
+    case OrderStatus.RETURNED:
+    case OrderStatus.PARTIALLY_RETURNED:
       return "error";
     case OrderStatus.DELIVERED:
       return "success";
@@ -139,7 +142,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             <Identifier>#{order.identifier}</Identifier>
 
             <Tag color={getStatusColor(order.status)}>
-              {t(`orders.status.${order.status.toLowerCase()}`)}
+              {t(`orders.status.${camelCase(order.status)}`)}
             </Tag>
           </Details>
 
@@ -149,11 +152,11 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         <Stats>
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("orders.fields.totalAmount")}
+              {t("orders.fields.totalRevenue")}
             </Text>
 
             <Text fontWeight="600">
-              {stringWithCurrencyCode(settings.currency, order.totalAmount)}
+              {stringWithCurrencyCode(settings.currency, order.totalRevenue)}
             </Text>
           </Stat>
 
@@ -172,18 +175,18 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("common.filters.creationDate.title")}
-            </Text>
-
-            <Text>{formatDate(order.createdAt, false, settings.timeZone)}</Text>
-          </Stat>
-
-          <Stat>
-            <Text color="textSecondary" fontSize="small">
               {t("orders.fields.itemsCount")}
             </Text>
 
             <Text>{orderItemsCount}</Text>
+          </Stat>
+
+          <Stat>
+            <Text color="textSecondary" fontSize="small">
+              {t("common.creationDate")}
+            </Text>
+
+            <Text>{formatDate(order.createdAt, false, settings.timeZone)}</Text>
           </Stat>
         </Stats>
       </Content>

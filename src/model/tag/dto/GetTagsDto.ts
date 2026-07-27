@@ -1,11 +1,11 @@
 import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
-import type { CreationDateFilters } from "../../shared/types/CreationDateFilters.enum";
+import type { SortKind } from "../../shared/types/SortKind.enum";
 
 export interface GetTagsDto extends GenericWithUserId {
   meta?: PaginationMeta;
   keyword?: string;
-  creationDate?: CreationDateFilters;
+  creationDate?: SortKind;
   minUsageCount?: number;
   maxUsageCount?: number;
 }

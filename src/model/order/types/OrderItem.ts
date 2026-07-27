@@ -10,5 +10,6 @@ export interface OrderItem {
   salePriceAtPurchase: number;
   discountAtPurchase?: ProductDiscount;
   finalSalePriceAtPurchase: number;
+  profitAtPurchase: number;
   totalProfitAtPurchase: number;
 }

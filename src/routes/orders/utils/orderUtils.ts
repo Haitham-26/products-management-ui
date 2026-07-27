@@ -14,11 +14,11 @@ export const parseOrdersFiltersFromParams = (
         }
       : meta,
   creationDate: params.get("creationDate") as GetOrdersDto["creationDate"],
-  minTotalAmount: params.get("minTotalAmount")
-    ? Number(params.get("minTotalAmount"))
+  minTotalRevenue: params.get("minTotalRevenue")
+    ? Number(params.get("minTotalRevenue"))
     : undefined,
-  maxTotalAmount: params.get("maxTotalAmount")
-    ? Number(params.get("maxTotalAmount"))
+  maxTotalRevenue: params.get("maxTotalRevenue")
+    ? Number(params.get("maxTotalRevenue"))
     : undefined,
   minTotalProfit: params.get("minTotalProfit")
     ? Number(params.get("minTotalProfit"))
@@ -48,8 +48,8 @@ export const buildOrdersParams = (
   set("creationDate", filters.creationDate);
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
-  set("minTotalAmount", filters.minTotalAmount?.toString());
-  set("maxTotalAmount", filters.maxTotalAmount?.toString());
+  set("minTotalRevenue", filters.minTotalRevenue?.toString());
+  set("maxTotalRevenue", filters.maxTotalRevenue?.toString());
   set("minTotalProfit", filters.minTotalProfit?.toString());
   set("maxTotalProfit", filters.maxTotalProfit?.toString());
   set("status", filters.status);
@@ -65,7 +65,7 @@ export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
   let n = 0;
 
   const applyConditions = [
-    !isNil(filters.minTotalAmount) || !isNil(filters.maxTotalAmount),
+    !isNil(filters.minTotalRevenue) || !isNil(filters.maxTotalRevenue),
     !isNil(filters.minTotalProfit) || !isNil(filters.maxTotalProfit),
     filters.status,
     !isNil(filters.creationDate),
