@@ -15,12 +15,11 @@ import truncate from "lodash/truncate";
 
 const getStatusColor = (status: Return["status"]): TagProps["color"] => {
   switch (status) {
-    case ReturnStatus.VOIDED:
+    case ReturnStatus.CANCELED:
       return "error";
-    case ReturnStatus.COMPLETED:
-      return "success";
+    case ReturnStatus.ACTIVE:
     default:
-      return "warning";
+      return "success";
   }
 };
 
@@ -86,8 +85,8 @@ type ReturnCardProps = {
   actions: {
     onEdit?: FNType;
     onRead?: FNType;
-    onVoid?: FNType;
-    onUnvoid?: FNType;
+    onCancel?: FNType;
+    onActivate?: FNType;
   };
 };
 

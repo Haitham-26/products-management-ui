@@ -12,8 +12,8 @@ type FNType = VoidCallback<Return>;
 type CreateReturnsTableColumnsArgs = {
   functions: {
     onEdit?: FNType;
-    onVoid?: FNType;
-    onUnvoid?: FNType;
+    onCancel?: FNType;
+    onActivate?: FNType;
     onRead?: FNType;
     t: TFunction;
   };

@@ -11,7 +11,7 @@ export interface Return {
   totalReturnRevenue: number;
   totalReturnProfit: number;
   returnedAt?: Date;
-  voidedAt?: Date;
+  canceledAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

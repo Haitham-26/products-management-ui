@@ -46,15 +46,15 @@ import { Text } from "../../components/Text";
 const StyledContainer = styled(Container)`
   overflow: hidden;
 
-  .completed-return,
-  .voided-return {
+  .active-return,
+  .canceled-return {
     color: ${({ theme }) => theme.colors.surface};
   }
 
-  .completed-return {
+  .active-return {
     background-color: ${({ theme }) => theme.colors.delivered} !important;
   }
-  .voided-return {
+  .canceled-return {
     background-color: ${({ theme }) => theme.colors.error} !important;
   }
 
@@ -83,13 +83,13 @@ export const Returns: React.FC = () => {
   const [currentReturn, setCurrentReturn] = useState<Return | null>(null);
 
   const [returnEditVisible, setReturnEditVisible] = useState(false);
-  const [returnVoidVisible, setReturnVoidVisible] = useState(false);
-  const [returnUnvoidVisible, setReturnUnvoidVisible] = useState(false);
+  const [returnCancelVisible, setReturnCancelVisible] = useState(false);
+  const [returnActivateVisible, setReturnActivateVisible] = useState(false);
   const [returnReadVisible, setReturnReadVisible] = useState(false);
   const [returnCreateVisible, setReturnCreateVisible] = useState(false);
 
-  const [returnVoidLoading, setReturnVoidLoading] = useState(false);
-  const [returnUnvoidLoading, setReturnUnvoidLoading] = useState(false);
+  const [returnCancelLoading, setReturnCancelLoading] = useState(false);
+  const [returnActivateLoading, setReturnActivateLoading] = useState(false);
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
@@ -174,14 +174,14 @@ export const Returns: React.FC = () => {
 
   const activeFiltersCount = countReturnsActiveFilters(filters);
 
-  const onVoid = (_return: Return) => {
+  const onCancel = (_return: Return) => {
     setCurrentReturn(_return);
-    setReturnVoidVisible(true);
+    setReturnCancelVisible(true);
   };
 
-  const onUnvoid = (_return: Return) => {
+  const onActivate = (_return: Return) => {
     setCurrentReturn(_return);
-    setReturnUnvoidVisible(true);
+    setReturnActivateVisible(true);
   };
 
   const onEdit = (_return: Return) => {
@@ -196,8 +196,8 @@ export const Returns: React.FC = () => {
 
   const tableActions = useMemo(
     () => ({
-      onVoid: permissions.UPDATE ? onVoid : undefined,
-      onUnvoid: permissions.UPDATE ? onUnvoid : undefined,
+      onCancel: permissions.UPDATE ? onCancel : undefined,
+      onActivate: permissions.UPDATE ? onActivate : undefined,
       onEdit: permissions.UPDATE ? onEdit : undefined,
       onRead: permissions.READ ? onRead : undefined,
     }),
@@ -213,16 +213,16 @@ export const Returns: React.FC = () => {
     [t, tableActions, settings],
   );
 
-  const voidReturn = async () => {
+  const cancelReturn = async () => {
     if (!currentReturn) {
       return;
     }
 
     try {
-      setReturnVoidLoading(true);
+      setReturnCancelLoading(true);
 
       await dispatch(
-        returnActions.voidReturn({
+        returnActions.cancelReturn({
           returnId: currentReturn._id,
         }),
       ).unwrap();
@@ -231,28 +231,28 @@ export const Returns: React.FC = () => {
         replace: true,
       });
 
-      setReturnVoidVisible(false);
+      setReturnCancelVisible(false);
       setCurrentReturn(null);
 
-      Toast.success(t("returns.void.success"));
+      Toast.success(t("returns.cancel.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
     } finally {
-      setReturnVoidLoading(false);
+      setReturnCancelLoading(false);
     }
   };
 
-  const unvoidReturn = async () => {
+  const activateReturn = async () => {
     if (!currentReturn) {
       return;
     }
 
     try {
-      setReturnUnvoidLoading(true);
+      setReturnActivateLoading(true);
 
       await dispatch(
-        returnActions.unvoidReturn({
+        returnActions.activateReturn({
           returnId: currentReturn._id,
         }),
       ).unwrap();
@@ -261,15 +261,15 @@ export const Returns: React.FC = () => {
         replace: true,
       });
 
-      setReturnVoidVisible(false);
+      setReturnActivateVisible(false);
       setCurrentReturn(null);
 
-      Toast.success(t("returns.unvoid.success"));
+      Toast.success(t("returns.activate.success"));
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
     } finally {
-      setReturnUnvoidLoading(false);
+      setReturnActivateLoading(false);
     }
   };
 
@@ -367,13 +367,13 @@ export const Returns: React.FC = () => {
           />
 
           <WarningModal
-            title={t("returns.void.title", {
+            title={t("returns.cancel.title", {
               orderIdentifier: currentReturn?.orderIdentifier,
             })}
             description={
               <WarningModalDescriptionContainer>
                 <Text fontSize="small" color="textSecondary">
-                  {t("returns.void.description.paragraph")}
+                  {t("returns.cancel.description.paragraph")}
                 </Text>
 
                 <ul>
@@ -385,7 +385,7 @@ export const Returns: React.FC = () => {
                       key={index}
                     >
                       <Trans
-                        i18nKey={`returns.void.description.listItems.${index}`}
+                        i18nKey={`returns.cancel.description.listItems.${index}`}
                         components={[<BoldSpan />]}
                       />
                     </Text>
@@ -393,20 +393,20 @@ export const Returns: React.FC = () => {
                 </ul>
               </WarningModalDescriptionContainer>
             }
-            open={returnVoidVisible}
-            onClose={() => setReturnVoidVisible(false)}
-            confirmLoading={returnVoidLoading}
-            onConfirm={voidReturn}
+            open={returnCancelVisible}
+            onClose={() => setReturnCancelVisible(false)}
+            confirmLoading={returnCancelLoading}
+            onConfirm={cancelReturn}
           />
 
           <WarningModal
-            title={t("returns.unvoid.title", {
+            title={t("returns.activate.title", {
               orderIdentifier: currentReturn?.orderIdentifier,
             })}
             description={
               <WarningModalDescriptionContainer>
                 <Text fontSize="small" color="textSecondary">
-                  {t("returns.unvoid.description.paragraph")}
+                  {t("returns.activate.description.paragraph")}
                 </Text>
 
                 <ul>
@@ -418,7 +418,7 @@ export const Returns: React.FC = () => {
                       key={index}
                     >
                       <Trans
-                        i18nKey={`returns.unvoid.description.listItems.${index}`}
+                        i18nKey={`returns.activate.description.listItems.${index}`}
                         components={[<BoldSpan />]}
                       />
                     </Text>
@@ -426,10 +426,10 @@ export const Returns: React.FC = () => {
                 </ul>
               </WarningModalDescriptionContainer>
             }
-            open={returnUnvoidVisible}
-            onClose={() => setReturnUnvoidVisible(false)}
-            confirmLoading={returnUnvoidLoading}
-            onConfirm={unvoidReturn}
+            open={returnActivateVisible}
+            onClose={() => setReturnActivateVisible(false)}
+            confirmLoading={returnActivateLoading}
+            onConfirm={activateReturn}
           />
         </Fragment>
       ) : null}

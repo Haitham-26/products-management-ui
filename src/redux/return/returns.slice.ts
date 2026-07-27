@@ -7,8 +7,8 @@ import type { Return } from "../../model/return/types/Return";
 import type { CreateReturnDto } from "../../model/return/dto/CreateReturnDto";
 import { ReturnAxios } from "../../axios/return/return.axios";
 import type { GetReturnsDto } from "../../model/return/dto/GetReturnsDto";
-import type { VoidReturnDto } from "../../model/return/dto/VoidReturnDto";
-import type { UnvoidReturnDto } from "../../model/return/dto/UnvoidReturnDto";
+import type { CancelReturnDto } from "../../model/return/dto/CancelReturnDto";
+import type { ActivateReturnDto } from "../../model/return/dto/ActivateReturnDto";
 import type { UpdateReturnDto } from "../../model/return/dto/UpdateReturnDto";
 
 interface ReturnState {
@@ -37,14 +37,14 @@ const getReturns = AppThunk<PaginatedResponse<Return>, GetReturnsDto>(
   ReturnAxios.getReturns,
 );
 
-const voidReturn = AppThunk<void, VoidReturnDto>(
-  "/returns/void",
-  ReturnAxios.voidReturn,
+const cancelReturn = AppThunk<void, CancelReturnDto>(
+  "/returns/cancel",
+  ReturnAxios.cancelReturn,
 );
 
-const unvoidReturn = AppThunk<void, UnvoidReturnDto>(
-  "/returns/unvoid",
-  ReturnAxios.unvoidReturn,
+const activateReturn = AppThunk<void, ActivateReturnDto>(
+  "/returns/activate",
+  ReturnAxios.activateReturn,
 );
 
 const updateReturn = AppThunk<void, UpdateReturnDto>(
@@ -76,8 +76,8 @@ export const returnSlice = createSlice({
 const returnActions = {
   createReturn,
   getReturns,
-  voidReturn,
-  unvoidReturn,
+  cancelReturn,
+  activateReturn,
   updateReturn,
 };
 

@@ -113,7 +113,7 @@ export const ReturnReadDrawer: React.FC<Props> = ({
 
               <Text
                 color={
-                  returnRecord.status === ReturnStatus.VOIDED
+                  returnRecord.status === ReturnStatus.CANCELED
                     ? "error"
                     : "success"
                 }
@@ -183,13 +183,13 @@ export const ReturnReadDrawer: React.FC<Props> = ({
               </DataItem>
             ) : null}
 
-            {returnRecord.voidedAt ? (
+            {returnRecord.canceledAt ? (
               <DataItem>
                 <Text fontSize="small" color="textSecondary" fontWeight="bold">
-                  {t("returns.fields.voidedAt")}
+                  {t("returns.fields.canceledAt")}
                 </Text>
                 <Text>
-                  {formatDate(returnRecord.voidedAt, true, settings.timeZone)}
+                  {formatDate(returnRecord.canceledAt, true, settings.timeZone)}
                 </Text>
               </DataItem>
             ) : null}

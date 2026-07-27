@@ -23,18 +23,18 @@ type ReturnActionsDropdownProps = {
   actions: {
     onEdit?: FNType;
     onRead?: FNType;
-    onVoid?: FNType;
-    onUnvoid?: FNType;
+    onCancel?: FNType;
+    onActivate?: FNType;
   };
 };
 
 export const ReturnActionsDropdown: React.FC<ReturnActionsDropdownProps> = ({
   record,
-  actions: { onEdit, onRead, onVoid, onUnvoid },
+  actions: { onEdit, onRead, onCancel, onActivate },
 }) => {
   const { t } = useTranslation();
 
-  const isCompleted = record.status === ReturnStatus.COMPLETED;
+  const isActive = record.status === ReturnStatus.ACTIVE;
 
   return (
     <Dropdown
@@ -55,21 +55,21 @@ export const ReturnActionsDropdown: React.FC<ReturnActionsDropdownProps> = ({
             onClick: () => onEdit?.(record),
             disabled: !isFunction(onEdit),
           },
-          isCompleted
+          isActive
             ? {
-                key: "void",
+                key: "cancel",
                 icon: <Icon icon={faBan} />,
                 label: t("common.cancel"),
-                onClick: () => onVoid?.(record),
-                disabled: !isFunction(onVoid),
+                onClick: () => onCancel?.(record),
+                disabled: !isFunction(onCancel),
                 danger: true,
               }
             : {
-                key: "unvoid",
+                key: "reactivate",
                 icon: <Icon icon={faRotateLeft} />,
                 label: t("common.reactivate"),
-                onClick: () => onUnvoid?.(record),
-                disabled: !isFunction(onUnvoid),
+                onClick: () => onActivate?.(record),
+                disabled: !isFunction(onActivate),
               },
         ].filter((item) => !item.disabled),
       }}

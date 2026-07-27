@@ -713,6 +713,30 @@
         }
       }
     },
+    "cancel": {
+      "title": "Cancel return for order {{orderIdentifier}}?",
+      "description": {
+        "paragraph": "Canceling this return will result in the following:",
+        "listItems": [
+          "Reinstating the order's revenue and profits in financial reports.",
+          "Changing the order status to <0>Delivered</0>.",
+          "Reverting stock increases resulting from this return (if any)."
+        ]
+      },
+      "success": "Return canceled successfully!"
+    },
+    "activate": {
+      "title": "Reactivate return for order {{orderIdentifier}}?",
+      "description": {
+        "paragraph": "Reactivating this return will result in the following:",
+        "listItems": [
+          "Deducting the order's revenue and profits from financial reports.",
+          "Updating the order status to <0>Returned</0> (if all items are returned) or <0>Partially Returned</0> (if some items are returned).",
+          "Adding the returned items back to inventory (if any restocked)."
+        ]
+      },
+      "success": "Return reactivated successfully!"
+    },
     "general": {
       "details": {
         "title": "Return Information"
@@ -733,8 +757,8 @@
       "returnReason": "Return Reason",
       "returnedAt": "Return Date",
       "status": {
-        "completed": "Completed",
-        "voided": "Voided"
+        "active": "Active",
+        "canceled": "Canceled"
       },
       "itemsCount": "Returned Items Count"
     }
@@ -888,6 +912,20 @@
           "long": "Return reason cannot exceed {{max}} characters."
         },
         "alreadyHasReturn": "This order already has a return. You can reactivate the existing return if it's not activated."
+      },
+      "cancel": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found.",
+          "alreadyCanceled": "This return is already canceled."
+        }
+      },
+      "activate": {
+        "return": {
+          "invalidId": "Invalid return ID.",
+          "notFound": "Return not found.",
+          "alreadyActive": "This return is already active."
+        }
       },
       "update": {
         "return": {
