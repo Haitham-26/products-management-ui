@@ -851,7 +851,8 @@
     "clearSelected": "Clear Selected",
     "allTime": "All Time",
     "order": "Order",
-    "reactivate": "Reactivate"
+    "reactivate": "Reactivate",
+    "returns": "Returns"
   },
   "errors": {
     "general": {

@@ -13,7 +13,7 @@ import { ResendVerificationButton } from "../../components/ResendTokenButton";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
 import i18n from "../../i18n";
-import type { AppLangs } from "../../model/app/types/AppLangs.enum";
+import { AppLangs } from "../../model/app/types/AppLangs.enum";
 
 const LAST_RESEND_LOCAL_STORAGE_KEY = "signup-token-last-resend-time";
 
@@ -39,6 +39,7 @@ export const SignUpToken: React.FC = () => {
     defaultValues: {
       email: state?.email,
       token: "",
+      lang: (i18n.language as AppLangs) || AppLangs.EN,
     },
   });
 

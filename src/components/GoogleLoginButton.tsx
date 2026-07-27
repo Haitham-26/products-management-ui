@@ -5,6 +5,8 @@ import { userActions } from "../redux/user/user.slice";
 import { useNavigate } from "react-router-dom";
 import { useAppToast } from "./toast/useAppToast";
 import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
+import { AppLangs } from "../model/app/types/AppLangs.enum";
 
 export const GoogleLoginButton: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +23,12 @@ export const GoogleLoginButton: React.FC = () => {
         return;
       }
 
-      await dispatch(userActions.googleLogin({ idToken })).unwrap();
+      await dispatch(
+        userActions.googleLogin({
+          idToken,
+          lang: (i18n.language || AppLangs.EN) as AppLangs,
+        }),
+      ).unwrap();
 
       navigate("/", { replace: true });
 

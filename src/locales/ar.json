@@ -851,7 +851,8 @@
     "clearSelected": "إلغاء تحديد الكل",
     "allTime": "كل الأوقات",
     "order": "الطلب",
-    "reactivate": "إعادة التفعيل"
+    "reactivate": "إعادة التفعيل",
+    "returns": "الإرجاعات"
   },
   "errors": {
     "general": {
