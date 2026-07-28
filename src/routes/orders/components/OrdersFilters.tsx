@@ -13,6 +13,7 @@ import { Checkbox } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import camelCase from "lodash/camelCase";
+import { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
 
 const getStatusOptions = (t: TFunction) => [
   { label: t("common.all"), value: null },
@@ -22,19 +23,30 @@ const getStatusOptions = (t: TFunction) => [
   })),
 ];
 
-const getCreationDateOptions = (t: TFunction) => [
+const getSortByOptions = (t: TFunction) => [
   {
     label: t("common.default"),
     value: null,
   },
   {
-    label: t("common.filters.creationDate.newest"),
+    label: t("common.filters.sortBy.newest"),
     value: SortKind.NEWEST,
   },
   {
-    label: t("common.filters.creationDate.oldest"),
+    label: t("common.filters.sortBy.oldest"),
     value: SortKind.OLDEST,
   },
+];
+
+const getDatePeriodOptions = (t: TFunction) => [
+  {
+    label: t("common.all"),
+    value: null,
+  },
+  ...Object.values(DatePeriodFilters).map((d) => ({
+    label: t(`common.${camelCase(d)}`),
+    value: d,
+  })),
 ];
 
 const PopoverBody = styled.div`
@@ -140,9 +152,19 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
           <Label>{t("common.sortBy")}</Label>
           <Select
             placeholder={t("common.default")}
-            value={filters.creationDate}
-            onChange={(val) => applyFilter("creationDate", val)}
-            options={getCreationDateOptions(t)}
+            value={filters.sortBy}
+            onChange={(val) => applyFilter("sortBy", val)}
+            options={getSortByOptions(t)}
+          />
+        </Section>
+
+        <Section>
+          <Label>{t("common.creationDate")}</Label>
+          <Select
+            placeholder={t("common.allTimes")}
+            value={filters.datePeriod}
+            onChange={(val) => applyFilter("datePeriod", val)}
+            options={getDatePeriodOptions(t)}
           />
         </Section>
 

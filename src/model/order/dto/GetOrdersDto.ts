@@ -1,11 +1,13 @@
 import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
+import type { DatePeriodFilters } from "../../shared/types/DatePeriodFilters.enum";
 import type { SortKind } from "../../shared/types/SortKind.enum";
 import type { OrderStatus } from "../types/OrderStatus.enum";
 
 export interface GetOrdersDto {
   meta?: PaginationMeta;
   keyword?: string;
-  creationDate?: SortKind;
+  sortBy?: SortKind;
+  datePeriod: DatePeriodFilters;
   minTotalRevenue?: number;
   maxTotalRevenue?: number;
   minTotalProfit?: number;

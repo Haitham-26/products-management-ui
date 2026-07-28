@@ -19,11 +19,11 @@ const getSortByDateOptions = (t: TFunction) => [
     value: null,
   },
   {
-    label: t("common.filters.creationDate.newest"),
+    label: t("common.filters.sortBy.newest"),
     value: SortKind.NEWEST,
   },
   {
-    label: t("common.filters.creationDate.oldest"),
+    label: t("common.filters.sortBy.oldest"),
     value: SortKind.OLDEST,
   },
 ];
@@ -50,11 +50,11 @@ const getStatusOptions = (t: TFunction) => [
   })),
 ];
 
-const PopoverBody = styled.div`
+const Body = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
 `;
 
-const PopoverContent = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
@@ -68,13 +68,13 @@ const FiltersClearContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
-const PopoverSection = styled.div`
+const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
 `;
 
-const PopoverLabel = styled.label`
+const Label = styled.label`
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -82,12 +82,12 @@ const PopoverLabel = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const PopoverSeparator = styled.hr`
+const Separator = styled.hr`
   height: 1px;
   border-color: ${({ theme }) => theme.colors.border}50;
 `;
 
-const PopoverFooter = styled.div`
+const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
   padding-top: 4px;
@@ -116,51 +116,51 @@ export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
   }, [setSearchParams]);
 
   return (
-    <PopoverBody>
-      <PopoverContent>
-        <PopoverSection>
-          <PopoverLabel>{t("common.sortBy")}</PopoverLabel>
+    <Body>
+      <Content>
+        <Section>
+          <Label>{t("common.sortBy")}</Label>
           <Select
             placeholder={t("common.default")}
             value={filters.sortBy}
             onChange={(val) => applyFilter("sortBy", val)}
             options={getSortByDateOptions(t)}
           />
-        </PopoverSection>
+        </Section>
 
-        <PopoverSection>
-          <PopoverLabel>{t("common.datePeriod")}</PopoverLabel>
+        <Section>
+          <Label>{t("common.creationDate")}</Label>
           <Select
-            placeholder={t("common.all")}
+            placeholder={t("common.allTimes")}
             value={filters.datePeriod}
             onChange={(val) => applyFilter("datePeriod", val)}
             options={getDatePeriodOptions(t)}
           />
-        </PopoverSection>
+        </Section>
 
-        <PopoverSeparator />
+        <Separator />
 
-        <PopoverSection>
-          <PopoverLabel>{t("common.status")}</PopoverLabel>
+        <Section>
+          <Label>{t("common.status")}</Label>
           <Select
             placeholder={t("common.all")}
             value={filters.status}
             onChange={(val) => applyFilter("status", val)}
             options={getStatusOptions(t)}
           />
-        </PopoverSection>
-      </PopoverContent>
+        </Section>
+      </Content>
 
       {activeFiltersCount ? (
         <FiltersClearContainer>
-          <PopoverSeparator />
-          <PopoverFooter>
+          <Separator />
+          <Footer>
             <Button icon={faRotateLeft} onClick={resetFilters}>
               {t("common.clearAll")}
             </Button>
-          </PopoverFooter>
+          </Footer>
         </FiltersClearContainer>
       ) : null}
-    </PopoverBody>
+    </Body>
   );
 };

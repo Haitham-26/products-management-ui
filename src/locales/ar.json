@@ -781,6 +781,7 @@
     "selectedCount": "تم تحديد {{count}} من {{total}}"
   },
   "common": {
+    "allTimes": "كل الأوقات",
     "sortBy": "الترتيب",
     "datePeriod": "الفترة الزمنية",
     "email": "البريد الإلكتروني",
@@ -825,7 +826,7 @@
     "filters": {
       "title": "الفلاتر",
       "clear": "إلغاء الفلاتر",
-      "creationDate": {
+      "sortBy": {
         "newest": "الأحدث أولا",
         "oldest": "الأقدم أولا"
       }

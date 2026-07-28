@@ -781,6 +781,7 @@
     "selectedCount": "{{count}} of {{total}} selected"
   },
   "common": {
+    "allTimes": "All Times",
     "sortBy": "Sort By",
     "datePeriod": "Date Period",
     "email": "Email",
@@ -824,7 +825,7 @@
     "filters": {
       "title": "Filters",
       "clear": "Clear Filters",
-      "creationDate": {
+      "sortBy": {
         "newest": "Newest First",
         "oldest": "Oldest First"
       }

@@ -13,7 +13,8 @@ export const parseOrdersFiltersFromParams = (
           limit: params.get("limit") ? Number(params.get("limit")) : undefined,
         }
       : meta,
-  creationDate: params.get("creationDate") as GetOrdersDto["creationDate"],
+  sortBy: params.get("sortBy") as GetOrdersDto["sortBy"],
+  datePeriod: params.get("datePeriod") as GetOrdersDto["datePeriod"],
   minTotalRevenue: params.get("minTotalRevenue")
     ? Number(params.get("minTotalRevenue"))
     : undefined,
@@ -45,7 +46,8 @@ export const buildOrdersParams = (
   };
 
   set("keyword", filters.keyword);
-  set("creationDate", filters.creationDate);
+  set("sortBy", filters.sortBy);
+  set("datePeriod", filters.datePeriod);
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
   set("minTotalRevenue", filters.minTotalRevenue?.toString());
@@ -68,7 +70,8 @@ export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
     !isNil(filters.minTotalRevenue) || !isNil(filters.maxTotalRevenue),
     !isNil(filters.minTotalProfit) || !isNil(filters.maxTotalProfit),
     filters.status,
-    !isNil(filters.creationDate),
+    !isNil(filters.sortBy),
+    !isNil(filters.datePeriod),
     filters.showArchived,
   ];
 

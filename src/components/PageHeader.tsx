@@ -83,7 +83,6 @@ const ActionWrapper = styled.div`
     }
   }
 `;
-//
 
 const Wrapper = styled.div`
   display: flex;
@@ -243,6 +242,7 @@ const GlobalStyle = createGlobalStyle<{ hasSelection: boolean }>`
   ${({ hasSelection }) =>
     // 3.5rem = App bar's height
     // 2.5rem = Fixed content's height
+    // This is to leave a a breath space on mobile
     hasSelection
       ? `
     @media (max-width: ${Breakpoints.MD}) {
