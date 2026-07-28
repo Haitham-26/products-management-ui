@@ -18,6 +18,8 @@ const initialState: DashboardState = {
       pending: 0,
       delivered: 0,
       canceled: 0,
+      returned: 0,
+      partiallyReturned: 0,
     },
     productsCountByStatus: {
       outOfStock: 0,

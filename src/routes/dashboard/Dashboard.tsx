@@ -2,7 +2,7 @@ import type React from "react";
 import { Container } from "../../components/Container";
 import styled from "styled-components";
 import { PageHeader } from "../../components/PageHeader";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { dashboardActions } from "../../redux/dashboard/dashboard.slice";
 import dashboardSliceSelectors from "../../redux/dashboard/dashboard.selector";
@@ -10,10 +10,6 @@ import { SpinnerFullScreen } from "../../components/SpinnerFullScreen";
 import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../theme/Breakpoints";
-import { Select } from "../../components/Select";
-import { DatePeriodFilters } from "../../model/shared/types/DatePeriodFilters.enum";
-import type { TFunction } from "i18next";
-import camelCase from "lodash/camelCase";
 import { DashboardKPICard } from "./components/DashboardKPICard";
 import { faSackDollar } from "@fortawesome/free-solid-svg-icons/faSackDollar";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
@@ -35,23 +31,28 @@ import { stringWithCurrencyCode } from "../../utils/String";
 import { settingsActions } from "../../redux/settings/settings.slice";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
 import type { ThemeType } from "../../theme/theme";
+import { DatePicker } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { getDateRangeLabel } from "../../utils/Date";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import localeData from "dayjs/plugin/localeData";
+import weekday from "dayjs/plugin/weekday";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import weekYear from "dayjs/plugin/weekYear";
+import { DateInput } from "../../components/DateInput";
 
-const getDateRangeOptions = (t: TFunction) =>
-  Object.values(DatePeriodFilters).map((d) => ({
-    label: t(`common.${camelCase(d)}`),
-    value: d,
-  }));
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
+dayjs.extend(localeData);
+dayjs.extend(weekday);
+dayjs.extend(weekOfYear);
+dayjs.extend(weekYear);
 
-const getSelectedPeriodLabel = (period: DatePeriodFilters, t: TFunction) => {
-  return t(`common.${camelCase(period)}`);
-};
+const { RangePicker } = DatePicker;
 
 const StyledContainer = styled(Container)`
   flex-grow: 1;
-`;
-
-const StyledSelect = styled(Select)`
-  min-width: 8rem;
 `;
 
 const GridsWrapper = styled.div`
@@ -172,10 +173,28 @@ const ViewOrdersLink = styled(Link)`
   }
 `;
 
+const StyledRangePicker = styled(RangePicker)`
+  @media (max-width: ${Breakpoints.SM}) {
+    display: none;
+  }
+`;
+
+const DateInputWrapper = styled.div`
+  display: flex;
+  gap: 4px;
+
+  @media (min-width: ${Breakpoints.SM}) {
+    display: none;
+  }
+`;
+
+const now = dayjs();
+
 export const Dashboard: React.FC = () => {
-  const [datePeriod, setDatePeriod] = useState<DatePeriodFilters>(
-    DatePeriodFilters.TODAY,
-  );
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    now.startOf("day"),
+    now.endOf("day"),
+  ]);
 
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -190,7 +209,7 @@ export const Dashboard: React.FC = () => {
   const isRtl = i18n.dir(i18n.language) === "rtl";
   const arrowIcon = isRtl ? faArrowLeft : faArrowRight;
 
-  const selectedPeriodLabel = getSelectedPeriodLabel(datePeriod, t);
+  const selectedPeriodLabel = getDateRangeLabel(dateRange, t);
 
   const {
     totalRevenue,
@@ -203,9 +222,14 @@ export const Dashboard: React.FC = () => {
     productsCountByStatus.outOfStock + productsCountByStatus.lowStock;
 
   useEffect(() => {
-    dispatch(dashboardActions.getDashboardStats({ datePeriod }));
+    dispatch(
+      dashboardActions.getDashboardStats({
+        startDate: dateRange[0].format("YYYY-MM-DD"),
+        endDate: dateRange[1].format("YYYY-MM-DD"),
+      }),
+    );
     dispatch(settingsActions.getSettings());
-  }, [dispatch, datePeriod]);
+  }, [dispatch, dateRange]);
 
   return (
     <StyledContainer>
@@ -213,11 +237,54 @@ export const Dashboard: React.FC = () => {
         icon={dashboard.icon}
         title={t(dashboard.titleKey)}
         extra={
-          <StyledSelect
-            value={datePeriod}
-            onChange={setDatePeriod}
-            options={getDateRangeOptions(t)}
-          />
+          <Fragment>
+            <StyledRangePicker
+              value={dateRange}
+              allowClear={false}
+              onChange={(dates) => {
+                if (dates && dates[0] && dates[1]) {
+                  setDateRange([dates[0], dates[1]] as [Dayjs, Dayjs]);
+                }
+              }}
+            />
+            <DateInputWrapper>
+              <DateInput
+                title={t("common.startDate")}
+                value={dateRange[0]}
+                onChange={(date) => {
+                  if (!date) {
+                    return;
+                  }
+
+                  setDateRange((prev) => [
+                    (date as Dayjs).startOf("day"),
+                    prev[1],
+                  ]);
+                }}
+                allowClear={false}
+                maxDate={dateRange[1]}
+                id="from"
+              />
+
+              <DateInput
+                title={t("common.endDate")}
+                value={dateRange[1]}
+                onChange={(date) => {
+                  if (!date) {
+                    return;
+                  }
+
+                  setDateRange((prev) => [
+                    prev[0],
+                    (date as Dayjs).endOf("day"),
+                  ]);
+                }}
+                allowClear={false}
+                minDate={dateRange[0]}
+                id="to"
+              />
+            </DateInputWrapper>
+          </Fragment>
         }
       />
 
@@ -309,9 +376,11 @@ export const Dashboard: React.FC = () => {
           </KPIsGrid>
 
           <ChartsGrid>
-            <DashboardRevenueAndProfitChart selectedDatePeriod={datePeriod} />
+            <DashboardRevenueAndProfitChart dateRange={dateRange} />
             <DashboardOrdersChart />
-            <DashboardTopProductsChart selectedDatePeriod={datePeriod} />
+            <DashboardTopProductsChart
+              selectedDatePeriodLabel={selectedPeriodLabel}
+            />
           </ChartsGrid>
         </GridsWrapper>
       ) : (

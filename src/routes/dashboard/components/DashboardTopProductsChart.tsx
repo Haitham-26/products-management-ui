@@ -12,8 +12,6 @@ import { Breakpoints } from "../../../theme/Breakpoints";
 import i18n from "../../../i18n";
 import type { ChartOptions } from "chart.js";
 import { Tag } from "antd";
-import camelCase from "lodash/camelCase";
-import type { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
 
 const Container = styled.div`
   display: flex;
@@ -140,18 +138,20 @@ const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
       },
       ticks: {
         color: theme.colors.textSecondary,
+        stepSize: 1,
+        precision: 0,
       },
     },
   },
 });
 
 type DashboardTopProductsChartProps = {
-  selectedDatePeriod: DatePeriodFilters;
+  selectedDatePeriodLabel: string;
 };
 
 export const DashboardTopProductsChart: React.FC<
   DashboardTopProductsChartProps
-> = ({ selectedDatePeriod }) => {
+> = ({ selectedDatePeriodLabel }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -183,9 +183,7 @@ export const DashboardTopProductsChart: React.FC<
         <Title>
           <span>{t("dashboard.mostSoldProducts.title")}</span>
 
-          <StyledTag color={"blue"}>
-            {t(`common.${camelCase(selectedDatePeriod)}`)}
-          </StyledTag>
+          <StyledTag color={"blue"}>{selectedDatePeriodLabel}</StyledTag>
         </Title>
 
         <ExtraWrapper>

@@ -9,44 +9,39 @@ import { Breakpoints } from "../../../theme/Breakpoints";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../../../redux/store";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
-import { DatePeriodFilters } from "../../../model/shared/types/DatePeriodFilters.enum";
 import type { TFunction } from "i18next";
 import type { GetDashboardStatsResponseDto } from "../../../model/dashboard/dto/GetDashboardStatsResponseDto";
 import { useMemo } from "react";
 import { Tag } from "antd";
-import camelCase from "lodash/camelCase";
+import type { Dayjs } from "dayjs";
+import { getDateRangeLabel } from "../../../utils/Date";
 
 const getLabels = (
-  selectedDatePeriod: DatePeriodFilters,
+  dateRange: [Dayjs, Dayjs],
   dates: Array<
     GetDashboardStatsResponseDto["profitAndRevenue"][number]["date"]
   >,
   t: TFunction,
 ) => {
   const currentLang = i18n.language;
+  const daySpan = dateRange[1].diff(dateRange[0], "day") + 1;
 
-  switch (selectedDatePeriod) {
-    case DatePeriodFilters.LAST_7_DAYS:
-    case DatePeriodFilters.LAST_30_DAYS:
-      return dates.map((dateStr) => {
-        if (!dateStr) {
-          return "";
-        }
-
-        const options: Intl.DateTimeFormatOptions =
-          selectedDatePeriod === DatePeriodFilters.LAST_7_DAYS
-            ? { weekday: "long" }
-            : { day: "numeric", month: "short" };
-
-        const date = new Date(dateStr);
-
-        return new Intl.DateTimeFormat(currentLang, options).format(date);
-      });
-
-    case DatePeriodFilters.TODAY:
-    default:
-      return [t("common.today")];
+  if (daySpan <= 1) {
+    return [t("common.today")];
   }
+
+  const options: Intl.DateTimeFormatOptions =
+    daySpan <= 7 ? { weekday: "long" } : { day: "numeric", month: "short" };
+
+  return dates.map((dateStr) => {
+    if (!dateStr) {
+      return "";
+    }
+
+    return new Intl.DateTimeFormat(currentLang, options).format(
+      new Date(dateStr),
+    );
+  });
 };
 
 const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
@@ -154,12 +149,12 @@ const StyledTag = styled(Tag)`
 `;
 
 type DashboardRevenueAndProfitChartProps = {
-  selectedDatePeriod: DatePeriodFilters;
+  dateRange: [Dayjs, Dayjs];
 };
 
 export const DashboardRevenueAndProfitChart: React.FC<
   DashboardRevenueAndProfitChartProps
-> = ({ selectedDatePeriod }) => {
+> = ({ dateRange }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -181,7 +176,7 @@ export const DashboardRevenueAndProfitChart: React.FC<
   );
 
   const data = {
-    labels: getLabels(selectedDatePeriod, dates, t),
+    labels: getLabels(dateRange, dates, t),
     datasets: [
       {
         label: t("dashboard.salesProfits.revenues"),
@@ -202,15 +197,15 @@ export const DashboardRevenueAndProfitChart: React.FC<
     ],
   };
 
+  const periodLabel = getDateRangeLabel(dateRange, t);
+
   return (
     <Container>
       <Header>
         <Title>
           <span>{t("dashboard.salesProfits.title")}</span>
 
-          <StyledTag color={"blue"}>
-            {t(`common.${camelCase(selectedDatePeriod)}`)}
-          </StyledTag>
+          <StyledTag color={"blue"}>{periodLabel}</StyledTag>
         </Title>
 
         <ExtraWrapper>

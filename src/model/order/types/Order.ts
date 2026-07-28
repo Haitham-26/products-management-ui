@@ -29,6 +29,7 @@ export interface Order {
   }[];
 
   isArchived: boolean;
+  lastDeliveredAt?: Date;
   createdAt: string;
   updatedAt: string;
 }

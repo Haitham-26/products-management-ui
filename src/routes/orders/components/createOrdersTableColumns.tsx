@@ -190,5 +190,23 @@ export const createOrdersTableColumns = ({
       sorter: (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
+    {
+      title: t("orders.fields.deliveredAt"),
+      dataIndex: "lastDeliveredAt",
+      key: "lastDeliveredAt",
+      width: 180,
+      render: (value?: string | null) =>
+        value ? formatDate(new Date(value), true, settings.timeZone) : "_",
+      sorter: (a, b) => {
+        const timeA = a.lastDeliveredAt
+          ? new Date(a.lastDeliveredAt).getTime()
+          : 0;
+        const timeB = b.lastDeliveredAt
+          ? new Date(b.lastDeliveredAt).getTime()
+          : 0;
+
+        return timeA - timeB;
+      },
+    },
   ];
 };

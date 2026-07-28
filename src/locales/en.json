@@ -281,7 +281,8 @@
       "totalProfit": "Total Profit",
       "itemsCount": "Items Count",
       "netProfit": "Net Profit",
-      "netRevenue": "Net Revenue"
+      "netRevenue": "Net Revenue",
+      "deliveredAt": "Delivered At"
     },
     "filters": {
       "showArchived": "Show Archived"
@@ -856,7 +857,9 @@
     "allTime": "All Time",
     "order": "Order",
     "reactivate": "Reactivate",
-    "returns": "Returns"
+    "returns": "Returns",
+    "startDate": "Start Date",
+    "endDate": "End Date"
   },
   "errors": {
     "general": {

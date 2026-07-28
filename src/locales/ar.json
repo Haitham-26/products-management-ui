@@ -281,7 +281,8 @@
       "totalProfit": "إجمالي الربح",
       "itemsCount": "عدد القطع",
       "netProfit": "صافي الربح",
-      "netRevenue": "صافي الإيرادات"
+      "netRevenue": "صافي الإيرادات",
+      "deliveredAt": "تاريخ التسليم"
     },
     "filters": {
       "showArchived": "اظهار المؤرشفات"
@@ -856,7 +857,9 @@
     "allTime": "كل الأوقات",
     "order": "الطلب",
     "reactivate": "إعادة التفعيل",
-    "returns": "الإرجاعات"
+    "returns": "الإرجاعات",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية"
   },
   "errors": {
     "general": {
