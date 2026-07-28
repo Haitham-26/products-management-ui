@@ -274,11 +274,7 @@ export const Returns: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      returnActions.getReturns({
-        ...filters,
-      } as GetReturnsDto),
-    );
+    dispatch(returnActions.getReturns(filters as GetReturnsDto));
     dispatch(
       orderActions.getOrders({
         meta: { page: 1, limit: 10 },

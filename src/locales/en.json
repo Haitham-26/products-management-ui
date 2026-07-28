@@ -91,11 +91,11 @@
     "title": "Dashboard",
     "totalRevenues": {
       "title": "Total Revenue",
-      "note": "Delivered orders only"
+      "note": "Delivered & Partially returned orders only"
     },
     "totalProfits": {
       "title": "Total Profit",
-      "note": "Delivered orders only"
+      "note": "Delivered & Partially returned"
     },
     "pendingOrders": { "title": "Pending Orders", "action": "View All" },
     "stockAlerts": {

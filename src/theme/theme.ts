@@ -20,8 +20,8 @@ export const theme = {
     pending: "#fbbf24",
     delivered: "#22c55e",
     canceled: "#ef4444",
-    returned: "#8b5cf6",
-    partiallyReturned: "#c4b5fd",
+    returned: "#581c87",
+    partiallyReturned: "#8b5cf6",
 
     glassBackground: "rgba(255, 255, 255, 0.6)",
     glassBorder: "rgba(255, 255, 255, 0.4)",

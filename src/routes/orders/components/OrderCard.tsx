@@ -1,6 +1,6 @@
 import React, { useMemo, type Key } from "react";
 import styled from "styled-components";
-import { Checkbox, Tag, type TagProps } from "antd";
+import { Checkbox, Tag } from "antd";
 import { useTranslation } from "react-i18next";
 
 import { Text } from "../../../components/Text";
@@ -12,19 +12,7 @@ import { OrderActionsDropdown } from "../../products/components/OrderActionsDrop
 import { formatDate } from "../../../utils/Date";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import camelCase from "lodash/camelCase";
-
-const getStatusColor = (status: Order["status"]): TagProps["color"] => {
-  switch (status) {
-    case OrderStatus.CANCELED:
-    case OrderStatus.RETURNED:
-    case OrderStatus.PARTIALLY_RETURNED:
-      return "error";
-    case OrderStatus.DELIVERED:
-      return "success";
-    default:
-      return "warning";
-  }
-};
+import type { ThemeType } from "../../../theme/theme";
 
 const Card = styled.div`
   display: flex;
@@ -32,6 +20,13 @@ const Card = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
+`;
+
+const StyledTag = styled(Tag)<{ status: OrderStatus }>`
+  color: ${({ theme, status }) =>
+    theme.colors[camelCase(status) as keyof ThemeType["colors"]]};
+  background-color: ${({ theme, status }) =>
+    theme.colors[camelCase(status) as keyof ThemeType["colors"]]}15;
 `;
 
 const CheckboxWrapper = styled.div`
@@ -141,9 +136,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
             <Identifier>#{order.identifier}</Identifier>
 
-            <Tag color={getStatusColor(order.status)}>
+            <StyledTag status={order.status}>
               {t(`orders.status.${camelCase(order.status)}`)}
-            </Tag>
+            </StyledTag>
           </Details>
 
           <OrderActionsDropdown order={order} actions={actions} />

@@ -57,20 +57,23 @@ const StyledContainer = styled(Container)`
   }
   .delivered-status {
     background-color: ${({ theme }) => theme.colors.delivered} !important;
-    color: ${({ theme }) => theme.colors.surface};
   }
   .canceled-status {
     background-color: ${({ theme }) => theme.colors.canceled} !important;
-    color: ${({ theme }) => theme.colors.surface};
   }
   .returned-status {
     background-color: ${({ theme }) => theme.colors.returned} !important;
-    color: ${({ theme }) => theme.colors.surface};
   }
   .partially-returned-status {
     background-color: ${({ theme }) =>
       theme.colors.partiallyReturned} !important;
-    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  .delivered-status,
+  .canceled-status,
+  .returned-status,
+  .partially-returned-status {
+    color: ${({ theme }) => theme.colors.surface};
   }
 
   .archived {
