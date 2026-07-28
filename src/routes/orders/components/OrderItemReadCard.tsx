@@ -5,11 +5,12 @@ import { useAppSelector } from "../../../redux/store";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import { ProductMainImage } from "../../products/components/ProductMainImage";
 import { Text } from "../../../components/Text";
+import type { Order } from "../../../model/order/types/Order";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import styled from "styled-components";
 import { Breakpoints } from "../../../theme/Breakpoints";
 
-const ItemRow = styled.div`
+const ItemRow = styled.div<{ muted?: boolean }>`
   display: flex;
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing.md};
@@ -18,9 +19,10 @@ const ItemRow = styled.div`
   border-radius: ${({ theme }) => theme.radius.lg};
   background: ${({ theme }) => theme.colors.background};
   position: relative;
+  opacity: ${({ muted }) => (muted ? 0.7 : 1)};
 `;
 
-const QuantityBadge = styled.div`
+const QuantityBadge = styled.div<{ $hasReturn?: boolean }>`
   position: absolute;
   top: 0;
   inset-inline-start: 0;
@@ -33,12 +35,14 @@ const QuantityBadge = styled.div`
     transform: translate(-50%, -50%);
   }
 
-  background: ${({ theme }) => theme.colors.primary};
+  background: ${({ theme, $hasReturn }) =>
+    $hasReturn ? theme.colors.warning : theme.colors.primary};
   color: ${({ theme }) => theme.colors.onPrimary};
 
-  width: 1.5rem;
-  aspect-ratio: 1;
-  border-radius: ${({ theme }) => theme.radius.circle};
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 4px;
+  border-radius: ${({ theme }) => theme.radius.full};
 
   display: flex;
   align-items: center;
@@ -87,22 +91,48 @@ const ItemTotals = styled.div`
   }
 `;
 
+const ProfitGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const StrikethroughText = styled(Text)`
+  text-decoration: line-through;
+`;
+
 type OrderItemReadCardProps = {
   item: OrderItem;
+  order: Order;
 };
 
 export const OrderItemReadCard: React.FC<OrderItemReadCardProps> = ({
   item,
+  order,
 }) => {
   const { t } = useTranslation();
 
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
 
-  const lineTotal = item.finalSalePriceAtPurchase * item.quantity;
+  const returnedQuantity =
+    (order.returnedItems ?? []).find((r) => r.productId === item.productId)
+      ?.returnedQuantity ?? 0;
+
+  const hasReturn = returnedQuantity > 0;
+  const netQuantity = Math.max(0, item.quantity - returnedQuantity);
+  const isFullyReturned = hasReturn && netQuantity === 0;
+
+  const originalLineTotal = item.finalSalePriceAtPurchase * item.quantity;
+  const netLineTotal = item.finalSalePriceAtPurchase * netQuantity;
+
+  const originalLineProfit = item.profitAtPurchase * item.quantity;
+  const netLineProfit = item.profitAtPurchase * netQuantity;
 
   return (
-    <ItemRow>
-      <QuantityBadge>{item.quantity}</QuantityBadge>
+    <ItemRow muted={isFullyReturned}>
+      <QuantityBadge $hasReturn={hasReturn}>
+        {hasReturn ? `${netQuantity}/${item.quantity}` : item.quantity}
+      </QuantityBadge>
 
       <ProductMainImage
         url={item.productMainImage}
@@ -134,24 +164,57 @@ export const OrderItemReadCard: React.FC<OrderItemReadCardProps> = ({
               },
             )}
           </Text>
+
+          {hasReturn ? (
+            <Text color="warning" fontSize="small" fontWeight="600">
+              {isFullyReturned
+                ? t("orders.general.items.item.fullyReturned")
+                : t("orders.general.items.item.returned", {
+                    count: returnedQuantity,
+                  })}
+            </Text>
+          ) : null}
         </ItemMain>
 
         <ItemTotals>
-          <Text fontWeight="600">
-            {stringWithCurrencyCode(settings.currency, lineTotal)}
-          </Text>
+          {hasReturn ? (
+            <StrikethroughText color="textSecondary" fontSize="small">
+              {stringWithCurrencyCode(settings.currency, originalLineTotal)}
+            </StrikethroughText>
+          ) : null}
 
           <Text
-            color={item.totalProfitAtPurchase > 0 ? "success" : "error"}
-            fontSize="small"
+            fontWeight="600"
+            color={isFullyReturned ? "textSecondary" : undefined}
           >
-            {t("orders.general.items.item.profit", {
-              totalProfit: `${item.totalProfitAtPurchase > 0 ? "+" : ""}${stringWithCurrencyCode(
-                settings.currency,
-                item.totalProfitAtPurchase,
-              )}`,
-            })}
+            {stringWithCurrencyCode(settings.currency, netLineTotal)}
           </Text>
+
+          <ProfitGroup>
+            {hasReturn ? (
+              <StrikethroughText color="textSecondary" fontSize="small">
+                {stringWithCurrencyCode(settings.currency, originalLineProfit)}
+              </StrikethroughText>
+            ) : null}
+
+            <Text
+              color={
+                isFullyReturned
+                  ? "textSecondary"
+                  : netLineProfit > 0
+                    ? "success"
+                    : "error"
+              }
+              fontSize="small"
+              fontWeight={hasReturn ? "600" : "regular"}
+            >
+              {t("orders.general.items.item.profit", {
+                totalProfit: `${
+                  netLineProfit > 0 ? "+" : ""
+                }${stringWithCurrencyCode(settings.currency, netLineProfit)}`,
+              })}
+            </Text>
+          </ProfitGroup>
         </ItemTotals>
       </ItemContent>
     </ItemRow>

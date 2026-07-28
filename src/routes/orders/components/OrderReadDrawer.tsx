@@ -74,16 +74,32 @@ const OrderLineItemsWrapper = styled.div`
 const SummaryBox = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  margin-top: ${({ theme }) => theme.spacing.xs};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
 `;
 
 const SummaryRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  &:not(:first-child) {
+    margin-top: ${({ theme }) => theme.spacing.md};
+    padding-top: ${({ theme }) => theme.spacing.md};
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+  }
+`;
+
+const TotalsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+`;
+
+const StrikethroughText = styled(Text)`
+  text-decoration: line-through;
 `;
 
 type Props = {
@@ -103,6 +119,8 @@ export const OrderReadDrawer: React.FC<Props> = ({
   if (!order) {
     return null;
   }
+
+  const hasReturns = (order.returnedItems?.length ?? 0) > 0;
 
   return (
     <Drawer
@@ -161,33 +179,55 @@ export const OrderReadDrawer: React.FC<Props> = ({
 
         <Section>
           <Text fontWeight="bold">{t("orders.general.items.title")}</Text>
-
           <OrderLineItemsWrapper>
             {order.items.map((item) => (
-              <OrderItemReadCard key={item.productId} item={item} />
+              <OrderItemReadCard
+                key={item.productId}
+                item={item}
+                order={order}
+              />
             ))}
           </OrderLineItemsWrapper>
-
           <SummaryBox>
             <SummaryRow>
               <Text color="textSecondary">
                 {t("orders.general.items.totalRevenue")}
               </Text>
-              <Text fontWeight="600">
-                {stringWithCurrencyCode(settings.currency, order.totalRevenue)}
-              </Text>
+              <TotalsColumn>
+                {hasReturns ? (
+                  <StrikethroughText color="textSecondary" fontSize="small">
+                    {stringWithCurrencyCode(
+                      settings.currency,
+                      order.totalRevenue,
+                    )}
+                  </StrikethroughText>
+                ) : null}
+                <Text fontWeight="600">
+                  {stringWithCurrencyCode(settings.currency, order.netRevenue)}
+                </Text>
+              </TotalsColumn>
             </SummaryRow>
 
             <SummaryRow>
               <Text color="textSecondary">
                 {t("orders.general.items.totalProfit")}
               </Text>
-              <Text
-                color={order.totalProfit > 0 ? "success" : "error"}
-                fontWeight="600"
-              >
-                {stringWithCurrencyCode(settings.currency, order.totalProfit)}
-              </Text>
+              <TotalsColumn>
+                {hasReturns ? (
+                  <StrikethroughText color="textSecondary" fontSize="small">
+                    {stringWithCurrencyCode(
+                      settings.currency,
+                      order.totalProfit,
+                    )}
+                  </StrikethroughText>
+                ) : null}
+                <Text
+                  color={order.netProfit > 0 ? "success" : "error"}
+                  fontWeight="600"
+                >
+                  {stringWithCurrencyCode(settings.currency, order.netProfit)}
+                </Text>
+              </TotalsColumn>
             </SummaryRow>
           </SummaryBox>
         </Section>

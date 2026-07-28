@@ -20,6 +20,14 @@ export interface Order {
    * @description Total profit generated from the sold items.
    */
   totalProfit: number;
+
+  netProfit: number;
+  netRevenue: number;
+  returnedItems: {
+    productId: string;
+    returnedQuantity: number;
+  }[];
+
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;

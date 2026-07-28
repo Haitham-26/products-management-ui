@@ -8,6 +8,25 @@ import type { TFunction } from "i18next";
 import { OrderActionsDropdown } from "../../products/components/OrderActionsDropdown";
 import type { Settings } from "../../../model/settings/types/Settings";
 import camelCase from "lodash/camelCase";
+import styled from "styled-components";
+import type { ThemeType } from "../../../theme/theme";
+
+const RevenueWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ReturnSpan = styled.span`
+  font-size: calc(${({ theme }) => theme.typography.small} * 0.8);
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-decoration: line-through;
+`;
+
+const NetProfit = styled.span<{ color: keyof ThemeType["colors"] }>`
+  color: ${({ theme, color }) => theme.colors[color]};
+  font-weight: bold;
+`;
 
 type FNType = VoidCallback<Order>;
 
@@ -45,34 +64,54 @@ export const createOrdersTableColumns = ({
       ellipsis: true,
     },
     {
-      title: t("orders.fields.totalRevenue"),
-      dataIndex: "totalRevenue",
-      key: "totalRevenue",
-      width: 120,
+      title: t("orders.fields.netRevenue"),
+      dataIndex: "netRevenue",
+      key: "netRevenue",
+      width: 200,
       ellipsis: true,
-      render: (value: number) =>
-        stringWithCurrencyCode(settings.currency, value),
-      sorter: (a, b) => a.totalRevenue - b.totalRevenue,
+      render: (_, record) => {
+        const hasReturns = (record.returnedItems?.length ?? 0) > 0;
+        return (
+          <RevenueWrapper>
+            <span>
+              {stringWithCurrencyCode(settings.currency, record.netRevenue)}
+            </span>
+            {hasReturns ? (
+              <ReturnSpan>
+                {stringWithCurrencyCode(settings.currency, record.totalRevenue)}
+              </ReturnSpan>
+            ) : null}
+          </RevenueWrapper>
+        );
+      },
+      sorter: (a, b) => a.netRevenue - b.netRevenue,
     },
     {
-      title: t("orders.fields.totalProfit"),
-      dataIndex: "totalProfit",
-      key: "totalProfit",
-      width: 120,
-      ellipsis: true,
-      render: (value: number) =>
-        stringWithCurrencyCode(settings.currency, value),
-      sorter: (a, b) => a.totalProfit - b.totalProfit,
-      onCell: (record) => ({
-        className:
-          record.totalProfit > 0 ? "positive-profit" : "negative-profit",
-      }),
+      title: t("orders.fields.netProfit"),
+      dataIndex: "netProfit",
+      key: "netProfit",
+      width: 180,
+      render: (_, record) => {
+        const hasReturns = (record.returnedItems?.length ?? 0) > 0;
+        return (
+          <RevenueWrapper>
+            <NetProfit color={record.netProfit > 0 ? "success" : "error"}>
+              {stringWithCurrencyCode(settings.currency, record.netProfit)}
+            </NetProfit>
+            {hasReturns ? (
+              <ReturnSpan>
+                {stringWithCurrencyCode(settings.currency, record.totalProfit)}
+              </ReturnSpan>
+            ) : null}
+          </RevenueWrapper>
+        );
+      },
     },
     {
       title: t("common.status"),
       dataIndex: "status",
       key: "status",
-      width: 90,
+      width: 110,
       ellipsis: true,
       render: (value: string) => t(`orders.status.${camelCase(value)}`),
       onCell: (record) => ({
@@ -83,10 +122,15 @@ export const createOrdersTableColumns = ({
       title: t("common.products"),
       dataIndex: "items",
       key: "items",
-      width: 220,
+      width: 240,
       ellipsis: true,
-      render: (items: OrderItem[]) =>
-        items.map((i) => `(${i.productName} × ${i.quantity})`).join(", "),
+      render: (items: OrderItem[]) => {
+        return items
+          .map((item) => {
+            return `(${item.productName} × ${item.quantity})`;
+          })
+          .join(", ");
+      },
     },
     {
       title: t("orders.fields.customerName"),

@@ -10,7 +10,7 @@ import settingsSliceSelectors from "../../../redux/settings/settings.selector";
 import type { Order } from "../../../model/order/types/Order";
 import { OrderActionsDropdown } from "../../products/components/OrderActionsDropdown";
 import { formatDate } from "../../../utils/Date";
-import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
+import type { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import camelCase from "lodash/camelCase";
 import type { ThemeType } from "../../../theme/theme";
 
@@ -27,6 +27,15 @@ const StyledTag = styled(Tag)<{ status: OrderStatus }>`
     theme.colors[camelCase(status) as keyof ThemeType["colors"]]};
   background-color: ${({ theme, status }) =>
     theme.colors[camelCase(status) as keyof ThemeType["colors"]]}15;
+  margin-inline-end: 0;
+`;
+
+const BadgeGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  flex-wrap: wrap;
+  margin-top: ${({ theme }) => theme.spacing.xs};
 `;
 
 const CheckboxWrapper = styled.div`
@@ -78,6 +87,17 @@ const Stat = styled.div`
   gap: 2px;
 `;
 
+const ValueWithStrikethrough = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+`;
+
+const StrikethroughText = styled(Text)`
+  text-decoration: line-through;
+`;
+
 type FNType = VoidCallback<Order> | undefined;
 
 type OrderCardProps = {
@@ -107,9 +127,25 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     [selectedData, order._id],
   );
 
-  const orderItemsCount = useMemo(
+  const totalReturnedQuantity = useMemo(
+    () =>
+      (order.returnedItems ?? []).reduce(
+        (acc, item) => acc + (item.returnedQuantity ?? 0),
+        0,
+      ),
+    [order.returnedItems],
+  );
+
+  const hasReturns = totalReturnedQuantity > 0;
+
+  const totalOrderedQuantity = useMemo(
     () => order.items.reduce((acc, item) => acc + item.quantity, 0),
     [order.items],
+  );
+
+  const netItemsCount = Math.max(
+    0,
+    totalOrderedQuantity - totalReturnedQuantity,
   );
 
   return (
@@ -136,9 +172,11 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
             <Identifier>#{order.identifier}</Identifier>
 
-            <StyledTag status={order.status}>
-              {t(`orders.status.${camelCase(order.status)}`)}
-            </StyledTag>
+            <BadgeGroup>
+              <StyledTag status={order.status}>
+                {t(`orders.status.${camelCase(order.status)}`)}
+              </StyledTag>
+            </BadgeGroup>
           </Details>
 
           <OrderActionsDropdown order={order} actions={actions} />
@@ -147,25 +185,42 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         <Stats>
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("orders.fields.totalRevenue")}
+              {t("orders.fields.netRevenue")}
             </Text>
 
-            <Text fontWeight="600">
-              {stringWithCurrencyCode(settings.currency, order.totalRevenue)}
-            </Text>
+            <ValueWithStrikethrough>
+              <Text fontWeight="600">
+                {stringWithCurrencyCode(settings.currency, order.netRevenue)}
+              </Text>
+              {hasReturns ? (
+                <StrikethroughText color="textSecondary" fontSize="small">
+                  {stringWithCurrencyCode(
+                    settings.currency,
+                    order.totalRevenue,
+                  )}
+                </StrikethroughText>
+              ) : null}
+            </ValueWithStrikethrough>
           </Stat>
 
           <Stat>
             <Text color="textSecondary" fontSize="small">
-              {t("orders.fields.totalProfit")}
+              {t("orders.fields.netProfit")}
             </Text>
 
-            <Text
-              color={order.totalProfit > 0 ? "success" : "error"}
-              fontWeight="600"
-            >
-              {stringWithCurrencyCode(settings.currency, order.totalProfit)}
-            </Text>
+            <ValueWithStrikethrough>
+              <Text
+                color={order.netProfit >= 0 ? "success" : "error"}
+                fontWeight="600"
+              >
+                {stringWithCurrencyCode(settings.currency, order.netProfit)}
+              </Text>
+              {hasReturns && (
+                <StrikethroughText color="textSecondary" fontSize="small">
+                  {stringWithCurrencyCode(settings.currency, order.totalProfit)}
+                </StrikethroughText>
+              )}
+            </ValueWithStrikethrough>
           </Stat>
 
           <Stat>
@@ -173,7 +228,11 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               {t("orders.fields.itemsCount")}
             </Text>
 
-            <Text>{orderItemsCount}</Text>
+            <Text>
+              {hasReturns
+                ? `${netItemsCount}/${totalOrderedQuantity}`
+                : totalOrderedQuantity}
+            </Text>
           </Stat>
 
           <Stat>

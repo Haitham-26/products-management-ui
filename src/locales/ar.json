@@ -279,7 +279,9 @@
       },
       "totalRevenue": "إجمالي الإيرادات",
       "totalProfit": "إجمالي الربح",
-      "itemsCount": "عدد القطع"
+      "itemsCount": "عدد القطع",
+      "netProfit": "صافي الربح",
+      "netRevenue": "صافي الإيرادات"
     },
     "filters": {
       "showArchived": "اظهار المؤرشفات"
@@ -380,7 +382,9 @@
         "item": {
           "price": "{{price}} للقطعة الواحدة",
           "priceWithDiscount": "{{price}} للقطعة الواحدة (بعد خصم {{discount}})",
-          "profit": "يشمل ربحًا قدره {{totalProfit}}"
+          "profit": "يشمل ربحًا قدره {{totalProfit}}",
+          "returned": "تم إرجاع {{count}}",
+          "fullyReturned": "تم إرجاعه بالكامل"
         }
       },
       "note": {
