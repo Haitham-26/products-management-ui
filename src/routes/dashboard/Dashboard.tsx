@@ -70,7 +70,7 @@ const KPIsGrid = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: ${Breakpoints.LG}) {
+  @media (min-width: ${Breakpoints.XL}) {
     grid-template-columns: repeat(4, 1fr);
   }
 `;
@@ -130,13 +130,9 @@ const ExtraWrapper = styled.div`
   gap: 6px;
   padding: 2px 8px;
   width: fit-content;
-  border-radius: 9999px;
+  border-radius: ${({ theme }) => theme.radius.full};
   background: ${({ theme }) => `${theme.colors.success}0d`};
   user-select: none;
-
-  p {
-    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
-  }
 `;
 
 const StatusDot = styled.span`

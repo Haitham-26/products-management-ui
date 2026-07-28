@@ -16,8 +16,9 @@ const Top = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
+  flex-wrap: wrap;
 
-  @media (max-width: ${Breakpoints.SM}) {
+  @media (max-width: ${Breakpoints.MD}) {
     flex-direction: column;
     align-items: stretch;
   }

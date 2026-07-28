@@ -95,7 +95,7 @@
     },
     "totalProfits": {
       "title": "Total Profit",
-      "note": "Delivered & Partially returned"
+      "note": "Delivered & Partially returned orders only"
     },
     "pendingOrders": { "title": "Pending Orders", "action": "View All" },
     "stockAlerts": {
