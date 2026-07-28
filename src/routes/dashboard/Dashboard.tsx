@@ -133,6 +133,11 @@ const ExtraWrapper = styled.div`
   border-radius: ${({ theme }) => theme.radius.full};
   background: ${({ theme }) => `${theme.colors.success}0d`};
   user-select: none;
+
+  p {
+    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
+    color: ${({ theme }) => theme.colors.success};
+  }
 `;
 
 const StatusDot = styled.span`
@@ -289,22 +294,20 @@ export const Dashboard: React.FC = () => {
           <KPIsGrid>
             <DashboardKPICard
               icon={faSackDollar}
-              title={t("dashboard.totalRevenues.title")}
+              title={t("dashboard.totalRevenue.title")}
               badgeContent={selectedPeriodLabel}
               value={stringWithCurrencyCode(settings.currency, totalRevenue)}
               extra={
                 <ExtraWrapper>
                   <StatusDot />
-                  <Text fontSize="small" color="success">
-                    {t("dashboard.totalRevenues.note")}
-                  </Text>
+                  <Text>{t("dashboard.totalRevenue.note")}</Text>
                 </ExtraWrapper>
               }
             />
 
             <DashboardKPICard
               icon={faChartLine}
-              title={t("dashboard.totalProfits.title")}
+              title={t("dashboard.totalProfit.title")}
               badgeContent={selectedPeriodLabel}
               value={
                 <TotalProfitSpan color={totalProfit >= 0 ? "primary" : "error"}>
@@ -314,9 +317,7 @@ export const Dashboard: React.FC = () => {
               extra={
                 <ExtraWrapper>
                   <StatusDot />
-                  <Text fontSize="small" color="success">
-                    {t("dashboard.totalProfits.note")}
-                  </Text>
+                  <Text>{t("dashboard.totalProfit.note")}</Text>
                 </ExtraWrapper>
               }
             />

@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 import { useToast } from "./ToastContext";
 import isString from "lodash/isString";
+import type { AppLangs } from "../../model/app/types/AppLangs.enum";
 
 export const useAppToast = () => {
   const toast = useToast();
@@ -11,9 +12,11 @@ export const useAppToast = () => {
   const placement = i18n.dir() === "rtl" ? "topLeft" : "topRight";
 
   return {
-    success(description: string) {
+    success(description: string, options?: { lng?: AppLangs }) {
       toast.success({
-        title: t("common.success"),
+        title: t("common.success", {
+          ...(options?.lng ? { lng: options.lng } : {}),
+        }),
         description,
         placement,
       });

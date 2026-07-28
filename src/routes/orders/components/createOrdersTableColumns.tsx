@@ -111,7 +111,7 @@ export const createOrdersTableColumns = ({
       title: t("common.status"),
       dataIndex: "status",
       key: "status",
-      width: 110,
+      width: 140,
       ellipsis: true,
       render: (value: string) => t(`orders.status.${camelCase(value)}`),
       onCell: (record) => ({
@@ -165,7 +165,7 @@ export const createOrdersTableColumns = ({
       title: t("orders.fields.isArchived.title"),
       dataIndex: "isArchived",
       key: "isArchived",
-      width: 90,
+      width: 130,
       ellipsis: true,
       render: (isArchived: boolean) =>
         t(`orders.fields.isArchived.${isArchived ? "archived" : "unarchived"}`),

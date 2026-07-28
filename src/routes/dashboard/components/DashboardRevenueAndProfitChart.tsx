@@ -91,13 +91,6 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
 const Title = styled(Text)`
   color: ${({ theme }) => theme.colors.primary};
   font-weight: bold;
@@ -105,28 +98,7 @@ const Title = styled(Text)`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const ExtraWrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  width: fit-content;
-  border-radius: 9999px;
-  background: ${({ theme }) => `${theme.colors.success}0d`};
-  user-select: none;
-
-  p {
-    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
-  }
-`;
-
-const StatusDot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: ${({ theme }) => theme.radius.circle};
-  background: ${({ theme }) => theme.colors.success};
+  flex-wrap: wrap;
 `;
 
 const ChartCanvasWrapper = styled.div`
@@ -179,7 +151,7 @@ export const DashboardRevenueAndProfitChart: React.FC<
     labels: getLabels(dateRange, dates, t),
     datasets: [
       {
-        label: t("dashboard.salesProfits.revenues"),
+        label: t("dashboard.revenueProfit.revenue"),
         data: revenueData,
         borderRadius: 6,
         borderSkipped: false,
@@ -187,7 +159,7 @@ export const DashboardRevenueAndProfitChart: React.FC<
         backgroundColor: theme.colors.primary,
       },
       {
-        label: t("dashboard.salesProfits.profits"),
+        label: t("dashboard.revenueProfit.profit"),
         data: profitData,
         borderRadius: 6,
         borderSkipped: false,
@@ -201,20 +173,11 @@ export const DashboardRevenueAndProfitChart: React.FC<
 
   return (
     <Container>
-      <Header>
-        <Title>
-          <span>{t("dashboard.salesProfits.title")}</span>
+      <Title>
+        <span>{t("dashboard.revenueProfit.title")}</span>
 
-          <StyledTag color={"blue"}>{periodLabel}</StyledTag>
-        </Title>
-
-        <ExtraWrapper>
-          <StatusDot />
-          <Text fontSize="small" color="success">
-            {t("dashboard.totalProfits.note")}
-          </Text>
-        </ExtraWrapper>
-      </Header>
+        <StyledTag color={"blue"}>{periodLabel}</StyledTag>
+      </Title>
 
       <ChartCanvasWrapper>
         <Bar

@@ -85,13 +85,11 @@ export const GeneralSettings: React.FC = () => {
 
       if (dto.lang && i18n.language !== dto.lang) {
         await changeLanguage(dto.lang);
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       }
 
-      Toast.success(t("settings.update.success"));
+      Toast.success(t("settings.update.success", { lng: dto.lang }), {
+        lng: dto.lang,
+      });
     } catch (e) {
       console.log(e);
       Toast.apiError(e);

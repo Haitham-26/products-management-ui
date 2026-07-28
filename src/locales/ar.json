@@ -89,13 +89,13 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "totalRevenues": {
+    "totalRevenue": {
       "title": "إجمالي الإيرادات",
-      "note": "الطلبات المسلّمة والمُرجَعة جزئيًا فقط"
+      "note": "إيرادات صافية"
     },
-    "totalProfits": {
-      "title": "صافي الأرباح",
-      "note": "الطلبات المسلّمة والمُرجَعة جزئيًا فقط"
+    "totalProfit": {
+      "title": "إجمالي الأرباح",
+      "note": "أرباح صافية"
     },
     "pendingOrders": { "title": "الطلبات المعلقة", "action": "عرض الكل" },
     "stockAlerts": {
@@ -103,10 +103,10 @@
       "out": "نفد",
       "low": "منخفض"
     },
-    "salesProfits": {
-      "title": "المبيعات والأرباح",
-      "profits": "الأرباح",
-      "revenues": "المبيعات"
+    "revenueProfit": {
+      "title": "الإيرادات والأرباح",
+      "profit": "الأرباح",
+      "revenue": "الإيرادات"
     },
     "orderStatus": {
       "title": "حالة الطلبات"

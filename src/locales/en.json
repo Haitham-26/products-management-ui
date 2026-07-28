@@ -89,13 +89,13 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalRevenues": {
+    "totalRevenue": {
       "title": "Total Revenue",
-      "note": "Delivered & Partially returned orders only"
+      "note": "Net revenue"
     },
-    "totalProfits": {
+    "totalProfit": {
       "title": "Total Profit",
-      "note": "Delivered & Partially returned orders only"
+      "note": "Net profit"
     },
     "pendingOrders": { "title": "Pending Orders", "action": "View All" },
     "stockAlerts": {
@@ -103,10 +103,10 @@
       "out": "Out",
       "low": "Low"
     },
-    "salesProfits": {
-      "title": "Sales & Profit Over Time",
-      "profits": "Profits",
-      "revenues": "Revenues"
+    "revenueProfit": {
+      "title": "Revenue & Profit",
+      "profit": "Profit",
+      "revenue": "Revenue"
     },
     "orderStatus": {
       "title": "Order Status Distribution"
@@ -865,7 +865,8 @@
     "general": {
       "required": "The field is required.",
       "short": "This field must be at least {{length}} characters long.",
-      "long": "This field must be at most {{length}} characters long."
+      "long": "This field must be at most {{length}} characters long.",
+      "unexpected": "An unexpected error occurred. Please try again later or contact our support team."
     },
     "phone": {
       "invalid": "Please enter a valid phone number."

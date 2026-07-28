@@ -26,35 +26,6 @@ const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const ExtraWrapper = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  width: fit-content;
-  border-radius: 9999px;
-  background: ${({ theme }) => `${theme.colors.success}0d`};
-  user-select: none;
-
-  p {
-    font-size: calc(${({ theme }) => theme.typography.small} * 0.75);
-  }
-`;
-
-const StatusDot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: ${({ theme }) => theme.radius.circle};
-  background: ${({ theme }) => theme.colors.success};
-`;
-
 const ChartCanvasWrapper = styled.div`
   flex: 1;
   position: relative;
@@ -179,20 +150,11 @@ export const DashboardTopProductsChart: React.FC<
 
   return (
     <Container>
-      <Header>
-        <Title>
-          <span>{t("dashboard.mostSoldProducts.title")}</span>
+      <Title>
+        <span>{t("dashboard.mostSoldProducts.title")}</span>
 
-          <StyledTag color={"blue"}>{selectedDatePeriodLabel}</StyledTag>
-        </Title>
-
-        <ExtraWrapper>
-          <StatusDot />
-          <Text fontSize="small" color="success">
-            {t("dashboard.totalProfits.note")}
-          </Text>
-        </ExtraWrapper>
-      </Header>
+        <StyledTag color={"blue"}>{selectedDatePeriodLabel}</StyledTag>
+      </Title>
 
       <ChartCanvasWrapper>
         <Bar

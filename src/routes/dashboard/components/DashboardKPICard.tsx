@@ -19,15 +19,19 @@ const Container = styled.div`
 
 const Header = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.xs};
+  width: 100%;
 `;
 
-const Title = styled(Text)`
+const Title = styled.div`
   display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.small};
   font-weight: 500;
@@ -47,7 +51,7 @@ const MainValue = styled.div`
 const Footer = styled.div`
   display: flex;
   align-items: center;
-  min-height: 24px;
+  min-height: 1.5rem;
 `;
 
 type DashboardKPICardProps = {
@@ -69,7 +73,7 @@ export const DashboardKPICard: React.FC<DashboardKPICardProps> = ({
     <Container>
       <Header>
         <Title>
-          {title}
+          <span>{title}</span>
 
           <StyledTag color={"blue"}>{badgeContent}</StyledTag>
         </Title>
@@ -82,7 +86,7 @@ export const DashboardKPICard: React.FC<DashboardKPICardProps> = ({
         </Text>
       </MainValue>
 
-      <Footer>{extra || null}</Footer>
+      {extra ? <Footer>{extra}</Footer> : null}
     </Container>
   );
 };
