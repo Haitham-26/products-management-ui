@@ -62,6 +62,10 @@ const Stat = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  p:nth-child(2) {
+    margin-top: auto;
+  }
 `;
 
 type FNType = VoidCallback<Tag> | undefined;
@@ -128,7 +132,7 @@ export const TagCard: React.FC<TagCardProps> = ({
               {t("tags.fields.usageCount")}
             </Text>
 
-            <Text fontWeight="600">{tag.usageCount}</Text>
+            <Text>{tag.usageCount}</Text>
           </Stat>
 
           <Stat>

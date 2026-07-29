@@ -85,12 +85,16 @@ const Stat = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  p:nth-child(2) {
+    margin-top: auto;
+  }
 `;
 
 const ValueWithStrikethrough = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  column-gap: 6px;
   flex-wrap: wrap;
 `;
 
