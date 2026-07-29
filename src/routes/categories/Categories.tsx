@@ -42,6 +42,8 @@ import { CategoryCard } from "./components/CategoryCard";
 import { Grid } from "antd";
 import { Breakpoints } from "../../theme/Breakpoints";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -96,6 +98,10 @@ export const Categories: React.FC = () => {
   const categoriesMeta = useAppSelector(
     categorySliceSelectors.selectCategoriesMeta,
   );
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "categories"),
+  );
+
   const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -361,10 +367,11 @@ export const Categories: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "categories" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={categoriesLoading}
             columns={tableColumns}

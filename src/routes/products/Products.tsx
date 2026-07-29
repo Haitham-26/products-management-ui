@@ -48,6 +48,8 @@ import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { ProductCard } from "./components/ProductCard";
 import { Breakpoints } from "../../theme/Breakpoints";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const getToggleStatusModalTexts = (t: TFunction) => ({
   [ProductStatus.DRAFT]: {
@@ -149,6 +151,9 @@ export const Products: React.FC = () => {
   );
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "products"),
+  );
 
   const permissions = checkPermissions(user, "products");
 
@@ -536,11 +541,14 @@ export const Products: React.FC = () => {
             </BulkActionsWrapper>
           ) : null
         }
+        layoutToggle={{
+          key: "products",
+        }}
         selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={productsLoading}
             columns={tableColumns}

@@ -48,6 +48,8 @@ import { Breakpoints } from "../../theme/Breakpoints";
 import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { OrderCard } from "./components/OrderCard";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -151,6 +153,9 @@ export const Orders: React.FC = () => {
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
   const user = useAppSelector(userSliceSelectors.selectUser)!;
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "orders"),
+  );
 
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
@@ -404,10 +409,11 @@ export const Orders: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "orders" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={ordersLoading}
             columns={tableColumns}

@@ -9,7 +9,7 @@ import { createGlobalStyle } from "styled-components";
 const GlobalStyle = createGlobalStyle`
   .ant-pagination {
     flex-wrap: wrap;
-    
+    justify-content: flex-end;
     row-gap: ${({ theme }) => theme.spacing.sm};
   }
 

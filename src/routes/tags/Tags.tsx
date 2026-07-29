@@ -42,6 +42,8 @@ import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { TagCard } from "./components/TagCard";
 import { Breakpoints } from "../../theme/Breakpoints";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -91,6 +93,9 @@ export const Tags: React.FC = () => {
   const tagsLoading = useAppSelector(tagSliceSelectors.selectTagsLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "tags"),
+  );
   const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -355,10 +360,11 @@ export const Tags: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "tags" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={tagsLoading}
             columns={tableColumns}

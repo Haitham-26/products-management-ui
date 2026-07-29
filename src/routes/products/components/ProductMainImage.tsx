@@ -4,7 +4,6 @@ import { Image } from "../../../components/Image";
 import { Icon } from "../../../components/Icon";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import type { ThemeType } from "../../../theme/theme";
-import { Grid } from "antd";
 import { Fragment } from "react";
 
 type ProductMainImageProps = {
@@ -32,17 +31,11 @@ const StyledImage = styled(Image)<
   }
 `;
 
-const GlobalStyles = createGlobalStyle<{
-  width: ProductMainImageProps["width"];
-  borderRadius: ProductMainImageProps["borderRadius"];
-}>`
-    .ant-image-cover-center {
-    width: ${({ width }) => width} !important;
-    height: ${({ width }) => width} !important;
-    border-radius: ${({ theme, borderRadius }) =>
-      borderRadius
-        ? theme.radius[borderRadius as keyof ThemeType["radius"]]
-        : `calc(${theme.radius.sm} * 0.75)`} !important;
+const GlobalStyles = createGlobalStyle`
+  .ant-image-cover-center {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
   }
 `;
 
@@ -71,8 +64,6 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
   width = "1.5rem",
   borderRadius,
 }) => {
-  const { md } = Grid.useBreakpoint();
-
   if (url) {
     return (
       <Fragment>
@@ -81,10 +72,9 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
           width={width}
           borderRadius={borderRadius}
           loading="lazy"
-          preview={!md}
         />
 
-        <GlobalStyles width={width} borderRadius={borderRadius} />
+        <GlobalStyles />
       </Fragment>
     );
   }

@@ -16,7 +16,7 @@ const FilterChip = styled.button<{ active?: boolean }>`
   margin-inline-start: auto;
 
   padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  height: 1.5rem;
+  height: 2rem;
 
   border-radius: ${({ theme }) => theme.radius.full};
   border: 1px solid

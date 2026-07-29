@@ -1,5 +1,4 @@
 import type React from "react";
-import { Grid } from "antd";
 import { Pagination, type PaginationProps } from "./Pagination";
 import type { Product } from "../model/product/types/Product";
 import { Empty } from "./Empty";
@@ -14,8 +13,7 @@ import { Button } from "./Button";
 import type { Key } from "react";
 import type { Return } from "../model/return/types/Return";
 import isFunction from "lodash/isFunction";
-
-const { useBreakpoint } = Grid;
+import { Breakpoints } from "../theme/Breakpoints";
 
 const Container = styled.div`
   display: flex;
@@ -47,6 +45,14 @@ const DataWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (min-width: ${Breakpoints.LG}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: ${Breakpoints.XL}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 type Data = Product | Order | Tag | Category | Return;
@@ -68,12 +74,7 @@ export const PaginatedDataCards: React.FC<PaginatedDataCardsProps> = ({
   selectedData,
   setSelectedData,
 }) => {
-  const { md } = useBreakpoint();
   const { t } = useTranslation();
-
-  if (md) {
-    return null;
-  }
 
   if (loading) {
     return <SpinnerFullScreen />;

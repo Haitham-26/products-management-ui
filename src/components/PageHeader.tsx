@@ -9,6 +9,13 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyin
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../theme/Breakpoints";
 import { FiltersPopover, type FiltersPopoverProps } from "./FiltersPopover";
+import { DataDisplayLayout } from "../model/app/types/DataDisplayLayout.enum";
+import type { PermissionEntities } from "../model/user/types/PermissionEntities";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import appSliceSelectors from "../redux/app/app.selector";
+import { appActions } from "../redux/app/app.slice";
+import { faTableList } from "@fortawesome/free-solid-svg-icons/faTableList";
+import { faTableCellsLarge } from "@fortawesome/free-solid-svg-icons/faTableCellsLarge";
 
 const Top = styled.div`
   display: flex;
@@ -214,6 +221,36 @@ const GlobalStyle = createGlobalStyle<{ hasSelection: boolean }>`
       : ""}
 `;
 
+const LayoutToggle = styled.div`
+  display: none;
+
+  @media (min-width: ${Breakpoints.MD}) {
+    display: flex;
+    align-items: center;
+    border-radius: ${({ theme }) => theme.radius.md};
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+`;
+
+const LayoutToggleButton = styled(Button)<{ active: boolean }>`
+  width: 2rem;
+  height: 2rem;
+  background: ${({ theme, active }) =>
+    active ? `${theme.colors.primary}15` : "transparent"};
+
+  svg {
+    font-size: 14px;
+    color: ${({ theme, active }) =>
+      active ? theme.colors.primary : theme.colors.textSecondary};
+  }
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary}10;
+  }
+`;
+
 type PageHeaderProps = {
   title: string;
   icon: IconProp;
@@ -236,6 +273,10 @@ type PageHeaderProps = {
 
   filters?: FiltersPopoverProps;
 
+  layoutToggle?: {
+    key: PermissionEntities;
+  };
+
   bulkActionsContent?: React.ReactNode;
   selectedTableItemsCount?: number;
   className?: string;
@@ -248,6 +289,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   action,
   search,
   filters,
+  layoutToggle,
   bulkActionsContent,
   selectedTableItemsCount = 0,
   className,
@@ -256,6 +298,26 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const [searchValue, setSearchValue] = useState("");
 
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const activeLayout = useAppSelector((s) =>
+    layoutToggle?.key
+      ? appSliceSelectors.selectEntityDisplayLayout(s, layoutToggle.key)
+      : undefined,
+  );
+
+  const handleLayoutChange = (layout: DataDisplayLayout) => {
+    if (!layoutToggle) {
+      return;
+    }
+
+    dispatch(
+      appActions.setDataEntityDisplayLayout({
+        entity: layoutToggle.key,
+        layout,
+      }),
+    );
+  };
 
   return (
     <Wrapper className={className}>
@@ -308,6 +370,23 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           ) : null}
 
           {filters ? <FiltersPopover {...filters} /> : null}
+
+          {layoutToggle ? (
+            <LayoutToggle>
+              <LayoutToggleButton
+                active={activeLayout === DataDisplayLayout.TABLE}
+                onClick={() => handleLayoutChange(DataDisplayLayout.TABLE)}
+              >
+                <Icon icon={faTableList} />
+              </LayoutToggleButton>
+              <LayoutToggleButton
+                active={activeLayout === DataDisplayLayout.CARDS}
+                onClick={() => handleLayoutChange(DataDisplayLayout.CARDS)}
+              >
+                <Icon icon={faTableCellsLarge} />
+              </LayoutToggleButton>
+            </LayoutToggle>
+          ) : null}
 
           {bulkActionsContent ? (
             <FixedContentContainer>

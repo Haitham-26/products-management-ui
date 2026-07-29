@@ -42,6 +42,8 @@ import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
 import { ReturnUpdateDrawer } from "./components/ReturnUpdateDrawer";
 import { Text } from "../../components/Text";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -103,6 +105,9 @@ export const Returns: React.FC = () => {
   );
   const returnsMeta = useAppSelector(returnSliceSelectors.selectReturnsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "returns"),
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -313,10 +318,11 @@ export const Returns: React.FC = () => {
               },
             }
           : {})}
+        layoutToggle={{ key: "returns" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={returnsLoading}
             columns={tableColumns}
