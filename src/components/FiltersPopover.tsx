@@ -113,7 +113,7 @@ export const FiltersPopover: React.FC<FiltersPopoverProps> = ({
           <ItemsWrapper>
             {items.map(({ title, type, children }) =>
               type === "item" && children ? (
-                <Section>
+                <Section key={`${title}-${type}`}>
                   {title ? <Label>{title}</Label> : null}
 
                   {children}

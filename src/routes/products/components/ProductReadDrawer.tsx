@@ -211,7 +211,10 @@ export const ProductReadDrawer: React.FC<ProductReadDrawerProps> = ({
             <Text fontWeight="bold" fontSize="subtitle">
               {product.name}
             </Text>
-            <Text color="textSecondary">
+            <Text
+              color="textSecondary"
+              fontStyle={!product.category?.name ? "italic" : undefined}
+            >
               {product.category?.name || t("common.uncategorized")}
             </Text>
             {(isLowStock || isOutOfStock) && (

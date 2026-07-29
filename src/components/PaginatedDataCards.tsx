@@ -47,11 +47,11 @@ const DataWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 
   @media (min-width: ${Breakpoints.LG}) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   @media (min-width: ${Breakpoints.XL}) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `;
 

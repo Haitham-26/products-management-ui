@@ -28,7 +28,7 @@ import {
 } from "./utils/tagUtils";
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
-import CreateTagFilters from "./components/createTagFilters";
+import { useTagFilters } from "./components/useTagFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
@@ -105,6 +105,8 @@ export const Tags: React.FC = () => {
     [searchParams, tagsMeta],
   );
 
+  const activeFiltersCount = countTagsActiveFilters(filters);
+
   const debouncedSetSearchParams = useMemo(
     () =>
       debounce((nextParams) => {
@@ -166,7 +168,11 @@ export const Tags: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countTagsActiveFilters(filters);
+  const tagFilters = useTagFilters({
+    filters,
+    activeFiltersCount,
+    applyFilter,
+  });
 
   const onDelete = (tag: Tag) => {
     setCurrentTag(tag);
@@ -332,11 +338,7 @@ export const Tags: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: CreateTagFilters({
-                filters,
-                activeFiltersCount,
-                applyFilter,
-              }),
+              filters: tagFilters,
               search: {
                 placeholder: t("tags.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

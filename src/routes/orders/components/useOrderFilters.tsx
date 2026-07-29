@@ -66,7 +66,7 @@ type OrdersFiltersProps = {
   ) => void;
 };
 
-export default function CreateOrderFilters({
+export function useOrderFilters({
   activeFiltersCount,
   filters,
   applyFilter,

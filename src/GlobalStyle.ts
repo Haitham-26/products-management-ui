@@ -14,23 +14,37 @@ const GlobalStyle = createGlobalStyle`
     background-repeat: no-repeat;
   }
 
-  * {
-    &::-webkit-scrollbar {
-      width: 3px; 
-    }
-    &::-webkit-scrollbar-track {
-      background: #f0f4f8; 
-    }
-    &::-webkit-scrollbar-thumb {
-      background: #4da3ff;
-      border-radius: 3px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background: #2f8cff;
-    }
-    scrollbar-width: thin;
-    scrollbar-color: #4da3ff #f0f4f8;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.2) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px; 
   }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.2);
+    
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 50rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #4da3ff;
+    border: 1px solid transparent; 
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
 
   @font-face {
     font-family: "Inter";

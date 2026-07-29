@@ -14,7 +14,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { createOrdersTableColumns } from "./components/createOrdersTableColumns";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
-import CreateOrderFilters from "./components/createOrderFilters";
+import { useOrderFilters } from "./components/useOrderFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { orderActions } from "../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
@@ -170,6 +170,8 @@ export const Orders: React.FC = () => {
     [setSearchParams],
   );
 
+  const activeFiltersCount = countOrdersActiveFilters(filters);
+
   const permissions = checkPermissions(user, "orders");
 
   const handlePageChange = (page: number, pageSize: number) => {
@@ -186,15 +188,6 @@ export const Orders: React.FC = () => {
       replace: true,
     });
     debouncedSetSearchParams(newFilters);
-  };
-
-  const sharedPaginationOptions = {
-    current: ordersMeta?.page || 1,
-    pageSize: ordersMeta?.limit || 10,
-    total: ordersMeta?.total || 0,
-    onChange: handlePageChange,
-    showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50", "100"],
   };
 
   const applyFilter = useCallback(
@@ -223,7 +216,20 @@ export const Orders: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countOrdersActiveFilters(filters);
+  const orderFilters = useOrderFilters({
+    applyFilter,
+    activeFiltersCount,
+    filters,
+  });
+
+  const sharedPaginationOptions = {
+    current: ordersMeta?.page || 1,
+    pageSize: ordersMeta?.limit || 10,
+    total: ordersMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
+  };
 
   const onEdit = (order: Order) => {
     setCurrentOrder(order);
@@ -363,11 +369,7 @@ export const Orders: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: CreateOrderFilters({
-                activeFiltersCount,
-                applyFilter,
-                filters,
-              }),
+              filters: orderFilters,
               search: {
                 placeholder: t("orders.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
-import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
+import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 import { Select } from "../../../components/Select";
 import { useTranslation } from "react-i18next";
 import {
@@ -33,28 +33,28 @@ type Range = {
   max?: number;
 } | null;
 
-type CategoriesFiltersProps = {
-  filters: Partial<GetCategoriesDto>;
+type TagFiltersProps = {
+  filters: Partial<GetTagsDto>;
   activeFiltersCount: number;
   applyFilter: (
-    key: keyof GetCategoriesDto,
-    value: GetCategoriesDto[keyof GetCategoriesDto],
+    key: keyof GetTagsDto,
+    value: GetTagsDto[keyof GetTagsDto],
     debounce?: boolean,
   ) => void;
 };
 
-export default function CreateCategoryFilters({
+export function useTagFilters({
   filters,
   activeFiltersCount,
   applyFilter,
-}: CategoriesFiltersProps): FiltersPopoverProps {
+}: TagFiltersProps): FiltersPopoverProps {
   const [usageCountRange, setUsageCountRange] = useState<Range>({
     min: filters.minUsageCount ?? 0,
     max: filters.maxUsageCount ?? 0,
   });
 
-  const { t } = useTranslation();
   const [, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const resetFilters = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
@@ -88,12 +88,10 @@ export default function CreateCategoryFilters({
           />
         ),
       },
-      {
-        type: "separator",
-      },
+      { type: "separator" },
       {
         type: "item",
-        title: t("categories.fields.usageCount"),
+        title: t("tags.fields.usageCount"),
         children: (
           <RangeRow>
             <Input

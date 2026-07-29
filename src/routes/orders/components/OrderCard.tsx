@@ -86,7 +86,7 @@ const Stat = styled.div`
   flex-direction: column;
   gap: 2px;
 
-  p:nth-child(2) {
+  > :nth-child(2) {
     margin-top: auto;
   }
 `;

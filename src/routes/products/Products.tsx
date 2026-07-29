@@ -23,7 +23,7 @@ import { ProductReadDrawer } from "./components/ProductReadDrawer";
 import { createProductsTableColumns } from "./components/createProductsTableColumns";
 import type { Product } from "../../model/product/types/Product";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
-import CreateProductsFilters from "./components/createProductsFilters";
+import { useProductsFilters } from "./components/useProductFilters";
 import {
   buildProductsParams,
   countProductsActiveFilters,
@@ -155,12 +155,12 @@ export const Products: React.FC = () => {
     appSliceSelectors.selectEntityDisplayLayout(s, "products"),
   );
 
-  const permissions = checkPermissions(user, "products");
-
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
+
+  const activeFiltersCount = countProductsActiveFilters(filters);
 
   const debouncedSetSearchParams = useMemo(
     () =>
@@ -169,6 +169,8 @@ export const Products: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const permissions = checkPermissions(user, "products");
 
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
@@ -214,9 +216,11 @@ export const Products: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countProductsActiveFilters(filters);
-
-  const toggleStatusModalTexts = getToggleStatusModalTexts(t);
+  const productFilters = useProductsFilters({
+    filters,
+    applyFilter,
+    activeFiltersCount,
+  });
 
   const sharedPaginationOptions = {
     current: productsMeta?.page || 1,
@@ -226,6 +230,8 @@ export const Products: React.FC = () => {
     showSizeChanger: true,
     pageSizeOptions: ["10", "20", "50", "100"],
   };
+
+  const toggleStatusModalTexts = getToggleStatusModalTexts(t);
 
   const onDelete = (product: Product) => {
     setCurrentProduct(product);
@@ -494,11 +500,7 @@ export const Products: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: CreateProductsFilters({
-                activeFiltersCount,
-                filters,
-                applyFilter,
-              }),
+              filters: productFilters,
               search: {
                 placeholder: t("products.subheader.inputPlaceholder"),
                 onChange: (searchKeyword: string) =>

@@ -1,10 +1,9 @@
 import type React from "react";
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 import { Image } from "../../../components/Image";
 import { Icon } from "../../../components/Icon";
 import { faImage } from "@fortawesome/free-solid-svg-icons/faImage";
 import type { ThemeType } from "../../../theme/theme";
-import { Fragment } from "react";
 
 type ProductMainImageProps = {
   url?: string;
@@ -23,19 +22,15 @@ const StyledImage = styled(Image)<
       : `calc(${theme.radius.sm} * 0.75)`};
   border: ${({ theme }) => `1px solid ${theme.colors.textSecondary}5a`};
 
-  .ant-image-img {
-    object-fit: cover;
+  .ant-image-img,
+  .ant-image-cover {
     height: 100%;
     width: 100%;
     border-radius: inherit !important;
   }
-`;
 
-const GlobalStyles = createGlobalStyle`
-  .ant-image-cover-center {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: inherit !important;
+  .ant-image-img {
+    object-fit: cover;
   }
 `;
 
@@ -66,16 +61,12 @@ export const ProductMainImage: React.FC<ProductMainImageProps> = ({
 }) => {
   if (url) {
     return (
-      <Fragment>
-        <StyledImage
-          src={url}
-          width={width}
-          borderRadius={borderRadius}
-          loading="lazy"
-        />
-
-        <GlobalStyles />
-      </Fragment>
+      <StyledImage
+        src={url}
+        width={width}
+        borderRadius={borderRadius}
+        loading="lazy"
+      />
     );
   }
 

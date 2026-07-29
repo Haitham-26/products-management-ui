@@ -23,7 +23,7 @@ const getStatusOptions = (t: TFunction) => [
   })),
 ];
 
-type ReturnsFiltersProps = {
+type ReturnFiltersProps = {
   filters: Partial<GetReturnsDto>;
   activeFiltersCount: number;
   applyFilter: (
@@ -33,11 +33,11 @@ type ReturnsFiltersProps = {
   ) => void;
 };
 
-export default function CreateReturnsFilters({
+export function useReturnFilters({
   filters,
   activeFiltersCount,
   applyFilter,
-}: ReturnsFiltersProps): FiltersPopoverProps {
+}: ReturnFiltersProps): FiltersPopoverProps {
   const [, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
 

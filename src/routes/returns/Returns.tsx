@@ -36,7 +36,7 @@ import type { Return } from "../../model/return/types/Return";
 import { returnActions } from "../../redux/return/returns.slice";
 import { ReturnCard } from "./components/ReturnCard";
 import { ReturnCreateDrawer } from "./components/ReturnCreateDrawer";
-import CreateReturnsFilters from "./components/createReturnFilters";
+import { useReturnFilters } from "./components/useReturnFilters";
 import { orderActions } from "../../redux/order/orders.slice";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
@@ -116,6 +116,8 @@ export const Returns: React.FC = () => {
     [searchParams, returnsMeta],
   );
 
+  const activeFiltersCount = countReturnsActiveFilters(filters);
+
   const debouncedSetSearchParams = useMemo(
     () =>
       debounce((nextParams) => {
@@ -177,7 +179,11 @@ export const Returns: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countReturnsActiveFilters(filters);
+  const returnFilters = useReturnFilters({
+    filters,
+    activeFiltersCount,
+    applyFilter,
+  });
 
   const onCancel = (_return: Return) => {
     setCurrentReturn(_return);
@@ -306,11 +312,7 @@ export const Returns: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: CreateReturnsFilters({
-                filters,
-                activeFiltersCount,
-                applyFilter,
-              }),
+              filters: returnFilters,
               search: {
                 placeholder: t("returns.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

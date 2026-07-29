@@ -66,7 +66,7 @@ type Range = {
   max?: number;
 } | null;
 
-type ProductsFiltersProps = {
+type ProductFiltersProps = {
   activeFiltersCount: number;
   filters: Partial<GetProductsDto>;
   applyFilter: (
@@ -76,11 +76,11 @@ type ProductsFiltersProps = {
   ) => void;
 };
 
-export default function CreateProductsFilters({
+export function useProductsFilters({
   activeFiltersCount,
   filters,
   applyFilter,
-}: ProductsFiltersProps): FiltersPopoverProps {
+}: ProductFiltersProps): FiltersPopoverProps {
   const [purchasePriceRange, setPurchasePriceRange] = useState<Range>({
     min: filters.minPurchasePrice ?? 0,
     max: filters.maxPurchasePrice ?? 0,

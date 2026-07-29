@@ -45,10 +45,10 @@ const initializeLanguage = async () => {
 const changeLanguage = async (lang: AppLangs) => {
   if (i18n.language !== lang) {
     await i18n.changeLanguage(lang);
-
-    applyLanguage(lang);
-    localStorage.setItem("lang", lang);
   }
+
+  applyLanguage(lang);
+  localStorage.setItem("lang", lang);
 };
 
 export default i18n;
