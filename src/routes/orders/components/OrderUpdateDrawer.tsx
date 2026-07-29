@@ -242,7 +242,11 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
 
           <ItemsGrid>
             {order.items.map((item) => (
-              <OrderItemReadCard key={item.productId} item={item} />
+              <OrderItemReadCard
+                key={item.productId}
+                item={item}
+                order={order}
+              />
             ))}
           </ItemsGrid>
 
