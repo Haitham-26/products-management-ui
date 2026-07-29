@@ -27,7 +27,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
-import { CategoriesFilters } from "./components/CategoriesFilters";
+import CreateCategoryFilters from "./components/createCategoryFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
@@ -333,16 +333,11 @@ export const Categories: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <CategoriesFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: CreateCategoryFilters({
+                activeFiltersCount,
+                applyFilter,
+                filters,
+              }),
               search: {
                 placeholder: t("categories.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

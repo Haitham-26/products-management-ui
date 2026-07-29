@@ -23,7 +23,7 @@ import { ProductReadDrawer } from "./components/ProductReadDrawer";
 import { createProductsTableColumns } from "./components/createProductsTableColumns";
 import type { Product } from "../../model/product/types/Product";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
-import { ProductsFilters } from "./components/ProductsFilters";
+import CreateProductsFilters from "./components/createProductsFilters";
 import {
   buildProductsParams,
   countProductsActiveFilters,
@@ -489,16 +489,11 @@ export const Products: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <ProductsFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: CreateProductsFilters({
+                activeFiltersCount,
+                filters,
+                applyFilter,
+              }),
               search: {
                 placeholder: t("products.subheader.inputPlaceholder"),
                 onChange: (searchKeyword: string) =>

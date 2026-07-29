@@ -28,7 +28,7 @@ import {
 } from "./utils/tagUtils";
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
-import { TagsFilters } from "./components/TagsFilters";
+import CreateTagFilters from "./components/createTagFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
@@ -327,16 +327,11 @@ export const Tags: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <TagsFilters
-                    filters={filters}
-                    activeFiltersCount={activeFiltersCount}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: CreateTagFilters({
+                filters,
+                activeFiltersCount,
+                applyFilter,
+              }),
               search: {
                 placeholder: t("tags.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

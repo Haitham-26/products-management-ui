@@ -36,7 +36,7 @@ import type { Return } from "../../model/return/types/Return";
 import { returnActions } from "../../redux/return/returns.slice";
 import { ReturnCard } from "./components/ReturnCard";
 import { ReturnCreateDrawer } from "./components/ReturnCreateDrawer";
-import { ReturnsFilters } from "./components/ReturnsFilters";
+import CreateReturnsFilters from "./components/createReturnFilters";
 import { orderActions } from "../../redux/order/orders.slice";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
@@ -301,16 +301,11 @@ export const Returns: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <ReturnsFilters
-                    filters={filters}
-                    activeFiltersCount={activeFiltersCount}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: CreateReturnsFilters({
+                filters,
+                activeFiltersCount,
+                applyFilter,
+              }),
               search: {
                 placeholder: t("returns.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

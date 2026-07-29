@@ -4,12 +4,11 @@ import styled, { createGlobalStyle } from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 import { Button, type ButtonProps } from "./Button";
-import { Popover } from "antd";
 import { Input } from "./Input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
-import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../theme/Breakpoints";
+import { FiltersPopover, type FiltersPopoverProps } from "./FiltersPopover";
 
 const Top = styled.div`
   display: flex;
@@ -132,45 +131,6 @@ const Search = styled.div`
   }
 `;
 
-const FilterChip = styled.button<{ active?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-inline-start: auto;
-
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  height: 28px;
-
-  border-radius: ${({ theme }) => theme.radius.full};
-  border: 1px solid
-    ${({ theme, active }) =>
-      active ? theme.colors.primary : theme.colors.border};
-
-  background: ${({ theme, active }) =>
-    active ? `${theme.colors.primary}12` : theme.colors.surface};
-
-  color: ${({ theme, active }) =>
-    active ? theme.colors.primary : theme.colors.textSecondary};
-
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  span {
-    display: none;
-  }
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (min-width: ${Breakpoints.MD}) {
-    span {
-      display: inline;
-    }
-  }
-`;
-
 const FixedContentContainer = styled.div`
   position: fixed;
   // 3.5rem = App bar's height
@@ -274,10 +234,7 @@ type PageHeaderProps = {
     onChange: (value: string) => void;
   };
 
-  filters?: {
-    content: React.ReactNode;
-    activeCount: number;
-  };
+  filters?: FiltersPopoverProps;
 
   bulkActionsContent?: React.ReactNode;
   selectedTableItemsCount?: number;
@@ -297,7 +254,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   extra,
 }) => {
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
 
   const { t } = useTranslation();
 
@@ -351,21 +307,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </Search>
           ) : null}
 
-          {filters ? (
-            <Popover
-              content={filters.content}
-              trigger="click"
-              open={open}
-              onOpenChange={setOpen}
-              arrow={false}
-            >
-              <FilterChip active={filters.activeCount > 0}>
-                <Icon icon={faFilter} />
-                <span>{t("common.filters.title")}</span>
-                {filters.activeCount ? ` (${filters.activeCount})` : ""}
-              </FilterChip>
-            </Popover>
-          ) : null}
+          {filters ? <FiltersPopover {...filters} /> : null}
 
           {bulkActionsContent ? (
             <FixedContentContainer>

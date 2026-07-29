@@ -14,7 +14,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { createOrdersTableColumns } from "./components/createOrdersTableColumns";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
-import { OrdersFilters } from "./components/OrdersFilters";
+import CreateOrderFilters from "./components/createOrderFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { orderActions } from "../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
@@ -358,16 +358,11 @@ export const Orders: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <OrdersFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: CreateOrderFilters({
+                activeFiltersCount,
+                applyFilter,
+                filters,
+              }),
               search: {
                 placeholder: t("orders.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>

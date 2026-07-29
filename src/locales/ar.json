@@ -278,9 +278,9 @@
         "unarchived": "غير مؤرشف"
       },
       "totalRevenue": "إجمالي الإيرادات",
-      "totalProfit": "إجمالي الربح",
+      "totalProfit": "إجمالي الأرباح",
       "itemsCount": "عدد القطع",
-      "netProfit": "صافي الربح",
+      "netProfit": "صافي الأرباح",
       "netRevenue": "صافي الإيرادات",
       "deliveredAt": "تاريخ التسليم"
     },
@@ -749,7 +749,7 @@
       "items": {
         "title": "العناصر المُرجَعة",
         "totalRevenue": "إجمالي الإيرادات",
-        "totalProfit": "إجمالي الربح",
+        "totalProfit": "إجمالي الأرباح",
         "item": {
           "restocked": "تمت إعادة تخزين {{restocked}} من {{returned}}"
         }

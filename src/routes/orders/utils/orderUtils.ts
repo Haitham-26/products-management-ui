@@ -27,6 +27,18 @@ export const parseOrdersFiltersFromParams = (
   maxTotalProfit: params.get("maxTotalProfit")
     ? Number(params.get("maxTotalProfit"))
     : undefined,
+  minNetRevenue: params.get("minNetRevenue")
+    ? Number(params.get("minNetRevenue"))
+    : undefined,
+  maxNetRevenue: params.get("maxNetRevenue")
+    ? Number(params.get("maxNetRevenue"))
+    : undefined,
+  minNetProfit: params.get("minNetProfit")
+    ? Number(params.get("minNetProfit"))
+    : undefined,
+  maxNetProfit: params.get("maxNetProfit")
+    ? Number(params.get("maxNetProfit"))
+    : undefined,
   status: params.get("status") as GetOrdersDto["status"],
   showArchived: params.get("showArchived") === "true",
 });
@@ -54,6 +66,10 @@ export const buildOrdersParams = (
   set("maxTotalRevenue", filters.maxTotalRevenue?.toString());
   set("minTotalProfit", filters.minTotalProfit?.toString());
   set("maxTotalProfit", filters.maxTotalProfit?.toString());
+  set("minNetRevenue", filters.minNetRevenue?.toString());
+  set("maxNetRevenue", filters.maxNetRevenue?.toString());
+  set("minNetProfit", filters.minNetProfit?.toString());
+  set("maxNetProfit", filters.maxNetProfit?.toString());
   set("status", filters.status);
   set("showArchived", filters.showArchived?.toString());
 
@@ -69,6 +85,8 @@ export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
   const applyConditions = [
     !isNil(filters.minTotalRevenue) || !isNil(filters.maxTotalRevenue),
     !isNil(filters.minTotalProfit) || !isNil(filters.maxTotalProfit),
+    !isNil(filters.minNetRevenue) || !isNil(filters.maxNetRevenue),
+    !isNil(filters.minNetProfit) || !isNil(filters.maxNetProfit),
     filters.status,
     !isNil(filters.sortBy),
     !isNil(filters.datePeriod),
