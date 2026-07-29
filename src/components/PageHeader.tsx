@@ -103,6 +103,7 @@ const ContextBar = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
   flex-wrap: wrap;
   position: relative;
+  width: 100%;
 
   padding: ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.radius.md};
@@ -116,25 +117,29 @@ const ContextBar = styled.div`
 
 const Search = styled.div`
   position: relative;
+  flex: 1;
+  min-width: 17rem;
 
   input {
-    padding-inline-start: ${({ theme }) => theme.spacing.md};
-    min-width: 14.5rem;
+    width: 100%;
+    min-width: 0;
+    padding-inline-start: ${({ theme }) => theme.spacing.xl};
   }
 
   svg {
     position: absolute;
     top: 50%;
+    z-index: 1;
     transform: translateY(-50%);
-    inset-block-start: ${({ theme }) => theme.spacing.sm};
+    inset-block-start: 50%;
+    inset-inline-start: ${({ theme }) => theme.spacing.sm};
     font-size: 12px;
     color: ${({ theme }) => theme.colors.textSecondary};
+    pointer-events: none;
   }
 
   @media (min-width: ${Breakpoints.SM}) {
-    input {
-      min-width: 16rem;
-    }
+    max-width: 24rem;
   }
 `;
 
