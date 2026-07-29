@@ -121,8 +121,20 @@ export default function CreateOrderFilters({
         children: (
           <Select
             placeholder={t("common.allTimes")}
-            value={filters.datePeriod}
-            onChange={(val) => applyFilter("datePeriod", val)}
+            value={filters.createdDatePeriod}
+            onChange={(val) => applyFilter("createdDatePeriod", val)}
+            options={getDatePeriodOptions()}
+          />
+        ),
+      },
+      {
+        type: "item",
+        title: t("orders.fields.deliveredAt"),
+        children: (
+          <Select
+            placeholder={t("common.allTimes")}
+            value={filters.deliveredDatePeriod}
+            onChange={(val) => applyFilter("deliveredDatePeriod", val)}
             options={getDatePeriodOptions()}
           />
         ),

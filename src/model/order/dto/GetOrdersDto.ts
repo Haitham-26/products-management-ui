@@ -7,7 +7,8 @@ export interface GetOrdersDto {
   meta?: PaginationMeta;
   keyword?: string;
   sortBy?: SortKind;
-  datePeriod?: DatePeriodFilters;
+  createdDatePeriod?: DatePeriodFilters;
+  deliveredDatePeriod?: DatePeriodFilters;
   minTotalRevenue?: number;
   maxTotalRevenue?: number;
   minTotalProfit?: number;

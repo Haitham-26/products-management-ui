@@ -14,7 +14,12 @@ export const parseOrdersFiltersFromParams = (
         }
       : meta,
   sortBy: params.get("sortBy") as GetOrdersDto["sortBy"],
-  datePeriod: params.get("datePeriod") as GetOrdersDto["datePeriod"],
+  createdDatePeriod: params.get(
+    "createdDatePeriod",
+  ) as GetOrdersDto["createdDatePeriod"],
+  deliveredDatePeriod: params.get(
+    "deliveredDatePeriod",
+  ) as GetOrdersDto["deliveredDatePeriod"],
   minTotalRevenue: params.get("minTotalRevenue")
     ? Number(params.get("minTotalRevenue"))
     : undefined,
@@ -59,7 +64,8 @@ export const buildOrdersParams = (
 
   set("keyword", filters.keyword);
   set("sortBy", filters.sortBy);
-  set("datePeriod", filters.datePeriod);
+  set("createdDatePeriod", filters.createdDatePeriod);
+  set("deliveredDatePeriod", filters.deliveredDatePeriod);
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
   set("minTotalRevenue", filters.minTotalRevenue?.toString());
@@ -89,7 +95,8 @@ export const countOrdersActiveFilters = (filters: Partial<GetOrdersDto>) => {
     !isNil(filters.minNetProfit) || !isNil(filters.maxNetProfit),
     filters.status,
     !isNil(filters.sortBy),
-    !isNil(filters.datePeriod),
+    !isNil(filters.createdDatePeriod),
+    !isNil(filters.deliveredDatePeriod),
     filters.showArchived,
   ];
 
