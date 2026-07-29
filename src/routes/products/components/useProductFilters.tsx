@@ -1,4 +1,3 @@
-import type React from "react";
 import styled from "styled-components";
 import { Select } from "../../../components/Select";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -8,12 +7,9 @@ import { useCallback, useMemo, useState } from "react";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
-import { Button } from "../../../components/Button";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import { ProductDiscountTypes } from "../../../model/product/types/ProductDiscountTypes.enum";
 import { ProductStockStatus } from "../../../model/product/types/ProductStockStatus.enum";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
-import { SortKind } from "../../../model/shared/types/SortKind.enum";
 import { Checkbox } from "antd";
 import { SearchSelect } from "../../../components/SearchSelect";
 import { categoryActions } from "../../../redux/category/categories.slice";
@@ -23,21 +19,11 @@ import { tagActions } from "../../../redux/tag/tags.slice";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import camelCase from "lodash/camelCase";
-
-const getCreationDateOptions = (t: TFunction) => [
-  {
-    label: t("common.default"),
-    value: null,
-  },
-  {
-    label: t("common.filters.creationDate.newest"),
-    value: SortKind.NEWEST,
-  },
-  {
-    label: t("common.filters.creationDate.oldest"),
-    value: SortKind.OLDEST,
-  },
-];
+import {
+  getDatePeriodOptions,
+  getSortByOptions,
+} from "../../../utils/filtersSelectOptions";
+import type { FiltersPopoverProps } from "../../../components/FiltersPopover";
 
 const stockStatusOptions = (t: TFunction) => [
   {
@@ -49,43 +35,6 @@ const stockStatusOptions = (t: TFunction) => [
     value: s,
   })),
 ];
-
-const PopoverBody = styled.div`
-  padding: ${({ theme }) => theme.spacing.sm};
-`;
-
-const PopoverContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  width: 16rem;
-  max-height: 45vh;
-  overflow-y: auto;
-  padding-inline-end: ${({ theme }) => theme.spacing.sm};
-`;
-
-const FiltersClearContainer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.md};
-`;
-
-const PopoverSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const PopoverLabel = styled.label`
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const PopoverSeparator = styled.hr`
-  height: 1px;
-  border-color: ${({ theme }) => theme.colors.border}50;
-`;
 
 const RangeRow = styled.div`
   display: flex;
@@ -104,10 +53,12 @@ const RangeDash = styled.span`
   flex-shrink: 0;
 `;
 
-const PopoverFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 4px;
+const Label = styled.label`
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 type Range = {
@@ -115,7 +66,7 @@ type Range = {
   max?: number;
 } | null;
 
-type ProductsFiltersProps = {
+type ProductFiltersProps = {
   activeFiltersCount: number;
   filters: Partial<GetProductsDto>;
   applyFilter: (
@@ -125,11 +76,11 @@ type ProductsFiltersProps = {
   ) => void;
 };
 
-export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
+export function useProductsFilters({
   activeFiltersCount,
   filters,
   applyFilter,
-}) => {
+}: ProductFiltersProps): FiltersPopoverProps {
   const [purchasePriceRange, setPurchasePriceRange] = useState<Range>({
     min: filters.minPurchasePrice ?? 0,
     max: filters.maxPurchasePrice ?? 0,
@@ -237,36 +188,49 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
     setQuantityRange(null);
   }, [setSearchParams]);
 
-  return (
-    <PopoverBody>
-      <PopoverContent>
-        <PopoverSection>
-          <PopoverLabel>{t("common.sortBy")}</PopoverLabel>
+  return {
+    items: [
+      {
+        type: "item",
+        title: t("common.sortBy"),
+        children: (
           <Select
             placeholder={t("common.default")}
-            value={filters.creationDate}
-            onChange={(val) => applyFilter("creationDate", val)}
-            options={getCreationDateOptions(t)}
+            value={filters.sortBy}
+            onChange={(val) => applyFilter("sortBy", val)}
+            options={getSortByOptions()}
           />
-        </PopoverSection>
-
-        <PopoverSeparator />
-
-        <PopoverSection>
+        ),
+      },
+      {
+        type: "item",
+        title: t("common.creationDate"),
+        children: (
+          <Select
+            placeholder={t("common.allTimes")}
+            value={filters.datePeriod}
+            onChange={(val) => applyFilter("datePeriod", val)}
+            options={getDatePeriodOptions()}
+          />
+        ),
+      },
+      { type: "separator" },
+      {
+        type: "item",
+        children: (
           <Checkbox
             checked={filters.showDraft}
             onChange={(e) => applyFilter("showDraft", e.target.checked)}
           >
-            <PopoverLabel>{t("products.filters.showDraft")}</PopoverLabel>
+            <Label>{t("products.filters.showDraft")}</Label>
           </Checkbox>
-        </PopoverSection>
-
-        <PopoverSeparator />
-
-        <PopoverSection>
-          <PopoverLabel>
-            {t("products.fields.purchasePrice")} ({settings.currency})
-          </PopoverLabel>
+        ),
+      },
+      { type: "separator" },
+      {
+        type: "item",
+        title: `${t("products.fields.purchasePrice")} (${settings.currency})`,
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -304,12 +268,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               min={0}
             />
           </RangeRow>
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>
-            {t("products.fields.salePrice")} ({settings.currency})
-          </PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: `${t("products.fields.salePrice")} (${settings.currency})`,
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -347,12 +311,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               min={0}
             />
           </RangeRow>
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>
-            {t("products.fields.finalSalePrice")} ({settings.currency})
-          </PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: `${t("products.fields.finalSalePrice")} (${settings.currency})`,
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -390,12 +354,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               min={0}
             />
           </RangeRow>
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>
-            {t("products.fields.profit")} ({settings.currency})
-          </PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: `${t("products.fields.profit")} (${settings.currency})`,
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -431,12 +395,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               }}
             />
           </RangeRow>
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>
-            {t("products.create-edit.price.discount.type.title")}
-          </PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: t("products.create-edit.price.discount.type.title"),
+        children: (
           <Select
             placeholder={t("common.all")}
             value={filters.discountType}
@@ -453,7 +417,6 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
                 ),
                 value: ProductDiscountTypes.PERCENTAGE,
               },
-
               {
                 label: t("products.create-edit.price.discount.types.fixed", {
                   currency: settings.currency,
@@ -462,12 +425,13 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               },
             ]}
           />
-        </PopoverSection>
-
-        <PopoverSeparator />
-
-        <PopoverSection>
-          <PopoverLabel>{t("common.category")}</PopoverLabel>
+        ),
+      },
+      { type: "separator" },
+      {
+        type: "item",
+        title: t("common.category"),
+        children: (
           <SearchSelect
             value={filters.categoryId || undefined}
             onChange={(val) => applyFilter("categoryId", val)}
@@ -479,10 +443,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               "products.create-edit.taxonomy.category.placeholder",
             )}
           />
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>{t("common.tags")}</PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: t("common.tags"),
+        children: (
           <SearchSelect
             mode="multiple"
             value={filters.tagIds || undefined}
@@ -493,12 +459,13 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             allowClear
             placeholder={t("products.create-edit.taxonomy.tags.placeholder")}
           />
-        </PopoverSection>
-
-        <PopoverSeparator />
-
-        <PopoverSection>
-          <PopoverLabel>{t("products.stockStatus.title")}</PopoverLabel>
+        ),
+      },
+      { type: "separator" },
+      {
+        type: "item",
+        title: t("products.stockStatus.title"),
+        children: (
           <Select
             placeholder={t("common.all")}
             value={filters.stockStatus}
@@ -506,10 +473,12 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
             allowClear
             options={stockStatusOptions(t)}
           />
-        </PopoverSection>
-
-        <PopoverSection>
-          <PopoverLabel>{t("common.quantity")}</PopoverLabel>
+        ),
+      },
+      {
+        type: "item",
+        title: t("common.quantity"),
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -547,19 +516,10 @@ export const ProductsFilters: React.FC<ProductsFiltersProps> = ({
               min={0}
             />
           </RangeRow>
-        </PopoverSection>
-      </PopoverContent>
-
-      {activeFiltersCount ? (
-        <FiltersClearContainer>
-          <PopoverSeparator />
-          <PopoverFooter>
-            <Button icon={faRotateLeft} onClick={resetFilters}>
-              {t("common.clearAll")}
-            </Button>
-          </PopoverFooter>
-        </FiltersClearContainer>
-      ) : null}
-    </PopoverBody>
-  );
-};
+        ),
+      },
+    ],
+    onResetFilters: resetFilters,
+    activeFiltersCount,
+  };
+}

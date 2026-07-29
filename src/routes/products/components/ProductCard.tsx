@@ -31,7 +31,7 @@ const Content = styled.div`
 
 const CheckboxWrapper = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   background-color: ${({ theme }) => theme.colors.background};
   border-inline-end: 1px solid ${({ theme }) => theme.colors.border};
   padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.sm}`};
@@ -68,6 +68,10 @@ const Stat = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  p:nth-child(2) {
+    margin-top: auto;
+  }
 `;
 
 type FNType = VoidCallback<Product> | undefined;

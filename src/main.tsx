@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import GlobalStyle from "./GlobalStyle.ts";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { initializeLanguage } from "./utils/i18nUtils.ts";
+import { initializeLanguage } from "./i18n.ts";
 
 initializeLanguage().then(() =>
   createRoot(document.getElementById("root")!).render(

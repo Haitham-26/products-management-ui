@@ -28,7 +28,7 @@ import {
 } from "./utils/tagUtils";
 import debounce from "lodash/debounce";
 import { PageHeader } from "../../components/PageHeader";
-import { TagsFilters } from "./components/TagsFilters";
+import { useTagFilters } from "./components/useTagFilters";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
 import type { Key } from "antd/es/table/interface";
@@ -42,6 +42,8 @@ import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { TagCard } from "./components/TagCard";
 import { Breakpoints } from "../../theme/Breakpoints";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -91,6 +93,9 @@ export const Tags: React.FC = () => {
   const tagsLoading = useAppSelector(tagSliceSelectors.selectTagsLoading);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const tagsMeta = useAppSelector(tagSliceSelectors.selectTagsMeta);
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "tags"),
+  );
   const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,6 +104,8 @@ export const Tags: React.FC = () => {
     () => parseTagsFiltersFromParams(searchParams, tagsMeta),
     [searchParams, tagsMeta],
   );
+
+  const activeFiltersCount = countTagsActiveFilters(filters);
 
   const debouncedSetSearchParams = useMemo(
     () =>
@@ -161,7 +168,11 @@ export const Tags: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countTagsActiveFilters(filters);
+  const tagFilters = useTagFilters({
+    filters,
+    activeFiltersCount,
+    applyFilter,
+  });
 
   const onDelete = (tag: Tag) => {
     setCurrentTag(tag);
@@ -327,16 +338,7 @@ export const Tags: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <TagsFilters
-                    filters={filters}
-                    activeFiltersCount={activeFiltersCount}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: tagFilters,
               search: {
                 placeholder: t("tags.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
@@ -360,10 +362,11 @@ export const Tags: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "tags" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={tagsLoading}
             columns={tableColumns}

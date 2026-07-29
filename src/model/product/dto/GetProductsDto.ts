@@ -1,5 +1,6 @@
 import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
+import type { DatePeriodFilters } from "../../shared/types/DatePeriodFilters.enum";
 import type { SortKind } from "../../shared/types/SortKind.enum";
 import type { ProductDiscount } from "../types/ProductDiscount";
 import type { ProductStockStatus } from "../types/ProductStockStatus.enum";
@@ -9,8 +10,9 @@ export interface GetProductsDto extends GenericWithUserId {
   categoryId?: string;
   tagIds?: string[];
   keyword?: string;
+  datePeriod?: DatePeriodFilters;
   showDraft?: boolean;
-  creationDate?: SortKind;
+  sortBy?: SortKind;
   minPurchasePrice?: number;
   maxPurchasePrice?: number;
   minSalePrice?: number;

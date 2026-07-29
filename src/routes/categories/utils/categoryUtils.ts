@@ -6,7 +6,8 @@ export const parseCategoriesFiltersFromParams = (
   meta: GetCategoriesDto["meta"],
 ): Partial<GetCategoriesDto> => ({
   keyword: params.get("keyword") || "",
-  creationDate: params.get("creationDate") as GetCategoriesDto["creationDate"],
+  sortBy: params.get("sortBy") as GetCategoriesDto["sortBy"],
+  datePeriod: params.get("datePeriod") as GetCategoriesDto["datePeriod"],
   meta:
     params.get("page") || params.get("limit")
       ? {
@@ -37,7 +38,8 @@ export const buildCategoriesParams = (
   };
 
   set("keyword", filters.keyword);
-  set("creationDate", filters.creationDate);
+  set("sortBy", filters.sortBy);
+  set("datePeriod", filters.datePeriod);
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
   set("minUsageCount", filters.minUsageCount?.toString());
@@ -55,7 +57,8 @@ export const countCategoriesActiveFilters = (
   let n = 0;
 
   const applyConditions = [
-    !isNil(filters.creationDate),
+    !isNil(filters.sortBy),
+    !isNil(filters.datePeriod),
     !isNil(filters.minUsageCount) || !isNil(filters.maxUsageCount),
   ];
 

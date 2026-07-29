@@ -10,11 +10,12 @@ export const parseProductsFiltersFromParams = (
 ): Partial<GetProductsDto> => ({
   keyword: params.get("keyword") || "",
   showDraft: params.get("showDraft") === "true",
-  creationDate: params.get("creationDate") as GetProductsDto["creationDate"],
+  sortBy: params.get("sortBy") as GetProductsDto["sortBy"],
   categoryId: params.get("categoryId") || undefined,
   discountType:
     (params.get("discountType") as ProductDiscount["type"]) || undefined,
   tagIds: params.getAll("tagIds"),
+  datePeriod: params.get("datePeriod") as GetProductsDto["datePeriod"],
   minPurchasePrice: params.get("minPurchasePrice")
     ? Number(params.get("minPurchasePrice"))
     : undefined,
@@ -71,9 +72,10 @@ export const buildProductsParams = (
 
   set("keyword", filters.keyword);
   set("showDraft", filters.showDraft?.toString());
-  set("creationDate", filters.creationDate);
+  set("sortBy", filters.sortBy);
   set("categoryId", filters.categoryId);
   set("discountType", filters.discountType);
+  set("datePeriod", filters.datePeriod);
   set("minPurchasePrice", filters.minPurchasePrice?.toString());
   set("maxPurchasePrice", filters.maxPurchasePrice?.toString());
   set("minSalePrice", filters.minSalePrice?.toString());
@@ -103,7 +105,8 @@ export const countProductsActiveFilters = (
   let n = 0;
 
   const applyConditions = [
-    filters.creationDate,
+    filters.sortBy,
+    filters.datePeriod,
     filters.showDraft,
     filters.categoryId,
     filters.discountType,

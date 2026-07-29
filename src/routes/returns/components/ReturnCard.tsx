@@ -76,6 +76,10 @@ const Stat = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  p:nth-child(2) {
+    margin-top: auto;
+  }
 `;
 
 type FNType = VoidCallback<Return> | undefined;

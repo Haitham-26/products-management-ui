@@ -23,7 +23,7 @@ import { ProductReadDrawer } from "./components/ProductReadDrawer";
 import { createProductsTableColumns } from "./components/createProductsTableColumns";
 import type { Product } from "../../model/product/types/Product";
 import type { GetProductsDto } from "../../model/product/dto/GetProductsDto";
-import { ProductsFilters } from "./components/ProductsFilters";
+import { useProductsFilters } from "./components/useProductFilters";
 import {
   buildProductsParams,
   countProductsActiveFilters,
@@ -48,6 +48,8 @@ import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { ProductCard } from "./components/ProductCard";
 import { Breakpoints } from "../../theme/Breakpoints";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const getToggleStatusModalTexts = (t: TFunction) => ({
   [ProductStatus.DRAFT]: {
@@ -149,13 +151,16 @@ export const Products: React.FC = () => {
   );
   const productsMeta = useAppSelector(productSliceSelectors.selectProductsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
-
-  const permissions = checkPermissions(user, "products");
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "products"),
+  );
 
   const filters = useMemo(
     () => parseProductsFiltersFromParams(searchParams, productsMeta),
     [searchParams, productsMeta],
   );
+
+  const activeFiltersCount = countProductsActiveFilters(filters);
 
   const debouncedSetSearchParams = useMemo(
     () =>
@@ -164,6 +169,8 @@ export const Products: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const permissions = checkPermissions(user, "products");
 
   const handlePageChange = (page: number, pageSize: number) => {
     const newFilters = {
@@ -209,9 +216,11 @@ export const Products: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countProductsActiveFilters(filters);
-
-  const toggleStatusModalTexts = getToggleStatusModalTexts(t);
+  const productFilters = useProductsFilters({
+    filters,
+    applyFilter,
+    activeFiltersCount,
+  });
 
   const sharedPaginationOptions = {
     current: productsMeta?.page || 1,
@@ -221,6 +230,8 @@ export const Products: React.FC = () => {
     showSizeChanger: true,
     pageSizeOptions: ["10", "20", "50", "100"],
   };
+
+  const toggleStatusModalTexts = getToggleStatusModalTexts(t);
 
   const onDelete = (product: Product) => {
     setCurrentProduct(product);
@@ -489,16 +500,7 @@ export const Products: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <ProductsFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: productFilters,
               search: {
                 placeholder: t("products.subheader.inputPlaceholder"),
                 onChange: (searchKeyword: string) =>
@@ -541,11 +543,14 @@ export const Products: React.FC = () => {
             </BulkActionsWrapper>
           ) : null
         }
+        layoutToggle={{
+          key: "products",
+        }}
         selectedTableItemsCount={selectedRowIds.length}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={productsLoading}
             columns={tableColumns}

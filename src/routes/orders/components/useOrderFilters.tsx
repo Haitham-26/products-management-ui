@@ -1,18 +1,19 @@
-import type React from "react";
 import styled from "styled-components";
-import { Fragment, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "../../../components/Input";
-import { Button } from "../../../components/Button";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons/faRotateLeft";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { Select } from "../../../components/Select";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
-import { SortKind } from "../../../model/shared/types/SortKind.enum";
 import { Checkbox } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import camelCase from "lodash/camelCase";
+import {
+  getDatePeriodOptions,
+  getSortByOptions,
+} from "../../../utils/filtersSelectOptions";
+import type { FiltersPopoverProps } from "../../../components/FiltersPopover";
 
 const getStatusOptions = (t: TFunction) => [
   { label: t("common.all"), value: null },
@@ -21,38 +22,6 @@ const getStatusOptions = (t: TFunction) => [
     value: s,
   })),
 ];
-
-const getCreationDateOptions = (t: TFunction) => [
-  {
-    label: t("common.default"),
-    value: null,
-  },
-  {
-    label: t("common.filters.creationDate.newest"),
-    value: SortKind.NEWEST,
-  },
-  {
-    label: t("common.filters.creationDate.oldest"),
-    value: SortKind.OLDEST,
-  },
-];
-
-const PopoverBody = styled.div`
-  padding: ${({ theme }) => theme.spacing.sm};
-`;
-
-const PopoverContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  width: 16rem;
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
 
 const Label = styled.label`
   font-size: 0.7rem;
@@ -63,12 +32,6 @@ const Label = styled.label`
   &:not(:first-child) {
     margin-top: ${({ theme }) => theme.spacing.xs};
   }
-`;
-
-const PopoverSeparator = styled.hr`
-  height: 1px;
-  border-color: ${({ theme }) => theme.colors.border}50;
-  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const RangeRow = styled.div`
@@ -88,12 +51,6 @@ const RangeDash = styled.span`
   flex-shrink: 0;
 `;
 
-const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.spacing.md};
-`;
-
 type Range = {
   min?: number;
   max?: number;
@@ -109,11 +66,11 @@ type OrdersFiltersProps = {
   ) => void;
 };
 
-export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
+export function useOrderFilters({
   activeFiltersCount,
   filters,
   applyFilter,
-}) => {
+}: OrdersFiltersProps): FiltersPopoverProps {
   const [totalRevenueRange, setTotalRevenueRange] = useState<Range>({
     min: filters.minTotalRevenue ?? 0,
     max: filters.maxTotalRevenue ?? 0,
@@ -121,6 +78,15 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   const [totalProfitRange, setTotalProfitRange] = useState<Range>({
     min: filters.minTotalProfit ?? 0,
     max: filters.maxTotalProfit ?? 0,
+  });
+
+  const [netRevenueRange, setNetRevenueRange] = useState<Range>({
+    min: filters.minNetRevenue ?? 0,
+    max: filters.maxNetRevenue ?? 0,
+  });
+  const [netProfitRange, setNetProfitRange] = useState<Range>({
+    min: filters.minNetProfit ?? 0,
+    max: filters.maxNetProfit ?? 0,
   });
 
   const { t } = useTranslation();
@@ -131,36 +97,69 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
 
     setTotalRevenueRange(null);
     setTotalProfitRange(null);
+    setNetRevenueRange(null);
+    setNetProfitRange(null);
   }, [setSearchParams]);
 
-  return (
-    <PopoverBody>
-      <PopoverContent>
-        <Section>
-          <Label>{t("common.sortBy")}</Label>
+  return {
+    items: [
+      {
+        type: "item",
+        title: t("common.sortBy"),
+        children: (
           <Select
             placeholder={t("common.default")}
-            value={filters.creationDate}
-            onChange={(val) => applyFilter("creationDate", val)}
-            options={getCreationDateOptions(t)}
+            value={filters.sortBy}
+            onChange={(val) => applyFilter("sortBy", val)}
+            options={getSortByOptions()}
           />
-        </Section>
-
-        <PopoverSeparator />
-
-        <Section>
+        ),
+      },
+      {
+        type: "item",
+        title: t("common.creationDate"),
+        children: (
           <Select
-            title={t("common.status")}
+            placeholder={t("common.allTimes")}
+            value={filters.createdDatePeriod}
+            onChange={(val) => applyFilter("createdDatePeriod", val)}
+            options={getDatePeriodOptions()}
+          />
+        ),
+      },
+      {
+        type: "item",
+        title: t("orders.fields.deliveredAt"),
+        children: (
+          <Select
+            placeholder={t("common.allTimes")}
+            value={filters.deliveredDatePeriod}
+            onChange={(val) => applyFilter("deliveredDatePeriod", val)}
+            options={getDatePeriodOptions()}
+          />
+        ),
+      },
+      {
+        type: "separator",
+      },
+      {
+        type: "item",
+        title: t("common.status"),
+        children: (
+          <Select
             options={getStatusOptions(t)}
             value={filters.status}
             onChange={(value) => applyFilter("status", value)}
           />
-        </Section>
-
-        <PopoverSeparator />
-
-        <Section>
-          <Label>{t("orders.fields.totalRevenue")}</Label>
+        ),
+      },
+      {
+        type: "separator",
+      },
+      {
+        type: "item",
+        title: t("orders.fields.totalRevenue"),
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -198,8 +197,12 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
               min={0}
             />
           </RangeRow>
-
-          <Label>{t("orders.fields.totalProfit")}</Label>
+        ),
+      },
+      {
+        type: "item",
+        title: t("orders.fields.totalProfit"),
+        children: (
           <RangeRow>
             <Input
               type="number"
@@ -235,31 +238,109 @@ export const OrdersFilters: React.FC<OrdersFiltersProps> = ({
               }}
             />
           </RangeRow>
-        </Section>
-
-        <PopoverSeparator />
-
-        <Section>
+        ),
+      },
+      {
+        type: "separator",
+      },
+      {
+        type: "item",
+        title: t("orders.fields.netRevenue"),
+        children: (
+          <RangeRow>
+            <Input
+              type="number"
+              placeholder={t("common.min")}
+              value={netRevenueRange?.min || ""}
+              onChange={(e) => {
+                setNetRevenueRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
+                applyFilter(
+                  "minNetRevenue",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+            <RangeDash>–</RangeDash>
+            <Input
+              type="number"
+              placeholder={t("common.max")}
+              value={netRevenueRange?.max || ""}
+              onChange={(e) => {
+                setNetRevenueRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
+                applyFilter(
+                  "maxNetRevenue",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+          </RangeRow>
+        ),
+      },
+      {
+        type: "item",
+        title: t("orders.fields.netProfit"),
+        children: (
+          <RangeRow>
+            <Input
+              type="number"
+              placeholder={t("common.min")}
+              value={netProfitRange?.min || ""}
+              onChange={(e) => {
+                setNetProfitRange((prev) => ({
+                  ...prev,
+                  min: Number(e.target.value),
+                }));
+                applyFilter(
+                  "minNetProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+            <RangeDash>–</RangeDash>
+            <Input
+              type="number"
+              placeholder={t("common.max")}
+              value={netProfitRange?.max || ""}
+              onChange={(e) => {
+                setNetProfitRange((prev) => ({
+                  ...prev,
+                  max: Number(e.target.value),
+                }));
+                applyFilter(
+                  "maxNetProfit",
+                  e.target.value ? Number(e.target.value) : undefined,
+                  true,
+                );
+              }}
+            />
+          </RangeRow>
+        ),
+      },
+      {
+        type: "separator",
+      },
+      {
+        type: "item",
+        children: (
           <Checkbox
             checked={filters.showArchived}
             onChange={(e) => applyFilter("showArchived", e.target.checked)}
           >
             <Label>{t("orders.filters.showArchived")}</Label>
           </Checkbox>
-        </Section>
-      </PopoverContent>
-
-      {activeFiltersCount ? (
-        <Fragment>
-          <PopoverSeparator />
-
-          <Footer>
-            <Button icon={faRotateLeft} onClick={resetFilters}>
-              {t("common.clearAll")}
-            </Button>
-          </Footer>
-        </Fragment>
-      ) : null}
-    </PopoverBody>
-  );
-};
+        ),
+      },
+    ],
+    activeFiltersCount,
+    onResetFilters: resetFilters,
+  };
+}

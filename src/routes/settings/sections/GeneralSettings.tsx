@@ -9,13 +9,12 @@ import { Fragment, useMemo, useState } from "react";
 import { settingsActions } from "../../../redux/settings/settings.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
-import { CURRENCY_OPTIONS } from "../../../utils/String";
+import { getCurrencyOptions } from "../../../utils/String";
 import { SettingsSection } from "../components/SettingsSection";
 import { Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
 import { AppLangs } from "../../../model/app/types/AppLangs.enum";
-import i18n from "../../../i18n";
-import { changeLanguage } from "../../../utils/i18nUtils";
+import i18n, { changeLanguage } from "../../../i18n";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import { getTimeZones } from "@vvo/tzdb";
 
@@ -73,6 +72,9 @@ export const GeneralSettings: React.FC = () => {
   });
 
   const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const currencyOptions = useMemo(() => getCurrencyOptions(), [i18n.language]);
 
   const onUpdate = async () => {
     try {
@@ -141,7 +143,7 @@ export const GeneralSettings: React.FC = () => {
                   errorMessage={error?.message}
                   value={value}
                   onChange={onChange}
-                  options={CURRENCY_OPTIONS}
+                  options={currencyOptions}
                   showSearch={{
                     filterOption: (input, option) =>
                       (option?.label as string)

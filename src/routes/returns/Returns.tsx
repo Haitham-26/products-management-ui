@@ -36,12 +36,14 @@ import type { Return } from "../../model/return/types/Return";
 import { returnActions } from "../../redux/return/returns.slice";
 import { ReturnCard } from "./components/ReturnCard";
 import { ReturnCreateDrawer } from "./components/ReturnCreateDrawer";
-import { ReturnsFilters } from "./components/ReturnsFilters";
+import { useReturnFilters } from "./components/useReturnFilters";
 import { orderActions } from "../../redux/order/orders.slice";
 import { OrderStatus } from "../../model/order/types/OrderStatus.enum";
 import { ReturnReadDrawer } from "./components/ReturnReadDrawer";
 import { ReturnUpdateDrawer } from "./components/ReturnUpdateDrawer";
 import { Text } from "../../components/Text";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -103,6 +105,9 @@ export const Returns: React.FC = () => {
   );
   const returnsMeta = useAppSelector(returnSliceSelectors.selectReturnsMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "returns"),
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -110,6 +115,8 @@ export const Returns: React.FC = () => {
     () => parseReturnsFiltersFromParams(searchParams, returnsMeta),
     [searchParams, returnsMeta],
   );
+
+  const activeFiltersCount = countReturnsActiveFilters(filters);
 
   const debouncedSetSearchParams = useMemo(
     () =>
@@ -172,7 +179,11 @@ export const Returns: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countReturnsActiveFilters(filters);
+  const returnFilters = useReturnFilters({
+    filters,
+    activeFiltersCount,
+    applyFilter,
+  });
 
   const onCancel = (_return: Return) => {
     setCurrentReturn(_return);
@@ -301,16 +312,7 @@ export const Returns: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <ReturnsFilters
-                    filters={filters}
-                    activeFiltersCount={activeFiltersCount}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: returnFilters,
               search: {
                 placeholder: t("returns.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
@@ -318,10 +320,11 @@ export const Returns: React.FC = () => {
               },
             }
           : {})}
+        layoutToggle={{ key: "returns" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={returnsLoading}
             columns={tableColumns}

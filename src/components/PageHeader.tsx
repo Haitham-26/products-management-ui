@@ -4,12 +4,18 @@ import styled, { createGlobalStyle } from "styled-components";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 import { Button, type ButtonProps } from "./Button";
-import { Popover } from "antd";
 import { Input } from "./Input";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
-import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
 import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../theme/Breakpoints";
+import { FiltersPopover, type FiltersPopoverProps } from "./FiltersPopover";
+import { DataDisplayLayout } from "../model/app/types/DataDisplayLayout.enum";
+import type { PermissionEntities } from "../model/user/types/PermissionEntities";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import appSliceSelectors from "../redux/app/app.selector";
+import { appActions } from "../redux/app/app.slice";
+import { faTableList } from "@fortawesome/free-solid-svg-icons/faTableList";
+import { faTableCellsLarge } from "@fortawesome/free-solid-svg-icons/faTableCellsLarge";
 
 const Top = styled.div`
   display: flex;
@@ -83,7 +89,6 @@ const ActionWrapper = styled.div`
     }
   }
 `;
-//
 
 const Wrapper = styled.div`
   display: flex;
@@ -98,6 +103,7 @@ const ContextBar = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
   flex-wrap: wrap;
   position: relative;
+  width: 100%;
 
   padding: ${({ theme }) => theme.spacing.sm};
   border-radius: ${({ theme }) => theme.radius.md};
@@ -111,64 +117,29 @@ const ContextBar = styled.div`
 
 const Search = styled.div`
   position: relative;
+  flex: 1;
+  min-width: 17rem;
 
   input {
-    padding-inline-start: ${({ theme }) => theme.spacing.md};
-    min-width: 14.5rem;
+    width: 100%;
+    min-width: 0;
+    padding-inline-start: ${({ theme }) => theme.spacing.xl};
   }
 
   svg {
     position: absolute;
     top: 50%;
+    z-index: 1;
     transform: translateY(-50%);
-    inset-block-start: ${({ theme }) => theme.spacing.sm};
+    inset-block-start: 50%;
+    inset-inline-start: ${({ theme }) => theme.spacing.sm};
     font-size: 12px;
     color: ${({ theme }) => theme.colors.textSecondary};
+    pointer-events: none;
   }
 
   @media (min-width: ${Breakpoints.SM}) {
-    input {
-      min-width: 16rem;
-    }
-  }
-`;
-
-const FilterChip = styled.button<{ active?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-inline-start: auto;
-
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  height: 28px;
-
-  border-radius: ${({ theme }) => theme.radius.full};
-  border: 1px solid
-    ${({ theme, active }) =>
-      active ? theme.colors.primary : theme.colors.border};
-
-  background: ${({ theme, active }) =>
-    active ? `${theme.colors.primary}12` : theme.colors.surface};
-
-  color: ${({ theme, active }) =>
-    active ? theme.colors.primary : theme.colors.textSecondary};
-
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  span {
-    display: none;
-  }
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (min-width: ${Breakpoints.MD}) {
-    span {
-      display: inline;
-    }
+    max-width: 24rem;
   }
 `;
 
@@ -243,6 +214,7 @@ const GlobalStyle = createGlobalStyle<{ hasSelection: boolean }>`
   ${({ hasSelection }) =>
     // 3.5rem = App bar's height
     // 2.5rem = Fixed content's height
+    // This is to leave a a breath space on mobile
     hasSelection
       ? `
     @media (max-width: ${Breakpoints.MD}) {
@@ -252,6 +224,36 @@ const GlobalStyle = createGlobalStyle<{ hasSelection: boolean }>`
     }
   `
       : ""}
+`;
+
+const LayoutToggle = styled.div`
+  display: none;
+
+  @media (min-width: ${Breakpoints.MD}) {
+    display: flex;
+    align-items: center;
+    border-radius: ${({ theme }) => theme.radius.md};
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+`;
+
+const LayoutToggleButton = styled(Button)<{ active: boolean }>`
+  width: 2rem;
+  height: 2rem;
+  background: ${({ theme, active }) =>
+    active ? `${theme.colors.primary}15` : "transparent"};
+
+  svg {
+    font-size: 14px;
+    color: ${({ theme, active }) =>
+      active ? theme.colors.primary : theme.colors.textSecondary};
+  }
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary}10;
+  }
 `;
 
 type PageHeaderProps = {
@@ -274,9 +276,10 @@ type PageHeaderProps = {
     onChange: (value: string) => void;
   };
 
-  filters?: {
-    content: React.ReactNode;
-    activeCount: number;
+  filters?: FiltersPopoverProps;
+
+  layoutToggle?: {
+    key: PermissionEntities;
   };
 
   bulkActionsContent?: React.ReactNode;
@@ -291,15 +294,35 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   action,
   search,
   filters,
+  layoutToggle,
   bulkActionsContent,
   selectedTableItemsCount = 0,
   className,
   extra,
 }) => {
   const [searchValue, setSearchValue] = useState("");
-  const [open, setOpen] = useState(false);
 
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const activeLayout = useAppSelector((s) =>
+    layoutToggle?.key
+      ? appSliceSelectors.selectEntityDisplayLayout(s, layoutToggle.key)
+      : undefined,
+  );
+
+  const handleLayoutChange = (layout: DataDisplayLayout) => {
+    if (!layoutToggle) {
+      return;
+    }
+
+    dispatch(
+      appActions.setDataEntityDisplayLayout({
+        entity: layoutToggle.key,
+        layout,
+      }),
+    );
+  };
 
   return (
     <Wrapper className={className}>
@@ -351,20 +374,23 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </Search>
           ) : null}
 
-          {filters ? (
-            <Popover
-              content={filters.content}
-              trigger="click"
-              open={open}
-              onOpenChange={setOpen}
-              arrow={false}
-            >
-              <FilterChip active={filters.activeCount > 0}>
-                <Icon icon={faFilter} />
-                <span>{t("common.filters.title")}</span>
-                {filters.activeCount ? ` (${filters.activeCount})` : ""}
-              </FilterChip>
-            </Popover>
+          {filters ? <FiltersPopover {...filters} /> : null}
+
+          {layoutToggle ? (
+            <LayoutToggle>
+              <LayoutToggleButton
+                active={activeLayout === DataDisplayLayout.TABLE}
+                onClick={() => handleLayoutChange(DataDisplayLayout.TABLE)}
+              >
+                <Icon icon={faTableList} />
+              </LayoutToggleButton>
+              <LayoutToggleButton
+                active={activeLayout === DataDisplayLayout.CARDS}
+                onClick={() => handleLayoutChange(DataDisplayLayout.CARDS)}
+              >
+                <Icon icon={faTableCellsLarge} />
+              </LayoutToggleButton>
+            </LayoutToggle>
           ) : null}
 
           {bulkActionsContent ? (

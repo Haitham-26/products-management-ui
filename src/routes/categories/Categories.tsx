@@ -27,7 +27,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
 import type { GetCategoriesDto } from "../../model/category/dto/GetCategoriesDto";
-import { CategoriesFilters } from "./components/CategoriesFilters";
+import { useCategoryFilters } from "./components/useCategoryFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { checkPermissions } from "../../utils/checkPermissions";
 import { NoPermissions } from "../../components/NoPermissions";
@@ -42,6 +42,8 @@ import { CategoryCard } from "./components/CategoryCard";
 import { Grid } from "antd";
 import { Breakpoints } from "../../theme/Breakpoints";
 import settingsSliceSelectors from "../../redux/settings/settings.selector";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -82,11 +84,6 @@ export const Categories: React.FC = () => {
   const [categoriesBulkDeleteVisible, setCategoriesBulkDeleteVisible] =
     useState(false);
 
-  const Toast = useAppToast();
-  const dispatch = useAppDispatch();
-  const { t } = useTranslation();
-  const { md } = Grid.useBreakpoint();
-
   const categories = useAppSelector(categorySliceSelectors.selectCategories);
   const categoriesLoading = useAppSelector(
     categorySliceSelectors.selectCategoriesLoading,
@@ -96,6 +93,10 @@ export const Categories: React.FC = () => {
   const categoriesMeta = useAppSelector(
     categorySliceSelectors.selectCategoriesMeta,
   );
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "categories"),
+  );
+
   const { timeZone } = useAppSelector(settingsSliceSelectors.selectSettings);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -105,6 +106,8 @@ export const Categories: React.FC = () => {
     [searchParams, categoriesMeta],
   );
 
+  const activeFiltersCount = countCategoriesActiveFilters(filters);
+
   const debouncedSetSearchParams = useMemo(
     () =>
       debounce((nextParams) => {
@@ -112,33 +115,6 @@ export const Categories: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
-
-  const permissions = checkPermissions(user, "categories");
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    const newFilters = {
-      ...filters,
-      meta: {
-        ...filters.meta,
-        page,
-        limit: pageSize,
-      },
-    };
-
-    setSearchParams(buildCategoriesParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
-  };
-
-  const sharedPaginationOptions = {
-    current: categoriesMeta?.page || 1,
-    pageSize: categoriesMeta?.limit || 10,
-    total: categoriesMeta?.total || 0,
-    onChange: handlePageChange,
-    showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50", "100"],
-  };
 
   const applyFilter = useCallback(
     (
@@ -166,7 +142,42 @@ export const Categories: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countCategoriesActiveFilters(filters);
+  const Toast = useAppToast();
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
+  const categoryFilters = useCategoryFilters({
+    filters,
+    activeFiltersCount,
+    applyFilter,
+  });
+
+  const permissions = checkPermissions(user, "categories");
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    const newFilters = {
+      ...filters,
+      meta: {
+        ...filters.meta,
+        page,
+        limit: pageSize,
+      },
+    };
+
+    setSearchParams(buildCategoriesParams(newFilters, searchParams), {
+      replace: true,
+    });
+    debouncedSetSearchParams(newFilters);
+  };
+
+  const sharedPaginationOptions = {
+    current: categoriesMeta?.page || 1,
+    pageSize: categoriesMeta?.limit || 10,
+    total: categoriesMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
+  };
 
   const onDelete = (category: Category) => {
     setCurrentCategory(category);
@@ -333,16 +344,7 @@ export const Categories: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <CategoriesFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: categoryFilters,
               search: {
                 placeholder: t("categories.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
@@ -366,10 +368,11 @@ export const Categories: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "categories" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={categoriesLoading}
             columns={tableColumns}

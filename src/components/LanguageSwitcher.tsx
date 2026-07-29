@@ -7,7 +7,7 @@ import type { ThemeType } from "../theme/theme";
 import { Image } from "./Image";
 import { Images } from "../assets";
 import { AppLangs } from "../model/app/types/AppLangs.enum";
-import { changeLanguage } from "../utils/i18nUtils";
+import { changeLanguage } from "../i18n";
 
 const menu: DropdownProps["menu"] = {
   items: [

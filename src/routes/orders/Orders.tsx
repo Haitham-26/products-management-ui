@@ -14,7 +14,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { createOrdersTableColumns } from "./components/createOrdersTableColumns";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash/debounce";
-import { OrdersFilters } from "./components/OrdersFilters";
+import { useOrderFilters } from "./components/useOrderFilters";
 import { PageHeader } from "../../components/PageHeader";
 import { orderActions } from "../../redux/order/orders.slice";
 import type { GetOrdersDto } from "../../model/order/dto/GetOrdersDto";
@@ -48,6 +48,8 @@ import { Breakpoints } from "../../theme/Breakpoints";
 import { Grid } from "antd";
 import { PaginatedDataCards } from "../../components/PaginatedDataCards";
 import { OrderCard } from "./components/OrderCard";
+import appSliceSelectors from "../../redux/app/app.selector";
+import { DataDisplayLayout } from "../../model/app/types/DataDisplayLayout.enum";
 
 const StyledContainer = styled(Container)`
   overflow: hidden;
@@ -151,6 +153,9 @@ export const Orders: React.FC = () => {
   const ordersMeta = useAppSelector(orderSliceSelectors.selectOrdersMeta);
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
   const user = useAppSelector(userSliceSelectors.selectUser)!;
+  const dataDisplayLayout = useAppSelector((s) =>
+    appSliceSelectors.selectEntityDisplayLayout(s, "orders"),
+  );
 
   const filters = useMemo(
     () => parseOrdersFiltersFromParams(searchParams, ordersMeta),
@@ -164,6 +169,8 @@ export const Orders: React.FC = () => {
       }, 800),
     [setSearchParams],
   );
+
+  const activeFiltersCount = countOrdersActiveFilters(filters);
 
   const permissions = checkPermissions(user, "orders");
 
@@ -181,15 +188,6 @@ export const Orders: React.FC = () => {
       replace: true,
     });
     debouncedSetSearchParams(newFilters);
-  };
-
-  const sharedPaginationOptions = {
-    current: ordersMeta?.page || 1,
-    pageSize: ordersMeta?.limit || 10,
-    total: ordersMeta?.total || 0,
-    onChange: handlePageChange,
-    showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50", "100"],
   };
 
   const applyFilter = useCallback(
@@ -218,7 +216,20 @@ export const Orders: React.FC = () => {
     [filters, searchParams, setSearchParams, debouncedSetSearchParams],
   );
 
-  const activeFiltersCount = countOrdersActiveFilters(filters);
+  const orderFilters = useOrderFilters({
+    applyFilter,
+    activeFiltersCount,
+    filters,
+  });
+
+  const sharedPaginationOptions = {
+    current: ordersMeta?.page || 1,
+    pageSize: ordersMeta?.limit || 10,
+    total: ordersMeta?.total || 0,
+    onChange: handlePageChange,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
+  };
 
   const onEdit = (order: Order) => {
     setCurrentOrder(order);
@@ -358,16 +369,7 @@ export const Orders: React.FC = () => {
           : {})}
         {...(permissions.READ
           ? {
-              filters: {
-                activeCount: activeFiltersCount,
-                content: (
-                  <OrdersFilters
-                    activeFiltersCount={activeFiltersCount}
-                    filters={filters}
-                    applyFilter={applyFilter}
-                  />
-                ),
-              },
+              filters: orderFilters,
               search: {
                 placeholder: t("orders.subheader.inputPlaceholder"),
                 onChange: (searchKeyword) =>
@@ -409,10 +411,11 @@ export const Orders: React.FC = () => {
           ) : null
         }
         selectedTableItemsCount={selectedRowIds.length}
+        layoutToggle={{ key: "orders" }}
       />
 
       {permissions.READ ? (
-        md ? (
+        md && dataDisplayLayout === DataDisplayLayout.TABLE ? (
           <Table
             loading={ordersLoading}
             columns={tableColumns}

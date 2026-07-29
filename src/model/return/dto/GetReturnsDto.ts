@@ -7,6 +7,6 @@ export interface GetReturnsDto {
   meta?: PaginationMeta;
   keyword?: string;
   sortBy?: SortKind;
-  datePeriod: DatePeriodFilters;
-  status: ReturnStatus;
+  datePeriod?: DatePeriodFilters;
+  status?: ReturnStatus;
 }
