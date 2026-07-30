@@ -1,53 +1,82 @@
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import type React from "react";
 import { useAppDispatch } from "../redux/store";
 import { userActions } from "../redux/user/user.slice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppToast } from "./toast/useAppToast";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import { AppLangs } from "../model/app/types/AppLangs.enum";
+import { Button } from "./Button";
+import { Image } from "./Image";
+import { Images } from "../assets";
+import styled from "styled-components";
+import { useCallback, useEffect } from "react";
+import type { GoogleRedirectURLs } from "../model/user/types/GoogleRedirectURLs.enum";
+
+const StyledButton = styled(Button)`
+  background-color: transparent;
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: ${({ theme }) => `1px solid ${theme.colors.border}`};
+  border-radius: ${({ theme }) => theme.radius.circle};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary}15;
+    background-color: ${({ theme }) => theme.colors.primary}15;
+  }
+`;
 
 export const GoogleLoginButton: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const Toast = useAppToast();
   const { t } = useTranslation();
+  const { pathname } = useLocation();
 
-  const handleSuccess = async (credentialResponse: CredentialResponse) => {
-    try {
-      const idToken = credentialResponse.credential;
+  const login = useGoogleLogin({
+    flow: "auth-code",
+    ux_mode: "redirect",
+    redirect_uri: `${window.location.origin}${pathname}`,
+  });
 
-      if (!idToken) {
-        Toast.error("Invalid Google token");
-        return;
+  const handleSuccess = useCallback(
+    async (code: string) => {
+      try {
+        await dispatch(
+          userActions.googleLogin({
+            code,
+            lang: (i18n.language || AppLangs.EN) as AppLangs,
+            redirectUrl: pathname as GoogleRedirectURLs,
+          }),
+        ).unwrap();
+
+        navigate("/", { replace: true });
+
+        Toast.success(t("login.success"));
+      } catch (e) {
+        console.log(e);
+        Toast.apiError(e);
       }
+    },
+    [Toast, dispatch, navigate, t, pathname],
+  );
 
-      await dispatch(
-        userActions.googleLogin({
-          idToken,
-          lang: (i18n.language || AppLangs.EN) as AppLangs,
-        }),
-      ).unwrap();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-      navigate("/", { replace: true });
-
-      Toast.success(t("login.success"));
-    } catch (e) {
-      console.log(e);
-      Toast.apiError(e);
+    if (!code) {
+      return;
     }
-  };
+
+    handleSuccess(code);
+  }, [handleSuccess]);
 
   return (
-    <GoogleLogin
-      onSuccess={handleSuccess}
-      onError={() => {
-        console.log("Login Failed");
-      }}
-      type="icon"
-      shape="circle"
-      ux_mode="popup"
-    />
+    <StyledButton onClick={() => login()}>
+      <Image src={Images.Google} width={20} height={20} />
+    </StyledButton>
   );
 };
