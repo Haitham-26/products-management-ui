@@ -49,7 +49,7 @@ export const GoogleLoginButton: React.FC = () => {
       type="icon"
       shape="circle"
       ux_mode="redirect"
-      login_uri={`${import.meta.env.VITE_BASE_URL}${pathname}`}
+      login_uri={`${import.meta.env.VITE_BASE_URL}/${pathname.replace("/", "")}`}
     />
   );
 };
