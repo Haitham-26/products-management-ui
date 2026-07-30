@@ -11,7 +11,7 @@ import { Button } from "./Button";
 import { Image } from "./Image";
 import { Images } from "../assets";
 import styled from "styled-components";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { GoogleRedirectURLs } from "../model/user/types/GoogleRedirectURLs.enum";
 
 const StyledButton = styled(Button)`
@@ -29,6 +29,8 @@ const StyledButton = styled(Button)`
 `;
 
 export const GoogleLoginButton: React.FC = () => {
+  const handledCode = useRef(false);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const Toast = useAppToast();
@@ -64,12 +66,17 @@ export const GoogleLoginButton: React.FC = () => {
   );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
 
-    if (!code) {
+    if (!code || handledCode.current) {
       return;
     }
+
+    handledCode.current = true;
+
+    url.searchParams.delete("code");
+    window.history.replaceState({}, "", url.pathname);
 
     handleSuccess(code);
   }, [handleSuccess]);
