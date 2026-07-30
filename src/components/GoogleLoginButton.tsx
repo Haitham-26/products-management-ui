@@ -2,7 +2,7 @@ import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import type React from "react";
 import { useAppDispatch } from "../redux/store";
 import { userActions } from "../redux/user/user.slice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppToast } from "./toast/useAppToast";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
@@ -13,6 +13,7 @@ export const GoogleLoginButton: React.FC = () => {
   const navigate = useNavigate();
   const Toast = useAppToast();
   const { t } = useTranslation();
+  const { pathname } = useLocation();
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
@@ -48,6 +49,7 @@ export const GoogleLoginButton: React.FC = () => {
       type="icon"
       shape="circle"
       ux_mode="redirect"
+      login_uri={`${import.meta.env.VITE_BASE_URL}${pathname}`}
     />
   );
 };
