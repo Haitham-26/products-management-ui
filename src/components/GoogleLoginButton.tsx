@@ -12,7 +12,7 @@ import { Image } from "./Image";
 import { Images } from "../assets";
 import styled from "styled-components";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { GoogleRedirectURLs } from "../model/user/types/GoogleRedirectURLs.enum";
+import type { GoogleRedirectPaths } from "../model/user/types/GoogleRedirectPaths.enum";
 
 const StyledButton = styled(Button)`
   background-color: transparent;
@@ -66,7 +66,7 @@ export const GoogleLoginButton: React.FC = () => {
           userActions.googleLogin({
             code,
             lang: (i18n.language || AppLangs.EN) as AppLangs,
-            redirectUrl: pathname as GoogleRedirectURLs,
+            redirectPath: pathname as GoogleRedirectPaths,
           }),
         ).unwrap();
 
