@@ -47,7 +47,6 @@ export const GoogleLoginButton: React.FC = () => {
       }}
       type="icon"
       shape="circle"
-      ux_mode="redirect"
     />
   );
 };
