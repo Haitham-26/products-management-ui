@@ -5,37 +5,29 @@ import { useTranslation } from "react-i18next";
 import AntdARLocale from "antd/locale/ar_EG";
 import AntdENLocale from "antd/locale/en_US";
 
-import DayjsENLocale from "dayjs/locale/en";
-import DayjsARLocale from "dayjs/locale/ar";
+import "dayjs/locale/en";
+import "dayjs/locale/ar";
 import dayjs from "dayjs";
-import type { AppLangs } from "./model/app/types/AppLangs.enum";
+import { AppLangs } from "./model/app/types/AppLangs.enum";
 
 const AntdLocale = {
-  en: AntdENLocale,
-  ar: AntdARLocale,
-};
-const DayjsLocale = {
-  en: DayjsENLocale,
-  ar: DayjsARLocale,
+  [AppLangs.EN]: AntdENLocale,
+  [AppLangs.AR]: AntdARLocale,
 };
 
-const lang = localStorage.getItem("lang") as AppLangs | AppLangs.EN;
-
-dayjs.locale(DayjsLocale[lang]);
-
-type AntdConfigProviderProps = {
+export const AntdConfigProvider: React.FC<{
   children: React.ReactNode;
-};
-
-export const AntdConfigProvider: React.FC<AntdConfigProviderProps> = ({
-  children,
-}) => {
+}> = ({ children }) => {
   const { i18n } = useTranslation();
+
+  const lang = i18n.language as AppLangs;
+
+  dayjs.locale(lang);
 
   return (
     <ConfigProvider
       locale={AntdLocale[lang]}
-      direction={i18n.dir(i18n.language)}
+      direction={i18n.dir(lang)}
       theme={{
         token: {
           colorPrimary: theme.colors.primary,
