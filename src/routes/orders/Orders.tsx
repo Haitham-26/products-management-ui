@@ -118,7 +118,7 @@ const BulkActionsWrapper = styled.div`
   }
 `;
 
-export const Orders: React.FC = () => {
+const Orders: React.FC = () => {
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
@@ -528,3 +528,5 @@ export const Orders: React.FC = () => {
     </StyledContainer>
   );
 };
+
+export default Orders;

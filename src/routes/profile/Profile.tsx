@@ -137,7 +137,7 @@ const FormSectionTitle = styled(Text)`
   padding-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
-export const Profile: React.FC = () => {
+const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const user = useAppSelector(userSliceSelectors.selectUser);
   const isOrgMember = useAppSelector(userSliceSelectors.selectIsOrgMember);
@@ -317,3 +317,5 @@ export const Profile: React.FC = () => {
     </Container>
   );
 };
+
+export default Profile;

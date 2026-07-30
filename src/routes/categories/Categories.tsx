@@ -69,7 +69,7 @@ const BulkActionsWrapper = styled.div`
   }
 `;
 
-export const Categories: React.FC = () => {
+const Categories: React.FC = () => {
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
 
   const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
@@ -464,3 +464,5 @@ export const Categories: React.FC = () => {
     </StyledContainer>
   );
 };
+
+export default Categories;

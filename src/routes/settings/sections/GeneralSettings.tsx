@@ -52,7 +52,7 @@ const StyledButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
-export const GeneralSettings: React.FC = () => {
+const GeneralSettings: React.FC = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -211,3 +211,5 @@ export const GeneralSettings: React.FC = () => {
     </Fragment>
   );
 };
+
+export default GeneralSettings;

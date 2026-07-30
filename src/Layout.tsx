@@ -1,7 +1,7 @@
 import type React from "react";
 import { Header } from "./components/Header";
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import { Fragment, useEffect } from "react";
+import { Fragment, Suspense, useEffect } from "react";
 import styled from "styled-components";
 import { SideMenu } from "./components/SideMenu";
 import { JoinOrganizationInvitationModal } from "./JoinOrganizationInvitationModal";
@@ -12,6 +12,7 @@ import { UserRoles } from "./model/user/types/UserRoles.enum";
 import { organizationActions } from "./redux/organization/organization.slice";
 import { Breakpoints } from "./theme/Breakpoints";
 import { settingsActions } from "./redux/settings/settings.slice";
+import { PrivatePageLoader } from "./components/PrivatePageLoader";
 
 const Container = styled.div`
   display: flex;
@@ -70,7 +71,9 @@ export const Layout: React.FC = () => {
       <Container id="content-conatiner">
         <SideMenu />
 
-        <Outlet />
+        <Suspense fallback={<PrivatePageLoader />}>
+          <Outlet />
+        </Suspense>
       </Container>
 
       <ScrollRestoration />

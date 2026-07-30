@@ -23,7 +23,7 @@ import { appRoutes } from "../../utils/appRoutes";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../components/toast/useAppToast";
 
-export const UsersPermissions: React.FC = () => {
+const UsersPermissions: React.FC = () => {
   const [inviteMembersModalVisible, setInviteMembersModalVisible] =
     useState(false);
   const [leaveOrgModalVisible, setLeaveOrgModalVisible] = useState(false);
@@ -145,3 +145,5 @@ export const UsersPermissions: React.FC = () => {
     </Container>
   );
 };
+
+export default UsersPermissions;

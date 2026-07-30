@@ -81,7 +81,7 @@ const BoldSpan = styled.span`
   font-weight: bold;
 `;
 
-export const Returns: React.FC = () => {
+const Returns: React.FC = () => {
   const [currentReturn, setCurrentReturn] = useState<Return | null>(null);
 
   const [returnEditVisible, setReturnEditVisible] = useState(false);
@@ -441,3 +441,5 @@ export const Returns: React.FC = () => {
     </StyledContainer>
   );
 };
+
+export default Returns;

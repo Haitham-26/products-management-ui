@@ -191,7 +191,7 @@ const DateInputWrapper = styled.div`
 
 const now = dayjs();
 
-export const Dashboard: React.FC = () => {
+const Dashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
     now.startOf("day"),
     now.endOf("day"),
@@ -386,3 +386,5 @@ export const Dashboard: React.FC = () => {
     </StyledContainer>
   );
 };
+
+export default Dashboard;

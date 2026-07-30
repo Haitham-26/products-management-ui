@@ -20,7 +20,7 @@ const StyledButton = styled(Button)`
   margin-inline-start: auto;
 `;
 
-export const InventorySettings: React.FC = () => {
+const InventorySettings: React.FC = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -109,3 +109,5 @@ export const InventorySettings: React.FC = () => {
     />
   );
 };
+
+export default InventorySettings;

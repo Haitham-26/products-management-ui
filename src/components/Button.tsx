@@ -35,6 +35,7 @@ const StyledButton = styled.button<{ variant: Variant }>`
   justify-content: center;
   gap: ${({ theme }) => theme.spacing.sm};
   position: relative;
+  transition: all 0.2s ease-in-out;
 
   ${({ variant }) =>
     Object.keys(variantStyles).includes(variant)
@@ -49,6 +50,10 @@ const StyledButton = styled.button<{ variant: Variant }>`
 
   `
       : ""}
+
+  &:hover {
+    opacity: 0.9;
+  }
 `;
 
 const SpinnerWrapper = styled.div`

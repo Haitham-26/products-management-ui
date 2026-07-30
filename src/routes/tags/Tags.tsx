@@ -69,7 +69,7 @@ const BulkActionsWrapper = styled.div`
   }
 `;
 
-export const Tags: React.FC = () => {
+const Tags: React.FC = () => {
   const [currentTag, setCurrentTag] = useState<Tag | null>(null);
 
   const [selectedRowIds, setSelectedRowIds] = useState<Key[]>([]);
@@ -454,3 +454,5 @@ export const Tags: React.FC = () => {
     </StyledContainer>
   );
 };
+
+export default Tags;

@@ -780,7 +780,13 @@
     "total": "Total items: {{total}}",
     "selectedCount": "{{count}} of {{total}} selected"
   },
+  "error": {
+    "title": "Something went wrong!",
+    "description": "An unexpected error occurred while processing your request. Please try reloading the page.",
+    "action": "Reload Page"
+  },
   "common": {
+    "loading": "Loading...",
     "allTimes": "All Times",
     "sortBy": "Sort By",
     "datePeriod": "Date Period",

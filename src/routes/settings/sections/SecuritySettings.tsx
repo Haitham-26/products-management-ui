@@ -20,7 +20,7 @@ const StyledButton = styled(Button)`
   margin-inline-start: auto;
 `;
 
-export const SecuritySettings: React.FC = () => {
+const SecuritySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const user = useAppSelector(userSliceSelectors.selectUser);
@@ -191,3 +191,5 @@ export const SecuritySettings: React.FC = () => {
     />
   );
 };
+
+export default SecuritySettings;

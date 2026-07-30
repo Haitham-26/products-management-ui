@@ -1,16 +1,37 @@
 import type { RouteObject } from "react-router-dom";
 import { Layout } from "../Layout";
 import { AppPrivateRoute } from "./AppPrivateRoute";
-import { Dashboard } from "./dashboard/Dashboard";
-import { Products } from "./products/Products";
-import { Categories } from "./categories/Categories";
-import { Tags } from "./tags/Tags";
-import { Orders } from "./orders/Orders";
 import { settingsRoutes } from "./settings/SettingsRoutes";
-import { UsersPermissions } from "./users-permissions/UsersPermissions";
-import { Profile } from "./profile/Profile";
 import { appRoutes } from "../utils/appRoutes";
-import { Returns } from "./returns/Returns";
+import { Error } from "./error/Error";
+import { lazy } from "react";
+
+const Dashboard = lazy(() =>
+  import("./dashboard/Dashboard").then((m) => ({ default: m.default })),
+);
+const Categories = lazy(() =>
+  import("./categories/Categories").then((m) => ({ default: m.default })),
+);
+const Orders = lazy(() =>
+  import("./orders/Orders").then((m) => ({ default: m.default })),
+);
+const Products = lazy(() =>
+  import("./products/Products").then((m) => ({ default: m.default })),
+);
+const Returns = lazy(() =>
+  import("./returns/Returns").then((m) => ({ default: m.default })),
+);
+const Tags = lazy(() =>
+  import("./tags/Tags").then((m) => ({ default: m.default })),
+);
+const UsersPermissions = lazy(() =>
+  import("./users-permissions/UsersPermissions").then((m) => ({
+    default: m.default,
+  })),
+);
+const Profile = lazy(() =>
+  import("./profile/Profile").then((m) => ({ default: m.default })),
+);
 
 export const PrivateRoutes: RouteObject = {
   element: <Layout />,
@@ -53,5 +74,5 @@ export const PrivateRoutes: RouteObject = {
       element: <AppPrivateRoute redirect="/" replace />,
     },
   ],
-  errorElement: <div>Something wrong happened</div>,
+  errorElement: <Error />,
 };
