@@ -109,7 +109,8 @@
       "revenue": "Revenue"
     },
     "orderStatus": {
-      "title": "Order Status Distribution"
+      "title": "Order Status Distribution",
+      "emptyText": "No orders yet"
     },
     "mostSoldProducts": {
       "title": "Most Sold Products"

@@ -109,7 +109,8 @@
       "revenue": "الإيرادات"
     },
     "orderStatus": {
-      "title": "حالة الطلبات"
+      "title": "حالة الطلبات",
+      "emptyText": "لا يوجد طلبات بعد"
     },
     "mostSoldProducts": {
       "title": "المنتجات الأكثر مبيعاً"

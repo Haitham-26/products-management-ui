@@ -14,6 +14,10 @@ import { useAppSelector } from "../../../redux/store";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
 import { Tag } from "antd";
 import camelCase from "lodash/camelCase";
+import { useMemo } from "react";
+import { Empty } from "../../../components/Empty";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
+import { Icon } from "../../../components/Icon";
 
 const getOptions = (
   theme: ThemeType,
@@ -90,6 +94,7 @@ const ChartCanvasWrapper = styled.div`
   flex: 1;
   position: relative;
   min-width: 0;
+  min-height: 10rem;
 
   canvas {
     max-width: 100% !important;
@@ -114,6 +119,23 @@ const StyledTag = styled(Tag)`
   font-weight: 500;
 `;
 
+const StyledEmpty = styled(Empty)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .ant-empty-image {
+    height: fit-content;
+  }
+
+  svg {
+    font-size: ${({ theme }) => theme.typography.title};
+    color: ${({ theme }) => theme.colors.textSecondary}99;
+  }
+`;
+
 export const DashboardOrdersChart: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -123,13 +145,29 @@ export const DashboardOrdersChart: React.FC = () => {
     dashboardSliceSelectors.selectDashboardStats,
   );
 
-  const orderedStatuses = [
-    OrderStatus.PENDING,
-    OrderStatus.CANCELED,
-    OrderStatus.DELIVERED,
-    OrderStatus.RETURNED,
-    OrderStatus.PARTIALLY_RETURNED,
-  ];
+  const orderedStatuses = useMemo(
+    () => [
+      OrderStatus.PENDING,
+      OrderStatus.CANCELED,
+      OrderStatus.DELIVERED,
+      OrderStatus.RETURNED,
+      OrderStatus.PARTIALLY_RETURNED,
+    ],
+    [],
+  );
+
+  const totalOrders = useMemo(
+    () =>
+      orderedStatuses.reduce(
+        (total, status) =>
+          total +
+          (ordersCountByStatus[
+            camelCase(status) as keyof typeof ordersCountByStatus
+          ] ?? 0),
+        0,
+      ),
+    [ordersCountByStatus, orderedStatuses],
+  );
 
   const data = {
     labels: orderedStatuses.map((s) => t(`orders.status.${camelCase(s)}`)),
@@ -159,15 +197,22 @@ export const DashboardOrdersChart: React.FC = () => {
       </Title>
 
       <ChartCanvasWrapper>
-        <Pie
-          data={data}
-          options={getOptions(
-            theme,
-            i18n.dir(i18n.language) === "rtl",
-            navigate,
-            t,
-          )}
-        />
+        {totalOrders ? (
+          <Pie
+            data={data}
+            options={getOptions(
+              theme,
+              i18n.dir(i18n.language) === "rtl",
+              navigate,
+              t,
+            )}
+          />
+        ) : (
+          <StyledEmpty
+            description={t("dashboard.orderStatus.emptyText")}
+            image={<Icon icon={faBoxOpen} />}
+          />
+        )}
       </ChartCanvasWrapper>
     </Container>
   );

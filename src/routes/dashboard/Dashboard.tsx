@@ -102,7 +102,7 @@ const AlertBadge = styled(Tag)`
   justify-content: space-between;
   gap: 4px;
   padding: 2px 6px;
-  margin: 0;
+  border-radius: ${({ theme }) => theme.radius.full};
 
   .arrow-icon {
     opacity: 0;
