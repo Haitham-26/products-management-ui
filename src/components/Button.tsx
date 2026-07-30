@@ -99,7 +99,11 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <StyledButton variant={variant} {...props}>
+    <StyledButton
+      variant={variant}
+      disabled={props.disabled || loading}
+      {...props}
+    >
       {loading ? (
         <SpinnerWrapper>
           <Spinner color={getSpinnerColor()} />

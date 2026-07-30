@@ -11,7 +11,7 @@ import { Button } from "./Button";
 import { Image } from "./Image";
 import { Images } from "../assets";
 import styled from "styled-components";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { GoogleRedirectURLs } from "../model/user/types/GoogleRedirectURLs.enum";
 
 const StyledButton = styled(Button)`
@@ -22,6 +22,18 @@ const StyledButton = styled(Button)`
   border: ${({ theme }) => `1px solid ${theme.colors.border}`};
   border-radius: ${({ theme }) => theme.radius.circle};
 
+  ${({ loading, theme }) =>
+    loading
+      ? `
+    background-color: ${theme.colors.primary}15;
+    border-color: ${theme.colors.primary}15;
+
+    img {
+      opacity: 0.1;
+    }
+  `
+      : ""}
+
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary}15;
     background-color: ${({ theme }) => theme.colors.primary}15;
@@ -29,6 +41,8 @@ const StyledButton = styled(Button)`
 `;
 
 export const GoogleLoginButton: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
   const handledCode = useRef(false);
 
   const dispatch = useAppDispatch();
@@ -46,6 +60,8 @@ export const GoogleLoginButton: React.FC = () => {
   const handleSuccess = useCallback(
     async (code: string) => {
       try {
+        setLoading(true);
+
         await dispatch(
           userActions.googleLogin({
             code,
@@ -60,6 +76,8 @@ export const GoogleLoginButton: React.FC = () => {
       } catch (e) {
         console.log(e);
         Toast.apiError(e);
+      } finally {
+        setLoading(false);
       }
     },
     [Toast, dispatch, navigate, t, pathname],
@@ -82,7 +100,11 @@ export const GoogleLoginButton: React.FC = () => {
   }, [handleSuccess]);
 
   return (
-    <StyledButton onClick={() => login()}>
+    <StyledButton
+      onClick={() => login()}
+      loading={loading}
+      spinnerColor="primary"
+    >
       <Image src={Images.Google} width={20} height={20} />
     </StyledButton>
   );
