@@ -120,7 +120,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     return (
-      <Wrapper>
+      <Wrapper className="hw-input-container">
         {title ? (
           <Label htmlFor={id}>
             {info ? (

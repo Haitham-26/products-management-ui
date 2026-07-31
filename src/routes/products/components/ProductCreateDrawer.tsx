@@ -64,6 +64,11 @@ const FormSection = styled.section`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: ${({ theme }) => theme.shadow.sm};
+
+  .hw-input-container,
+  .hw-select-container {
+    margin-bottom: auto;
+  }
 `;
 
 const SectionLabel = styled.div`

@@ -2,7 +2,6 @@ import type React from "react";
 import type { SelectProps as AntdSelectProps } from "antd";
 import { Select as AntdSelect } from "antd";
 import styled from "styled-components";
-import { Text } from "./Text";
 
 const Container = styled.div<{ valid?: boolean }>`
   display: flex;
@@ -13,10 +12,11 @@ const Container = styled.div<{ valid?: boolean }>`
     height: 2rem;
     border-color: ${({ theme, valid }) =>
       !valid ? theme.colors.error : theme.colors.border};
+    border-radius: ${({ theme }) => theme.radius.md};
   }
 `;
 
-const Label = styled(Text)`
+const Label = styled.label`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.small};
 
@@ -42,7 +42,7 @@ export const Select: React.FC<SelectProps> = ({
   ...props
 }) => {
   return (
-    <Container valid={valid}>
+    <Container valid={valid} className="hw-select-container">
       {props?.title ? (
         <Label>
           {props.title}
