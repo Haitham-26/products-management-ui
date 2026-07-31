@@ -118,7 +118,7 @@ const ContextBar = styled.div`
 const Search = styled.div`
   position: relative;
   flex: 1;
-  min-width: 17rem;
+  min-width: 16rem;
 
   input {
     width: 100%;
