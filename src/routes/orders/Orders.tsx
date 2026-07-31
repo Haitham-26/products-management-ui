@@ -184,10 +184,7 @@ const Orders: React.FC = () => {
       },
     };
 
-    setSearchParams(buildOrdersParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
+    dispatch(orderActions.getOrders(newFilters));
   };
 
   const applyFilter = useCallback(
@@ -200,7 +197,7 @@ const Orders: React.FC = () => {
         ...filters,
         meta: {
           ...(filters?.meta || {}),
-          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+          page: 0,
         },
         [key]: value,
       };
@@ -284,21 +281,15 @@ const Orders: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildOrdersParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        orderActions.getOrders({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -348,10 +339,18 @@ const Orders: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(orderActions.getOrders(filters));
+    dispatch(
+      orderActions.getOrders({
+        ...filters,
+        meta: {
+          ...filters.meta,
+          page: 1,
+        },
+      }),
+    );
 
     return () => debouncedSetSearchParams.cancel();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StyledContainer>

@@ -1,11 +1,10 @@
-import type { GenericWithUserId } from "../../shared/dto/GenericWithUserId";
 import type { PaginationMeta } from "../../shared/meta/PaginationMeta";
 import type { DatePeriodFilters } from "../../shared/types/DatePeriodFilters.enum";
 import type { SortKind } from "../../shared/types/SortKind.enum";
 import type { ProductDiscount } from "../types/ProductDiscount";
 import type { ProductStockStatus } from "../types/ProductStockStatus.enum";
 
-export interface GetProductsDto extends GenericWithUserId {
+export interface GetProductsDto {
   meta?: PaginationMeta;
   categoryId?: string;
   tagIds?: string[];

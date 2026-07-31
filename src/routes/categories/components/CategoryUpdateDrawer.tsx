@@ -13,8 +13,6 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
 import type { Category } from "../../../model/category/types/Category";
-import { buildCategoriesParams } from "../utils/categoryUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
@@ -70,7 +68,6 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -100,9 +97,7 @@ export const CategoryUpdateDrawer: React.FC<CategoryUpdateDrawerProps> = ({
         }),
       ).unwrap();
 
-      setSearchParams(buildCategoriesParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(categoryActions.getCategories(filters)).unwrap();
 
       localOnClose();
 

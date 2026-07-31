@@ -11,8 +11,6 @@ import type { CreateCategoryDto } from "../../../model/category/dto/CreateCatego
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { categoryActions } from "../../../redux/category/categories.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { buildCategoriesParams } from "../utils/categoryUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetCategoriesDto } from "../../../model/category/dto/GetCategoriesDto";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../components/Text";
@@ -69,7 +67,6 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
   const dispatch = useAppDispatch();
 
   const Toast = useAppToast();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -98,9 +95,7 @@ export const CategoryCreateDrawer: React.FC<CategoryCreateDrawerProps> = ({
         }),
       ).unwrap();
 
-      setSearchParams(buildCategoriesParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(categoryActions.getCategories(filters)).unwrap();
 
       localOnClose();
 

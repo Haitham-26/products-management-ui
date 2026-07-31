@@ -4,7 +4,7 @@ import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 export const parseOrdersFiltersFromParams = (
   params: URLSearchParams,
   meta: GetOrdersDto["meta"],
-): Partial<GetOrdersDto> => ({
+): GetOrdersDto => ({
   keyword: params.get("keyword") || "",
   meta:
     params.get("page") || params.get("limit")
@@ -78,9 +78,6 @@ export const buildOrdersParams = (
   set("maxNetProfit", filters.maxNetProfit?.toString());
   set("status", filters.status);
   set("showArchived", filters.showArchived?.toString());
-
-  // to force reload
-  next.set("u", new Date().getTime().toString());
 
   return next;
 };

@@ -126,7 +126,7 @@ const Categories: React.FC = () => {
         ...filters,
         meta: {
           ...(filters?.meta || {}),
-          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+          page: 0,
         },
         [key]: value,
       };
@@ -164,10 +164,7 @@ const Categories: React.FC = () => {
       },
     };
 
-    setSearchParams(buildCategoriesParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
+    dispatch(categoryActions.getCategories(newFilters));
   };
 
   const sharedPaginationOptions = {
@@ -218,21 +215,15 @@ const Categories: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildCategoriesParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        categoryActions.getCategories({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
 
       setCategoryDeleteVisible(false);
       setCurrentCategory(null);
@@ -270,21 +261,15 @@ const Categories: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildCategoriesParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        categoryActions.getCategories({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
 
       setCategoriesBulkDeleteVisible(false);
       setSelectedRowIds([]);
@@ -321,12 +306,15 @@ const Categories: React.FC = () => {
     dispatch(
       categoryActions.getCategories({
         ...filters,
-        userId,
-      } as GetCategoriesDto),
+        meta: {
+          ...filters.meta,
+          page: 1,
+        },
+      }),
     );
 
     return () => debouncedSetSearchParams.cancel();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StyledContainer>

@@ -14,8 +14,6 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { faNoteSticky } from "@fortawesome/free-solid-svg-icons/faNoteSticky";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { useSearchParams } from "react-router-dom";
-import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
 import productSliceSelectors from "../../../redux/product/products.selector";
 import type { CreateOrderDto } from "../../../model/order/dto/CreateOrderDto";
@@ -190,7 +188,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const user = useAppSelector(userSliceSelectors.selectUser);
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -355,7 +352,6 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       try {
         await dispatch(
           productActions.getProducts({
-            userId,
             keyword,
             meta: { page: 1, limit: 50 },
           }),
@@ -388,12 +384,11 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
       ).unwrap();
 
       await dispatch(
-        productActions.getProducts({ userId, meta: { page: 1, limit: 10 } }),
+        productActions.getProducts({ meta: { page: 1, limit: 10 } }),
       ).unwrap();
 
-      setSearchParams(buildOrdersParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(orderActions.getOrders(filters)).unwrap();
+
       localOnClose();
 
       Toast.success(t("orders.create.success"));

@@ -138,10 +138,7 @@ const Returns: React.FC = () => {
       },
     };
 
-    setSearchParams(buildReturnsParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
+    dispatch(returnActions.getReturns(newFilters));
   };
 
   const sharedPaginationOptions = {
@@ -163,7 +160,7 @@ const Returns: React.FC = () => {
         ...filters,
         meta: {
           ...(filters?.meta || {}),
-          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+          page: 0,
         },
         [key]: value,
       };
@@ -238,9 +235,7 @@ const Returns: React.FC = () => {
         }),
       ).unwrap();
 
-      setSearchParams(buildReturnsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(returnActions.getReturns(filters)).unwrap();
 
       setReturnCancelVisible(false);
       setCurrentReturn(null);
@@ -268,9 +263,7 @@ const Returns: React.FC = () => {
         }),
       ).unwrap();
 
-      setSearchParams(buildReturnsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(returnActions.getReturns(filters)).unwrap();
 
       setReturnActivateVisible(false);
       setCurrentReturn(null);
@@ -285,16 +278,27 @@ const Returns: React.FC = () => {
   };
 
   useEffect(() => {
-    dispatch(returnActions.getReturns(filters as GetReturnsDto));
+    dispatch(
+      returnActions.getReturns({
+        ...filters,
+        meta: {
+          ...filters.meta,
+          page: 1,
+        },
+      }),
+    );
+
+    return () => debouncedSetSearchParams.cancel();
+  }, [searchParams, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     dispatch(
       orderActions.getOrders({
         meta: { page: 1, limit: 10 },
         status: OrderStatus.DELIVERED,
       }),
     );
-
-    return () => debouncedSetSearchParams.cancel();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   return (
     <StyledContainer>

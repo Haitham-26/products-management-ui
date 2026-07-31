@@ -127,10 +127,7 @@ const Tags: React.FC = () => {
       },
     };
 
-    setSearchParams(buildTagsParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
+    dispatch(tagActions.getTags(newFilters));
   };
 
   const sharedPaginationOptions = {
@@ -152,7 +149,7 @@ const Tags: React.FC = () => {
         ...filters,
         meta: {
           ...(filters?.meta || {}),
-          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+          page: 0,
         },
         [key]: value,
       };
@@ -213,21 +210,15 @@ const Tags: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildTagsParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        tagActions.getTags({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
 
       setTagDeleteVisible(false);
       setCurrentTag(null);
@@ -265,21 +256,15 @@ const Tags: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildTagsParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        tagActions.getTags({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
 
       setTagsBulkDeleteVisible(false);
       setSelectedRowIds([]);
@@ -315,12 +300,15 @@ const Tags: React.FC = () => {
     dispatch(
       tagActions.getTags({
         ...filters,
-        userId,
-      } as GetTagsDto),
+        meta: {
+          ...filters.meta,
+          page: 1,
+        },
+      }),
     );
 
     return () => debouncedSetSearchParams.cancel();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StyledContainer>

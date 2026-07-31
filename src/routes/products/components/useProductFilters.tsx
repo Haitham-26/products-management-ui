@@ -122,7 +122,6 @@ export function useProductsFilters({
 
         await dispatch(
           categoryActions.getCategories({
-            userId,
             keyword,
             meta: { page: 1, limit: 50 },
           }),
@@ -143,7 +142,6 @@ export function useProductsFilters({
 
         await dispatch(
           tagActions.getTags({
-            userId,
             keyword,
             meta: {
               page: 1,

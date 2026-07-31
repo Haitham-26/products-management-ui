@@ -4,7 +4,7 @@ import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 export const parseTagsFiltersFromParams = (
   params: URLSearchParams,
   meta: GetTagsDto["meta"],
-): Partial<GetTagsDto> => ({
+): GetTagsDto => ({
   keyword: params.get("keyword") || "",
   sortBy: params.get("sortBy") as GetTagsDto["sortBy"],
   datePeriod: params.get("datePeriod") as GetTagsDto["datePeriod"],
@@ -44,9 +44,6 @@ export const buildTagsParams = (
   set("limit", filters.meta?.limit?.toString() || "10");
   set("minUsageCount", filters.minUsageCount?.toString());
   set("maxUsageCount", filters.maxUsageCount?.toString());
-
-  // to force reload
-  next.set("u", new Date().getTime().toString());
 
   return next;
 };

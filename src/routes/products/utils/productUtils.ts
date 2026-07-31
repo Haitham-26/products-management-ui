@@ -7,7 +7,7 @@ import isNaN from "lodash/isNaN";
 export const parseProductsFiltersFromParams = (
   params: URLSearchParams,
   meta: GetProductsDto["meta"],
-): Partial<GetProductsDto> => ({
+): GetProductsDto => ({
   keyword: params.get("keyword") || "",
   showDraft: params.get("showDraft") === "true",
   sortBy: params.get("sortBy") as GetProductsDto["sortBy"],
@@ -89,9 +89,6 @@ export const buildProductsParams = (
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
   set("stockStatus", filters.stockStatus);
-
-  // to force reload
-  next.set("u", new Date().getTime().toString());
 
   next.delete("tagIds");
   filters.tagIds?.forEach((id) => next.append("tagIds", id));

@@ -12,8 +12,6 @@ import type { CreateTagDto } from "../../../model/tag/dto/CreateTagDto";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { tagActions } from "../../../redux/tag/tags.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { buildTagsParams } from "../utils/tagUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetTagsDto } from "../../../model/tag/dto/GetTagsDto";
 import { Text } from "../../../components/Text";
 import { useTranslation } from "react-i18next";
@@ -69,7 +67,6 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -97,9 +94,7 @@ export const TagCreateDrawer: React.FC<TagCreateDrawerProps> = ({
         }),
       ).unwrap();
 
-      setSearchParams(buildTagsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(tagActions.getTags(filters)).unwrap();
 
       localOnClose();
 

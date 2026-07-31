@@ -9,7 +9,6 @@ import {
   useWatch,
 } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 
 import { Drawer } from "../../../components/Drawer";
@@ -23,7 +22,6 @@ import type { CreateReturnDto } from "../../../model/return/dto/CreateReturnDto"
 import type { GetReturnsDto } from "../../../model/return/dto/GetReturnsDto";
 import type { OrderItem } from "../../../model/order/types/OrderItem";
 import { returnActions } from "../../../redux/return/returns.slice";
-import { buildReturnsParams } from "../utils/returnUtils";
 import orderSliceSelectors from "../../../redux/order/orders.selector";
 import { Dropdown } from "../../../components/Dropdown";
 import type { ItemType } from "antd/es/menu/interface";
@@ -129,7 +127,6 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
 
   const formMethods = useForm<CreateReturnDto>({
@@ -272,9 +269,7 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
         orderActions.getOrders({ meta: { page: 1, limit: 10 } }),
       ).unwrap();
 
-      setSearchParams(buildReturnsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(returnActions.getReturns(filters)).unwrap();
 
       localOnClose();
       Toast.success(t("returns.create.success"));

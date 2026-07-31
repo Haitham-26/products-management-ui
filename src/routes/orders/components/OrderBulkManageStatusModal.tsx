@@ -9,8 +9,6 @@ import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { orderActions } from "../../../redux/order/orders.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { buildOrdersParams } from "../utils/orderUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import type { Key } from "antd/es/table/interface";
 import { Info } from "../../../components/Info";
@@ -105,7 +103,6 @@ export const OrderBulkManageStatusModal: React.FC<
   const Toast = useAppToast();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -142,9 +139,7 @@ export const OrderBulkManageStatusModal: React.FC<
         }),
       ).unwrap();
 
-      setSearchParams(buildOrdersParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(orderActions.getOrders(filters)).unwrap();
 
       setSelctedRowIds([]);
 

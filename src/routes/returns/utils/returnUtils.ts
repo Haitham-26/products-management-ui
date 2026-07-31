@@ -4,7 +4,7 @@ import type { GetReturnsDto } from "../../../model/return/dto/GetReturnsDto";
 export const parseReturnsFiltersFromParams = (
   params: URLSearchParams,
   meta: GetReturnsDto["meta"],
-): Partial<GetReturnsDto> => ({
+): GetReturnsDto => ({
   keyword: params.get("keyword") || "",
   sortBy: params.get("sortBy") as GetReturnsDto["sortBy"],
   datePeriod: params.get("datePeriod") as GetReturnsDto["datePeriod"],
@@ -38,9 +38,6 @@ export const buildReturnsParams = (
   set("page", filters.meta?.page?.toString() || "0");
   set("limit", filters.meta?.limit?.toString() || "10");
   set("status", filters.status);
-
-  // to force reload
-  next.set("u", new Date().getTime().toString());
 
   return next;
 };

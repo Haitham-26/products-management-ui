@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Controller, useForm } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
 
 import { Drawer } from "../../../components/Drawer";
@@ -15,7 +14,6 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { useAppToast } from "../../../components/toast/useAppToast";
 import type { GetReturnsDto } from "../../../model/return/dto/GetReturnsDto";
 import { returnActions } from "../../../redux/return/returns.slice";
-import { buildReturnsParams } from "../utils/returnUtils";
 import { faBook } from "@fortawesome/free-solid-svg-icons/faBook";
 import { stringWithCurrencyCode } from "../../../utils/String";
 import settingsSliceSelectors from "../../../redux/settings/settings.selector";
@@ -98,7 +96,6 @@ export const ReturnUpdateDrawer: React.FC<ReturnUpdateDrawerProps> = ({
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
 
   const { control, handleSubmit, getValues, reset } =
@@ -119,9 +116,7 @@ export const ReturnUpdateDrawer: React.FC<ReturnUpdateDrawerProps> = ({
 
       await dispatch(returnActions.updateReturn(dto)).unwrap();
 
-      setSearchParams(buildReturnsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(returnActions.getReturns(filters)).unwrap();
 
       localOnClose();
       Toast.success(t("returns.edit.success"));

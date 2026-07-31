@@ -10,8 +10,6 @@ import type { Order } from "../../../model/order/types/Order";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { orderActions } from "../../../redux/order/orders.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { buildOrdersParams } from "../utils/orderUtils";
-import { useSearchParams } from "react-router-dom";
 import type { GetOrdersDto } from "../../../model/order/dto/GetOrdersDto";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
@@ -102,7 +100,6 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
   const Toast = useAppToast();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
 
@@ -156,9 +153,7 @@ export const OrderManageStatusModal: React.FC<OrderManageStatusModalProps> = ({
         }),
       ).unwrap();
 
-      setSearchParams(buildOrdersParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(orderActions.getOrders(filters)).unwrap();
 
       Toast.success(t("orders.manageStatus.success"));
       localOnClose();

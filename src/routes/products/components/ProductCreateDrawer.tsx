@@ -19,9 +19,7 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { useSearchParams } from "react-router-dom";
 import {
-  buildProductsParams,
   calculateProductFinalSalePrice,
   calculateProductProfit,
 } from "../utils/productUtils";
@@ -196,7 +194,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
   const [searchTagsLoading, setSearchTagsLoading] = useState(false);
 
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const Toast = useAppToast();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -305,7 +302,6 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
 
         await dispatch(
           categoryActions.getCategories({
-            userId,
             keyword,
             meta: { page: 1, limit: 50 },
           }),
@@ -325,7 +321,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         setSearchTagsLoading(true);
 
         await dispatch(
-          tagActions.getTags({ userId, keyword, meta: { page: 1, limit: 50 } }),
+          tagActions.getTags({ keyword, meta: { page: 1, limit: 50 } }),
         ).unwrap();
       } catch (e) {
         console.log(e);
@@ -371,9 +367,7 @@ export const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
         productActions.createProduct(payload as CreateProductDto),
       ).unwrap();
 
-      setSearchParams(buildProductsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(productActions.getProducts(filters)).unwrap();
 
       reset();
       onClose();

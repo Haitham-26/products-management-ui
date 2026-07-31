@@ -13,8 +13,6 @@ import { Input } from "../../../components/Input";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { productActions } from "../../../redux/product/products.slice";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { useSearchParams } from "react-router-dom";
-import { buildProductsParams } from "../utils/productUtils";
 import type { GetProductsDto } from "../../../model/product/dto/GetProductsDto";
 import { useTranslation } from "react-i18next";
 import { useAppToast } from "../../../components/toast/useAppToast";
@@ -184,7 +182,6 @@ export const ProductStockManageModal: React.FC<
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
@@ -244,9 +241,7 @@ export const ProductStockManageModal: React.FC<
         }),
       ).unwrap();
 
-      setSearchParams(buildProductsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(productActions.getProducts(filters)).unwrap();
 
       onClose();
 

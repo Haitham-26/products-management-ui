@@ -10,8 +10,6 @@ import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
 import { faNoteSticky } from "@fortawesome/free-solid-svg-icons/faNoteSticky";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import userSliceSelectors from "../../../redux/user/user.selector";
-import { useSearchParams } from "react-router-dom";
-import { buildOrdersParams } from "../utils/orderUtils";
 import { orderActions } from "../../../redux/order/orders.slice";
 import type { Order } from "../../../model/order/types/Order";
 import type { UpdateOrderDto } from "../../../model/order/dto/UpdateOrderDto";
@@ -97,7 +95,6 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const userId = useAppSelector(userSliceSelectors.selectUserId)!;
   const settings = useAppSelector(settingsSliceSelectors.selectSettings);
@@ -117,9 +114,7 @@ export const OrderUpdateDrawer: React.FC<OrderUpdateDrawerProps> = ({
 
       await dispatch(orderActions.updateOrder(data)).unwrap();
 
-      setSearchParams(buildOrdersParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(orderActions.getOrders(filters)).unwrap();
 
       localOnClose();
 

@@ -18,9 +18,7 @@ import userSliceSelectors from "../../../redux/user/user.selector";
 import { Select } from "../../../components/Select";
 import categorySliceSelectors from "../../../redux/category/categories.selector";
 import tagSliceSelectors from "../../../redux/tag/tags.selector";
-import { useSearchParams } from "react-router-dom";
 import {
-  buildProductsParams,
   calculateProductFinalSalePrice,
   calculateProductProfit,
 } from "../utils/productUtils";
@@ -206,7 +204,6 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
   const Toast = useAppToast();
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { control, handleSubmit, reset, getValues, watch, setValue } =
     useForm<UpdateProductDto>();
@@ -292,7 +289,6 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
 
         await dispatch(
           categoryActions.getCategories({
-            userId,
             keyword,
             meta: { page: 1, limit: 50 },
           }),
@@ -312,7 +308,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         setSearchTagsLoading(true);
 
         await dispatch(
-          tagActions.getTags({ userId, keyword, meta: { page: 1, limit: 50 } }),
+          tagActions.getTags({ keyword, meta: { page: 1, limit: 50 } }),
         ).unwrap();
       } catch (e) {
         console.log(e);
@@ -359,9 +355,7 @@ export const ProductUpdateDrawer: React.FC<ProductUpdateDrawerProps> = ({
         productActions.updateProduct(payload as UpdateProductDto),
       ).unwrap();
 
-      setSearchParams(buildProductsParams(filters, searchParams), {
-        replace: true,
-      });
+      await dispatch(productActions.getProducts(filters)).unwrap();
 
       onClose();
 

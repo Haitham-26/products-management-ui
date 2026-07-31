@@ -182,10 +182,7 @@ const Products: React.FC = () => {
       },
     };
 
-    setSearchParams(buildProductsParams(newFilters, searchParams), {
-      replace: true,
-    });
-    debouncedSetSearchParams(newFilters);
+    dispatch(productActions.getProducts(newFilters));
   };
 
   const applyFilter = useCallback(
@@ -198,7 +195,7 @@ const Products: React.FC = () => {
         ...filters,
         meta: {
           ...(filters?.meta || {}),
-          page: key === "keyword" ? 0 : filters?.meta?.page || 0,
+          page: 0,
         },
         [key]: value,
       };
@@ -267,21 +264,15 @@ const Products: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildProductsParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        productActions.getProducts({
+          ...filters,
+          meta: {
+            ...filters.meta,
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
     } catch (e) {
       console.log(e);
       Toast.apiError(e);
@@ -373,21 +364,15 @@ const Products: React.FC = () => {
 
       const newPage = currentPage > totalPages ? totalPages : currentPage;
 
-      setSearchParams(
-        buildProductsParams(
-          {
-            ...filters,
-            meta: {
-              ...(filters?.meta || {}),
-              page: newPage,
-            },
+      await dispatch(
+        productActions.getProducts({
+          ...filters,
+          meta: {
+            ...(filters?.meta || {}),
+            page: newPage,
           },
-          searchParams,
-        ),
-        {
-          replace: true,
-        },
-      );
+        }),
+      ).unwrap();
 
       setProductsBulkDeleteVisible(false);
       setSelectedRowIds([]);
@@ -477,12 +462,15 @@ const Products: React.FC = () => {
     dispatch(
       productActions.getProducts({
         ...filters,
-        userId,
-      } as GetProductsDto),
+        meta: {
+          ...filters.meta,
+          page: 1,
+        },
+      }),
     );
 
     return () => debouncedSetSearchParams.cancel();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StyledContainer>

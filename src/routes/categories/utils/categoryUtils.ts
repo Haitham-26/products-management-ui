@@ -4,7 +4,7 @@ import type { GetCategoriesDto } from "../../../model/category/dto/GetCategories
 export const parseCategoriesFiltersFromParams = (
   params: URLSearchParams,
   meta: GetCategoriesDto["meta"],
-): Partial<GetCategoriesDto> => ({
+): GetCategoriesDto => ({
   keyword: params.get("keyword") || "",
   sortBy: params.get("sortBy") as GetCategoriesDto["sortBy"],
   datePeriod: params.get("datePeriod") as GetCategoriesDto["datePeriod"],
@@ -44,9 +44,6 @@ export const buildCategoriesParams = (
   set("limit", filters.meta?.limit?.toString() || "10");
   set("minUsageCount", filters.minUsageCount?.toString());
   set("maxUsageCount", filters.maxUsageCount?.toString());
-
-  // to force reload
-  next.set("u", new Date().getTime().toString());
 
   return next;
 };
