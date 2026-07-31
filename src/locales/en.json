@@ -629,7 +629,7 @@
           "Only individuals who are non-invited by you and not associated with another organization can be invited.",
           "Upon opening the app (and creating an account if new), invitees will immediately see their pending invitation and be able to accept or decline it.",
           "You can check delivery progress anytime under the <0>Invitations Tab</0>.",
-          "Who accepts the invitation will have read-only access to products, tags, categories and orders by default, and you can manage their permissions under the <0>Members Tab</0>."
+          "Who accepts the invitation will have read-only access to products, tags, categories, orders and returns by default, and you can manage their permissions under the <0>Members Tab</0>."
         ],
         "emails": {
           "title": "Recipients",
