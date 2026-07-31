@@ -7,8 +7,6 @@ import i18n from "../../../i18n";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import type { ThemeType } from "../../../theme/theme";
 import { useTranslation } from "react-i18next";
-import { useNavigate, type NavigateFunction } from "react-router-dom";
-import type { TFunction } from "i18next";
 import { OrderStatus } from "../../../model/order/types/OrderStatus.enum";
 import { useAppSelector } from "../../../redux/store";
 import dashboardSliceSelectors from "../../../redux/dashboard/dashboard.selector";
@@ -19,40 +17,8 @@ import { Empty } from "../../../components/Empty";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons/faBoxOpen";
 import { Icon } from "../../../components/Icon";
 
-const getOptions = (
-  theme: ThemeType,
-  isRTL: boolean,
-  navigate: NavigateFunction,
-  t: TFunction,
-): ChartOptions<"pie"> => ({
+const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"pie"> => ({
   responsive: true,
-  onClick: (_, elements, chart) => {
-    if (!elements.length) {
-      return;
-    }
-
-    const index = elements[0].index;
-    const label = chart.data.labels?.[index] as string;
-
-    switch (label) {
-      case t("orders.status.pending"):
-        navigate(`/orders?status=${OrderStatus.PENDING}`);
-        break;
-      case t("orders.status.delivered"):
-        navigate(`/orders?status=${OrderStatus.DELIVERED}`);
-        break;
-
-      case t("orders.status.canceled"):
-        navigate(`/orders?status=${OrderStatus.CANCELED}`);
-        break;
-      case t("orders.status.returned"):
-        navigate(`/orders?status=${OrderStatus.RETURNED}`);
-        break;
-      case t("orders.status.partiallyReturned"):
-        navigate(`/orders?status=${OrderStatus.PARTIALLY_RETURNED}`);
-        break;
-    }
-  },
   onHover: (event, elements) => {
     const canvas = event.native?.target as HTMLCanvasElement;
 
@@ -138,7 +104,6 @@ const StyledEmpty = styled(Empty)`
 
 export const DashboardOrdersChart: React.FC = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { ordersCountByStatus } = useAppSelector(
@@ -200,12 +165,7 @@ export const DashboardOrdersChart: React.FC = () => {
         {totalOrders ? (
           <Pie
             data={data}
-            options={getOptions(
-              theme,
-              i18n.dir(i18n.language) === "rtl",
-              navigate,
-              t,
-            )}
+            options={getOptions(theme, i18n.dir(i18n.language) === "rtl")}
           />
         ) : (
           <StyledEmpty
