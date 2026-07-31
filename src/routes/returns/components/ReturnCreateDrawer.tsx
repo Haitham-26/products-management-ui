@@ -218,8 +218,6 @@ export const ReturnCreateDrawer: React.FC<ReturnCreateDrawerProps> = ({
           (orderItem) => String(orderItem.productId) === String(item.productId),
         );
 
-        console.log(orderItem);
-
         if (!orderItem) {
           return acc;
         }

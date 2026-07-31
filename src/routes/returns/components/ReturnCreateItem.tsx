@@ -95,6 +95,7 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
   if (!orderItem) {
     return null;
   }
+
   const watchedItem = watch(`items.${index}`);
 
   const maxAllowedReturnCount = orderItem.quantity;
@@ -196,7 +197,16 @@ export const ReturnCreateItem: React.FC<ReturnCreateItemProps> = ({
               min={0}
               max={watchedItem.returnedQuantity}
               value={value}
-              onChange={(e) => onChange(Number(e.currentTarget.value ?? 0))}
+              onChange={(e) => {
+                const numericValue = Number(e.target.value);
+
+                const newValue = Math.min(
+                  numericValue,
+                  watchedItem.returnedQuantity,
+                );
+
+                onChange(newValue);
+              }}
               type="number"
               valid={!restockedQuantityError}
             />
