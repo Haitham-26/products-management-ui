@@ -55,8 +55,8 @@ const StickyBar = styled.div<{ blur: boolean }>`
   -webkit-backdrop-filter: ${({ blur }) => (blur ? "blur(10px)" : "none")};
 
   @media (min-width: ${Breakpoints.MD}) {
-    // 7.5rem = Header's height on mobile
-    top: 7.5rem;
+    // 6.5rem = 7.5rem Header's height - 1rem padding
+    top: 6.5rem;
   }
 `;
 
