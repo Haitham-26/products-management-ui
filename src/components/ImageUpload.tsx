@@ -3,6 +3,22 @@ import { Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
 import ImgCrop, { type ImgCropProps } from "antd-img-crop";
 import { useTranslation } from "react-i18next";
+import styled from "styled-components";
+
+const StyledUpload = styled(Upload)`
+  overflow-x: auto;
+
+  .ant-upload-list {
+    flex-wrap: nowrap !important;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  .ant-upload-list-item-container,
+  .ant-upload {
+    flex-shrink: 0;
+  }
+`;
 
 type ImageUploadProps = UploadProps & {
   onChange: VoidCallback<UploadFile[]>;
@@ -56,7 +72,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       modalCancel={t("common.cancel")}
       modalOk={t("common.save")}
     >
-      <Upload
+      <StyledUpload
         listType="picture-card"
         fileList={fileList}
         onChange={localOnChange}
