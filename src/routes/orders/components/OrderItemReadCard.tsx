@@ -91,12 +91,6 @@ const ItemTotals = styled.div`
   }
 `;
 
-const ProfitGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
 const StrikethroughText = styled(Text)`
   text-decoration: line-through;
 `;
@@ -125,7 +119,6 @@ export const OrderItemReadCard: React.FC<OrderItemReadCardProps> = ({
   const originalLineTotal = item.finalSalePriceAtPurchase * item.quantity;
   const netLineTotal = item.finalSalePriceAtPurchase * netQuantity;
 
-  const originalLineProfit = item.profitAtPurchase * item.quantity;
   const netLineProfit = item.profitAtPurchase * netQuantity;
 
   return (
@@ -190,31 +183,23 @@ export const OrderItemReadCard: React.FC<OrderItemReadCardProps> = ({
             {stringWithCurrencyCode(settings.currency, netLineTotal)}
           </Text>
 
-          <ProfitGroup>
-            {hasReturn ? (
-              <StrikethroughText color="textSecondary" fontSize="small">
-                {stringWithCurrencyCode(settings.currency, originalLineProfit)}
-              </StrikethroughText>
-            ) : null}
-
-            <Text
-              color={
-                isFullyReturned
-                  ? "textSecondary"
-                  : netLineProfit > 0
-                    ? "success"
-                    : "error"
-              }
-              fontSize="small"
-              fontWeight={hasReturn ? "600" : "regular"}
-            >
-              {t("orders.general.items.item.profit", {
-                totalProfit: `${
-                  netLineProfit > 0 ? "+" : ""
-                }${stringWithCurrencyCode(settings.currency, netLineProfit)}`,
-              })}
-            </Text>
-          </ProfitGroup>
+          <Text
+            color={
+              isFullyReturned
+                ? "textSecondary"
+                : netLineProfit > 0
+                  ? "success"
+                  : "error"
+            }
+            fontSize="small"
+            fontWeight={hasReturn ? "600" : "regular"}
+          >
+            {t("orders.general.items.item.profit", {
+              totalProfit: `${
+                netLineProfit > 0 ? "+" : ""
+              }${stringWithCurrencyCode(settings.currency, netLineProfit)}`,
+            })}
+          </Text>
         </ItemTotals>
       </ItemContent>
     </ItemRow>
