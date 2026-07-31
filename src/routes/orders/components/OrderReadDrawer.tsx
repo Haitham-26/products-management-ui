@@ -102,6 +102,13 @@ const StrikethroughText = styled(Text)`
   text-decoration: line-through;
 `;
 
+const LTRText = styled(Text)`
+  html[dir="rtl"] & {
+    direction: ltr;
+    text-align: end;
+  }
+`;
+
 type Props = {
   open: boolean;
   onClose: VoidFunction;
@@ -154,17 +161,17 @@ export const OrderReadDrawer: React.FC<Props> = ({
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
                 {t("orders.fields.customerEmail")}
               </Text>
-              <Text fontStyle={!order.customerEmail ? "italic" : undefined}>
+              <LTRText fontStyle={!order.customerEmail ? "italic" : undefined}>
                 {order.customerEmail || "_"}
-              </Text>
+              </LTRText>
             </DataItem>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
                 {t("orders.fields.customerPhone")}
               </Text>
-              <Text fontStyle={!order.customerPhone ? "italic" : undefined}>
+              <LTRText fontStyle={!order.customerPhone ? "italic" : undefined}>
                 {order.customerPhone || "_"}
-              </Text>
+              </LTRText>
             </DataItem>
             <DataItem>
               <Text fontSize="small" color="textSecondary" fontWeight="bold">
