@@ -76,10 +76,32 @@ const ProductRow = styled.div`
   grid-template-columns: 1fr 6rem 2rem;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacing.md};
+  padding-bottom: ${({ theme }) => theme.spacing.sm};
   border-bottom: 1px dashed ${({ theme }) => theme.colors.border};
 
   &:last-of-type {
     border-bottom: none;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr 2rem;
+    grid-template-areas:
+      "product product"
+      "quantity remove";
+    row-gap: ${({ theme }) => theme.spacing.sm};
+
+    > *:nth-child(1) {
+      grid-area: product;
+    }
+
+    > *:nth-child(2) {
+      grid-area: quantity;
+    }
+
+    > *:nth-child(3) {
+      grid-area: remove;
+      justify-self: end;
+    }
   }
 `;
 
@@ -512,7 +534,7 @@ export const OrderCreateDrawer: React.FC<OrderCreateDrawerProps> = ({
 
                       return (
                         <SearchSelect
-                          title={t("common.product")}
+                          title={`${index + 1}. ${t("common.product")}`}
                           value={
                             options?.find((p) => p.value === value) || undefined
                           }
