@@ -36,6 +36,7 @@ const StyledButton = styled.button<{ variant: Variant }>`
   gap: ${({ theme }) => theme.spacing.sm};
   position: relative;
   transition: all 0.2s ease-in-out;
+  user-select: none;
 
   ${({ variant }) =>
     Object.keys(variantStyles).includes(variant)
