@@ -11,7 +11,8 @@ import { useTranslation } from "react-i18next";
 import { Breakpoints } from "../../../theme/Breakpoints";
 import i18n from "../../../i18n";
 import type { ChartOptions } from "chart.js";
-import { Tag } from "antd";
+import { Grid, Tag } from "antd";
+import truncate from "lodash/truncate";
 
 const Container = styled.div`
   display: flex;
@@ -77,7 +78,11 @@ const getChartColors = (theme: ThemeType) => [
   `${theme.colors.primary}70`,
 ];
 
-const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
+const getOptions = (
+  theme: ThemeType,
+  isRTL: boolean,
+  isMobile: boolean,
+): ChartOptions<"bar"> => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -96,10 +101,15 @@ const getOptions = (theme: ThemeType, isRTL: boolean): ChartOptions<"bar"> => ({
       grid: { display: false },
       ticks: {
         color: theme.colors.textSecondary,
-        callback: function (value) {
-          const label = this.getLabelForValue(value as number);
-          return label.length > 12 ? label.slice(0, 10) + "..." : label;
-        },
+        ...(isMobile
+          ? {
+              callback: function (value) {
+                return truncate(this.getLabelForValue(value as number), {
+                  length: 12,
+                });
+              },
+            }
+          : {}),
       },
     },
     y: {
@@ -125,6 +135,7 @@ export const DashboardTopProductsChart: React.FC<
 > = ({ selectedDatePeriodLabel }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { md } = Grid.useBreakpoint();
 
   const { mostSoldProducts } = useAppSelector(
     dashboardSliceSelectors.selectDashboardStats,
@@ -139,6 +150,7 @@ export const DashboardTopProductsChart: React.FC<
     datasets: [
       {
         data: products.map((p) => p.totalSold),
+
         backgroundColor: getChartColors(theme).slice(0, products.length),
         borderRadius: 6,
         borderSkipped: false,
@@ -158,7 +170,7 @@ export const DashboardTopProductsChart: React.FC<
 
       <ChartCanvasWrapper>
         <Bar
-          options={getOptions(theme, i18n.dir(i18n.language) === "rtl")}
+          options={getOptions(theme, i18n.dir(i18n.language) === "rtl", !md)}
           data={data}
         />
       </ChartCanvasWrapper>
