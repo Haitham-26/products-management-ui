@@ -884,6 +884,7 @@
     }
   },
   "serverErrors": {
+    "hugeRequest": "You sent a large request to the server.",
     "internal": "An unexpected error occurred. Please try again later or contact our support team.",
     "unauthorized": "Authentication failed.",
     "rateLimit": {
